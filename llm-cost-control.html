@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#07100e" />
 <meta property="og:title" content="Keeping LLM costs from quietly wrecking your margins — Harman Kamboj" />
 <meta property="og:description" content="Practical LLM cost control: where the money actually goes, how to cut spend without hurting quality, and the metrics worth watching." />
-<meta property="og:type" content="article" />
+<meta property="og:type" content="website" />
 <meta property="og:site_name" content="Harman Kamboj" />
 <meta property="og:url" content="https://hammyasf.github.io/llm-cost-control.html" />
 <meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
@@ -35,6 +35,7 @@
   a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
   body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
   .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  .wrapw{max-width:1080px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrapw{padding:0 22px;}}
   nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
   .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
   .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
@@ -56,14 +57,19 @@
   article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
   article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
   article.post strong{color:var(--ink);font-weight:700;}
-  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
   article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
   .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
   .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
   .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
   .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
   .btn:hover{transform:translateY(-2px);}
-  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .related{margin-top:50px;border-top:1px solid var(--line);padding-top:22px;}
+  .related h2{font-family:var(--display);font-weight:600;font-size:22px;margin-bottom:4px;letter-spacing:-.01em;}
+  .related a{display:block;padding:15px 0;border-bottom:1px solid var(--line);color:#cdd8d3;font-size:16.5px;transition:color .2s,padding .2s;}
+  .related a:hover{color:var(--accent);padding-left:8px;}
+  .related a em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--faint);display:block;margin-top:4px;}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:30px;padding:26px 0 10px;font-family:var(--mono);font-size:13px;}
   .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
   .blist{padding:20px 0;display:grid;gap:8px;}
   .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
@@ -77,12 +83,18 @@
   .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
   .bhero{padding:150px 0 6px;}
   .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
-  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
-  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(40px,7vw,84px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:640px;}
   .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
-  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  .lanes a,.lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;transition:background .2s;}
+  .lanes a:hover{background:rgba(43,227,176,.12);}
+  .hubgrid{display:flex;gap:24px;flex-wrap:wrap;margin-top:20px;font-family:var(--mono);font-size:12.5px;}
+  .hubgrid a{color:var(--muted);}.hubgrid a:hover{color:var(--accent);}
+  .proof{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;}
+  .proof a{font-family:var(--mono);font-size:12.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:7px 13px;border-radius:8px;}
+  .proof a:hover{background:rgba(43,227,176,.1);}
   footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  footer .wrapw{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
   .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
   .reveal.in{opacity:1;transform:none;}
   @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
@@ -92,7 +104,7 @@
 <nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
 <main>
  <header class="phead"><div class="wrap">
-   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a> / <a href="ai.html">AI &amp; agents</a></div>
    <h1 class="ptitle">Keeping LLM costs from quietly wrecking your margins</h1>
    <div class="pmeta"><span>April 26, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
    <div class="ptags"><span>AI</span><span>Engineering</span></div>
@@ -116,11 +128,16 @@
 <p>Model prices and capabilities change fast. A routing decision that was correct six months ago may be wrong now because a cheaper model got good enough, or an expensive one dropped in price. I put a recurring reminder on the calendar to re-benchmark the main paths against current options. It is dull work and it consistently finds savings, because the ground keeps shifting under whatever you decided last time.</p>
 <p>None of this is glamorous and none of it requires deep magic. Measure at the task level, match the model to the difficulty, stop paying for tokens you do not use, and cap the failure modes that can run away. Do that and the model bill becomes a predictable cost you manage, instead of a surprise that shows up to wreck your margins when you are least expecting it.</p>
    <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="related"><h2>Related in AI &amp; agents</h2>
+     <a href="securing-ai-generated-code.html">Securing AI generated code before it ships<em>April 29, 2026</em></a>
+     <a href="when-not-to-use-ai.html">When not to reach for an AI agent<em>April 23, 2026</em></a>
+     <a href="agent-architecture-basics.html">Agent architecture basics, minus the hype<em>May 2, 2026</em></a>
+   </div>
    <div class="pager">
      <a href="securing-ai-generated-code.html">← Securing AI generated code before it ships</a>
      <a href="when-not-to-use-ai.html">When not to reach for an AI agent →</a>
    </div>
  </div></article>
 </main>
-<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<footer><div class="wrapw"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
 </body></html>

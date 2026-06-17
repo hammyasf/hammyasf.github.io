@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The token swap frontend pitfalls that cost real money — Harman Kamboj</title>
-<meta name="description" content="Token swap frontend pitfalls that cost users real money: slippage, stale quotes, approvals, decimals, and the trust details most swap UIs get wrong." />
+<title>Web3 &amp; on-chain engineering — Harman Kamboj</title>
+<meta name="description" content="Deep dives on the parts of Web3 engineering that actually bite: on-chain indexing, reorgs, bridges, swaps, and building frontends people trust with their money. Drawn from shipping the web platform and on-chain plumbing for a top-10 cryptocurrency." />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#07100e" />
-<meta property="og:title" content="The token swap frontend pitfalls that cost real money — Harman Kamboj" />
-<meta property="og:description" content="Token swap frontend pitfalls that cost users real money: slippage, stale quotes, approvals, decimals, and the trust details most swap UIs get wrong." />
+<meta property="og:title" content="Web3 &amp; on-chain engineering — Harman Kamboj" />
+<meta property="og:description" content="Deep dives on the parts of Web3 engineering that actually bite: on-chain indexing, reorgs, bridges, swaps, and building frontends people trust with their money. Drawn from shipping the web platform and on-chain plumbing for a top-10 cryptocurrency." />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Harman Kamboj" />
-<meta property="og:url" content="https://hammyasf.github.io/token-swap-frontend-pitfalls.html" />
+<meta property="og:url" content="https://hammyasf.github.io/web3.html" />
 <meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="The token swap frontend pitfalls that cost real money — Harman Kamboj" />
-<meta name="twitter:description" content="Token swap frontend pitfalls that cost users real money: slippage, stale quotes, approvals, decimals, and the trust details most swap UIs get wrong." />
+<meta name="twitter:title" content="Web3 &amp; on-chain engineering — Harman Kamboj" />
+<meta name="twitter:description" content="Deep dives on the parts of Web3 engineering that actually bite: on-chain indexing, reorgs, bridges, swaps, and building frontends people trust with their money. Drawn from shipping the web platform and on-chain plumbing for a top-10 cryptocurrency." />
 <meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
-<link rel="canonical" href="https://hammyasf.github.io/token-swap-frontend-pitfalls.html" />
+<link rel="canonical" href="https://hammyasf.github.io/web3.html" />
 <link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
 <link rel="icon" href="favicon.svg" />
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"The token swap frontend pitfalls that cost real money","description":"Token swap frontend pitfalls that cost users real money: slippage, stale quotes, approvals, decimals, and the trust details most swap UIs get wrong.","datePublished":"2026-06-04","dateModified":"2026-06-04","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/token-swap-frontend-pitfalls.html","url":"https://hammyasf.github.io/token-swap-frontend-pitfalls.html","keywords":"Web3, Engineering","image":"https://hammyasf.github.io/og-image.png"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Web3 & on-chain engineering — Harman Kamboj","description":"Deep dives on the parts of Web3 engineering that actually bite: on-chain indexing, reorgs, bridges, swaps, and building frontends people trust with their money. Drawn from shipping the web platform and on-chain plumbing for a top-10 cryptocurrency.","url":"https://hammyasf.github.io/web3.html"}</script>
 <style>
   :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
   --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
@@ -103,41 +103,25 @@
 <body>
 <nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
 <main>
- <header class="phead"><div class="wrap">
-   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a> / <a href="web3.html">Web3 &amp; on-chain</a></div>
-   <h1 class="ptitle">The token swap frontend pitfalls that cost real money</h1>
-   <div class="pmeta"><span>June 4, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
-   <div class="ptags"><span>Web3</span><span>Engineering</span></div>
+ <header class="bhero"><div class="wrap">
+   <div class="k">web3 engineering</div>
+   <h1>Web3 &amp; on-chain engineering.</h1>
+   <p>Deep dives on the parts of Web3 engineering that actually bite: on-chain indexing, reorgs, bridges, swaps, and building frontends people trust with their money. Drawn from shipping the web platform and on-chain plumbing for a top-10 cryptocurrency.</p>
+   <div class="lanes"><a href="blog.html">All writing</a><a href="web3.html">Web3 &amp; on-chain</a><a href="ai.html">AI &amp; agents</a><a href="full-stack.html">Full-stack &amp; performance</a><a href="game-dev.html">Game dev</a><a href="career.html">Career &amp; building in public</a></div>
  </div></header>
- <article class="post"><div class="wrap">
-   <p>A token swap frontend is one of the few UIs where a small bug does not just annoy someone, it takes their money. I have built swap interfaces and I have watched users lose value not because the smart contract was wrong but because the frontend let them sign something they did not understand or showed them a number that was already stale by the time they clicked. These are the pitfalls that actually cost real money, and most of them are unglamorous frontend discipline rather than anything exotic.</p>
-<h2>Slippage is a promise, not a suggestion</h2>
-<p>Slippage tolerance is the gap you accept between the price you saw and the price you actually get when the transaction lands. Set it too tight and swaps fail constantly because the price moved a hair, which frustrates people. Set it too loose, or let the user set it loose without understanding, and you have opened the door to sandwich attacks where a bot moves the price against them inside that tolerance and pockets the difference.</p>
-<p>The frontend's job is to make this legible. Show the minimum received, not just the expected amount, because the minimum is the real promise. Warn loudly when someone sets a high tolerance. And never silently raise slippage to make a swap go through. I have seen UIs do that to reduce failed transactions, and it is a quiet way to hand users to the bots. A failed swap is recoverable. A swap that executed at a terrible price is not.</p>
-<h2>Quotes go stale faster than users click</h2>
-<p>The price you fetched a few seconds ago may not be the price now. Markets move, and the gap between fetching a quote and the user signing can be long enough for the displayed number to be a lie. If you show a quote and let it sit there indefinitely, you are setting up a confusing experience at best and a costly one at worst when the user signs against a number that no longer holds.</p>
-<p>Refresh quotes on a sensible interval, show the user when a quote is refreshing, and recompute the minimum received from the fresh number rather than the one the user first saw. The contract enforces the minimum, so the safety is real, but a swap that reverts because the quote went stale still reads to the user as the app being broken. Keeping the displayed number honest is how you avoid both the bad fill and the support ticket.</p>
-<ul><li>Always display minimum received, not just the expected output</li><li>Refresh quotes and show a clear refreshing state instead of a frozen price</li><li>Recompute slippage bounds from the latest quote, never the first one shown</li></ul>
-<h2>Approvals are where trust is won or lost</h2>
-<p>Before a contract can move a user's tokens they have to approve it, and the approval step is where a lot of damage happens. The convenient pattern is to request an unlimited approval so the user never has to approve again. The safe pattern is to approve only the amount being swapped. Unlimited approvals are a standing risk: if that contract is ever compromised, every token a user approved is reachable. Convenience here is borrowed against the user's security.</p>
-<p>I lean toward exact-amount approvals by default and make the tradeoff visible rather than deciding it silently for people. At minimum, surface what is being approved and to whom in plain language. A user clicking approve on an opaque prompt has no idea they may be granting open-ended access, and the frontend is the only thing standing between them and that ignorance.</p>
-<h2>Decimals and the off-by-a-lot bug</h2>
-<p>Tokens have different decimal precisions, and getting this wrong does not produce a slightly off number. It produces a number off by orders of magnitude. Treat all token amounts as the smallest integer unit internally and only format for display at the edges. Doing math on the human-readable floating point value is how you end up swapping a thousand times more or less than the user intended, and floating point rounding in a financial UI is simply not acceptable.</p>
-<p>This is boring and it is also one of the most common serious bugs I see in swap code. The fix is a hard rule: integers in the smallest unit everywhere, conversion to display only at render. No exceptions, no shortcuts, no doing one quick calculation in floats because it was easier in the moment.</p>
-<h2>The transaction is not done when the wallet pops up</h2>
-<p>A swap has a lifecycle: pending in the mempool, included in a block, and confirmed enough to be safe. A frontend that flips to success the instant the wallet returns is lying, because the transaction can still fail or get reorganized. Track the real state and reflect it. Show pending honestly, show failures clearly with a reason the user can act on, and do not claim success until the chain has actually confirmed it.</p>
-<p>All of these pitfalls share a theme. The contract can be perfect and the user can still lose money because the frontend showed them the wrong thing, let them sign the wrong thing, or told them they were safe when they were not. In a swap UI the interface is part of the security surface, not a layer on top of it, and treating it that way is the difference between a tool people trust and one that quietly costs them.</p>
-   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
-   <div class="related"><h2>Related in Web3 &amp; on-chain</h2>
-     <a href="cross-chain-bridge-lessons.html">What building a cross-chain bridge taught me about trust<em>June 7, 2026</em></a>
-     <a href="event-ordering-evm-logs.html">Event ordering on EVM is not what you think<em>June 1, 2026</em></a>
-     <a href="subsquid-vs-the-graph-2026.html">Subsquid vs The Graph in 2026: a practical comparison<em>June 10, 2026</em></a>
-   </div>
-   <div class="pager">
-     <a href="cross-chain-bridge-lessons.html">← What building a cross-chain bridge taught me about trust</a>
-     <a href="event-ordering-evm-logs.html">Event ordering on EVM is not what you think →</a>
-   </div>
- </div></article>
+ <section><div class="wrap"><div class="blist">
+        <a class="bcard reveal" href="indexing-onchain-data-subsquid-the-graph.html"><div class="d">June 18, 2026 · 3 min read</div><h2>Indexing on-chain data without losing your mind</h2><p>Notes from building indexers for a top-10 crypto and a DeFi exchange. When The Graph is the right call, when Subsquid earns its keep, and the traps that cost me weekends.</p></a>
+        <a class="bcard reveal" href="how-subgraphs-actually-work.html"><div class="d">June 16, 2026 · 5 min read</div><h2>How subgraphs actually work, from someone who ships them</h2><p>A working engineer's guide to how The Graph subgraphs actually work, from event handlers and the store to reorg safety and the gotchas docs skip.</p></a>
+        <a class="bcard reveal" href="handling-chain-reorgs-indexer.html"><div class="d">June 13, 2026 · 5 min read</div><h2>Handling chain reorgs without corrupting your indexer</h2><p>How to handle chain reorgs in an indexer without corrupting state: confirmations, rollbacks, idempotent writes, and the quiet failure modes to fear.</p></a>
+        <a class="bcard reveal" href="subsquid-vs-the-graph-2026.html"><div class="d">June 10, 2026 · 5 min read</div><h2>Subsquid vs The Graph in 2026: a practical comparison</h2><p>Subsquid vs The Graph in 2026 from someone who ships both: sync speed, query flexibility, hosting, and how to actually pick the right indexer.</p></a>
+        <a class="bcard reveal" href="cross-chain-bridge-lessons.html"><div class="d">June 7, 2026 · 5 min read</div><h2>What building a cross-chain bridge taught me about trust</h2><p>Lessons from building a cross-chain bridge: where trust really lives, finality and replay risks, and why the boring parts are what keep funds safe.</p></a>
+        <a class="bcard reveal" href="token-swap-frontend-pitfalls.html"><div class="d">June 4, 2026 · 5 min read</div><h2>The token swap frontend pitfalls that cost real money</h2><p>Token swap frontend pitfalls that cost users real money: slippage, stale quotes, approvals, decimals, and the trust details most swap UIs get wrong.</p></a>
+        <a class="bcard reveal" href="event-ordering-evm-logs.html"><div class="d">June 1, 2026 · 5 min read</div><h2>Event ordering on EVM is not what you think</h2><p>EVM event ordering trips up almost every indexer. Here is how logs are actually ordered on chain and the sort key you need to get it right.</p></a>
+        <a class="bcard reveal" href="on-chain-data-modeling.html"><div class="d">May 29, 2026 · 5 min read</div><h2>Modeling on-chain data so your queries do not melt</h2><p>On-chain data modeling decides whether your queries fly or crawl. Practical schema patterns for indexers that stay fast as the chain grows.</p></a>
+        <a class="bcard reveal" href="rpc-reliability-web3.html"><div class="d">May 26, 2026 · 4 min read</div><h2>RPC reliability for Web3 apps that cannot go down</h2><p>Web3 RPC reliability is where most production outages actually start. Patterns for failover, retries and fallbacks that keep your dapp up.</p></a>
+        <a class="bcard reveal" href="defi-dex-architecture.html"><div class="d">May 23, 2026 · 5 min read</div><h2>How a DeFi DEX is actually put together</h2><p>A practical look at DeFi DEX architecture: the contracts, the indexer, the frontend, and where the genuinely hard engineering really lives.</p></a>
+        <a class="bcard reveal" href="gas-aware-frontend.html"><div class="d">May 20, 2026 · 5 min read</div><h2>Building a gas-aware frontend users trust</h2><p>A gas-aware frontend tells users what a transaction will cost before they sign. Practical patterns for estimates, failures and honest UX.</p></a>
+ </div></div></section>
 </main>
 <footer><div class="wrapw"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
 </body></html>
