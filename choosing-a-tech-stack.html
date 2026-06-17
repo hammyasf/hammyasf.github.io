@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>How I choose a tech stack without chasing hype — Harman Kamboj</title>
+<meta name="description" content="Choosing a tech stack is a bet on the next few years, not a fashion choice. Here is the practical framework I use to pick tools I will not regret." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="How I choose a tech stack without chasing hype — Harman Kamboj" />
+<meta property="og:description" content="Choosing a tech stack is a bet on the next few years, not a fashion choice. Here is the practical framework I use to pick tools I will not regret." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/choosing-a-tech-stack.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="How I choose a tech stack without chasing hype — Harman Kamboj" />
+<meta name="twitter:description" content="Choosing a tech stack is a bet on the next few years, not a fashion choice. Here is the practical framework I use to pick tools I will not regret." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/choosing-a-tech-stack.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"How I choose a tech stack without chasing hype","description":"Choosing a tech stack is a bet on the next few years, not a fashion choice. Here is the practical framework I use to pick tools I will not regret.","datePublished":"2026-01-29","dateModified":"2026-01-29","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/choosing-a-tech-stack.html","url":"https://hammyasf.github.io/choosing-a-tech-stack.html","keywords":"Career, Building in public","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
+  .blist{padding:20px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.02em;margin:9px 0 7px;}
+  .bcard p{color:var(--muted);font-size:15.5px;}
+  .bcard .tg{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+  .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
+  .bhero{padding:150px 0 6px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
+  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">How I choose a tech stack without chasing hype</h1>
+   <div class="pmeta"><span>January 29, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Career</span><span>Building in public</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>Every few months a new framework shows up with a slick landing page and a benchmark that makes everything else look slow. I have been doing this long enough to have adopted some of those early and regretted it, and to have skipped others that turned out to matter. Choosing a tech stack is not about picking what is exciting on a given Tuesday. It is a bet on what you will be able to maintain, hire for, and debug at 2am two years from now.</p>
+<h2>Boring is a feature</h2>
+<p>My default lean is toward boring, proven tools, and I mean that as a compliment. Postgres, a typed language, a framework with a big community and years of production mileage. Boring tools have something the shiny ones do not: every problem you will hit has already been hit by a thousand people who wrote it down. When I picked Postgres for something, I never spent a day wondering whether the database itself was the bug. That confidence is worth more than a 10 percent speedup on a benchmark nobody will ever notice.</p>
+<p>The cost of novelty is real and it shows up later. New tools have thin docs, breaking changes, and a Stack Overflow that just says no answers found. You pay that cost in the exact moment you can least afford it, when something is on fire in production.</p>
+<h2>The questions I actually ask</h2>
+<p>When I am choosing a tech stack for a real project, I run through a short list before I get attached to anything. None of these are about how fun the tool is to write.</p>
+<ul><li>Who maintains this and will they still be here in three years.</li><li>How hard is it to hire or onboard someone who knows it.</li><li>When it breaks, can I read the source and understand what happened.</li><li>What is the escape hatch if this choice turns out wrong.</li><li>Does it actually fit this problem, or am I just curious about it.</li></ul>
+<p>That last question catches me more than I would like to admit. There is a difference between a tool being good and a tool being right for this specific job. I keep a separate place for tools I want to learn, which is side projects, so I am not paying off my curiosity with a client's deadline.</p>
+<h2>Match the tool to the problem, not the trend</h2>
+<p>Different problems pull toward different answers, and that is fine. I reach for Go when I want predictable performance and simple concurrency in a backend service, and for TypeScript and Node when I want to move fast and share types across the whole stack. For a content-heavy site I will pick something with strong rendering and routing built in rather than wiring it together myself. The point is that the problem decides, not my mood. A stack that is perfect for a high-throughput indexer is overkill for a marketing site, and the reverse is worse.</p>
+<p>I also weigh the team I am handing this to. A brilliant choice that only I understand is a liability the day I am on vacation. If the people who will live with the code cannot be productive in it, it was the wrong choice no matter how elegant it looked on paper.</p>
+<h2>When new tech is worth the risk</h2>
+<p>I am not a luddite. I do adopt new things, just deliberately. The bar is that the new tool has to solve a problem my current tools genuinely cannot, not solve a problem I already had a fine answer for. When a query layer or a build tool removes a whole category of pain I was actually feeling, that is a real reason to switch. Faster on a benchmark is not a real reason on its own.</p>
+<p>I also try the new thing on something small and low-stakes first. A side project, an internal tool, a piece of a system I can rip out. By the time it touches anything important, I have hit its rough edges in private where they cannot hurt anyone. That is how I learned which new tools were keepers and which were demos with good marketing.</p>
+<h2>The choice you can walk back</h2>
+<p>The healthiest mindset I have found when choosing a tech stack is to assume I might be wrong and design so that being wrong is survivable. Keep the core of your system in plain, portable code. Put the trendy thing at the edges where you can swap it. Avoid letting any one framework dictate the shape of your entire codebase, because frameworks come and go and your business logic should outlive all of them.</p>
+<p>Hype fades on a schedule you cannot predict. The tools you can reason about, hire for, and replace without a rewrite are the ones that keep paying off. Pick for the unglamorous middle years of a project, not the launch-week excitement, and you will make far fewer choices you have to apologize for later.</p>
+   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="pager">
+     <a href="technical-interview-senior.html">← Senior technical interviews, from both sides of the table</a>
+     <a href="writing-better-pull-requests.html">Writing pull requests people actually enjoy reviewing →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>

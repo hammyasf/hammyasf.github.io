@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Securing AI generated code before it ships — Harman Kamboj</title>
+<meta name="description" content="Practical advice on securing AI generated code: the vulnerabilities models repeat, how to catch them in review, and what to automate before merge." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Securing AI generated code before it ships — Harman Kamboj" />
+<meta property="og:description" content="Practical advice on securing AI generated code: the vulnerabilities models repeat, how to catch them in review, and what to automate before merge." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/securing-ai-generated-code.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Securing AI generated code before it ships — Harman Kamboj" />
+<meta name="twitter:description" content="Practical advice on securing AI generated code: the vulnerabilities models repeat, how to catch them in review, and what to automate before merge." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/securing-ai-generated-code.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Securing AI generated code before it ships","description":"Practical advice on securing AI generated code: the vulnerabilities models repeat, how to catch them in review, and what to automate before merge.","datePublished":"2026-04-29","dateModified":"2026-04-29","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/securing-ai-generated-code.html","url":"https://hammyasf.github.io/securing-ai-generated-code.html","keywords":"AI, Engineering","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
+  .blist{padding:20px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.02em;margin:9px 0 7px;}
+  .bcard p{color:var(--muted);font-size:15.5px;}
+  .bcard .tg{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+  .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
+  .bhero{padding:150px 0 6px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
+  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Securing AI generated code before it ships</h1>
+   <div class="pmeta"><span>April 29, 2026</span><span>4 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>AI</span><span>Engineering</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>Securing AI generated code is a problem I now think about on basically every pull request, because a real share of the diffs I review started life in a model. The code usually runs. It usually passes the happy-path tests the author asked for. And it quietly carries the same handful of security mistakes over and over, because the model learned from a corpus full of those exact mistakes. If you treat model output as trusted just because it compiles, you are going to ship holes.</p>
+<h2>Why the bugs cluster</h2>
+<p>Language models produce the most statistically likely code, and the most likely code is not the most secure code. The internet is full of tutorials that concatenate strings into SQL, examples that disable certificate verification to make a demo work, and snippets that log secrets without a second thought. The model absorbed all of it. So the vulnerabilities you see in generated code are not random. They cluster around the same patterns, which is actually good news, because patterns are something you can systematically catch.</p>
+<p>I have learned to read AI output with a specific suspicion. It tends to be optimistic. It assumes inputs are well formed, that the network behaves, that the caller is friendly. Real systems are none of those things, and the gap between the model's optimism and reality is exactly where the security work lives.</p>
+<h2>The repeat offenders I watch for</h2>
+<p>Over time I built a short mental checklist that I run against any generated diff before it gets near main. None of this is exotic. It is the same list a careful engineer would use anyway, just applied with extra paranoia because nobody fully owns the reasoning behind the code.</p>
+<ul><li>Unparameterized queries and any place user input gets stitched into SQL, shell commands, or file paths.</li><li>Missing input validation at trust boundaries, especially anything coming from a request body or URL.</li><li>Secrets and tokens that ended up hardcoded or written into logs.</li><li>Auth checks that are present in the obvious handler but missing on a sibling route the model added.</li><li>Disabled TLS verification, permissive CORS, or overly broad permissions that 'just made it work'.</li><li>Dependencies the model invented or pulled in, which may be unmaintained, typosquatted, or simply wrong.</li></ul>
+<h2>Dependencies are the sneaky part</h2>
+<p>That last bullet deserves its own paragraph. Models hallucinate package names. They suggest libraries that sound right but do not exist, or worse, that do exist and are malicious because someone registered the plausible name knowing this would happen. I never let a generated import through without checking the package is real, maintained, and the one I actually meant. A lockfile and an automated audit step catch a lot of this, but the first line of defense is a human noticing an unfamiliar name in the diff and stopping to ask where it came from.</p>
+<h2>Automate the floor, keep humans on the ceiling</h2>
+<p>You cannot eyeball every line at the volume teams now generate, so the floor has to be automated. Static analysis, secret scanning, and dependency auditing belong in the pipeline, running on every pull request, blocking merge on real findings. These tools are not smart, but they are tireless, and they catch the boring mistakes that make up most of the risk. Set them up once and they pay you back forever.</p>
+<p>What you cannot automate is judgment about intent. A scanner will not tell you that an authorization check is technically present but checks the wrong resource, or that a feature exposes data it should not because the model did not understand the domain. That is human review work, and it is precisely the kind of review that gets skipped when a diff looks clean and the author is in a hurry. I push hard to keep that review honest, because clean-looking generated code is the most dangerous kind.</p>
+<h2>Make the author own it</h2>
+<p>The cultural fix matters as much as the tooling. On teams I work with, the rule is simple: if you submit it, you own it, regardless of who or what wrote it. 'The model generated that' is not an explanation in a postmortem. The moment people internalize that they are responsible for code they did not personally type, the quality of their review of generated output goes up sharply. They stop skimming and start reading, because their name is on the merge.</p>
+<p>Generated code is a genuine accelerant and I use it daily. But speed without a security floor just means you reach the incident faster. Build the automated checks, keep real human review on the parts that need judgment, and make authorship mean something. Do that and you get most of the upside without quietly handing attackers a faster path in.</p>
+   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="pager">
+     <a href="agent-architecture-basics.html">← Agent architecture basics, minus the hype</a>
+     <a href="llm-cost-control.html">Keeping LLM costs from quietly wrecking your margins →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>

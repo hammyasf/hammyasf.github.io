@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Go vs Node for backends in 2026, from someone who ships both — Harman Kamboj</title>
+<meta name="description" content="Go vs Node for backends in 2026 from an engineer who ships both. Where each one wins, where it bites you, and how I actually pick between them." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Go vs Node for backends in 2026, from someone who ships both — Harman Kamboj" />
+<meta property="og:description" content="Go vs Node for backends in 2026 from an engineer who ships both. Where each one wins, where it bites you, and how I actually pick between them." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/go-vs-node-backend-2026.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Go vs Node for backends in 2026, from someone who ships both — Harman Kamboj" />
+<meta name="twitter:description" content="Go vs Node for backends in 2026 from an engineer who ships both. Where each one wins, where it bites you, and how I actually pick between them." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/go-vs-node-backend-2026.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Go vs Node for backends in 2026, from someone who ships both","description":"Go vs Node for backends in 2026 from an engineer who ships both. Where each one wins, where it bites you, and how I actually pick between them.","datePublished":"2026-04-17","dateModified":"2026-04-17","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/go-vs-node-backend-2026.html","url":"https://hammyasf.github.io/go-vs-node-backend-2026.html","keywords":"Full-stack, Engineering","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
+  .blist{padding:20px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.02em;margin:9px 0 7px;}
+  .bcard p{color:var(--muted);font-size:15.5px;}
+  .bcard .tg{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+  .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
+  .bhero{padding:150px 0 6px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
+  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Go vs Node for backends in 2026, from someone who ships both</h1>
+   <div class="pmeta"><span>April 17, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Full-stack</span><span>Engineering</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>I have shipped production backends in both Go and Node, sometimes in the same quarter, and the question of Go vs Node for a backend almost never has a clean answer until you look at the actual workload. The internet treats this like a sports rivalry. In practice both are good, both pay my bills, and the interesting part is the boring tradeoffs nobody puts in a benchmark blog. Here is how I actually think about it when I am the one who has to maintain the thing at 2am.</p>
+<h2>Where Go quietly wins</h2>
+<p>Go shines when the service is mostly plumbing. High request volume, lots of concurrent connections, predictable CPU and memory, and a team that wants the binary to just sit there and behave. Goroutines make concurrency feel cheap, and the runtime does not surprise you with garbage collection pauses that wreck your tail latency. I reach for Go on indexers, on anything chewing through a firehose of events, and on services where a single process needs to handle thousands of in-flight requests without falling over.</p>
+<p>The other thing Go gives you is a single static binary. No node_modules, no version drift between the box and your laptop, no runtime to install. You copy one file and run it. For on-chain data pipelines and infrastructure work, that operational simplicity has saved me more grief than any micro-benchmark ever did.</p>
+<h2>Where Node still earns its keep</h2>
+<p>Node wins on iteration speed and on sharing code with the frontend. If the same engineers write the React app and the API, having one language and one set of types flowing end to end is worth a lot. I can define a type once, share it across the wire with something like tRPC or a generated client, and stop hand-syncing two definitions that will inevitably drift apart.</p>
+<p>The ecosystem is the other reason. Whatever weird third-party thing you need to talk to, there is almost certainly a maintained npm package for it. Stripe, SDKs for half the cloud providers, every auth flow under the sun. In Go you sometimes get an official client and sometimes you get a half-finished community port and a long afternoon. Node also handles IO-heavy, glue-heavy work just fine. The event loop is genuinely good at waiting on a lot of slow things at once, which is most of what a typical web backend does.</p>
+<h2>The places each one bites you</h2>
+<p>Go bites you on the boring stuff first. Error handling is verbose and you will write the same three lines checking err over and over. Generics arrived but the standard library and a lot of ecosystem code predate them, so the experience is uneven. And the moment your domain logic gets genuinely complex, the lack of expressiveness starts to feel like friction rather than discipline.</p>
+<p>Node bites you on discipline and on the runtime itself. Nothing stops you from blocking the event loop with a heavy synchronous computation and tanking every other request on the process. Dependency sprawl is real, and a casual npm install can drag in a tree you would never audit by hand. TypeScript helps enormously, but it is a layer on top, not a guarantee, and the gap between the types you wrote and the JSON that actually showed up at runtime is where a lot of incidents live.</p>
+<ul><li>Go: CPU-bound and concurrency-heavy services, infra and data pipelines, teams that value operational simplicity</li><li>Node: product APIs that move fast, anything sharing types with a TypeScript frontend, heavy IO with lots of third-party integrations</li></ul>
+<h2>How I actually decide</h2>
+<p>My first question is not which language is faster. It is who maintains this and what does the work look like day to day. A small product team shipping features against a React frontend should usually stay in Node and TypeScript, because the cost of context-switching between two languages outweighs the performance you would claw back. A platform team running infrastructure that needs to be rock solid and cheap to operate should usually reach for Go.</p>
+<p>The second question is the shape of the load. If the service spends its life waiting on the database and other APIs, Node is fine and the language is not your bottleneck. If it is grinding CPU or holding a huge number of concurrent connections, Go pays you back. Most CRUD apps are the first kind, which is why I tell people that for a normal web backend the choice matters less than they think.</p>
+<h2>The answer most teams do not want to hear</h2>
+<p>You can run both. I have built systems where the product API is Node, talking to TypeScript on the frontend, while a couple of focused Go services handle the heavy indexing and event processing behind a queue. They meet at well-defined boundaries and each language does what it is good at. This is not fence-sitting. It is recognizing that a codebase is a collection of different problems, and forcing all of them into one runtime because of tribal loyalty is how you end up fighting your tools.</p>
+<p>So when someone asks me Go vs Node for a backend in 2026, my honest answer is that the language is rarely the thing that decides whether the project succeeds. Clear boundaries, good observability, and a team that understands the runtime they chose matter far more. Pick the one your people will maintain well, and keep the door open to using the other where it genuinely fits.</p>
+   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="pager">
+     <a href="ai-in-legacy-codebases.html">← Using AI agents inside a messy legacy codebase</a>
+     <a href="typescript-patterns-that-scale.html">TypeScript patterns that scale past a small team →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>

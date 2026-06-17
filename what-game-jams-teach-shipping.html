@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>What running game jams taught me about shipping software — Harman Kamboj</title>
+<meta name="description" content="Running game jams taught me more about shipping software than most retros. Here is what a 48-hour deadline reveals about scope, focus, and finishing." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="What running game jams taught me about shipping software — Harman Kamboj" />
+<meta property="og:description" content="Running game jams taught me more about shipping software than most retros. Here is what a 48-hour deadline reveals about scope, focus, and finishing." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/what-game-jams-teach-shipping.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="What running game jams taught me about shipping software — Harman Kamboj" />
+<meta name="twitter:description" content="Running game jams taught me more about shipping software than most retros. Here is what a 48-hour deadline reveals about scope, focus, and finishing." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/what-game-jams-teach-shipping.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"What running game jams taught me about shipping software","description":"Running game jams taught me more about shipping software than most retros. Here is what a 48-hour deadline reveals about scope, focus, and finishing.","datePublished":"2026-03-18","dateModified":"2026-03-18","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/what-game-jams-teach-shipping.html","url":"https://hammyasf.github.io/what-game-jams-teach-shipping.html","keywords":"Game dev, Building in public","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
+  .blist{padding:20px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.02em;margin:9px 0 7px;}
+  .bcard p{color:var(--muted);font-size:15.5px;}
+  .bcard .tg{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+  .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
+  .bhero{padding:150px 0 6px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
+  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">What running game jams taught me about shipping software</h1>
+   <div class="pmeta"><span>March 18, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Game dev</span><span>Building in public</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The first time I ran a game jam, I watched a dozen talented people spend Friday night arguing about engine choice and lose the whole weekend to a project nobody finished. That weekend changed how I think about shipping. A game jam is a brutal little laboratory for the one skill most engineers are bad at, which is finishing something inside a hard deadline. I have run a fair number of these now, and the lessons carry straight back into how I ship real software at work.</p>
+<h2>A game jam is a forced lesson in shipping</h2>
+<p>The whole format is built around a clock. You get a theme, you get 48 or 72 hours, and at the end there is a hard cutoff where something either runs or it does not. There is no sprint extension, no moving the date, no negotiating with a product manager. That constraint does something useful to your brain. It strips away the comfortable lie that you will polish it later, because there is no later.</p>
+<p>What I have seen over and over is that the teams who win are almost never the ones with the best idea on Friday. They are the ones who picked something small enough to actually build and then spent their remaining hours making it feel good. The idea is cheap. The finishing is the entire game.</p>
+<h2>Scope is the only thing that kills you</h2>
+<p>Every failed jam project I have watched died the same way. The team fell in love with a vision that needed a week, and they had a weekend. By Saturday afternoon they had a half-built inventory system, no actual gameplay loop, and a slowly dawning panic. Nothing got cut in time because cutting felt like admitting defeat.</p>
+<p>The teams that finish treat scope as a living number they revise every few hours. They ask a simple question. If we stopped adding features right now, would what we have be playable start to finish? If the answer is no, they do not add anything new until the answer is yes. That single discipline is worth more than any framework.</p>
+<ul><li>Pick one mechanic and make it the whole game, not feature number four</li><li>Build the smallest version that loops from start to a win or loss state</li><li>Cut anything that does not make that loop more fun</li><li>Leave real time for bugs, because they always cost more than you think</li></ul>
+<h2>Finishing is a separate skill from building</h2>
+<p>Most engineers are good at building and bad at finishing, and a jam exposes the gap instantly. Building is the fun ninety percent where you write new code and watch things come alive. Finishing is the unglamorous last stretch where you fix the crash on level two, write the title screen, make the controls explainable in five seconds, and export a build that actually runs on someone else's machine.</p>
+<p>That last part trips people up constantly. A game that only runs on the author's laptop is not shipped. I have learned to do a real build and test it on a fresh machine hours before the deadline, not minutes. The same rule applies to production software. A feature that only works on your branch with your local database is not done, and the gap between those two states is where most schedules quietly bleed out.</p>
+<h2>Constraints make better decisions</h2>
+<p>There is a counterintuitive thing about working under a tight clock. The constraint usually produces better work, not worse. When you have unlimited time you keep all your options open, which sounds good but means you never commit to anything hard enough to learn from it. A deadline forces commitment. You pick a direction because you have to, and committing early gives you time to react to what you learn.</p>
+<p>I bring this into normal engineering by timeboxing the messy parts. Instead of an open question like how should we architect this, I give myself two hours to build the dumbest version that works and see what hurts. The dumb version almost always teaches me more than another day of whiteboarding would have. You cannot think your way to the right design as fast as you can build your way to it.</p>
+<h2>Small wins compound, and so does momentum</h2>
+<p>The other thing jams teach is the value of a working build at every stage. Good jam teams get something on screen in the first hour. A box that moves. A click that does anything. Then they keep it runnable the entire weekend, adding one small thing at a time. Their game is always playable, just less complete than it will be.</p>
+<p>Teams that go dark for ten hours building some grand system in isolation almost always come back to a pile of code that does not integrate, with no time left to fix it. This is the exact failure mode of long-lived feature branches in real work. Integrate constantly, keep main green, and you trade a few dramatic finishes for a lot of boring successful ones. After enough jams, boring and finished starts to look like the most impressive thing in the room.</p>
+<p>The deeper point is that shipping is a habit you build through reps, and a game jam is a concentrated dose of reps. You make scope calls, you cut your darlings, you fight an export bug at 2am, and then you actually release something to other humans. Do that a few times and the fear of finishing real software gets a lot smaller, because you have practiced the hard part in fast forward.</p>
+   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="pager">
+     <a href="taming-tech-debt.html">← Taming tech debt on a team that has to keep shipping</a>
+     <a href="game-feel-juice.html">Game feel: why juice matters more than features →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>

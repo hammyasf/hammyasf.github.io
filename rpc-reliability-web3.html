@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RPC reliability for Web3 apps that cannot go down — Harman Kamboj</title>
+<meta name="description" content="Web3 RPC reliability is where most production outages actually start. Patterns for failover, retries and fallbacks that keep your dapp up." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="RPC reliability for Web3 apps that cannot go down — Harman Kamboj" />
+<meta property="og:description" content="Web3 RPC reliability is where most production outages actually start. Patterns for failover, retries and fallbacks that keep your dapp up." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/rpc-reliability-web3.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="RPC reliability for Web3 apps that cannot go down — Harman Kamboj" />
+<meta name="twitter:description" content="Web3 RPC reliability is where most production outages actually start. Patterns for failover, retries and fallbacks that keep your dapp up." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/rpc-reliability-web3.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"RPC reliability for Web3 apps that cannot go down","description":"Web3 RPC reliability is where most production outages actually start. Patterns for failover, retries and fallbacks that keep your dapp up.","datePublished":"2026-05-26","dateModified":"2026-05-26","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/rpc-reliability-web3.html","url":"https://hammyasf.github.io/rpc-reliability-web3.html","keywords":"Web3, Engineering","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
+  .blist{padding:20px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.02em;margin:9px 0 7px;}
+  .bcard p{color:var(--muted);font-size:15.5px;}
+  .bcard .tg{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+  .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
+  .bhero{padding:150px 0 6px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
+  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">RPC reliability for Web3 apps that cannot go down</h1>
+   <div class="pmeta"><span>May 26, 2026</span><span>4 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Web3</span><span>Engineering</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>Almost every Web3 outage I have been paged for traced back to the same thing, and it was never the smart contract. It was the RPC layer. The node provider had a bad afternoon, rate limits kicked in during a traffic spike, or a single endpoint silently started returning stale data. Web3 RPC reliability is the unglamorous foundation everything else sits on, and it is the part teams think about last. That order is backwards.</p>
+<h2>Your RPC is a dependency, treat it like one</h2>
+<p>A contract on chain is about as reliable as software gets. But your app does not talk to the chain directly. It talks to an RPC node, usually one you rent from a provider, and that node is a normal piece of internet infrastructure with all the normal failure modes. It goes down, it gets slow, it rate limits you, it occasionally lies about the latest block. If you wire your whole app to one endpoint, you have built a single point of failure in front of the most reliable thing in your stack.</p>
+<p>The first shift in thinking is to stop treating the RPC URL as a constant and start treating it as a fallible service you depend on. The moment you see it that way, the engineering follows naturally, because you already know how to build around flaky dependencies.</p>
+<h2>Multiple providers, always</h2>
+<p>I never ship production with a single RPC provider. I configure at least two from different companies, because the failure that takes down one provider often does not touch another. The app tries the primary, and on failure or timeout it falls through to the secondary. This is not exotic, it is the same failover pattern you would use for any external service, applied to the one external service Web3 apps cannot live without.</p>
+<p>The detail that trips people up is what counts as failure. A connection error is obvious. Harder cases are a node that responds quickly but returns a block number several blocks behind, or one that returns an empty result for a query that should have data. Those need health checks that go beyond is it up, into is it telling me the truth and is it current.</p>
+<h2>Retries that help instead of hurt</h2>
+<p>Naive retries make outages worse. The moment a provider gets slow, a retry storm from your app piles on more load and pushes it fully over. The retry logic I use has a few non-negotiable properties.</p>
+<ul><li>Exponential backoff with jitter, so a thousand clients do not all retry on the same tick and hammer the recovering node</li><li>A hard cap on attempts, infinite retries just convert a brief blip into a permanent hang</li><li>Only retry idempotent reads freely, a transaction send needs careful handling so you do not broadcast twice</li><li>Fail over to the next provider after a couple of failed attempts rather than retrying the same dead endpoint forever</li></ul>
+<p>That last point is the one that actually saves you during a real incident. Retrying the same broken endpoint is just waiting politely for something that is not coming back. Moving to a healthy provider is what keeps the app responsive.</p>
+<h2>Reads and writes are different problems</h2>
+<p>Reads are easy to make reliable because they are idempotent. Ask any healthy node, get the answer, done. Writes are where reliability gets genuinely hard. If you send a transaction and the connection drops before you get a hash, did it go through. Resending blindly risks a double submission, and on chain that can mean spending money twice.</p>
+<p>The pattern that works is to track the transaction by nonce and check chain state before resending, rather than trusting the network round trip. If a transaction with that nonce already landed, you are done and you must not send again. This is fiddly, it is worth getting right once and wrapping in a helper, because the alternative is users who occasionally get charged twice and rightly never trust you again.</p>
+<h2>Watch the layer everyone ignores</h2>
+<p>You cannot fix what you cannot see. I put metrics on the RPC layer specifically: latency per provider, error rate per provider, how far behind the latest block each one is, and how often failover triggers. When a provider starts degrading, those numbers move well before users notice, which gives you room to switch primaries or open a support ticket before it becomes an outage.</p>
+<p>None of this is glamorous and none of it ships a feature. But a Web3 app that cannot stay up is not really a product, and the thing that most often takes it down is the RPC layer nobody planned for. Plan for it. Two providers, sane retries, careful writes, and real metrics will keep you online through the bad afternoons that are coming whether you prepared or not.</p>
+   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="pager">
+     <a href="on-chain-data-modeling.html">← Modeling on-chain data so your queries do not melt</a>
+     <a href="defi-dex-architecture.html">How a DeFi DEX is actually put together →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>

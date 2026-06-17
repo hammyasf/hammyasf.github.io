@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Background jobs and queues without the 3am pages — Harman Kamboj</title>
+<meta name="description" content="How to build background jobs and queues that do not page you at 3am: idempotency, retries with backoff, dead letters and visibility you can trust." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Background jobs and queues without the 3am pages — Harman Kamboj" />
+<meta property="og:description" content="How to build background jobs and queues that do not page you at 3am: idempotency, retries with backoff, dead letters and visibility you can trust." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/background-jobs-queues.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Background jobs and queues without the 3am pages — Harman Kamboj" />
+<meta name="twitter:description" content="How to build background jobs and queues that do not page you at 3am: idempotency, retries with backoff, dead letters and visibility you can trust." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/background-jobs-queues.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Background jobs and queues without the 3am pages","description":"How to build background jobs and queues that do not page you at 3am: idempotency, retries with backoff, dead letters and visibility you can trust.","datePublished":"2026-03-27","dateModified":"2026-03-27","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/background-jobs-queues.html","url":"https://hammyasf.github.io/background-jobs-queues.html","keywords":"Full-stack, Engineering","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
+  .blist{padding:20px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.02em;margin:9px 0 7px;}
+  .bcard p{color:var(--muted);font-size:15.5px;}
+  .bcard .tg{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+  .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
+  .bhero{padding:150px 0 6px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
+  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Background jobs and queues without the 3am pages</h1>
+   <div class="pmeta"><span>March 27, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Full-stack</span><span>Engineering</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The first background job everyone writes looks fine. Take a task off the request path, push it to a queue, process it later. The problem is that background jobs and queues fail in ways synchronous code does not, and they fail when nobody is watching. A job that runs twice, runs out of order, or silently disappears will not show up in a unit test. It shows up at 3am when a customer notices they got charged twice. Most of the work in queue design is making those failure modes survivable instead of pretend they will not happen.</p>
+<h2>Assume every job runs at least twice</h2>
+<p>This is the single rule that prevents the most pain. Almost every queue worth using guarantees at-least-once delivery, not exactly-once. A worker can pick up a job, do the work, and crash before it acknowledges completion. The queue, having heard no ack, hands the same job to another worker. Now your email goes out twice, or your payment runs twice.</p>
+<p>The answer is idempotency, which means a job produces the same result whether it runs once or five times. Sometimes that is a unique key on the database so a duplicate insert is a no-op. Sometimes it is checking whether the work was already done before doing it. It is more effort up front, and it is the difference between a worker crash being a non-event and being an incident. I design every job as if it will be delivered twice, because eventually it will be.</p>
+<h2>Retries need backoff and a ceiling</h2>
+<p>When a job fails, retrying is usually right. A downstream API blipped, a database connection dropped, the next attempt succeeds. But naive retries cause two specific disasters. The first is the retry storm: a downstream service is struggling, every job fails, and your workers immediately hammer it again, keeping it down. The second is the poison message: a job that can never succeed, retrying forever, burning a worker slot until you notice.</p>
+<p>What I reach for on every queue:</p>
+<ul><li>Exponential backoff with jitter, so retries spread out instead of stampeding the failing service all at once</li><li>A hard retry ceiling, after which the job stops retrying and goes somewhere visible</li><li>A dead letter queue for those exhausted jobs, so they are parked and inspectable instead of lost</li></ul>
+<p>A dead letter queue is not optional infrastructure. It is where you find out what is actually breaking, and a job vanishing into the void is far worse than a job sitting in a holding pen with its error attached.</p>
+<h2>Ordering is a promise you probably do not have</h2>
+<p>People assume jobs run in the order they were enqueued. With multiple workers pulling concurrently, they do not. Job B can finish before job A even if A was queued first. If your logic depends on order, like apply discount then charge card, concurrent workers will eventually run them backwards and you will get a bug that only reproduces under load.</p>
+<p>You have a few options. Some queues offer ordered partitions, where jobs sharing a key process in sequence. Or you make the operations commutative so order stops mattering. Or you keep an explicit state machine that rejects an out-of-order transition rather than executing it. What does not work is assuming order you were never promised. That assumption is invisible in code review and obvious in production.</p>
+<h2>Visibility is the whole game</h2>
+<p>The reason queues page you at 3am is almost always that you could not see the problem building during the day. A queue silently filling up because workers are too slow is a time bomb. By the time latency is user-visible, you have a deep backlog that takes hours to drain even after you fix the cause.</p>
+<p>I instrument three things from the start: queue depth over time, job processing latency, and the failure rate. Queue depth is the leading indicator. If it is climbing and not coming back down, you are falling behind, and you want to know that at 2pm when you can calmly scale workers, not at 3am when the backlog is already enormous. Alert on the trend, not just the catastrophe.</p>
+<h2>Keep jobs small and singular</h2>
+<p>A job that does five things is a job that can fail four steps in, leaving you in a half-done state that is miserable to recover. I keep jobs as small as the work allows and have them do one thing. If a flow needs several steps, I chain small jobs or use a workflow tool that tracks progress, so a failure resumes from where it stopped instead of redoing everything and re-triggering side effects.</p>
+<p>The goal across all of this is boring queues. A good background job system is one you forget exists because it quietly handles its own failures, deduplicates its own retries, and tells you when it is falling behind long before it falls over. That boredom is earned. It comes from deciding, before you ship, that every job will run twice, fail sometimes, and run out of order, and building so none of that wakes you up.</p>
+   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="pager">
+     <a href="graphql-pitfalls.html">← GraphQL pitfalls I keep seeing in production</a>
+     <a href="shipping-fast-without-mess.html">How to ship fast without shipping a mess →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>

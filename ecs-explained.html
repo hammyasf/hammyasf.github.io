@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ECS explained without the academic fog — Harman Kamboj</title>
+<meta name="description" content="ECS, the entity component system pattern, explained in plain terms. What it is, why it beats deep inheritance, and when it is overkill for your game." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="ECS explained without the academic fog — Harman Kamboj" />
+<meta property="og:description" content="ECS, the entity component system pattern, explained in plain terms. What it is, why it beats deep inheritance, and when it is overkill for your game." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/ecs-explained.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="ECS explained without the academic fog — Harman Kamboj" />
+<meta name="twitter:description" content="ECS, the entity component system pattern, explained in plain terms. What it is, why it beats deep inheritance, and when it is overkill for your game." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/ecs-explained.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"ECS explained without the academic fog","description":"ECS, the entity component system pattern, explained in plain terms. What it is, why it beats deep inheritance, and when it is overkill for your game.","datePublished":"2026-03-09","dateModified":"2026-03-09","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/ecs-explained.html","url":"https://hammyasf.github.io/ecs-explained.html","keywords":"Game dev, Building in public","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
+  .blist{padding:20px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.02em;margin:9px 0 7px;}
+  .bcard p{color:var(--muted);font-size:15.5px;}
+  .bcard .tg{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+  .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
+  .bhero{padding:150px 0 6px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
+  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">ECS explained without the academic fog</h1>
+   <div class="pmeta"><span>March 9, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Game dev</span><span>Building in public</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>Most explanations of ECS, the entity component system pattern, start with cache locality and data-oriented design and lose everyone in the first paragraph. I want to do the opposite. ECS is a simple idea wearing a scary name, and once it clicks you start seeing why so many game engines and a fair amount of simulation code organize themselves this way. Let me explain it the way I wish someone had explained it to me, which is by starting with the problem it solves.</p>
+<h2>The problem that makes you want ECS</h2>
+<p>You start a game with a tidy class hierarchy. A base GameObject, then Character, then Player and Enemy. It feels clean for about a week. Then you need a crate that can take damage but cannot move. Then a turret that shoots but is not a character. Then a player who can be temporarily turned into a pickup. Suddenly your inheritance tree is fighting you, because real game objects are mix-and-match bundles of capabilities and inheritance forces them into a single rigid line of descent.</p>
+<p>You end up with monster base classes full of optional behavior, or deep trees where every new combination needs a new class, or a tangle of interfaces. The core issue is that you modeled is-a relationships when what you actually have are has-a relationships. An entity has health, has a position, has the ability to shoot. ECS takes that observation seriously.</p>
+<h2>The three pieces, plainly</h2>
+<p>Here is the whole pattern in three sentences. An entity is just an id, a number, with no data and no behavior of its own. A component is a plain bag of data attached to an entity, like a Position with x and y, or a Health with current and max. A system is a function that runs over every entity that has a particular set of components and does the actual work.</p>
+<p>So a player is not a class. A player is an id that happens to have a Position component, a Health component, a Sprite component, and a PlayerInput component. A crate is an id with a Position, a Sprite, and a Health but no input. The movement system runs over everything with Position and Velocity. The render system runs over everything with Position and Sprite. Behavior lives in systems, data lives in components, and entities are just the glue that says which data belongs together.</p>
+<ul><li>Entity: an id, nothing more</li><li>Component: pure data, no logic, attached to entities</li><li>System: logic that operates on every entity with a given component set</li><li>Composition over inheritance, made into an architecture</li></ul>
+<h2>Why this actually helps</h2>
+<p>The first payoff is flexibility. Want a crate that can take damage? Add a Health component to it. Want to make the player briefly invincible? Remove or flag their Health for a few seconds. New combinations of behavior are now data changes, not new classes. You compose entities out of parts instead of carving them out of a hierarchy, and that maps to how games actually grow.</p>
+<p>The second payoff is performance, and this is where the academic crowd usually starts. Because components of the same type are stored together in tight arrays, a system can rip through all of them in a cache-friendly loop without chasing pointers around memory. For a game updating thousands of entities every frame, that memory layout is a real and measurable win. But honestly, the flexibility is what sells it day to day. The speed is a bonus you appreciate later.</p>
+<h2>When ECS is the wrong call</h2>
+<p>ECS is not free, and I would not reach for it on every project. There is real upfront complexity. You need an entity manager, component storage, a system scheduler, and you give up the comfort of just calling a method on an object. For a small game with a few dozen objects and simple behavior, a plain object-oriented approach will be faster to write and easier to read, and the ECS machinery is pure overhead you do not need.</p>
+<p>My rough rule is that ECS starts earning its keep when you have many entities, lots of mix-and-match behavior, and performance pressure from sheer entity count. A bullet hell, a city builder, a large simulation, those are natural fits. A narrative puzzle game with a handful of interactive objects is not. Reaching for ECS because it sounds professional, on a game that does not have the problem ECS solves, is a classic case of adding architecture for its own sake.</p>
+<h2>Start simple and let the pattern earn its way in</h2>
+<p>If you are curious, you do not need a heavyweight framework to try it. You can build a minimal version with arrays of components and a few system functions in an afternoon, and that toy version teaches you more than any article. Many engines also offer ECS as an option rather than a mandate, so you can adopt it where it fits and keep ordinary objects where they fit.</p>
+<p>The thing to hold onto is that ECS is not a religion, it is a tool for one specific shape of problem. It separates data from behavior and lets you compose entities out of parts. When your game objects refuse to fit a clean hierarchy and you are drowning in special cases, that is the pattern asking to be used. Until then, do not let the impressive name talk you into complexity your game does not need.</p>
+   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="pager">
+     <a href="threejs-performance-web.html">← Three.js performance for the web, learned the hard way</a>
+     <a href="godot-vs-unity-2026.html">Godot vs Unity in 2026 for small teams →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Postgres indexing basics every full-stack dev should know — Harman Kamboj</title>
+<meta name="description" content="Postgres indexing basics every full-stack dev should know: how indexes work, when to add one, composite column order, and how to read a query plan." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Postgres indexing basics every full-stack dev should know — Harman Kamboj" />
+<meta property="og:description" content="Postgres indexing basics every full-stack dev should know: how indexes work, when to add one, composite column order, and how to read a query plan." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/postgres-indexing-basics.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Postgres indexing basics every full-stack dev should know — Harman Kamboj" />
+<meta name="twitter:description" content="Postgres indexing basics every full-stack dev should know: how indexes work, when to add one, composite column order, and how to read a query plan." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/postgres-indexing-basics.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Postgres indexing basics every full-stack dev should know","description":"Postgres indexing basics every full-stack dev should know: how indexes work, when to add one, composite column order, and how to read a query plan.","datePublished":"2026-04-05","dateModified":"2026-04-05","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/postgres-indexing-basics.html","url":"https://hammyasf.github.io/postgres-indexing-basics.html","keywords":"Full-stack, Engineering","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
+  .blist{padding:20px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.02em;margin:9px 0 7px;}
+  .bcard p{color:var(--muted);font-size:15.5px;}
+  .bcard .tg{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+  .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
+  .bhero{padding:150px 0 6px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
+  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Postgres indexing basics every full-stack dev should know</h1>
+   <div class="pmeta"><span>April 5, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Full-stack</span><span>Engineering</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The first time a query that ran in two milliseconds locally took eight seconds in production, I learned more about Postgres indexing than any tutorial taught me. The data grew, the sequential scan that was free on a thousand rows became brutal on a few million, and nobody had added an index because nobody had needed one yet. Postgres indexing is one of those skills that sits right at the line between frontend and backend work, and every full-stack developer should have a working grasp of it. You do not need to be a database administrator. You need a handful of ideas and the ability to read a query plan.</p>
+<h2>What an index actually does</h2>
+<p>An index is a separate, sorted data structure that lets Postgres find rows without scanning the whole table. The default is a B-tree, and the mental model that works is a book index. Without one, finding every mention of a topic means reading every page. With one, you flip to the back, find the entry, and jump straight to the right pages. That is the difference between a sequential scan and an index scan, and at scale it is the difference between milliseconds and seconds.</p>
+<p>The cost is that indexes are not free. Every index you add has to be updated on every insert, update, and delete to the table, and it takes disk space. So the goal is not to index everything. It is to index the columns your queries actually filter and sort on, and to leave the rest alone. An unused index is pure overhead that slows down your writes for no benefit.</p>
+<h2>When to add one</h2>
+<p>Add an index when you have a query that filters or joins on a column and that query is either slow or run often against a table that is going to grow. Foreign keys are a classic case people forget. Postgres does not automatically index the referencing side of a foreign key, so joins and lookups on it can quietly do full scans until you add the index yourself.</p>
+<p>The columns in your WHERE clauses, your JOIN conditions, and your ORDER BY are the candidates. The trap is adding indexes speculatively for queries you do not run. Let the real query patterns guide you, and check that the index is actually being used before you congratulate yourself.</p>
+<ul><li>Index columns you filter, join, and sort on in real queries</li><li>Index foreign key columns, because Postgres does not do it for you</li><li>Do not index low-cardinality columns like a boolean flag, the scan is often cheaper</li></ul>
+<h2>Composite indexes and column order</h2>
+<p>When a query filters on more than one column, a composite index covering both can be far better than two separate ones. But the order of columns inside the index matters a great deal, and this is where people get tripped up. A B-tree index on two columns is sorted by the first column, then by the second within each value of the first. So an index on a status column followed by a created-at column helps a query that filters by status and then sorts by date. It does little for a query that only filters by date, because the index is not sorted by date at the top level.</p>
+<p>The rule of thumb is to put the column you filter for equality first, and the column you range over or sort by second. Get the order wrong and Postgres may ignore the index entirely. I have seen a perfectly reasonable looking composite index do nothing because the columns were in the order someone typed them rather than the order the query needed.</p>
+<h2>Read the query plan, do not guess</h2>
+<p>The single most useful thing you can learn here is EXPLAIN ANALYZE. Put it in front of your query and Postgres tells you exactly how it plans to run it and how long each step actually took. You are looking for whether it chose a sequential scan or an index scan, and whether its row estimates are close to reality. A sequential scan on a big table where you expected an index to kick in is your signal that something is off, often the column order or a function wrapped around the column that prevents the index from being used.</p>
+<p>This turns indexing from guesswork into something you can verify. Add an index, run EXPLAIN ANALYZE, confirm the plan changed and the time dropped. If the plan did not change, the index is wrong or unnecessary, and you just saved yourself from carrying dead weight into production.</p>
+<h2>The mistakes that keep showing up</h2>
+<p>A few patterns defeat indexes silently. Wrapping an indexed column in a function in your WHERE clause, like lowercasing it for a comparison, usually means the plain index cannot be used, and you need an expression index instead. Leading wildcards in a LIKE pattern cannot use a standard B-tree. And adding so many indexes that your write performance quietly degrades is its own trap, because each one is maintained on every write.</p>
+<p>You do not need to master query planning to be effective here. Understand that indexes are sorted shortcuts, add them for the columns your real queries touch, get composite column order right, and read the plan to confirm. That alone will keep most full-stack apps fast well past the point where the naive version would have fallen over.</p>
+   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="pager">
+     <a href="react-rerenders.html">← Stop guessing about React re-renders</a>
+     <a href="api-design-that-lasts.html">API design that lasts longer than the next refactor →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>

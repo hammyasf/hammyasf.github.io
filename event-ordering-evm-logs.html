@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Event ordering on EVM is not what you think — Harman Kamboj</title>
+<meta name="description" content="EVM event ordering trips up almost every indexer. Here is how logs are actually ordered on chain and the sort key you need to get it right." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Event ordering on EVM is not what you think — Harman Kamboj" />
+<meta property="og:description" content="EVM event ordering trips up almost every indexer. Here is how logs are actually ordered on chain and the sort key you need to get it right." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/event-ordering-evm-logs.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Event ordering on EVM is not what you think — Harman Kamboj" />
+<meta name="twitter:description" content="EVM event ordering trips up almost every indexer. Here is how logs are actually ordered on chain and the sort key you need to get it right." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/event-ordering-evm-logs.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Event ordering on EVM is not what you think","description":"EVM event ordering trips up almost every indexer. Here is how logs are actually ordered on chain and the sort key you need to get it right.","datePublished":"2026-06-01","dateModified":"2026-06-01","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/event-ordering-evm-logs.html","url":"https://hammyasf.github.io/event-ordering-evm-logs.html","keywords":"Web3, Engineering","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
+  .blist{padding:20px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.02em;margin:9px 0 7px;}
+  .bcard p{color:var(--muted);font-size:15.5px;}
+  .bcard .tg{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+  .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
+  .bhero{padding:150px 0 6px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
+  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Event ordering on EVM is not what you think</h1>
+   <div class="pmeta"><span>June 1, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Web3</span><span>Engineering</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The first indexer I ever shipped had a bug that took two weeks to find. Balances were drifting by tiny amounts on a handful of accounts, never enough to look like a crash, just enough to be wrong. The cause was EVM event ordering. I had assumed logs came out in a clean, obvious sequence, and they do not. If you build anything that reads on-chain events and reconstructs state, this is the detail that quietly breaks you.</p>
+<h2>What people assume about event ordering</h2>
+<p>Most engineers picture a block as a list of transactions, each transaction emitting a few events, all neatly stacked in the order things happened. That mental model is close enough to feel safe and wrong enough to cause real damage. The trap is thinking a block timestamp or a transaction hash gives you order. It does not. Two events in the same block share the same timestamp. Transaction hashes are random, so sorting by them shuffles your history into nonsense.</p>
+<p>The other common assumption is that a single transaction emits its events top to bottom in source-code order. That part is mostly true, but only mostly, because internal calls and nested contract interactions can interleave in ways that surprise you the first time you trace one.</p>
+<h2>The ordering that actually exists</h2>
+<p>On chain, every log has three numbers that together give you a total order: block number, transaction index within the block, and log index within the block. The log index is the one people forget. It increments across the entire block, not per transaction, so it already encodes the position of every event relative to every other event in that block. If you sort by (block number, log index) you get the true sequence in which the EVM produced those events.</p>
+<p>I want to stress how important that combination is. Block number alone collides for everything in a block. Transaction index plus a per-transaction counter works, but it is more moving parts than you need. Log index is monotonic across the block, which means the single cleanest sort key is block number first, then log index. Get that right and a whole category of bugs disappears.</p>
+<h2>Why the wrong sort corrupts state</h2>
+<p>Say you are tracking a token. A transfer out followed by a transfer in nets to zero change in a balance. Reverse those two events and you can momentarily compute a negative balance, which either throws, clamps to zero, or silently writes a bad row depending on how defensive your code is. None of those outcomes is what happened on chain. The chain is the source of truth, and the chain ordered those events a specific way.</p>
+<p>This gets worse with anything path dependent. Liquidity pool math, staking reward accrual, vesting schedules, auction state, any logic where the order of operations changes the result. If your indexer processes events in the wrong order, you are not computing the protocol's real state, you are computing a plausible looking fiction.</p>
+<h2>How I handle it in practice</h2>
+<p>The rule I follow on every indexing project is to treat ordering as a property of the data layer, not the business logic. The code that reads logs should hand the rest of the system a stream that is already correctly ordered, so no downstream handler ever has to think about it. That keeps the ordering logic in one place where it can be tested instead of scattered across every event handler.</p>
+<ul><li>Sort every batch of logs by (block number, log index) before you touch them, never by timestamp or transaction hash</li><li>When you fetch logs across a range, do not assume the RPC returns them sorted, sort them yourself</li><li>Persist the last processed (block number, log index) cursor so a restart resumes at the exact right spot and never replays or skips</li><li>Treat a same-block, lower-log-index event as strictly earlier, even if it lives in a later transaction index, because nested calls can produce that</li></ul>
+<p>Both The Graph and Subsquid give you these fields, and both will hand you events in order if you ask correctly, but I still verify it rather than trust it. A five line test that feeds two out-of-order logs and asserts the resulting state matches the chain has saved me more grief than almost any other check I write.</p>
+<h2>The mental shift worth making</h2>
+<p>The thing I wish someone had told me early is that an EVM block is a tape of events, not a folder of transactions. Once you see it that way, the log index stops being an obscure field and becomes the thing you sort on by default. Transactions are still useful for grouping and for gas accounting, but for reconstructing what the protocol did and in what sequence, the log index is the spine of the whole thing.</p>
+<p>If your indexer has ever produced numbers that are almost right, check your sort key first. Nine times out of ten that is where the drift is hiding, and it is a one line fix once you know where to look.</p>
+   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="pager">
+     <a href="token-swap-frontend-pitfalls.html">← The token swap frontend pitfalls that cost real money</a>
+     <a href="on-chain-data-modeling.html">Modeling on-chain data so your queries do not melt →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>

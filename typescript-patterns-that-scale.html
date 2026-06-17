@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TypeScript patterns that scale past a small team — Harman Kamboj</title>
+<meta name="description" content="TypeScript patterns that hold up as a codebase and team grow. Practical typing habits, where types pay off, and the clever tricks I have learned to avoid." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="TypeScript patterns that scale past a small team — Harman Kamboj" />
+<meta property="og:description" content="TypeScript patterns that hold up as a codebase and team grow. Practical typing habits, where types pay off, and the clever tricks I have learned to avoid." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/typescript-patterns-that-scale.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="TypeScript patterns that scale past a small team — Harman Kamboj" />
+<meta name="twitter:description" content="TypeScript patterns that hold up as a codebase and team grow. Practical typing habits, where types pay off, and the clever tricks I have learned to avoid." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/typescript-patterns-that-scale.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"TypeScript patterns that scale past a small team","description":"TypeScript patterns that hold up as a codebase and team grow. Practical typing habits, where types pay off, and the clever tricks I have learned to avoid.","datePublished":"2026-04-14","dateModified":"2026-04-14","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/typescript-patterns-that-scale.html","url":"https://hammyasf.github.io/typescript-patterns-that-scale.html","keywords":"Full-stack, Engineering","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
+  .blist{padding:20px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.02em;margin:9px 0 7px;}
+  .bcard p{color:var(--muted);font-size:15.5px;}
+  .bcard .tg{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+  .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
+  .bhero{padding:150px 0 6px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
+  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">TypeScript patterns that scale past a small team</h1>
+   <div class="pmeta"><span>April 14, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Full-stack</span><span>Engineering</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The TypeScript patterns that work for a solo project and the ones that survive a team of fifteen people touching the same code are not the same patterns. When it is just you, the compiler is a nice safety net you can ignore when it gets annoying. When ten people are merging into the same repo every day, the type system is the contract that keeps everyone from quietly breaking each other. I have watched both ends of that spectrum, and the habits below are the ones I keep coming back to.</p>
+<h2>Make illegal states impossible to represent</h2>
+<p>The single most valuable thing TypeScript gives you is the ability to model your domain so that bad combinations simply do not compile. Instead of an object with a status string and four optional fields where only some combinations are valid, use a discriminated union. A loading state has no data. A success state has data and no error. A failure state has an error and no data. Once you model it that way, the compiler forces every consumer to handle each case, and a whole category of undefined-is-not-a-function bugs disappears before runtime.</p>
+<p>This is where types stop being annotation and start being design. When I review code from a teammate and I see a wide object full of optionals with a comment explaining which fields go together, I know we have a bug waiting to happen. The fix is almost always a union that makes the invalid shapes unrepresentable.</p>
+<h2>Validate at the boundary, trust inside</h2>
+<p>TypeScript types vanish at runtime. They tell you nothing about the JSON that actually arrived from an API, a webhook, or a database row. The pattern that scales is to validate untrusted data once at the edge with something like Zod, derive your type from that schema, and then trust it everywhere downstream. One source of truth, checked at the door.</p>
+<p>The failure mode I see on growing teams is casting. Someone writes a type assertion to make the compiler stop complaining, and now there is a lie in the codebase that everyone downstream inherits. A cast is a promise you are making to the compiler with no enforcement behind it. On a small team you might get away with it. On a big one, every cast is a place where the types say one thing and reality says another, and the person who finds out is usually on call.</p>
+<ul><li>Parse external data with a schema, infer the type from it, never hand-write both</li><li>Treat `as` casts as a code smell that needs a comment justifying why it is safe</li><li>Turn on strict mode and noUncheckedIndexedAccess from day one, because retrofitting them later is brutal</li></ul>
+<h2>Keep your clever types in a corner</h2>
+<p>TypeScript has a genuinely powerful type system, and that is a trap. You can write conditional types and mapped types and recursive template literal types that feel like a magic trick. Sometimes that machinery is the right call, usually inside a library where the complexity is hidden behind a clean public API. In ordinary application code it is almost always the wrong call.</p>
+<p>The reason is simple. The next person to read that type, possibly you in six months, has to hold the whole derivation in their head to understand what shape they are dealing with. A type that takes ten minutes to decode is worse than a slightly repetitive type you can read at a glance. I have written the galaxy-brain version and regretted it more than I have ever regretted being a little verbose. Keep the wizardry contained, document it, and let application code stay obvious.</p>
+<h2>Share types across the boundary, do not duplicate them</h2>
+<p>On a full-stack codebase the TypeScript pattern that pays off most is making one type definition flow from the backend to the frontend. Whether you do that with tRPC, a generated OpenAPI client, or a shared package in a monorepo, the goal is the same. The frontend should not be guessing the shape of the API response from memory. When the backend changes a field, the frontend should fail to compile, not fail in production.</p>
+<p>This is the thing that pays off most as a team grows, because it removes an entire class of coordination overhead. Nobody has to remember to update a separate type file. Nobody ships a mismatch because two definitions drifted. The compiler does the coordination that humans are bad at.</p>
+<h2>The pattern under all the patterns</h2>
+<p>Every habit here comes down to one idea: push correctness as far toward compile time as you reasonably can, and make the types describe reality rather than wishes. A small team can paper over gaps with shared context and a quick Slack message. A larger team cannot, because nobody holds the whole system in their head anymore. The type system becomes the shared memory.</p>
+<p>None of this requires exotic TypeScript. Discriminated unions, schema validation at the edges, restrained generics, and shared types across the wire will carry you a very long way. The teams that struggle are usually not the ones who lack advanced tricks. They are the ones casting their way out of friction and letting the types slowly become fiction.</p>
+   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="pager">
+     <a href="go-vs-node-backend-2026.html">← Go vs Node for backends in 2026, from someone who ships both</a>
+     <a href="nextjs-performance-real.html">Next.js performance, the parts that actually move the needle →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Three.js performance for the web, learned the hard way — Harman Kamboj</title>
+<meta name="description" content="Three.js performance on the web comes down to draw calls, the main thread, and memory. Here are the bottlenecks that actually tank your frame rate." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Three.js performance for the web, learned the hard way — Harman Kamboj" />
+<meta property="og:description" content="Three.js performance on the web comes down to draw calls, the main thread, and memory. Here are the bottlenecks that actually tank your frame rate." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/threejs-performance-web.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Three.js performance for the web, learned the hard way — Harman Kamboj" />
+<meta name="twitter:description" content="Three.js performance on the web comes down to draw calls, the main thread, and memory. Here are the bottlenecks that actually tank your frame rate." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/threejs-performance-web.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Three.js performance for the web, learned the hard way","description":"Three.js performance on the web comes down to draw calls, the main thread, and memory. Here are the bottlenecks that actually tank your frame rate.","datePublished":"2026-03-12","dateModified":"2026-03-12","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/threejs-performance-web.html","url":"https://hammyasf.github.io/threejs-performance-web.html","keywords":"Game dev, Building in public","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
+  .blist{padding:20px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.02em;margin:9px 0 7px;}
+  .bcard p{color:var(--muted);font-size:15.5px;}
+  .bcard .tg{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+  .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
+  .bhero{padding:150px 0 6px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
+  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Three.js performance for the web, learned the hard way</h1>
+   <div class="pmeta"><span>March 12, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Game dev</span><span>Building in public</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The first time I shipped a real Three.js scene to the web, it ran beautifully on my machine and turned into a slideshow on a mid-range phone. That is the rite of passage. Three.js performance on the web is a different game from native, because you are sharing a single main thread with the whole page and running on hardware that ranges from gaming desktops to three-year-old budget phones. Most of the lessons came from watching the frame rate collapse and figuring out why.</p>
+<h2>Draw calls are usually the real enemy</h2>
+<p>The single most common cause of a slow Three.js scene is too many draw calls. Every distinct mesh with its own geometry and material is roughly one draw call, and the cost is the overhead of telling the GPU to start drawing, not the triangles themselves. A scene with five hundred separate small objects can be slower than one with a handful of large ones, even when the second has more geometry.</p>
+<p>The fixes are about reducing the count. Merge static geometry that shares a material into a single mesh. Use instanced meshes when you have many copies of the same object, like trees or particles or tiles, because instancing draws all of them in one call. Share materials aggressively, since a new material often forces a new draw call even on identical geometry. I keep an eye on the renderer info panel during development so I notice the count creeping up before it becomes a problem.</p>
+<ul><li>Merge static meshes that share a material into one geometry</li><li>Use InstancedMesh for large numbers of repeated objects</li><li>Reuse a small set of materials instead of one per object</li><li>Watch renderer.info.render.calls while you build, not after</li></ul>
+<h2>The main thread is shared, and that hurts</h2>
+<p>On the web your render loop is competing with React, with layout, with garbage collection, with everything else the page is doing. A frame budget at 60fps is about sixteen milliseconds, and that has to cover your scene update, the render, and whatever else the browser needs to do. One heavy synchronous operation in the middle of a frame and you drop it.</p>
+<p>This means the usual web rules apply harder than usual. Keep per-frame work lean and predictable. Do not allocate objects inside your animation loop, because the garbage collector will eventually pause you at the worst moment. Move heavy computation like physics or pathfinding off the main thread with a worker when you can. And be careful with framework re-renders, since a React component re-rendering your canvas wrapper every frame can quietly double your cost.</p>
+<h2>Memory and textures will sink you on mobile</h2>
+<p>Desktop hides a lot of sins that mobile will not forgive. Textures are the big one. A few uncompressed high-resolution textures can blow past a phone's memory budget and either crash the tab or force the browser to thrash. I size textures to what they actually need on screen, use power-of-two dimensions, generate mipmaps, and reach for compressed texture formats like KTX2 with Basis when the project can support them.</p>
+<p>The other memory trap is that Three.js does not clean up after you automatically. Geometries, materials, and textures hold GPU resources that you have to dispose of explicitly when you are done with them. In a long-lived single page app where scenes come and go, forgetting to dispose is a slow leak that ends in a crash after a few navigations. I treat teardown as a first-class part of any scene, not an afterthought.</p>
+<h2>Measure on real hardware, not your laptop</h2>
+<p>The mistake I made early and see constantly is profiling only on a development machine. Your laptop has a real GPU and plenty of memory, so everything feels fine. Your users are on phones with thermal throttling and a fraction of the power. A scene that holds 60fps on your desk can sit at 20fps on the device most of your audience actually has.</p>
+<p>I keep a couple of genuinely mid-range devices around and test on them regularly, not just at the end. The browser performance tools and the WebGL frame inspectors are useful, but nothing replaces holding a real phone and feeling the lag. Budget for the worst common device you intend to support and tune to that, because the powerful machines will take care of themselves.</p>
+<h2>Level of detail and culling are free wins</h2>
+<p>Two techniques pay off constantly once a scene gets large. Level of detail swaps a complex mesh for a simpler one as it gets farther from the camera, so distant objects cost almost nothing. Frustum culling, which Three.js does by default, skips anything outside the camera view, but it only helps if your objects are organized so the culling can actually exclude them. For big worlds, spatial partitioning so you are not even considering off-screen regions matters more than any micro-optimization.</p>
+<p>None of this is exotic. The pattern that works is boring and reliable. Keep draw calls low, keep the main thread clear, respect the memory budget of the weakest device, and measure where it actually runs. Do those four things and most Three.js performance problems never get a chance to appear. Skip them and you will rediscover each one the hard way, the same way I did.</p>
+   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="pager">
+     <a href="game-feel-juice.html">← Game feel: why juice matters more than features</a>
+     <a href="ecs-explained.html">ECS explained without the academic fog →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>

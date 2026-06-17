@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Game feel: why juice matters more than features — Harman Kamboj</title>
+<meta name="description" content="Game feel and juice are why a simple game feels great while a feature-rich one feels dead. Here is how I think about juice and why it beats more features." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Game feel: why juice matters more than features — Harman Kamboj" />
+<meta property="og:description" content="Game feel and juice are why a simple game feels great while a feature-rich one feels dead. Here is how I think about juice and why it beats more features." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/game-feel-juice.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Game feel: why juice matters more than features — Harman Kamboj" />
+<meta name="twitter:description" content="Game feel and juice are why a simple game feels great while a feature-rich one feels dead. Here is how I think about juice and why it beats more features." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/game-feel-juice.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Game feel: why juice matters more than features","description":"Game feel and juice are why a simple game feels great while a feature-rich one feels dead. Here is how I think about juice and why it beats more features.","datePublished":"2026-03-15","dateModified":"2026-03-15","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/game-feel-juice.html","url":"https://hammyasf.github.io/game-feel-juice.html","keywords":"Game dev, Building in public","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);max-width:46%;}.pager a:hover{color:var(--accent);}
+  .blist{padding:20px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:26px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.02em;margin:9px 0 7px;}
+  .bcard p{color:var(--muted);font-size:15.5px;}
+  .bcard .tg{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+  .bcard .tg span{font-family:var(--mono);font-size:10.5px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
+  .bhero{padding:150px 0 6px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  .lanes{display:flex;gap:8px;flex-wrap:wrap;margin:26px 0 0;}
+  .lanes span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:5px 11px;border-radius:8px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Game feel: why juice matters more than features</h1>
+   <div class="pmeta"><span>March 15, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Game dev</span><span>Building in public</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>Take two versions of the same simple platformer. Same physics, same level, same character. In one, jumping is an instant position change and landing is silent. In the other, the jump has a tiny squash, the landing kicks up a puff of dust, the camera dips a few pixels, and there is a soft thud. Players will tell you the second one is a better game. The code difference is small. The felt difference is enormous. That gap is game feel, and the polish that creates it is what people call juice.</p>
+<h2>What game feel actually is</h2>
+<p>Game feel is the moment to moment sensation of controlling something. It lives in the milliseconds between input and response, in how things accelerate and stop, in the feedback that confirms your action mattered. It is almost entirely separate from your feature list. You can have a deep crafting system, twenty weapons, and a branching story, and still feel like you are pushing a spreadsheet around if the core interaction has no weight to it.</p>
+<p>The frustrating thing for engineers is that game feel does not show up in any spec. Nobody writes a ticket that says make the jump feel good. It emerges from a hundred tiny choices about timing and feedback, and you can only find it by playing your own thing constantly and asking whether it feels alive.</p>
+<h2>Juice is the cheap part with the biggest payoff</h2>
+<p>Juice is the layer of responsive feedback you add on top of a working mechanic. Screen shake, particles, a quick scale animation, sound that fires on contact, a brief hit pause where time freezes for a few frames. None of it changes what the game does. All of it changes how the game feels to do.</p>
+<p>What makes juice such a good investment is the ratio. A working but lifeless mechanic might take a day to build. Making it feel great might take an hour of adding feedback. That hour often does more for the player experience than the next three features combined. I have watched plenty of prototypes go from forgettable to genuinely fun without a single new system, just by adding response to the things that already worked.</p>
+<ul><li>A short squash and stretch on jump and land sells weight</li><li>Particles and dust on impact tell the eye that something connected</li><li>A few frames of hit pause make a hit feel like it landed</li><li>Sound on every meaningful action closes the feedback loop</li><li>Subtle camera movement gives the world physical presence</li></ul>
+<h2>Why more features rarely fix a dull game</h2>
+<p>There is a trap I have seen smart people fall into. The game feels flat, so they conclude it needs more content. More enemies, more mechanics, another mode. They add all of it and the game still feels flat, because the dullness was never about quantity. It was about the base interaction having no satisfying response. Stacking features on a mechanic that feels dead just gives you a larger dead thing.</p>
+<p>The honest test is to strip your game back to its single core action and ask if that one thing is fun to do for thirty seconds with nothing else around it. If swinging the sword or moving the cursor or stacking the block is not satisfying on its own, no feature is going to rescue it. Fix the feel of the core first. Everything else is built on top of that foundation.</p>
+<h2>How this thinking carries into normal software</h2>
+<p>This is not only a game dev idea. The same principle runs through any interface a human touches. A button that responds instantly, a form that shows you progress, a save that confirms it worked, a loading state that feels intentional rather than broken. That is juice for regular apps, and it is the difference between software that feels solid and software that feels like it might be lying to you.</p>
+<p>I spend real effort on the feedback layer in web work for the same reason I spend it in games. Users do not experience your architecture. They experience the response to their clicks. A technically excellent backend behind an interface that gives no feedback feels worse than a simple app that confirms every action crisply. Perceived quality lives in the response, not the internals.</p>
+<h2>Find the feel before you scale the content</h2>
+<p>My working order on any interactive thing is the same now. Get one core interaction working, then pour attention into how it feels until it is genuinely good, and only then start adding breadth. Doing it in that order means every feature you add later inherits a base that already feels right. Doing it in the other order means you are decorating a corpse.</p>
+<p>Juice has a reputation as the finishing touch, the stuff you sprinkle on at the end if time allows. I think that gets it backwards. The feel of the core loop is the product. The features are how you give people more reasons to keep experiencing a feel they already enjoy. Build the feel first, treat it as the real work, and the rest of the game has something worth attaching to.</p>
+   <div class="cta-final"><h3>Building something where this matters?</h3><p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the hard part of your product is fighting you, that is the work I like.</p><a class="btn" href="index.html#contact">Get in touch →</a></div>
+   <div class="pager">
+     <a href="what-game-jams-teach-shipping.html">← What running game jams taught me about shipping software</a>
+     <a href="threejs-performance-web.html">Three.js performance for the web, learned the hard way →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>
