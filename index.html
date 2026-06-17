@@ -306,6 +306,42 @@
   }
 .gview{display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;color:var(--lime);border-bottom:1px solid rgba(43,227,176,.4);padding-bottom:2px;transition:gap .2s,color .2s;}
   .gview:hover{gap:13px;color:var(--lime-2);}
+
+  /* sound toggle */
+  .snd{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);background:transparent;border:1px solid var(--line-2);
+    padding:7px 11px;border-radius:100px;cursor:pointer;transition:color .2s,border-color .2s;}
+  .snd:hover{color:var(--lime);border-color:rgba(43,227,176,.5);}
+  .snd.on{color:var(--lime);border-color:rgba(43,227,176,.6);}
+  @media(max-width:880px){.snd{display:none;}}
+  /* toast */
+  #toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,30px);z-index:120;opacity:0;pointer-events:none;
+    background:var(--lime);color:#07100e;font-family:var(--mono);font-size:13px;font-weight:500;padding:13px 20px;border-radius:100px;
+    box-shadow:0 14px 40px rgba(43,227,176,.3);transition:opacity .4s var(--ease),transform .4s var(--ease);max-width:90vw;text-align:center;}
+  #toast.show{opacity:1;transform:translate(-50%,0);}
+  /* confetti + trail */
+  #confetti{position:fixed;inset:0;z-index:110;pointer-events:none;opacity:1;}
+  .trail{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--lime);pointer-events:none;z-index:94;
+    transform:translate(-50%,-50%);opacity:.7;transition:opacity .5s linear,transform .5s linear;}
+  /* playground */
+  .play-sub{margin-top:20px;max-width:620px;font-size:16.5px;color:var(--muted);}
+  .game{margin-top:34px;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:rgba(11,23,20,.6);}
+  .game-hud{display:flex;gap:30px;padding:18px 24px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .game-hud b{color:var(--lime);font-weight:500;font-size:15px;}
+  .game-stage{position:relative;width:100%;height:380px;touch-action:manipulation;}
+  #game{display:block;width:100%;height:100%;cursor:crosshair;}
+  .game-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    background:rgba(7,16,14,.72);backdrop-filter:blur(3px);text-align:center;padding:20px;transition:opacity .3s;}
+  .game-overlay.hidden{opacity:0;pointer-events:none;}
+  .game-overlay p{font-size:14.5px;color:var(--muted);max-width:340px;}
+  @media(max-width:640px){.game-stage{height:320px;}.game-hud{gap:18px;}}
+  /* writing cards */
+  .wlist{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;}
+  .wcard{border:1px solid var(--line);border-radius:20px;padding:28px;background:rgba(11,23,20,.5);transition:border-color .3s,transform .25s var(--ease),background .3s;}
+  .wcard:hover{border-color:rgba(43,227,176,.4);transform:translateY(-4px);background:rgba(43,227,176,.04);}
+  .wcard .wd{font-family:var(--mono);font-size:12px;color:var(--faint);}
+  .wcard h3{font-family:var(--display);font-weight:600;font-size:clamp(20px,2.2vw,26px);letter-spacing:-.01em;margin:12px 0 10px;line-height:1.12;}
+  .wcard p{font-size:15px;color:var(--muted);}
+  @media(max-width:760px){.wlist{grid-template-columns:1fr;}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Harman Kamboj","alternateName":"Harmanpreet Singh","jobTitle":"Senior Full-Stack Engineer","url":"https://hammyasf.github.io","image":"https://hammyasf.github.io/og-image.png","email":"mailto:playcivil@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Patiala","addressRegion":"Punjab","addressCountry":"IN"},"sameAs":["https://github.com/hammyasf","https://linkedin.com/in/hammyasf"],"knowsAbout":["Full-stack engineering","Web3","DeFi","Go","TypeScript","React","Node.js","Svelte","Game development","Blockchain indexing","AI"]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Harman Kamboj — Senior Full-Stack Engineer","url":"https://hammyasf.github.io"}</script>
@@ -316,6 +352,8 @@
 <canvas id="bg"></canvas>
 <div id="progress"></div>
 <div id="cursor"><span class="clab"></span></div>
+<canvas id="confetti"></canvas>
+<div id="toast" role="status" aria-live="polite"></div>
 <div id="secidx"><b id="six-n">01</b> / 07 — <span id="six-name">Intro</span></div>
 <button id="toTop" aria-label="Back to top">↑</button>
 
@@ -332,7 +370,9 @@
       <a class="lnk" href="#work" data-cursor="VIEW">Work</a>
       <a class="lnk" href="#about" data-cursor="VIEW">About</a>
       <a class="lnk" href="#career" data-cursor="VIEW">Experience</a>
+      <a class="lnk" href="blog.html" data-cursor="VIEW">Writing</a>
       <span class="nav-clock" id="clock">—</span>
+      <button class="snd" id="snd" aria-label="Toggle sound" data-cursor="VIEW">SND OFF</button>
       <a class="nav-btn magnetic" href="#contact" data-cursor="OPEN">Hire me</a>
     </div>
   </div>
@@ -580,10 +620,56 @@
     </div>
   </section>
 
+    <!-- PLAYGROUND -->
+  <section class="sec panel-bg" id="play" data-name="Playground" data-idx="08">
+    <div class="wrap">
+      <div class="kicker reveal"><span class="n">08</span> Playground <span class="rule"></span></div>
+      <h2 class="big reveal-line">Coffee break? <span class="lime">Smash some bugs.</span></h2>
+      <p class="play-sub reveal d1">I build games too, so here is a tiny one. Twenty seconds, click the bugs before they vanish, beat your best. The whole thing is hand-coded canvas, no library.</p>
+      <div class="game reveal d1">
+        <div class="game-hud">
+          <span>Score <b id="g-score">0</b></span>
+          <span>Best <b id="g-best">0</b></span>
+          <span>Time <b id="g-time">20</b>s</span>
+        </div>
+        <div class="game-stage" id="g-stage">
+          <canvas id="game" aria-label="Bug smashing mini-game"></canvas>
+          <div class="game-overlay" id="g-over">
+            <button class="btn btn-lime magnetic" id="g-start" data-cursor="OPEN">Start &#9656;</button>
+            <p id="g-msg">Click the bugs before they disappear.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WRITING TEASER -->
+  <section class="sec panel-bg" id="writing" data-name="Writing" data-idx="09">
+    <div class="wrap">
+      <div class="kicker reveal"><span class="n">09</span> Writing <span class="rule"></span></div>
+      <div class="gal-head">
+        <h2 class="big reveal-line">From the <span class="lime">blog.</span></h2>
+        <div class="hint reveal d1"><a href="blog.html" data-cursor="OPEN" style="color:var(--lime)">All posts &rarr;</a></div>
+      </div>
+      <div class="wlist">
+        <a class="wcard reveal" href="indexing-onchain-data-subsquid-the-graph.html" data-cursor="OPEN">
+          <div class="wd">June 18, 2026 · 3 min</div>
+          <h3>Indexing on-chain data without losing your mind</h3>
+          <p>When The Graph is the right call, when Subsquid earns its keep, and the traps that cost me weekends.</p>
+        </a>
+        <a class="wcard reveal d1" href="ai-coding-agents-where-they-earn-their-keep.html" data-cursor="OPEN">
+          <div class="wd">June 17, 2026 · 3 min</div>
+          <h3>Where AI coding agents earn their keep, and where they do not</h3>
+          <p>An honest take after the hype: where agents speed you up, where they quietly add risk.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- CONTACT -->
   <section class="contact panel-bg" id="contact" data-name="Contact" data-idx="07">
     <div class="wrap">
-      <div class="kicker reveal" style="justify-content:center;"><span class="n">08</span> Let's talk</div>
+      <div class="kicker reveal" style="justify-content:center;"><span class="n">10</span> Let&rsquo;s talk</div>
       <h2 class="reveal-line">Let's build<br>something <span class="lime">real.</span></h2>
       <p class="reveal d1">Available right now for senior full-stack, Web3, or AI engineering roles. Fully remote, any timezone.</p>
       <div class="cta-row reveal d2">
@@ -873,5 +959,78 @@
 })();
 </script>
 
+<script>
+(function(){
+  var reduce=window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+  var fine=window.matchMedia("(pointer:fine)").matches;
+  /* ---- sound ---- */
+  var AC=null,sndOn=false;
+  try{ sndOn=localStorage.getItem("snd")==="1"; }catch(e){}
+  var sb=document.getElementById("snd");
+  function setSnd(v){ sndOn=v; if(sb){sb.textContent="SND "+(v?"ON":"OFF"); sb.classList.toggle("on",v);} try{localStorage.setItem("snd",v?"1":"0");}catch(e){} }
+  setSnd(sndOn);
+  function ctx(){ if(!AC){ try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } return AC; }
+  function tone(freq,dur,type,vol){ if(!sndOn)return; var c=ctx(); if(!c)return; var o=c.createOscillator(),g=c.createGain();
+    o.type=type||"sine"; o.frequency.value=freq; g.gain.value=0.0001; o.connect(g); g.connect(c.destination);
+    var t=c.currentTime; g.gain.exponentialRampToValueAtTime(vol||0.08,t+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+(dur||0.12));
+    o.start(t); o.stop(t+(dur||0.12)); }
+  if(sb){ sb.addEventListener("click",function(){ ctx(); setSnd(!sndOn); if(sndOn)tone(660,0.1,"triangle",0.06); }); }
+  var lastHov=0;
+  document.querySelectorAll("a,button,.gpanel,.sbcell,.wcard").forEach(function(el){
+    el.addEventListener("mouseenter",function(){ var n=Date.now(); if(n-lastHov>40){ tone(880,0.05,"sine",0.03); lastHov=n; } });
+  });
+  /* ---- cursor trail ---- */
+  if(fine && !reduce){ var th=0; window.addEventListener("mousemove",function(e){ var n=Date.now(); if(n-th<28)return; th=n;
+    var d=document.createElement("div"); d.className="trail"; d.style.left=e.clientX+"px"; d.style.top=e.clientY+"px"; document.body.appendChild(d);
+    requestAnimationFrame(function(){ d.style.opacity="0"; d.style.transform="translate(-50%,-50%) scale(.2)"; });
+    setTimeout(function(){ d.remove(); },520); }); }
+  /* ---- toast ---- */
+  var toastEl=document.getElementById("toast"),tT=null;
+  function toast(msg){ if(!toastEl)return; toastEl.textContent=msg; toastEl.classList.add("show"); clearTimeout(tT); tT=setTimeout(function(){toastEl.classList.remove("show");},3400); }
+  /* ---- confetti ---- */
+  var cc=document.getElementById("confetti"),cx=cc?cc.getContext("2d"):null,parts=[],craf=null;
+  function csize(){ if(!cc)return; cc.width=window.innerWidth; cc.height=window.innerHeight; } csize(); window.addEventListener("resize",csize);
+  function burst(x,y,n,colors){ if(!cx)return; for(var i=0;i<n;i++){ var a=Math.random()*Math.PI*2,s=2+Math.random()*7;
+    parts.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-3,life:1,col:colors[i%colors.length],sz:3+Math.random()*4}); } if(!craf)cloop(); }
+  function cloop(){ craf=requestAnimationFrame(cloop); cx.clearRect(0,0,cc.width,cc.height); var alive=false;
+    for(var i=0;i<parts.length;i++){ var p=parts[i]; if(p.life<=0)continue; alive=true; p.vy+=0.18; p.x+=p.vx; p.y+=p.vy; p.life-=0.012;
+      cx.globalAlpha=Math.max(0,p.life); cx.fillStyle=p.col; cx.fillRect(p.x,p.y,p.sz,p.sz); }
+    cx.globalAlpha=1; if(!alive){ cancelAnimationFrame(craf); craf=null; parts=[]; cx.clearRect(0,0,cc.width,cc.height); } }
+  /* ---- konami ---- */
+  var seq=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"],pos=0;
+  window.addEventListener("keydown",function(e){ var k=e.key; if(k===seq[pos]||(k&&k.toLowerCase&&k.toLowerCase()===seq[pos])){ pos++; if(pos===seq.length){ pos=0;
+    toast("Achievement unlocked: you found the secret. Now go hire me."); burst(window.innerWidth/2,window.innerHeight*0.4,160,["#2be3b0","#14c3c9","#edf2ef","#5cf2cf"]);
+    tone(523,0.12,"triangle",0.07); setTimeout(function(){tone(659,0.12,"triangle",0.07);},120); setTimeout(function(){tone(784,0.2,"triangle",0.07);},260); } } else { pos=(k===seq[0])?1:0; } });
+  /* ---- bug smash mini-game ---- */
+  var stage=document.getElementById("g-stage"),cv=document.getElementById("game");
+  if(stage&&cv){ var g=cv.getContext("2d"); var W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
+    function gsize(){ W=stage.clientWidth; H=stage.clientHeight; cv.width=W*dpr; cv.height=H*dpr; g.setTransform(dpr,0,0,dpr,0,0); } gsize(); window.addEventListener("resize",gsize);
+    var bugs=[],pops=[],playing=false,score=0,best=0,timeLeft=20,spawnT=0,spawnEvery=820,lastTs=0,endAt=0;
+    try{ best=parseInt(localStorage.getItem("bestBugs")||"0",10)||0; }catch(e){}
+    var elS=document.getElementById("g-score"),elB=document.getElementById("g-best"),elT=document.getElementById("g-time"),over=document.getElementById("g-over"),msg=document.getElementById("g-msg"),startBtn=document.getElementById("g-start");
+    if(elB)elB.textContent=best;
+    function spawn(){ var r=16+Math.random()*12; bugs.push({x:r+Math.random()*(W-2*r),y:r+Math.random()*(H-2*r),r:r,born:performance.now(),life:1150}); }
+    function pop(x,y){ for(var i=0;i<10;i++){ var a=Math.random()*Math.PI*2,s=1+Math.random()*4; pops.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1}); } }
+    function start(){ score=0; timeLeft=20; bugs=[]; pops=[]; spawnEvery=820; playing=true; lastTs=performance.now(); endAt=lastTs+20000; spawnT=0;
+      if(over)over.classList.add("hidden"); if(elS)elS.textContent=0; ctx(); loop(lastTs); }
+    function end(){ playing=false; if(score>best){ best=score; try{localStorage.setItem("bestBugs",best);}catch(e){} if(elB)elB.textContent=best; toast("New best: "+best+" bugs. Nice."); burst(W/2+stage.getBoundingClientRect().left,stage.getBoundingClientRect().top+H/2,90,["#2be3b0","#14c3c9","#5cf2cf"]); }
+      if(over){ over.classList.remove("hidden"); } if(msg)msg.textContent="Time! You smashed "+score+". Best "+best+". Go again?"; if(startBtn)startBtn.textContent="Play again \u25B8"; }
+    function loop(ts){ if(!playing)return; requestAnimationFrame(loop); var dt=ts-lastTs; lastTs=ts;
+      timeLeft=Math.max(0,(endAt-ts)/1000); if(elT)elT.textContent=Math.ceil(timeLeft);
+      spawnT+=dt; if(spawnT>=spawnEvery){ spawnT=0; spawn(); spawnEvery=Math.max(360,spawnEvery*0.97); }
+      g.clearRect(0,0,W,H);
+      var now=ts; for(var i=bugs.length-1;i>=0;i--){ var b=bugs[i]; var age=now-b.born; if(age>b.life){ bugs.splice(i,1); continue; }
+        var p=age/b.life; var rr=b.r*(1-0.25*p); g.globalAlpha=1-0.15*p;
+        g.beginPath(); g.arc(b.x,b.y,rr,0,Math.PI*2); g.fillStyle="#2be3b0"; g.fill();
+        g.beginPath(); g.arc(b.x,b.y,rr*0.45,0,Math.PI*2); g.fillStyle="#07100e"; g.fill(); g.globalAlpha=1; }
+      for(var j=pops.length-1;j>=0;j--){ var q=pops[j]; q.x+=q.vx; q.y+=q.vy; q.life-=0.05; if(q.life<=0){ pops.splice(j,1); continue; }
+        g.globalAlpha=q.life; g.fillStyle="#5cf2cf"; g.fillRect(q.x,q.y,3,3); g.globalAlpha=1; }
+      if(ts>=endAt){ end(); } }
+    function hit(mx,my){ if(!playing)return; for(var i=bugs.length-1;i>=0;i--){ var b=bugs[i]; var dx=mx-b.x,dy=my-b.y; if(dx*dx+dy*dy<=(b.r+8)*(b.r+8)){ bugs.splice(i,1); score++; if(elS)elS.textContent=score; pop(b.x,b.y); tone(440+Math.random()*220,0.06,"square",0.05); return; } } }
+    cv.addEventListener("pointerdown",function(e){ var rect=cv.getBoundingClientRect(); hit(e.clientX-rect.left,e.clientY-rect.top); });
+    if(startBtn)startBtn.addEventListener("click",function(){ ctx(); start(); });
+  }
+})();
+</script>
 </body>
 </html>

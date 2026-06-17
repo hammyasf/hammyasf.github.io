@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+<title>Harman Kamboj — Writing</title>
+<link>https://hammyasf.github.io/blog.html</link>
+<description>Essays on Web3, AI engineering, full-stack, and shipping software.</description>
+<language>en-us</language>
+<item><title>Indexing on-chain data without losing your mind</title><link>https://hammyasf.github.io/indexing-onchain-data-subsquid-the-graph.html</link><guid>https://hammyasf.github.io/indexing-onchain-data-subsquid-the-graph.html</guid><pubDate>Thu, 18 Jun 2026 00:00:00 GMT</pubDate><description>Notes from building indexers for a top-10 crypto and a DeFi exchange. When The Graph is the right call, when Subsquid earns its keep, and the traps that cost me weekends.</description></item>
+<item><title>Where AI coding agents earn their keep, and where they do not</title><link>https://hammyasf.github.io/ai-coding-agents-where-they-earn-their-keep.html</link><guid>https://hammyasf.github.io/ai-coding-agents-where-they-earn-their-keep.html</guid><pubDate>Wed, 17 Jun 2026 00:00:00 GMT</pubDate><description>An honest take after the hype from someone who has shipped for 12 years. The tasks agents genuinely speed up, the ones where they quietly add risk, and how I would use them on a real team.</description></item>
+</channel></rss>
