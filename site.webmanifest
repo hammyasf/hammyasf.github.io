@@ -1,0 +1,15 @@
+{
+  "name": "Harman Kamboj — Senior Full-Stack Engineer",
+  "short_name": "Harman Kamboj",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07100e",
+  "theme_color": "#07100e",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

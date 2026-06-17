@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<rect width="1200" height="630" fill="#07100e"/>
+<rect x="0" y="0" width="1200" height="8" fill="#2be3b0"/>
+<rect x="90" y="250" width="120" height="10" fill="#2be3b0"/>
+<circle cx="99" cy="92" r="9" fill="#2be3b0"/>
+<text x="120" y="100" font-family="DejaVu Sans, Arial, sans-serif" font-size="26" fill="#93a8a1" font-weight="bold">Harman Kamboj</text>
+<text x="88" y="360" font-family="DejaVu Sans, Arial, sans-serif" font-size="112" fill="#edf2ef" font-weight="bold">Senior Full-Stack</text>
+<text x="88" y="470" font-family="DejaVu Sans, Arial, sans-serif" font-size="112" fill="#2be3b0" font-weight="bold">Engineer.</text>
+<text x="92" y="545" font-family="DejaVu Sans, Arial, sans-serif" font-size="29" fill="#93a8a1">12+ yrs  -  Web3  -  AI  -  shipped for a top-10 crypto  -  remote</text>
+<text x="92" y="598" font-family="DejaVu Sans, Arial, sans-serif" font-size="23" fill="#5f726b">hammyasf.github.io</text>
+</svg>
