@@ -358,7 +358,7 @@
 <div id="cursor" aria-hidden="true"><span class="clab"></span></div>
 <canvas id="confetti" aria-hidden="true"></canvas>
 <div id="toast" role="status" aria-live="polite"></div>
-<div id="secidx"><b id="six-n">01</b> / 07 — <span id="six-name">Intro</span></div>
+<div id="secidx"><b id="six-n">01</b> / <b id="six-tot">07</b> — <span id="six-name">Intro</span></div>
 <button id="toTop" aria-label="Back to top">↑</button>
 
 <div id="pre">
@@ -833,11 +833,14 @@
       scrollVel+=(velTarget-scrollVel)*0.25; if(Math.abs(scrollVel)<0.01)scrollVel=0; raf(tick); } raf(tick); })();
 
   /* ---------- section index ---------- */
-  (function(){ var sn=document.getElementById('six-n'),snm=document.getElementById('six-name'),box=document.getElementById('secidx');
-    var secs=Array.prototype.slice.call(document.querySelectorAll('[data-name]')); if(!secs.length)return;
-    function upd(){ var mid=window.innerHeight*0.42,cur=null;
-      for(var i=0;i<secs.length;i++){ var r=secs[i].getBoundingClientRect(); if(r.top<=mid && r.bottom>=mid){ cur=secs[i]; } }
-      if(cur){ box.classList.add('show'); sn.textContent=cur.getAttribute('data-idx'); snm.textContent=cur.getAttribute('data-name'); }
+  (function(){ var sn=document.getElementById('six-n'),snm=document.getElementById('six-name'),tot=document.getElementById('six-tot'),box=document.getElementById('secidx');
+    var all=Array.prototype.slice.call(document.querySelectorAll('[data-name]')); if(!all.length)return;
+    function pad(n){return ('0'+n).slice(-2);}
+    function visible(){ return all.filter(function(s){ var r=s.getBoundingClientRect(); return s.offsetParent!==null && r.height>0; }); }
+    function upd(){ var secs=visible(); if(tot)tot.textContent=pad(secs.length); if(!secs.length)return;
+      var mid=window.innerHeight*0.42,cur=-1;
+      for(var i=0;i<secs.length;i++){ var r=secs[i].getBoundingClientRect(); if(r.top<=mid && r.bottom>=mid){ cur=i; } }
+      if(cur>=0){ box.classList.add('show'); sn.textContent=pad(cur+1); snm.textContent=secs[cur].getAttribute('data-name'); }
       else if(window.pageYOffset<200){ box.classList.remove('show'); } }
     window.addEventListener('scroll',function(){raf(upd);},{passive:true}); upd();
     // nav active

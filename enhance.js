@@ -5,6 +5,13 @@
   var ANALYTICS_TOKEN="67319da24fb341b6bc63d535a3edda18";
   if(ANALYTICS_TOKEN){ var ab=document.createElement("script"); ab.defer=true; ab.src="https://static.cloudflareinsights.com/beacon.min.js"; ab.setAttribute("data-cf-beacon",JSON.stringify({token:ANALYTICS_TOKEN})); document.head.appendChild(ab); }
 
+  /* fix: solid-accent buttons must keep dark, legible text on every theme.
+     On post pages `article.post a{color:var(--accent)}` was beating `.btn`,
+     so the CTA text matched its own background. Force dark ink + no underline. */
+  (function(){ var s=document.createElement("style");
+    s.textContent="article.post a.btn,.cta-final a.btn,a.btn{color:#07100e!important;border-bottom:0!important;}";
+    (document.head||document.documentElement).appendChild(s); })();
+
   /* ===== theme ===== */
   var THEMES={
     jade:{a:"#2be3b0",a2:"#14c3c9",rgb:"43,227,176",l2:"#5cf2cf",bg:"#07100e",bg2:"#0b1714",surf:"11,23,20"},
