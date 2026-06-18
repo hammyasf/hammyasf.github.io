@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Browser SQL Playground — query CSV, Parquet &amp; JSON with DuckDB, no upload</title>
+<meta name="description" content="Run real analytical SQL on CSV, Parquet, and JSON files entirely in your browser. A full DuckDB database runs client-side via WebAssembly. Nothing is uploaded, no sign-up, no size limits." />
+<meta name="keywords" content="query csv with sql, sql on csv online, duckdb wasm, browser sql, csv sql query, parquet viewer online, run sql in browser, query json with sql, sql playground, no upload sql" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Browser SQL Playground — query CSV &amp; Parquet with DuckDB" />
+<meta property="og:description" content="Run real analytical SQL on CSV, Parquet, and JSON in your browser. A full DuckDB runs client-side via WebAssembly. No upload, no sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/sql-playground.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Browser SQL Playground — DuckDB in your browser" />
+<meta name="twitter:description" content="Query CSV, Parquet, and JSON with real SQL, 100% client-side. No upload, no sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/sql-playground.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Browser SQL Playground","url":"https://hammyasf.github.io/sql-playground.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Run analytical SQL on CSV, Parquet and JSON files entirely in the browser with DuckDB compiled to WebAssembly. No upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my files uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. A full DuckDB database runs inside your browser via WebAssembly. Your files are read locally and never leave your device."}},{"@type":"Question","name":"What file types can I query?","acceptedAnswer":{"@type":"Answer","text":"CSV and TSV, Parquet, and JSON or NDJSON. Each file you drop in becomes a table you can query with standard SQL."}},{"@type":"Question","name":"How large a file can it handle?","acceptedAnswer":{"@type":"Answer","text":"DuckDB is a columnar analytical engine, so it handles files with hundreds of thousands of rows comfortably. The practical limit is your device's memory, not an arbitrary server cap."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up. The DuckDB engine downloads once and is then cached by your browser."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);--err:#ff7a6b;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:720px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  .app{margin:26px 0;display:grid;grid-template-columns:260px 1fr;gap:18px;}
+  @media(max-width:820px){.app{grid-template-columns:1fr;}}
+  .side{border:1px solid var(--line);border-radius:18px;background:rgba(var(--surfaceRGB),.55);padding:16px;height:fit-content;}
+  .side h3{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;}
+  .drop{padding:22px 14px;text-align:center;border:2px dashed var(--line-2);border-radius:14px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop b{font-family:var(--display);font-weight:600;font-size:15px;display:block;}
+  .drop span{color:var(--muted);font-size:12.5px;}
+  .tablebtn{width:100%;text-align:left;background:transparent;border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-top:8px;cursor:pointer;color:var(--ink);transition:.15s;}
+  .tablebtn:hover{border-color:rgba(var(--accentRGB),.45);background:rgba(var(--accentRGB),.05);}
+  .tablebtn .tn{font-family:var(--mono);font-size:13px;color:var(--accent);word-break:break-all;}
+  .tablebtn .tm{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:2px;}
+  .cols{margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.5;display:none;}
+  .tablebtn.open .cols{display:block;}
+  .sample{margin-top:14px;width:100%;font-family:var(--body);font-weight:700;font-size:13px;padding:10px 14px;border-radius:100px;background:transparent;border:1px solid var(--line-2);color:var(--ink);cursor:pointer;transition:.15s;}
+  .sample:hover{border-color:var(--accent);color:var(--accent);}
+
+  .main{min-width:0;border:1px solid var(--line);border-radius:18px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;display:flex;flex-direction:column;}
+  .ed{position:relative;}
+  textarea#sql{width:100%;min-height:148px;resize:vertical;background:rgba(0,0,0,.25);color:var(--ink);border:none;border-bottom:1px solid var(--line);padding:16px 18px;font-family:var(--mono);font-size:14px;line-height:1.65;outline:none;tab-size:2;}
+  textarea#sql::placeholder{color:var(--faint);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 18px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;font-size:13px;padding:9px 14px;}
+  .kbd{font-family:var(--mono);font-size:11px;color:var(--faint);margin-left:auto;}
+  .status{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:0 18px 4px;min-height:18px;}
+  .status .ok{color:var(--accent);}
+  .status .bad{color:var(--err);}
+  .loadwrap{padding:14px 18px;}
+  .progress{height:6px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;}
+  .progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .3s;}
+  .err{margin:0 18px 14px;padding:12px 14px;border:1px solid rgba(255,122,107,.4);background:rgba(255,122,107,.08);border-radius:12px;color:#ffb3a8;font-family:var(--mono);font-size:13px;white-space:pre-wrap;display:none;}
+  .resmeta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:6px 18px 0;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .resmeta b{color:var(--accent);}
+  .resmeta-actions{margin-left:auto;display:flex;gap:8px;}
+  .tablebox{overflow:auto;max-height:60vh;margin:12px 18px 18px;border:1px solid var(--line);border-radius:12px;}
+  table.res{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;}
+  table.res th,table.res td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap;}
+  table.res th{position:sticky;top:0;background:#0a1512;color:var(--accent);font-weight:500;z-index:1;border-bottom:1px solid var(--line-2);}
+  table.res th .ty{display:block;color:var(--faint);font-size:10px;letter-spacing:.04em;}
+  table.res td{color:#d4ded9;}
+  table.res td.num{text-align:right;}
+  table.res td.nul{color:var(--faint);font-style:italic;}
+  table.res tr:hover td{background:rgba(var(--accentRGB),.05);}
+  .empty{padding:40px 18px;text-align:center;color:var(--muted);font-size:14px;}
+  .empty code{font-family:var(--mono);background:rgba(255,255,255,.06);padding:2px 6px;border-radius:5px;color:var(--accent);}
+
+  section.copy{padding:24px 0 10px;max-width:760px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;max-width:760px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));max-width:760px;}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Browser SQL Playground</h1>
+    <p class="sub">Drop in a CSV, Parquet, or JSON file and query it with real analytical SQL. A full DuckDB database runs inside your browser through WebAssembly, so your data never leaves your device.</p>
+    <span class="priv">&#128274; 100% private — a real database runs locally, nothing is uploaded</span>
+  </header>
+
+  <div class="app">
+    <aside class="side">
+      <h3>Data</h3>
+      <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add data files">
+        <b>Drop files</b>
+        <span>CSV · TSV · Parquet · JSON</span>
+        <input type="file" id="file" accept=".csv,.tsv,.txt,.parquet,.json,.ndjson,.jsonl" multiple hidden />
+      </div>
+      <div id="tables"></div>
+      <button class="sample" id="sampleBtn">Load sample dataset</button>
+    </aside>
+
+    <div class="main">
+      <div class="loadwrap" id="loadwrap" style="display:none;">
+        <div class="status" id="loadstatus">Starting the database engine…</div>
+        <div class="progress"><i id="loadbar"></i></div>
+      </div>
+      <div class="ed">
+        <textarea id="sql" spellcheck="false" placeholder="-- Load the sample dataset or drop a file, then write SQL.&#10;-- Example:&#10;SELECT region, SUM(revenue) AS total&#10;FROM sales&#10;GROUP BY region&#10;ORDER BY total DESC;"></textarea>
+      </div>
+      <div class="bar">
+        <button class="btn" id="run" disabled>Run query</button>
+        <button class="btn btn-out" id="csvBtn" disabled>Export CSV</button>
+        <button class="btn btn-out" id="jsonBtn" disabled>Export JSON</button>
+        <span class="kbd">&#8984;/Ctrl + Enter to run</span>
+      </div>
+      <div class="status" id="status"></div>
+      <div class="err" id="err"></div>
+      <div class="resmeta-wrap"></div>
+      <div class="resmeta" id="resmeta" style="display:none;"></div>
+      <div id="resultArea">
+        <div class="empty">Your results will appear here. Load the sample dataset to see it in action.</div>
+      </div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>This page loads DuckDB, a fast columnar analytics database, compiled to WebAssembly. When you drop in a file it is registered directly with the engine and exposed as a table, so a query like <code>SELECT * FROM your_file</code> runs against your real data. Because the whole engine lives in the page, there is no server round trip, no upload queue, and no privacy trade off. The first run downloads the engine once and your browser caches it after that.</p>
+    <h2>What you can do with it</h2>
+    <p>Explore a CSV someone sent you without opening a spreadsheet, join two files together, aggregate millions of rows, peek inside a Parquet export, or flatten nested JSON, all with plain SQL. DuckDB supports window functions, CTEs, <code>GROUP BY</code>, joins across your files, and most of the SQL you already know. It is genuinely useful for the quick "what is actually in this file" questions that come up every day.</p>
+    <h2>Why run a database in the browser?</h2>
+    <p>Uploading a data file to some random online tool to run one query is a privacy risk you do not need to take. Here the data stays on your machine, the queries are instant because nothing travels over the network, and there are no row caps or paywalls. It is the same engine data engineers run on the command line, just sitting in a tab.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my data uploaded anywhere?</summary><p>No. DuckDB runs entirely in your browser via WebAssembly. Files are read locally and never sent to a server, which is why it works offline once the engine is cached.</p></details>
+    <details><summary>Which file formats are supported?</summary><p>CSV and TSV, Parquet, and JSON or NDJSON. Drop several files and each becomes its own table, so you can join across them.</p></details>
+    <details><summary>How big a file can I query?</summary><p>DuckDB is built for analytics, so hundreds of thousands of rows are no problem. The real limit is your device's available memory rather than an arbitrary server cap.</p></details>
+    <details><summary>Can I run more than one statement?</summary><p>Yes. Separate statements with semicolons and they run in order. The results shown are from the last statement that returns rows, so you can create temporary tables and then select from them.</p></details>
+    <details><summary>Does it work on my phone?</summary><p>It runs on modern mobile browsers, but the engine is a few megabytes and large files use real memory, so a laptop is the better experience for heavy work.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>A real database in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- AdSense slot (enable later):
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
+-->
+<!-- Polar.sh "support / hire" slot (enable later) -->
+
+<script type="module">
+  // ---- match the portfolio's saved theme ----
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  const $ = (id) => document.getElementById(id);
+  const sqlEl=$("sql"), runBtn=$("run"), csvBtn=$("csvBtn"), jsonBtn=$("jsonBtn"),
+        statusEl=$("status"), errEl=$("err"), resmeta=$("resmeta"), resultArea=$("resultArea"),
+        tablesEl=$("tables"), drop=$("drop"), fileInput=$("file"), sampleBtn=$("sampleBtn"),
+        loadwrap=$("loadwrap"), loadstatus=$("loadstatus"), loadbar=$("loadbar");
+
+  let db=null, conn=null, dbReady=null, lastResult=null;
+  const registered=[]; // {table, rows, cols:[{name,type}]}
+
+  function setStatus(msg, cls){ statusEl.innerHTML = cls ? '<span class="'+cls+'">'+msg+'</span>' : msg; }
+  function showErr(msg){ errEl.textContent=msg; errEl.style.display="block"; }
+  function clearErr(){ errEl.style.display="none"; errEl.textContent=""; }
+  function fmtNum(n){ return n.toLocaleString("en-US"); }
+
+  // capability check
+  if(typeof WebAssembly!=="object" || typeof Worker!=="function"){
+    setStatus("Your browser does not support WebAssembly workers, which this tool needs. Try a recent version of Chrome, Edge, Firefox, or Safari.","bad");
+    runBtn.disabled=true; sampleBtn.disabled=true; drop.style.opacity=".5"; drop.style.pointerEvents="none";
+  }
+
+  // ---- DuckDB-WASM bootstrap (lazy: only when first needed) ----
+  async function initDB(){
+    if(dbReady) return dbReady;
+    dbReady = (async () => {
+      loadwrap.style.display="block";
+      loadstatus.textContent="Downloading the DuckDB engine (cached after first load)…";
+      loadbar.style.width="18%";
+      const duckdb = await import("https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.33.1-dev45.0/+esm");
+      loadbar.style.width="45%";
+      const bundles = duckdb.getJsDelivrBundles();
+      const bundle = await duckdb.selectBundle(bundles); // picks single-thread EH bundle on GitHub Pages
+      loadbar.style.width="62%";
+      const workerUrl = URL.createObjectURL(
+        new Blob(['importScripts("'+bundle.mainWorker+'");'], {type:"text/javascript"})
+      );
+      const worker = new Worker(workerUrl);
+      const logger = new duckdb.ConsoleLogger(duckdb.LogLevel.WARNING);
+      db = new duckdb.AsyncDuckDB(logger, worker);
+      loadstatus.textContent="Starting the database engine…";
+      loadbar.style.width="80%";
+      await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
+      URL.revokeObjectURL(workerUrl);
+      conn = await db.connect();
+      loadbar.style.width="100%";
+      setTimeout(()=>{ loadwrap.style.display="none"; loadbar.style.width="0%"; }, 350);
+      return db;
+    })().catch((e)=>{
+      loadwrap.style.display="none";
+      showErr("Could not start the database engine: "+(e&&e.message?e.message:e));
+      dbReady=null;
+      throw e;
+    });
+    return dbReady;
+  }
+
+  // ---- file registration ----
+  function sanitize(name){
+    let base=name.replace(/\.[^.]+$/,"").toLowerCase().replace(/[^a-z0-9_]+/g,"_").replace(/^_+|_+$/g,"");
+    if(!base) base="t";
+    if(/^[0-9]/.test(base)) base="t_"+base;
+    let n=base, i=2;
+    while(registered.some(r=>r.table===n)){ n=base+"_"+i; i++; }
+    return n;
+  }
+  function readerFor(name){
+    const lower=name.toLowerCase();
+    if(lower.endsWith(".parquet")) return f=>`read_parquet('${f}')`;
+    if(lower.endsWith(".json")||lower.endsWith(".ndjson")||lower.endsWith(".jsonl")) return f=>`read_json_auto('${f}')`;
+    if(lower.endsWith(".tsv")) return f=>`read_csv_auto('${f}', delim='\t')`;
+    return f=>`read_csv_auto('${f}')`;
+  }
+
+  async function registerArrayBuffer(name, buf){
+    await initDB();
+    clearErr();
+    const table=sanitize(name);
+    const fname=table+"__"+Date.now()+"."+(name.split(".").pop()||"csv");
+    const bytes=new Uint8Array(buf);
+    await db.registerFileBuffer(fname, bytes);
+    const reader=readerFor(name);
+    try{
+      await conn.query(`CREATE OR REPLACE TABLE "${table}" AS SELECT * FROM ${reader(fname)}`);
+    }catch(e){
+      showErr('Could not read "'+name+'": '+(e&&e.message?e.message:e));
+      return null;
+    }
+    const desc=await conn.query(`DESCRIBE "${table}"`);
+    const cols=desc.toArray().map(r=>({name:String(r.column_name), type:String(r.column_type)}));
+    const cnt=await conn.query(`SELECT COUNT(*)::BIGINT AS n FROM "${table}"`);
+    const rows=Number(cnt.toArray()[0].n);
+    registered.push({table, rows, cols});
+    renderTables();
+    runBtn.disabled=false;
+    setStatus('Loaded <span class="ok">'+table+'</span> · '+fmtNum(rows)+' rows, '+cols.length+' columns','');
+    if(!sqlEl.value.trim() || sqlEl.value.trim().startsWith("--")){
+      sqlEl.value='SELECT *\nFROM "'+table+'"\nLIMIT 100;';
+    }
+    return table;
+  }
+
+  async function handleFiles(files){
+    for(const f of files){
+      try{
+        const buf=await f.arrayBuffer();
+        await registerArrayBuffer(f.name, buf);
+      }catch(e){ showErr("Failed to load "+f.name+": "+(e&&e.message?e.message:e)); }
+    }
+  }
+
+  function renderTables(){
+    tablesEl.innerHTML="";
+    for(const r of registered){
+      const b=document.createElement("button");
+      b.className="tablebtn";
+      b.innerHTML='<div class="tn">'+r.table+'</div><div class="tm">'+fmtNum(r.rows)+' rows · '+r.cols.length+' cols</div>'+
+        '<div class="cols">'+r.cols.map(c=>c.name+' <span style="color:var(--faint)">'+c.type.toLowerCase()+'</span>').join("<br>")+'</div>';
+      b.addEventListener("click",()=>{ b.classList.toggle("open"); });
+      tablesEl.appendChild(b);
+    }
+  }
+
+  // ---- drag & drop ----
+  drop.addEventListener("click",()=>fileInput.click());
+  drop.addEventListener("keydown",(e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); fileInput.click(); }});
+  ["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,(e)=>{ e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,(e)=>{ e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop",(e)=>{ if(e.dataTransfer&&e.dataTransfer.files.length) handleFiles(e.dataTransfer.files); });
+  fileInput.addEventListener("change",()=>{ if(fileInput.files.length) handleFiles(fileInput.files); });
+
+  // ---- value formatting for display/export ----
+  function cellVal(v){
+    if(v===null||v===undefined) return null;
+    if(typeof v==="bigint") return v.toString();
+    if(v instanceof Date) return v.toISOString();
+    if(typeof v==="object"){ try{ return JSON.stringify(v, (k,val)=>typeof val==="bigint"?val.toString():val); }catch(e){ return String(v); } }
+    return v;
+  }
+  function isNumericType(t){ t=t.toLowerCase(); return /int|decimal|double|float|hugeint|numeric|real/.test(t); }
+
+  // ---- run query ----
+  function splitStatements(text){
+    const out=[]; let cur=""; let q=null;
+    for(let i=0;i<text.length;i++){
+      const c=text[i];
+      if(q){ cur+=c; if(c===q) q=null; continue; }
+      if(c==="'"||c==='"'){ q=c; cur+=c; continue; }
+      if(c==="-"&&text[i+1]==="-"){ while(i<text.length&&text[i]!=="\n"){ cur+=text[i]; i++; } if(i<text.length) cur+=text[i]; continue; }
+      if(c===";"){ if(cur.trim()) out.push(cur.trim()); cur=""; continue; }
+      cur+=c;
+    }
+    if(cur.trim()) out.push(cur.trim());
+    return out;
+  }
+
+  async function run(){
+    const text=sqlEl.value.trim();
+    if(!text) return;
+    clearErr(); lastResult=null; csvBtn.disabled=true; jsonBtn.disabled=true; resmeta.style.display="none";
+    runBtn.disabled=true; runBtn.textContent="Running…";
+    try{
+      await initDB();
+      const stmts=splitStatements(text);
+      if(!stmts.length){ runBtn.disabled=false; runBtn.textContent="Run query"; return; }
+      const t0=performance.now();
+      let result=null, lastNonEmpty=null, affected=0;
+      for(const s of stmts){
+        result=await conn.query(s);
+        if(result && result.schema && result.schema.fields.length) lastNonEmpty=result;
+        else affected+=(result&&result.numRows)?result.numRows:0;
+      }
+      const ms=performance.now()-t0;
+      const show=lastNonEmpty||result;
+      if(show && show.schema && show.schema.fields.length){
+        renderResult(show, ms);
+      }else{
+        resultArea.innerHTML='<div class="empty">Statement ran in '+ms.toFixed(0)+' ms. No rows to display (this was not a SELECT).</div>';
+        setStatus('<span class="ok">OK</span> · '+stmts.length+' statement'+(stmts.length>1?"s":"")+' in '+ms.toFixed(0)+' ms','');
+        // refresh table list in case a CREATE TABLE happened
+        await refreshTableList();
+      }
+    }catch(e){
+      const msg=(e&&e.message?e.message:String(e)).replace(/^Error:\s*/,"");
+      showErr(msg);
+      setStatus('<span class="bad">Query failed</span>','');
+    }finally{
+      runBtn.disabled=false; runBtn.textContent="Run query";
+    }
+  }
+
+  async function refreshTableList(){
+    try{
+      const r=await conn.query("SELECT table_name FROM information_schema.tables WHERE table_schema='main' ORDER BY table_name");
+      const names=r.toArray().map(x=>String(x.table_name));
+      for(const nm of names){
+        if(!registered.some(x=>x.table===nm)){
+          const desc=await conn.query(`DESCRIBE "${nm}"`);
+          const cols=desc.toArray().map(x=>({name:String(x.column_name),type:String(x.column_type)}));
+          let rows=0; try{ const c=await conn.query(`SELECT COUNT(*)::BIGINT AS n FROM "${nm}"`); rows=Number(c.toArray()[0].n);}catch(e){}
+          registered.push({table:nm, rows, cols});
+        }
+      }
+      renderTables();
+    }catch(e){}
+  }
+
+  const MAX_RENDER=2000;
+  function renderResult(result, ms){
+    const fields=result.schema.fields.map(f=>({name:f.name, type:String(f.type)}));
+    const all=result.toArray();
+    lastResult={fields, rows:all};
+    const total=all.length;
+    const rows=all.slice(0, MAX_RENDER);
+
+    let html='<div class="tablebox"><table class="res"><thead><tr>';
+    for(const f of fields){ html+='<th>'+escapeHtml(f.name)+'<span class="ty">'+escapeHtml(f.type.toLowerCase())+'</span></th>'; }
+    html+='</tr></thead><tbody>';
+    for(const row of rows){
+      html+='<tr>';
+      for(const f of fields){
+        const v=cellVal(row[f.name]);
+        if(v===null){ html+='<td class="nul">NULL</td>'; }
+        else{ const cls=isNumericType(f.type)?' class="num"':''; html+='<td'+cls+'>'+escapeHtml(String(v))+'</td>'; }
+      }
+      html+='</tr>';
+    }
+    html+='</tbody></table></div>';
+    resultArea.innerHTML=html;
+
+    resmeta.style.display="flex";
+    resmeta.innerHTML='<span><b>'+fmtNum(total)+'</b> row'+(total===1?"":"s")+'</span>'+
+      '<span><b>'+fields.length+'</b> column'+(fields.length===1?"":"s")+'</span>'+
+      '<span>in <b>'+ms.toFixed(0)+'</b> ms</span>'+
+      (total>MAX_RENDER?'<span style="color:var(--faint)">showing first '+fmtNum(MAX_RENDER)+'</span>':'');
+    setStatus('<span class="ok">'+fmtNum(total)+' rows</span> returned in '+ms.toFixed(0)+' ms','');
+    csvBtn.disabled=total===0; jsonBtn.disabled=total===0;
+  }
+
+  function escapeHtml(s){ return s.replace(/[&<>"]/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+  // ---- exports ----
+  function download(content, mime, fname){
+    const blob=new Blob([content],{type:mime});
+    const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=fname; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }
+  function toCsv(){
+    const {fields, rows}=lastResult;
+    const esc=(v)=>{ if(v===null||v===undefined) return ""; v=String(v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+    let out=fields.map(f=>esc(f.name)).join(",")+"\n";
+    for(const r of rows){ out+=fields.map(f=>esc(cellVal(r[f.name]))).join(",")+"\n"; }
+    return out;
+  }
+  function toJson(){
+    const {fields, rows}=lastResult;
+    return JSON.stringify(rows.map(r=>{ const o={}; for(const f of fields) o[f.name]=cellVal(r[f.name]); return o; }), null, 2);
+  }
+  csvBtn.addEventListener("click",()=>{ if(lastResult) download(toCsv(),"text/csv","query-results.csv"); });
+  jsonBtn.addEventListener("click",()=>{ if(lastResult) download(toJson(),"application/json","query-results.json"); });
+
+  // ---- editor shortcuts ----
+  runBtn.addEventListener("click",run);
+  sqlEl.addEventListener("keydown",(e)=>{
+    if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){ e.preventDefault(); run(); }
+    if(e.key==="Tab"){ e.preventDefault(); const s=sqlEl.selectionStart, en=sqlEl.selectionEnd;
+      sqlEl.value=sqlEl.value.slice(0,s)+"  "+sqlEl.value.slice(en); sqlEl.selectionStart=sqlEl.selectionEnd=s+2; }
+  });
+
+  // ---- sample dataset (so the magic is visible in 5 seconds, no setup) ----
+  const SAMPLE_CSV=`order_id,order_date,region,product,channel,units,unit_price,revenue
+1001,2026-01-04,North,Aurora Lamp,online,3,42.00,126.00
+1002,2026-01-09,South,Nimbus Speaker,retail,1,89.00,89.00
+1003,2026-01-15,North,Drift Chair,online,2,150.00,300.00
+1004,2026-01-21,East,Aurora Lamp,retail,5,42.00,210.00
+1005,2026-02-02,West,Nimbus Speaker,online,4,89.00,356.00
+1006,2026-02-08,South,Drift Chair,online,1,150.00,150.00
+1007,2026-02-14,East,Pebble Mug,retail,12,14.50,174.00
+1008,2026-02-19,North,Pebble Mug,online,8,14.50,116.00
+1009,2026-03-03,West,Aurora Lamp,online,6,42.00,252.00
+1010,2026-03-11,South,Nimbus Speaker,retail,2,89.00,178.00
+1011,2026-03-18,East,Drift Chair,online,3,150.00,450.00
+1012,2026-03-25,North,Nimbus Speaker,online,5,89.00,445.00
+1013,2026-04-01,West,Pebble Mug,retail,20,14.50,290.00
+1014,2026-04-09,South,Aurora Lamp,online,4,42.00,168.00
+1015,2026-04-16,East,Nimbus Speaker,online,3,89.00,267.00
+1016,2026-04-22,North,Drift Chair,retail,2,150.00,300.00
+1017,2026-05-05,West,Drift Chair,online,1,150.00,150.00
+1018,2026-05-13,South,Pebble Mug,online,15,14.50,217.50
+1019,2026-05-20,East,Aurora Lamp,retail,7,42.00,294.00
+1020,2026-05-28,North,Nimbus Speaker,online,6,89.00,534.00
+`;
+  sampleBtn.addEventListener("click", async ()=>{
+    sampleBtn.disabled=true; sampleBtn.textContent="Loading…";
+    try{
+      const buf=new TextEncoder().encode(SAMPLE_CSV).buffer;
+      // give it a friendly table name
+      const fakeName="sales.csv";
+      await registerArrayBuffer(fakeName, buf);
+      sqlEl.value="-- 20 orders of sample data. Try editing this.\nSELECT\n  region,\n  COUNT(*)            AS orders,\n  SUM(units)          AS units_sold,\n  ROUND(SUM(revenue),2) AS revenue\nFROM sales\nGROUP BY region\nORDER BY revenue DESC;";
+      await run();
+    }catch(e){ showErr("Could not load sample: "+(e&&e.message?e.message:e)); }
+    finally{ sampleBtn.textContent="Load sample dataset"; sampleBtn.disabled=false; }
+  });
+</script>
+
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
