@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Slime Mold Simulation — WebGPU Physarum Playground (runs in your browser)</title>
+<meta name="description" content="A real-time slime mold (Physarum) simulation with millions of agents running entirely on your GPU via WebGPU. Tweak the rules, paint with your mouse, and watch life-like networks emerge. No upload, no sign-up." />
+<meta name="keywords" content="slime mold simulation, physarum simulation, webgpu, particle simulation, agent based simulation, generative art, emergent behavior, gpu compute, slime simulation browser, physarum polycephalum" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Slime Mold Simulation — WebGPU Physarum Playground" />
+<meta property="og:description" content="Millions of agents, real-time, on your GPU. Tweak the rules and watch life-like networks emerge — entirely in your browser." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/slime-simulation.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Slime Mold Simulation — WebGPU Physarum Playground" />
+<meta name="twitter:description" content="Millions of agents simulated in real time on your GPU with WebGPU. Tweak the rules, paint with your mouse, watch networks grow." />
+<link rel="canonical" href="https://hammyasf.github.io/slime-simulation.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Slime Mold Simulation — WebGPU Physarum Playground","url":"https://hammyasf.github.io/slime-simulation.html","applicationCategory":"GameApplication","operatingSystem":"Any (WebGPU browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time Physarum slime-mold simulation running millions of agents on the GPU with WebGPU compute shaders, entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does a simulation with millions of agents run in a browser?","acceptedAnswer":{"@type":"Answer","text":"It uses WebGPU compute shaders. Each agent and each pixel of the trail map is updated in parallel on your graphics card, so the browser can move and render millions of particles every frame without a server."}},{"@type":"Question","name":"What is Physarum / slime mold simulation?","acceptedAnswer":{"@type":"Answer","text":"Physarum polycephalum is a slime mold that finds efficient paths between food sources. Each simulated agent drops a chemical trail, senses the trail ahead, and steers toward stronger signals. From those three simple rules, life-like transport networks emerge."}},{"@type":"Question","name":"Is anything uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs locally on your GPU. Nothing is uploaded and there is no sign-up."}},{"@type":"Question","name":"Why does it say my browser is not supported?","acceptedAnswer":{"@type":"Answer","text":"The simulation needs WebGPU, which is available in recent Chrome, Edge, and Safari, and behind a flag in Firefox. Update your browser or try a desktop Chrome to run it."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1040px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 12px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,50px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  .stage{position:relative;margin:24px 0 8px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#000;height:min(72vh,680px);min-height:380px;}
+  #gpu{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair;}
+  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;background:rgba(7,16,14,.86);backdrop-filter:blur(4px);z-index:5;}
+  .overlay .card{max-width:460px;}
+  .overlay h2{font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:10px;}
+  .overlay p{color:var(--muted);font-size:15px;}
+  .overlay a{font-weight:600;}
+  .hud{position:absolute;top:12px;left:12px;z-index:4;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(7,16,14,.55);border:1px solid var(--line);padding:6px 10px;border-radius:8px;pointer-events:none;backdrop-filter:blur(6px);}
+  .hud b{color:var(--accent);}
+  .hint{position:absolute;bottom:12px;left:12px;z-index:4;font-family:var(--mono);font-size:11px;color:var(--faint);background:rgba(7,16,14,.45);border:1px solid var(--line);padding:5px 9px;border-radius:8px;pointer-events:none;}
+
+  .panel{margin:8px 0 26px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);padding:18px 20px;}
+  .rowtop{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+  .presets{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);background:transparent;padding:7px 13px;border-radius:100px;cursor:pointer;transition:.15s;}
+  .chip:hover{color:var(--ink);border-color:rgba(var(--accentRGB),.5);}
+  .chip.on{background:var(--accent);color:#07100e;font-weight:600;border-color:var(--accent);}
+  .spacer{flex:1;}
+  .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:600;}
+  .sliders{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px 26px;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl .lab{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);}
+  .ctl .lab .v{color:var(--accent);}
+  input[type=range]{accent-color:var(--accent);width:100%;}
+  .segwrap{display:flex;flex-wrap:wrap;gap:18px 26px;margin-top:16px;align-items:flex-end;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 13px;font-family:var(--mono);font-size:12px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .seglab{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:6px;display:block;}
+
+  section.copy{padding:26px 0 8px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  section.copy code{font-family:var(--mono);font-size:14px;background:rgba(var(--surfaceRGB),.7);border:1px solid var(--line);padding:2px 6px;border-radius:6px;color:var(--accent);}
+  .faq{border-top:1px solid var(--line);margin-top:12px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.stage{height:62vh;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">WebGPU · runs on your GPU</div>
+    <h1>Slime Mold Simulation</h1>
+    <p class="sub">Millions of agents, each dropping a trail and steering toward the strongest scent ahead. Three tiny rules, life-like networks. It all runs in real time on your graphics card — no server, no upload.</p>
+    <span class="priv">&#9889; 100% on-device — your GPU does every frame</span>
+  </header>
+
+  <div class="stage" id="stage">
+    <canvas id="gpu"></canvas>
+    <div class="hud" id="hud" hidden><b id="hudAgents">0</b> agents · <b id="hudRes">0&times;0</b> · <b id="hudFps">0</b> fps</div>
+    <div class="hint" id="hint" hidden>Drag on the canvas to attract the slime</div>
+    <div class="overlay" id="overlay"><div class="card">
+      <h2 id="ovTitle">Starting the GPU…</h2>
+      <p id="ovMsg">Setting up WebGPU and seeding the agents.</p>
+    </div></div>
+  </div>
+
+  <div class="panel" id="panel" hidden>
+    <div class="rowtop">
+      <div class="presets" id="presets"></div>
+      <span class="spacer"></span>
+      <button class="btn btn-out" id="pause">Pause</button>
+      <button class="btn btn-out" id="reset">Reseed</button>
+      <button class="btn btn-out" id="save">Save PNG</button>
+      <button class="btn" id="share">Copy share link</button>
+    </div>
+
+    <div class="sliders">
+      <div class="ctl"><div class="lab"><span>Agents</span><span class="v" id="vAgents">700k</span></div><input type="range" id="sAgents" min="50000" max="3000000" step="50000" value="700000" /></div>
+      <div class="ctl"><div class="lab"><span>Sensor angle</span><span class="v" id="vAngle">22&deg;</span></div><input type="range" id="sAngle" min="2" max="80" step="1" value="22" /></div>
+      <div class="ctl"><div class="lab"><span>Sensor distance</span><span class="v" id="vDist">9</span></div><input type="range" id="sDist" min="1" max="40" step="1" value="9" /></div>
+      <div class="ctl"><div class="lab"><span>Turn speed</span><span class="v" id="vTurn">0.40</span></div><input type="range" id="sTurn" min="1" max="120" step="1" value="40" /></div>
+      <div class="ctl"><div class="lab"><span>Move speed</span><span class="v" id="vMove">1.0</span></div><input type="range" id="sMove" min="2" max="40" step="1" value="10" /></div>
+      <div class="ctl"><div class="lab"><span>Deposit</span><span class="v" id="vDep">1.0</span></div><input type="range" id="sDep" min="2" max="40" step="1" value="10" /></div>
+      <div class="ctl"><div class="lab"><span>Trail decay</span><span class="v" id="vDecay">0.90</span></div><input type="range" id="sDecay" min="70" max="99" step="1" value="90" /></div>
+      <div class="ctl"><div class="lab"><span>Brightness</span><span class="v" id="vGain">1.2</span></div><input type="range" id="sGain" min="3" max="40" step="1" value="12" /></div>
+    </div>
+
+    <div class="segwrap">
+      <div><span class="seglab">Color</span>
+        <div class="seg" id="palette">
+          <button data-p="0" class="on">Jade</button>
+          <button data-p="1">Magma</button>
+          <button data-p="2">Ice</button>
+          <button data-p="3">Spectrum</button>
+          <button data-p="4">Mono</button>
+        </div>
+      </div>
+      <div><span class="seglab">Spawn pattern</span>
+        <div class="seg" id="spawn">
+          <button data-s="0" class="on">Scatter</button>
+          <button data-s="1">Disk</button>
+          <button data-s="2">Ring</button>
+        </div>
+      </div>
+      <div><span class="seglab">Mouse</span>
+        <div class="seg" id="mouse">
+          <button data-m="1" class="on">Attract</button>
+          <button data-m="0">Repel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How does this run in your browser?</h2>
+    <p>Every frame, three things happen entirely on your GPU through WebGPU compute shaders. First, a compute pass moves each agent: it samples the trail map at three points ahead (left, center, right), steers toward the strongest one, steps forward, and deposits a little trail where it lands. Second, another compute pass blurs and fades the whole trail map so old paths slowly evaporate. Third, a render pass reads the trail map and paints it through a color gradient. With WebGPU the agent pass and the map pass both run thousands of threads in parallel, which is why a laptop can push <code>700k</code> to a few million agents at a smooth frame rate without ever touching a server.</p>
+    <h2>What you are looking at</h2>
+    <p>This is a model of <em>Physarum polycephalum</em>, a slime mold famous for solving mazes and re-deriving the Tokyo rail map by connecting food sources with efficient tubes. No agent has a plan. Each one only follows the rule "drop a scent, then turn toward more scent." Reinforcement does the rest: faint trails fade, busy trails thicken, and the population self-organizes into branching transport networks. It is one of the cleanest examples of emergence you can watch happen live.</p>
+    <h2>Things to try</h2>
+    <p>Drag on the canvas to pull the colony toward your cursor, or switch the mouse to Repel and carve channels through it. Widen the sensor angle for lacy webs, shrink it for tight veins. Push turn speed up for nervous, crystalline structure and down for long sweeping arcs. Lower the trail decay and the network ossifies into rigid lattices; raise it and everything stays liquid. Found a look you like? Hit <strong>Copy share link</strong> and the exact settings travel in the URL, or <strong>Save PNG</strong> for a wallpaper-grade still.</p>
+    <h2>Privacy and performance</h2>
+    <p>Nothing is uploaded and there is no account. The simulation, the rendering, and the image you save all stay on your machine. It needs a WebGPU-capable browser — recent Chrome, Edge, or Safari work well; Firefox needs WebGPU enabled. If your device is modest, drop the agent count and it will keep a steady frame rate.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>How can millions of agents run client-side?</summary><p>WebGPU exposes your graphics card to the page. The agents live in a GPU buffer and the trail lives in another, and compute shaders update them in parallel — tens of thousands of threads at once — so there is no per-agent JavaScript loop and no server round trip.</p></details>
+    <details><summary>What are the three sliders that matter most?</summary><p>Sensor angle and sensor distance set how the agents "see" the trail, and trail decay sets how long paths persist. Those three control whether you get fine webs, thick veins, or rigid lattices.</p></details>
+    <details><summary>My browser says it is not supported.</summary><p>It needs WebGPU. Update to a current Chrome, Edge, or Safari, or enable WebGPU in Firefox. A desktop GPU gives the best results.</p></details>
+    <details><summary>Is it really private?</summary><p>Yes. The whole thing is one HTML file that runs locally on your GPU. No upload, no tracking of your inputs, no sign-up.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build things like this for a living.</h3>
+    <p>Senior full-stack engineer comfortable from WebGPU shaders to production backends, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- AdSense slot (enable later): <ins class="adsbygoogle" ...></ins> -->
+<!-- Polar.sh "support this tool" slot (enable later) -->
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<script type="module">
+const $ = function(id){ return document.getElementById(id); };
+const canvas = $("gpu"), stage = $("stage"), overlay = $("overlay"), ovTitle = $("ovTitle"), ovMsg = $("ovMsg"), panel = $("panel"), hud = $("hud"), hint = $("hint");
+
+function fail(title, msg){
+  overlay.hidden = false;
+  ovTitle.textContent = title;
+  ovMsg.innerHTML = msg;
+}
+
+// ---------- parameters / state ----------
+const isCoarse = window.matchMedia("(pointer:coarse)").matches;
+const P = {
+  agents: isCoarse ? 250000 : 700000,
+  sensorAngle: 22 * Math.PI/180,
+  sensorDist: 9,
+  turnSpeed: 0.40,
+  moveSpeed: 1.0,
+  deposit: 1.0,
+  decay: 0.90,
+  gain: 1.2,
+  palette: 0,
+  spawn: 0,
+  mouseMode: 1
+};
+
+const PRESETS = {
+  "Webs":   {sensorAngle:30,sensorDist:12,turnSpeed:35,moveSpeed:10,deposit:10,decay:92,gain:12,palette:0,spawn:0},
+  "Veins":  {sensorAngle:14,sensorDist:7, turnSpeed:55,moveSpeed:9, deposit:12,decay:88,gain:14,palette:1,spawn:1},
+  "Cells":  {sensorAngle:55,sensorDist:18,turnSpeed:25,moveSpeed:12,deposit:8, decay:95,gain:10,palette:2,spawn:0},
+  "Storm":  {sensorAngle:8, sensorDist:22,turnSpeed:90,moveSpeed:16,deposit:14,decay:84,gain:16,palette:3,spawn:2},
+  "Lattice":{sensorAngle:45,sensorDist:9, turnSpeed:40,moveSpeed:8, deposit:16,decay:97,gain:11,palette:4,spawn:1}
+};
+
+// read shareable settings from URL
+(function(){
+  const q = new URLSearchParams(location.search);
+  const num = function(k, def){ const v = parseFloat(q.get(k)); return isFinite(v) ? v : def; };
+  if(q.has("a")) P.agents = Math.max(50000, Math.min(3000000, Math.round(num("a", P.agents))));
+  if(q.has("sa")) P.sensorAngle = num("sa", 22) * Math.PI/180;
+  if(q.has("sd")) P.sensorDist = num("sd", 9);
+  if(q.has("ts")) P.turnSpeed = num("ts", 40)/100;
+  if(q.has("ms")) P.moveSpeed = num("ms", 10)/10;
+  if(q.has("dp")) P.deposit = num("dp", 10)/10;
+  if(q.has("dc")) P.decay = num("dc", 90)/100;
+  if(q.has("g")) P.gain = num("g", 12)/10;
+  if(q.has("p")) P.palette = Math.max(0, Math.min(4, Math.round(num("p", 0))));
+  if(q.has("sp")) P.spawn = Math.max(0, Math.min(2, Math.round(num("sp", 0))));
+})();
+
+// ---------- WGSL ----------
+const COMMON = `
+struct Params {
+  width: u32, height: u32, agentCount: u32, frame: u32,
+  sensorAngle: f32, sensorDist: f32, turnSpeed: f32, moveSpeed: f32,
+  deposit: f32, decay: f32, mouseX: f32, mouseY: f32,
+  mouseRadius: f32, mouseMode: f32, palette: f32, gain: f32,
+};
+struct Agent { x: f32, y: f32, angle: f32, pad: f32 };
+fn hash(s: u32) -> u32 { var x = s; x = x ^ (x >> 16u); x = x * 0x7feb352du; x = x ^ (x >> 15u); x = x * 0x846ca68bu; x = x ^ (x >> 16u); return x; }
+fn rnd(s: u32) -> f32 { return f32(hash(s)) / 4294967295.0; }
+`;
+
+const MOVE_WGSL = COMMON + `
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read_write> agents: array<Agent>;
+@group(0) @binding(2) var<storage, read> field: array<f32>;
+@group(0) @binding(3) var<storage, read_write> deposit: array<atomic<u32>>;
+
+fn sampleField(px: i32, py: i32) -> f32 {
+  let w = i32(P.width); let h = i32(P.height);
+  let xx = ((px % w) + w) % w;
+  let yy = ((py % h) + h) % h;
+  return field[u32(yy * w + xx)];
+}
+fn sense(pos: vec2<f32>, ang: f32) -> f32 {
+  let sx = pos.x + cos(ang) * P.sensorDist;
+  let sy = pos.y + sin(ang) * P.sensorDist;
+  return sampleField(i32(floor(sx)), i32(floor(sy)));
+}
+
+@compute @workgroup_size(64)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i = gid.x;
+  if (i >= P.agentCount) { return; }
+  var a = agents[i];
+  var pos = vec2<f32>(a.x, a.y);
+  var angle = a.angle;
+  let seed = hash(i * 1973u + P.frame * 2654435761u);
+
+  let sl = sense(pos, angle - P.sensorAngle);
+  let sc = sense(pos, angle);
+  let sr = sense(pos, angle + P.sensorAngle);
+
+  if (sc > sl && sc > sr) {
+    // continue straight
+  } else if (sc < sl && sc < sr) {
+    if (rnd(seed) < 0.5) { angle = angle - P.turnSpeed; } else { angle = angle + P.turnSpeed; }
+  } else if (sr > sl) {
+    angle = angle + P.turnSpeed;
+  } else if (sl > sr) {
+    angle = angle - P.turnSpeed;
+  }
+
+  if (P.mouseX >= 0.0) {
+    let m = vec2<f32>(P.mouseX, P.mouseY);
+    let d = m - pos;
+    let dist = length(d);
+    if (dist < P.mouseRadius && dist > 0.5) {
+      var target = atan2(d.y, d.x);
+      if (P.mouseMode < 0.5) { target = atan2(-d.y, -d.x); }
+      var diff = target - angle;
+      diff = atan2(sin(diff), cos(diff));
+      angle = angle + diff * 0.35 * (1.0 - dist / P.mouseRadius);
+    }
+  }
+
+  pos.x = pos.x + cos(angle) * P.moveSpeed;
+  pos.y = pos.y + sin(angle) * P.moveSpeed;
+
+  let w = f32(P.width); let h = f32(P.height);
+  if (pos.x < 0.0) { pos.x = pos.x + w; }
+  if (pos.x >= w) { pos.x = pos.x - w; }
+  if (pos.y < 0.0) { pos.y = pos.y + h; }
+  if (pos.y >= h) { pos.y = pos.y - h; }
+
+  a.x = pos.x; a.y = pos.y; a.angle = angle;
+  agents[i] = a;
+
+  let px = u32(clamp(pos.x, 0.0, w - 1.0));
+  let py = u32(clamp(pos.y, 0.0, h - 1.0));
+  let idx = py * P.width + px;
+  atomicAdd(&deposit[idx], u32(P.deposit * 1024.0));
+}
+`;
+
+const DIFFUSE_WGSL = COMMON + `
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read> fieldIn: array<f32>;
+@group(0) @binding(2) var<storage, read_write> deposit: array<atomic<u32>>;
+@group(0) @binding(3) var<storage, read_write> fieldOut: array<f32>;
+
+fn fin(px: i32, py: i32) -> f32 {
+  let w = i32(P.width); let h = i32(P.height);
+  let xx = ((px % w) + w) % w;
+  let yy = ((py % h) + h) % h;
+  let id = u32(yy * w + xx);
+  return fieldIn[id] + f32(atomicLoad(&deposit[id])) / 1024.0;
+}
+
+@compute @workgroup_size(8, 8)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (gid.x >= P.width || gid.y >= P.height) { return; }
+  let x = i32(gid.x); let y = i32(gid.y);
+  var sum = 0.0;
+  for (var j = -1; j <= 1; j = j + 1) {
+    for (var k = -1; k <= 1; k = k + 1) {
+      sum = sum + fin(x + k, y + j);
+    }
+  }
+  let v = (sum / 9.0) * P.decay;
+  fieldOut[gid.y * P.width + gid.x] = v;
+}
+`;
+
+const RENDER_WGSL = COMMON + `
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read> field: array<f32>;
+
+@vertex fn vs(@builtin(vertex_index) vi: u32) -> @builtin(position) vec4<f32> {
+  var p = array<vec2<f32>, 3>(vec2<f32>(-1.0, -1.0), vec2<f32>(3.0, -1.0), vec2<f32>(-1.0, 3.0));
+  return vec4<f32>(p[vi], 0.0, 1.0);
+}
+
+fn grad4(t: f32, c0: vec3<f32>, c1: vec3<f32>, c2: vec3<f32>, c3: vec3<f32>) -> vec3<f32> {
+  let s = clamp(t, 0.0, 1.0) * 3.0;
+  if (s < 1.0) { return mix(c0, c1, s); }
+  else if (s < 2.0) { return mix(c1, c2, s - 1.0); }
+  return mix(c2, c3, s - 2.0);
+}
+fn hsv2rgb(h: f32, s: f32, v: f32) -> vec3<f32> {
+  let c = v * s;
+  let hh = h * 6.0;
+  let xx = c * (1.0 - abs((hh % 2.0) - 1.0));
+  let m = v - c;
+  var r = vec3<f32>(0.0, 0.0, 0.0);
+  if (hh < 1.0) { r = vec3<f32>(c, xx, 0.0); }
+  else if (hh < 2.0) { r = vec3<f32>(xx, c, 0.0); }
+  else if (hh < 3.0) { r = vec3<f32>(0.0, c, xx); }
+  else if (hh < 4.0) { r = vec3<f32>(0.0, xx, c); }
+  else if (hh < 5.0) { r = vec3<f32>(xx, 0.0, c); }
+  else { r = vec3<f32>(c, 0.0, xx); }
+  return r + vec3<f32>(m, m, m);
+}
+fn palette(t: f32) -> vec3<f32> {
+  let p = P.palette;
+  if (p < 0.5) { return grad4(t, vec3<f32>(0.020,0.055,0.047), vec3<f32>(0.043,0.231,0.188), vec3<f32>(0.169,0.890,0.690), vec3<f32>(0.851,1.000,0.949)); }
+  else if (p < 1.5) { return grad4(t, vec3<f32>(0.020,0.010,0.030), vec3<f32>(0.290,0.055,0.300), vec3<f32>(0.910,0.392,0.235), vec3<f32>(1.000,0.902,0.659)); }
+  else if (p < 2.5) { return grad4(t, vec3<f32>(0.008,0.024,0.059), vec3<f32>(0.039,0.227,0.400), vec3<f32>(0.212,0.773,1.000), vec3<f32>(0.918,1.000,1.000)); }
+  else if (p < 3.5) { return hsv2rgb(fract(t * 0.85 + 0.55), 0.85, clamp(t * 1.35, 0.0, 1.0)); }
+  return vec3<f32>(t, t, t);
+}
+
+@fragment fn fs(@builtin(position) fc: vec4<f32>) -> @location(0) vec4<f32> {
+  let x = u32(fc.x); let y = u32(fc.y);
+  if (x >= P.width || y >= P.height) { return vec4<f32>(0.0, 0.0, 0.0, 1.0); }
+  let v = field[y * P.width + x];
+  let t = 1.0 - exp(-v * P.gain);
+  return vec4<f32>(palette(clamp(t, 0.0, 1.0)), 1.0);
+}
+`;
+
+// ---------- boot ----------
+let device, context, format;
+let W = 2, H = 2;
+let agentBuf = null, fieldA = null, fieldB = null, depositBuf = null, paramsBuf = null;
+let movePipe, diffPipe, renderPipe;
+let moveBG = [null, null], diffBG = [null, null], renderBG = [null, null];
+let state = 0, frameNo = 0, paused = false;
+let mouseX = -1, mouseY = -1;
+const paramsAB = new ArrayBuffer(64);
+const pu32 = new Uint32Array(paramsAB);
+const pf32 = new Float32Array(paramsAB);
+
+async function boot(){
+  if(!navigator.gpu){
+    fail("WebGPU isn't available here", "This simulation needs WebGPU. Try the latest <b>Chrome</b>, <b>Edge</b>, or <b>Safari</b> on desktop, or enable WebGPU in Firefox. Everything else in <a href='lab.html'>the lab</a> works without it.");
+    return;
+  }
+  let adapter;
+  try { adapter = await navigator.gpu.requestAdapter({ powerPreference: "high-performance" }); } catch(e){}
+  if(!adapter){ fail("No GPU adapter", "Your browser exposes WebGPU but no graphics adapter could be acquired. Try a different browser or device."); return; }
+  device = await adapter.requestDevice();
+  device.lost.then(function(info){ fail("GPU connection lost", "The GPU device was lost (" + (info.message||"") + "). Reload to restart."); });
+
+  context = canvas.getContext("webgpu");
+  format = navigator.gpu.getPreferredCanvasFormat();
+  context.configure({ device: device, format: format, alphaMode: "opaque" });
+
+  movePipe = device.createComputePipeline({ layout:"auto", compute:{ module: device.createShaderModule({code:MOVE_WGSL}), entryPoint:"main" }});
+  diffPipe = device.createComputePipeline({ layout:"auto", compute:{ module: device.createShaderModule({code:DIFFUSE_WGSL}), entryPoint:"main" }});
+  renderPipe = device.createRenderPipeline({ layout:"auto",
+    vertex:{ module: device.createShaderModule({code:RENDER_WGSL}), entryPoint:"vs" },
+    fragment:{ module: device.createShaderModule({code:RENDER_WGSL}), entryPoint:"fs", targets:[{format:format}] },
+    primitive:{ topology:"triangle-list" }
+  });
+
+  paramsBuf = device.createBuffer({ size:64, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+
+  resize();
+  seedAgents();
+  buildBindGroups();
+  bindUI();
+
+  overlay.hidden = true;
+  panel.hidden = false;
+  hud.hidden = false;
+  hint.hidden = isCoarse;
+  requestAnimationFrame(loop);
+}
+
+function computeSimSize(){
+  const r = stage.getBoundingClientRect();
+  const cssW = Math.max(320, Math.floor(r.width));
+  const cssH = Math.max(320, Math.floor(r.height));
+  const cap = isCoarse ? 720 : 1180;
+  const scale = Math.min(1, cap / Math.max(cssW, cssH));
+  W = Math.max(2, Math.floor(cssW * scale));
+  H = Math.max(2, Math.floor(cssH * scale));
+  canvas.width = W; canvas.height = H;
+}
+
+function makeFieldBuffers(){
+  if(fieldA) fieldA.destroy();
+  if(fieldB) fieldB.destroy();
+  if(depositBuf) depositBuf.destroy();
+  const cells = W * H;
+  fieldA = device.createBuffer({ size: cells * 4, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST });
+  fieldB = device.createBuffer({ size: cells * 4, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST });
+  depositBuf = device.createBuffer({ size: cells * 4, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST });
+}
+
+function resize(){
+  computeSimSize();
+  makeFieldBuffers();
+}
+
+function seedAgents(){
+  const n = P.agents;
+  if(agentBuf) agentBuf.destroy();
+  agentBuf = device.createBuffer({ size: n * 16, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST });
+  const arr = new Float32Array(n * 4);
+  const cx = W/2, cy = H/2, R = Math.min(W,H) * 0.42;
+  for(let i=0;i<n;i++){
+    let x, y, ang;
+    if(P.spawn === 1){ // disk
+      const rr = Math.sqrt(Math.random()) * R, th = Math.random()*Math.PI*2;
+      x = cx + Math.cos(th)*rr; y = cy + Math.sin(th)*rr;
+      ang = Math.atan2(cy - y, cx - x);
+    } else if(P.spawn === 2){ // ring
+      const th = Math.random()*Math.PI*2;
+      x = cx + Math.cos(th)*R; y = cy + Math.sin(th)*R;
+      ang = th + Math.PI/2;
+    } else { // scatter
+      x = Math.random()*W; y = Math.random()*H; ang = Math.random()*Math.PI*2;
+    }
+    const o = i*4;
+    arr[o] = x; arr[o+1] = y; arr[o+2] = ang; arr[o+3] = 0;
+  }
+  device.queue.writeBuffer(agentBuf, 0, arr);
+}
+
+function buildBindGroups(){
+  // state 0: read = fieldA, write = fieldB ; state 1: read = fieldB, write = fieldA
+  const reads = [fieldA, fieldB], writes = [fieldB, fieldA];
+  for(let s=0;s<2;s++){
+    moveBG[s] = device.createBindGroup({ layout: movePipe.getBindGroupLayout(0), entries:[
+      {binding:0,resource:{buffer:paramsBuf}},
+      {binding:1,resource:{buffer:agentBuf}},
+      {binding:2,resource:{buffer:reads[s]}},
+      {binding:3,resource:{buffer:depositBuf}}
+    ]});
+    diffBG[s] = device.createBindGroup({ layout: diffPipe.getBindGroupLayout(0), entries:[
+      {binding:0,resource:{buffer:paramsBuf}},
+      {binding:1,resource:{buffer:reads[s]}},
+      {binding:2,resource:{buffer:depositBuf}},
+      {binding:3,resource:{buffer:writes[s]}}
+    ]});
+    renderBG[s] = device.createBindGroup({ layout: renderPipe.getBindGroupLayout(0), entries:[
+      {binding:0,resource:{buffer:paramsBuf}},
+      {binding:1,resource:{buffer:writes[s]}}
+    ]});
+  }
+}
+
+function writeParams(){
+  pu32[0] = W; pu32[1] = H; pu32[2] = P.agents; pu32[3] = frameNo;
+  pf32[4] = P.sensorAngle; pf32[5] = P.sensorDist; pf32[6] = P.turnSpeed; pf32[7] = P.moveSpeed;
+  pf32[8] = P.deposit; pf32[9] = P.decay; pf32[10] = mouseX; pf32[11] = mouseY;
+  pf32[12] = Math.min(W,H)*0.22; pf32[13] = P.mouseMode; pf32[14] = P.palette; pf32[15] = P.gain;
+  device.queue.writeBuffer(paramsBuf, 0, paramsAB);
+}
+
+let captureWanted = false, lastT = performance.now(), fps = 0, fpsAcc = 0, fpsN = 0;
+function loop(now){
+  requestAnimationFrame(loop);
+  if(paused){ lastT = now; return; }
+  frameNo++;
+  writeParams();
+
+  const enc = device.createCommandEncoder();
+  enc.clearBuffer(depositBuf);
+  {
+    const p = enc.beginComputePass();
+    p.setPipeline(movePipe); p.setBindGroup(0, moveBG[state]);
+    p.dispatchWorkgroups(Math.ceil(P.agents / 64));
+    p.end();
+  }
+  {
+    const p = enc.beginComputePass();
+    p.setPipeline(diffPipe); p.setBindGroup(0, diffBG[state]);
+    p.dispatchWorkgroups(Math.ceil(W / 8), Math.ceil(H / 8));
+    p.end();
+  }
+  {
+    const view = context.getCurrentTexture().createView();
+    const p = enc.beginRenderPass({ colorAttachments:[{ view: view, loadOp:"clear", clearValue:{r:0,g:0,b:0,a:1}, storeOp:"store" }] });
+    p.setPipeline(renderPipe); p.setBindGroup(0, renderBG[state]);
+    p.draw(3); p.end();
+  }
+  device.queue.submit([enc.finish()]);
+  state = 1 - state;
+
+  if(captureWanted){
+    captureWanted = false;
+    canvas.toBlob(function(b){ if(!b) return; const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="slime-"+Date.now()+".png"; a.click(); });
+  }
+
+  // fps
+  const dt = now - lastT; lastT = now;
+  fpsAcc += dt; fpsN++;
+  if(fpsAcc > 400){ fps = Math.round(1000 / (fpsAcc / fpsN)); fpsAcc = 0; fpsN = 0;
+    $("hudFps").textContent = fps; $("hudAgents").textContent = fmtN(P.agents); $("hudRes").textContent = W + "×" + H;
+  }
+}
+
+function fmtN(n){ return n>=1000000 ? (n/1000000).toFixed(n%1000000?1:0)+"M" : (n/1000).toFixed(0)+"k"; }
+
+// ---------- UI ----------
+function bindUI(){
+  // sliders
+  const bind = function(id, fn, fmt){ const el = $(id); el.addEventListener("input", function(){ fn(parseFloat(el.value)); $(fmt.id).innerHTML = fmt.fn(parseFloat(el.value)); }); };
+  bind("sAngle", function(v){ P.sensorAngle = v*Math.PI/180; }, {id:"vAngle", fn:function(v){return v+"°";}});
+  bind("sDist", function(v){ P.sensorDist = v; }, {id:"vDist", fn:function(v){return v;}});
+  bind("sTurn", function(v){ P.turnSpeed = v/100; }, {id:"vTurn", fn:function(v){return (v/100).toFixed(2);}});
+  bind("sMove", function(v){ P.moveSpeed = v/10; }, {id:"vMove", fn:function(v){return (v/10).toFixed(1);}});
+  bind("sDep", function(v){ P.deposit = v/10; }, {id:"vDep", fn:function(v){return (v/10).toFixed(1);}});
+  bind("sDecay", function(v){ P.decay = v/100; }, {id:"vDecay", fn:function(v){return (v/100).toFixed(2);}});
+  bind("sGain", function(v){ P.gain = v/10; }, {id:"vGain", fn:function(v){return (v/10).toFixed(1);}});
+  $("sAgents").addEventListener("change", function(){ P.agents = parseInt(this.value,10); $("vAgents").textContent = fmtN(P.agents); seedAgents(); buildBindGroups(); });
+  $("sAgents").addEventListener("input", function(){ $("vAgents").textContent = fmtN(parseInt(this.value,10)); });
+
+  // segmented
+  segment("palette", "p", function(v){ P.palette = v; });
+  segment("spawn", "s", function(v){ P.spawn = v; seedAgents(); buildBindGroups(); });
+  segment("mouse", "m", function(v){ P.mouseMode = v; });
+
+  // presets
+  const pc = $("presets");
+  Object.keys(PRESETS).forEach(function(name){
+    const b = document.createElement("button"); b.className = "chip"; b.textContent = name;
+    b.addEventListener("click", function(){ applyPreset(name); document.querySelectorAll("#presets .chip").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); });
+    pc.appendChild(b);
+  });
+
+  $("pause").addEventListener("click", function(){ paused = !paused; this.textContent = paused ? "Play" : "Pause"; });
+  $("reset").addEventListener("click", function(){ seedAgents(); buildBindGroups(); });
+  $("save").addEventListener("click", function(){ captureWanted = true; });
+  $("share").addEventListener("click", shareLink);
+
+  // mouse / touch
+  const setM = function(e){ const r = canvas.getBoundingClientRect(); mouseX = (e.clientX - r.left)/r.width*W; mouseY = (e.clientY - r.top)/r.height*H; };
+  canvas.addEventListener("pointerdown", function(e){ setM(e); canvas.setPointerCapture(e.pointerId); });
+  canvas.addEventListener("pointermove", function(e){ if(e.buttons || e.pointerType==="touch"){ setM(e); } else if(!isCoarse){ setM(e); } });
+  canvas.addEventListener("pointerup", function(){ mouseX = -1; mouseY = -1; });
+  canvas.addEventListener("pointerleave", function(){ mouseX = -1; mouseY = -1; });
+
+  // reflect initial values into the controls
+  reflectControls();
+  window.addEventListener("resize", debounce(function(){ resize(); seedAgents(); buildBindGroups(); }, 250));
+}
+
+function segment(groupId, attr, fn){
+  document.querySelectorAll("#"+groupId+" button").forEach(function(b){
+    b.addEventListener("click", function(){
+      document.querySelectorAll("#"+groupId+" button").forEach(function(x){x.classList.remove("on");});
+      b.classList.add("on");
+      fn(parseInt(b.getAttribute("data-"+attr),10));
+    });
+  });
+}
+
+function applyPreset(name){
+  const pr = PRESETS[name];
+  P.sensorAngle = pr.sensorAngle*Math.PI/180; P.sensorDist = pr.sensorDist;
+  P.turnSpeed = pr.turnSpeed/100; P.moveSpeed = pr.moveSpeed/10; P.deposit = pr.deposit/10;
+  P.decay = pr.decay/100; P.gain = pr.gain/10; P.palette = pr.palette; P.spawn = pr.spawn;
+  reflectControls(); seedAgents(); buildBindGroups();
+}
+
+function reflectControls(){
+  $("sAgents").value = P.agents; $("vAgents").textContent = fmtN(P.agents);
+  $("sAngle").value = Math.round(P.sensorAngle*180/Math.PI); $("vAngle").innerHTML = Math.round(P.sensorAngle*180/Math.PI)+"°";
+  $("sDist").value = P.sensorDist; $("vDist").textContent = P.sensorDist;
+  $("sTurn").value = Math.round(P.turnSpeed*100); $("vTurn").textContent = P.turnSpeed.toFixed(2);
+  $("sMove").value = Math.round(P.moveSpeed*10); $("vMove").textContent = P.moveSpeed.toFixed(1);
+  $("sDep").value = Math.round(P.deposit*10); $("vDep").textContent = P.deposit.toFixed(1);
+  $("sDecay").value = Math.round(P.decay*100); $("vDecay").textContent = P.decay.toFixed(2);
+  $("sGain").value = Math.round(P.gain*10); $("vGain").textContent = P.gain.toFixed(1);
+  setSeg("palette","p",P.palette); setSeg("spawn","s",P.spawn); setSeg("mouse","m",P.mouseMode);
+}
+function setSeg(groupId, attr, val){
+  document.querySelectorAll("#"+groupId+" button").forEach(function(b){
+    b.classList.toggle("on", parseInt(b.getAttribute("data-"+attr),10) === val);
+  });
+}
+
+function shareLink(){
+  const q = new URLSearchParams();
+  q.set("a", P.agents);
+  q.set("sa", Math.round(P.sensorAngle*180/Math.PI));
+  q.set("sd", P.sensorDist);
+  q.set("ts", Math.round(P.turnSpeed*100));
+  q.set("ms", Math.round(P.moveSpeed*10));
+  q.set("dp", Math.round(P.deposit*10));
+  q.set("dc", Math.round(P.decay*100));
+  q.set("g", Math.round(P.gain*10));
+  q.set("p", P.palette);
+  q.set("sp", P.spawn);
+  const url = location.origin + location.pathname + "?" + q.toString();
+  const btn = $("share");
+  const done = function(){ const t = btn.textContent; btn.textContent = "Link copied!"; setTimeout(function(){ btn.textContent = t; }, 1400); };
+  if(navigator.clipboard){ navigator.clipboard.writeText(url).then(done, function(){ prompt("Copy this link:", url); }); }
+  else { prompt("Copy this link:", url); }
+}
+
+function debounce(fn, ms){ let t; return function(){ clearTimeout(t); t = setTimeout(fn, ms); }; }
+
+boot().catch(function(e){ fail("Could not start the simulation", "An unexpected error occurred: " + (e && e.message ? e.message : e) + ". Try reloading or a different browser."); });
+</script>
+
+<!-- Analytics: Cloudflare Web Analytics beacon -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
