@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Free Poll Maker — create a poll and share the link in seconds</title>
+<meta name="description" content="Make a free online poll in seconds. Add your question and options, get a shareable link, and watch live results update as people vote. No sign-up, no app." />
+<meta name="keywords" content="poll maker, create a poll, free poll, online poll, make a poll, quick poll, poll link, voting poll, live poll results, anonymous poll" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Free Poll Maker — create a poll, share a link" />
+<meta property="og:description" content="Make a poll in seconds, share the link, watch live results. No sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/quick-poll.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Free Poll Maker — create a poll, share a link" />
+<meta name="twitter:description" content="Make a poll in seconds, share the link, watch live results. No sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/quick-poll.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Free Poll Maker","url":"https://hammyasf.github.io/quick-poll.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Create a poll, share a link, and watch live results. No sign-up.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an account to make a poll?","acceptedAnswer":{"@type":"Answer","text":"No. You type your question and options, hit create, and you get a shareable link instantly. No sign-up, no email."}},{"@type":"Question","name":"How do people vote?","acceptedAnswer":{"@type":"Answer","text":"You share the poll link. Anyone who opens it picks an option and sees the live results right away. Votes are anonymous."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Creating polls and collecting votes is completely free with no limit on the number of polls."}},{"@type":"Question","name":"Can someone vote more than once?","acceptedAnswer":{"@type":"Answer","text":"Each browser is allowed one vote per poll. It is meant for quick, friendly polls rather than secured elections."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .pad{padding:24px;}
+  label.fld{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:0 0 8px;}
+  input[type=text]{width:100%;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:13px 14px;font-family:var(--body);font-size:16px;}
+  input[type=text]:focus{outline:none;border-color:var(--accent);}
+  .opts{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+  .optrow{display:flex;gap:10px;align-items:center;}
+  .optrow input{flex:1;}
+  .optrow .rm{background:transparent;border:1px solid var(--line-2);color:var(--muted);border-radius:9px;width:42px;height:46px;font-size:18px;cursor:pointer;flex:none;transition:.15s;}
+  .optrow .rm:hover{border-color:#ff6a6a;color:#ff6a6a;}
+  .addopt{margin-top:12px;background:transparent;border:1px dashed var(--line-2);color:var(--muted);border-radius:10px;padding:11px 16px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
+  .addopt:hover{border-color:var(--accent);color:var(--accent);}
+  .row{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;margin-top:20px;}
+  .chk{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:13px;color:var(--muted);cursor:pointer;user-select:none;}
+  .chk input{accent-color:var(--accent);width:16px;height:16px;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .btn-block{width:100%;margin-top:22px;font-size:16px;padding:15px;}
+  .err{color:#ff8a8a;font-family:var(--mono);font-size:13px;margin-top:14px;min-height:18px;}
+  .banner{display:none;font-family:var(--mono);font-size:12px;color:#ffd479;border:1px solid rgba(255,212,121,.3);background:rgba(255,212,121,.06);border-radius:10px;padding:10px 14px;margin:0 0 18px;}
+  .banner.show{display:block;}
+  /* vote + results */
+  .qhead{font-family:var(--display);font-weight:600;font-size:clamp(24px,4vw,34px);letter-spacing:-.02em;line-height:1.12;}
+  .qmeta{font-family:var(--mono);font-size:12.5px;color:var(--faint);margin-top:10px;}
+  .choices{display:flex;flex-direction:column;gap:12px;margin-top:22px;}
+  .choice{display:flex;align-items:center;gap:13px;width:100%;text-align:left;border:1px solid var(--line-2);border-radius:14px;padding:15px 17px;background:rgba(var(--surfaceRGB),.4);color:var(--ink);font-family:var(--body);font-size:16px;cursor:pointer;transition:.15s;position:relative;overflow:hidden;}
+  .choice:hover{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .choice .tick{width:20px;height:20px;border-radius:50%;border:2px solid var(--line-2);flex:none;transition:.15s;}
+  .choice.sel .tick{border-color:var(--accent);background:var(--accent);box-shadow:inset 0 0 0 3px var(--bg);}
+  /* results bars */
+  .res{display:flex;flex-direction:column;gap:12px;margin-top:22px;}
+  .bar{position:relative;border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(var(--surfaceRGB),.4);overflow:hidden;}
+  .bar .fill{position:absolute;inset:0;width:0;background:linear-gradient(90deg,rgba(var(--accentRGB),.22),rgba(var(--accentRGB),.08));border-right:1px solid rgba(var(--accentRGB),.4);transition:width .6s var(--ease);}
+  .bar.win .fill{background:linear-gradient(90deg,rgba(var(--accentRGB),.34),rgba(var(--accentRGB),.12));}
+  .bar .lbl{position:relative;display:flex;justify-content:space-between;gap:12px;align-items:center;}
+  .bar .lbl .t{font-size:15.5px;}
+  .bar .lbl .v{font-family:var(--mono);font-size:13px;color:var(--accent);white-space:nowrap;}
+  .bar.youpick .lbl .t::after{content:" · your pick";color:var(--accent);font-family:var(--mono);font-size:11px;}
+  .tot{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center;}
+  .share{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+  .share input{flex:1;min-width:200px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--muted);border-radius:10px;padding:11px 13px;font-family:var(--mono);font-size:12.5px;}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:14px;padding:11px 20px;border-radius:100px;opacity:0;pointer-events:none;transition:.25s;z-index:120;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .smallcta{margin-top:24px;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .hidden{display:none!important;}
+  /* content */
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · share a link, get votes</div>
+    <h1 id="pageTitle">Make a poll in seconds</h1>
+    <p class="sub" id="pageSub">Type a question, add a few options, and get a link you can drop in any chat. Results update live as people vote. No sign-up, no app to install.</p>
+    <span class="priv">&#9889; No account needed — create and share in one click</span>
+  </header>
+
+  <div id="backendBanner" class="banner"></div>
+
+  <!-- CREATE VIEW -->
+  <div class="panel" id="createView">
+    <div class="pad">
+      <label class="fld" for="q">Your question</label>
+      <input type="text" id="q" maxlength="300" placeholder="e.g. Where should the team offsite be?" autocomplete="off" />
+
+      <label class="fld" style="margin-top:22px;">Options</label>
+      <div class="opts" id="opts"></div>
+      <button class="addopt" id="addOpt" type="button">+ Add option</button>
+
+      <div class="row">
+        <label class="chk"><input type="checkbox" id="multi" /> Let people pick more than one</label>
+      </div>
+
+      <button class="btn btn-block" id="create">Create poll &amp; get link</button>
+      <div class="err" id="createErr"></div>
+    </div>
+  </div>
+
+  <!-- VOTE VIEW -->
+  <div class="panel hidden" id="voteView">
+    <div class="pad">
+      <div class="qhead" id="voteQ"></div>
+      <div class="qmeta" id="voteMeta"></div>
+      <div class="choices" id="choices"></div>
+      <button class="btn btn-block" id="submitVote" disabled>Vote</button>
+      <div class="err" id="voteErr"></div>
+      <div class="smallcta"><a href="quick-poll.html">Make your own poll &rarr;</a></div>
+    </div>
+  </div>
+
+  <!-- RESULTS VIEW -->
+  <div class="panel hidden" id="resultView">
+    <div class="pad">
+      <div class="qhead" id="resQ"></div>
+      <div class="res" id="resBars"></div>
+      <div class="tot">
+        <span id="resTot">0 votes</span>
+        <button class="btn btn-out" id="refresh" style="padding:8px 16px;font-size:13px;">Refresh</button>
+      </div>
+      <label class="fld" style="margin-top:24px;">Share this poll</label>
+      <div class="share">
+        <input type="text" id="shareUrl" readonly />
+        <button class="btn" id="copyLink">Copy link</button>
+      </div>
+      <div class="smallcta"><a href="quick-poll.html">Make your own poll &rarr;</a></div>
+    </div>
+  </div>
+
+  <!-- SEO / content (hidden once viewing a specific poll) -->
+  <div id="contentBlock">
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Write your question, add two to ten options, and press create. You get a short link that you can paste into a group chat, an email, a Slack channel, or a tweet. Everyone who opens it picks an answer and immediately sees how the votes are stacking up. There is nothing to download and no account to make, so the people you share it with can vote in a couple of seconds.</p>
+    <h2>What it is good for</h2>
+    <p>Quick team decisions like where to eat or which day works for a meeting, audience questions during a stream or webinar, settling a friendly argument, gathering feedback on a name or a logo, or running a fast pulse check with a community. It is built for speed and clarity rather than locked-down voting, so it shines for low-stakes questions where you just want an answer fast.</p>
+    <h2>Private by default</h2>
+    <p>Votes are anonymous. The poll stores only the question, the options, and a running tally of how many votes each option got. There are no names, no logins, and no tracking of who picked what. Each browser gets one vote per poll, which keeps casual polls honest without making people jump through hoops.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Do I need an account?</summary><p>No. You create a poll and share the link in one step, with no sign-up and no email required.</p></details>
+    <details><summary>How many options can I add?</summary><p>Between two and ten. Add or remove rows until it looks right, then create the poll.</p></details>
+    <details><summary>Can people vote more than once?</summary><p>Each browser is allowed one vote per poll. It is designed for quick, friendly polls, not secured elections.</p></details>
+    <details><summary>Is there a limit on votes or polls?</summary><p>No. Make as many polls as you like and collect as many votes as you need, free.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build and ship tools like this every day.</h3>
+    <p>Senior full-stack engineer, open to senior or contract roles, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+  </div>
+</main>
+
+<div class="toast" id="toast">Link copied</div>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in public · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!--
+  Monetization slots (left intentionally empty for now):
+  - AdSense: drop an <ins class="adsbygoogle"> unit below the FAQ once approved.
+  - Polar.sh / Pro: a paid tier could add custom branding, one-vote-per-person enforcement,
+    CSV export of results, longer retention, and private polls. Wire the upgrade CTA here.
+-->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  // ---- match the portfolio's saved theme ----
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  // ---- config (anon key is public/client-safe, protected by RLS) ----
+  var SUPABASE_URL="https://cunynpmbjogrexkrxbwf.supabase.co";
+  var SUPABASE_ANON="sb_publishable_cOG9I9Rh6NJNEUxM4MDT4A_KceeVBsQ";
+  var sb=null;
+  try{ if(window.supabase&&SUPABASE_URL&&SUPABASE_ANON){ sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON); } }catch(e){}
+
+  var localMode=false; // flips true if the DB is not reachable/ready
+  function flagLocal(){ if(localMode)return; localMode=true;
+    var b=document.getElementById("backendBanner");
+    b.textContent="Local mode: this poll is saved on this device only. Cross-device sharing turns on once the database tables are set up.";
+    b.classList.add("show");
+  }
+
+  // ---- tiny helpers ----
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+  function newId(){ var c="abcdefghijkmnpqrstuvwxyz23456789",s=""; for(var i=0;i<8;i++) s+=c[Math.floor(Math.random()*c.length)]; return s; }
+  function toast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){ t.classList.remove("show"); },1600); }
+
+  // ---- local storage layer (fallback + vote dedup) ----
+  function lsPoll(id){ try{ return JSON.parse(localStorage.getItem("poll_"+id)); }catch(e){ return null; } }
+  function lsSavePoll(p){ try{ localStorage.setItem("poll_"+p.id,JSON.stringify(p)); }catch(e){} }
+  function votedKey(id){ return "pollvoted_"+id; }
+  function getVoted(id){ try{ var v=localStorage.getItem(votedKey(id)); return v==null?null:JSON.parse(v); }catch(e){ return null; } }
+  function setVoted(id,picks){ try{ localStorage.setItem(votedKey(id),JSON.stringify(picks)); }catch(e){} }
+
+  // ---- data layer (Supabase primary, localStorage fallback) ----
+  async function createPoll(question,options,multi){
+    var id=newId();
+    var poll={id:id,question:question,options:options,multi:multi,created_at:new Date().toISOString()};
+    if(sb){
+      try{
+        var r=await sb.from("polls").insert({id:id,question:question,options:options,multi:multi}).select().single();
+        if(!r.error){ return id; }
+      }catch(e){}
+    }
+    flagLocal();
+    lsSavePoll(poll);
+    return id;
+  }
+  async function loadPoll(id){
+    if(sb){
+      try{
+        var r=await sb.from("polls").select("id,question,options,multi").eq("id",id).single();
+        if(!r.error&&r.data){ return r.data; }
+        if(r.error&&r.error.code!=="PGRST116"){ /* table missing / other -> fallback */ }
+      }catch(e){}
+    }
+    var lp=lsPoll(id);
+    if(lp){ flagLocal(); return lp; }
+    return null;
+  }
+  async function castVotes(id,picks){
+    if(sb&&!localMode){
+      try{
+        var rows=picks.map(function(i){ return {poll_id:id,option_index:i}; });
+        var r=await sb.from("poll_votes").insert(rows);
+        if(!r.error){ setVoted(id,picks); return true; }
+      }catch(e){}
+    }
+    // local fallback
+    flagLocal();
+    var p=lsPoll(id); if(!p){ return false; }
+    p.tallies=p.tallies||p.options.map(function(){return 0;});
+    picks.forEach(function(i){ p.tallies[i]=(p.tallies[i]||0)+1; });
+    lsSavePoll(p);
+    setVoted(id,picks);
+    return true;
+  }
+  async function loadResults(id,optionCount){
+    if(sb&&!localMode){
+      try{
+        var r=await sb.from("poll_votes").select("option_index").eq("poll_id",id);
+        if(!r.error&&r.data){
+          var c=[]; for(var k=0;k<optionCount;k++) c.push(0);
+          r.data.forEach(function(row){ if(row.option_index>=0&&row.option_index<optionCount) c[row.option_index]++; });
+          return c;
+        }
+      }catch(e){}
+    }
+    flagLocal();
+    var p=lsPoll(id);
+    if(p&&p.tallies) return p.tallies.slice(0,optionCount);
+    var z=[]; for(var j=0;j<optionCount;j++) z.push(0); return z;
+  }
+
+  // ====================== CREATE VIEW ======================
+  var optsEl=$("opts");
+  function addOptRow(val){
+    var row=document.createElement("div"); row.className="optrow";
+    var inp=document.createElement("input"); inp.type="text"; inp.maxLength=120; inp.placeholder="Option"; inp.autocomplete="off"; if(val) inp.value=val;
+    var rm=document.createElement("button"); rm.type="button"; rm.className="rm"; rm.innerHTML="&times;"; rm.title="Remove";
+    rm.addEventListener("click",function(){ if(optsEl.children.length>2){ row.remove(); } else { toast("Need at least two options"); } });
+    row.appendChild(inp); row.appendChild(rm); optsEl.appendChild(row);
+  }
+  function initCreate(){
+    addOptRow(""); addOptRow("");
+    $("addOpt").addEventListener("click",function(){ if(optsEl.children.length>=10){ toast("Up to 10 options"); return; } addOptRow(""); optsEl.lastChild.querySelector("input").focus(); });
+    $("create").addEventListener("click",doCreate);
+    $("q").addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); optsEl.firstChild.querySelector("input").focus(); } });
+  }
+  async function doCreate(){
+    var err=$("createErr"); err.textContent="";
+    var q=$("q").value.trim();
+    if(q.length<2){ err.textContent="Add a question first."; $("q").focus(); return; }
+    var options=[];
+    Array.prototype.forEach.call(optsEl.querySelectorAll("input"),function(i){ var v=i.value.trim(); if(v) options.push(v); });
+    if(options.length<2){ err.textContent="Add at least two options."; return; }
+    var btn=$("create"); btn.disabled=true; btn.textContent="Creating…";
+    try{
+      var id=await createPoll(q,options,$("multi").checked);
+      location.hash=id;
+      // hashchange handler will render the share/vote view
+    }catch(e){
+      err.textContent="Something went wrong. Please try again.";
+      btn.disabled=false; btn.textContent="Create poll & get link";
+    }
+  }
+
+  // ====================== VOTE + RESULTS ======================
+  var autoTimer=null;
+  function show(view){
+    ["createView","voteView","resultView"].forEach(function(v){ $(v).classList.toggle("hidden",v!==view); });
+    $("contentBlock").classList.toggle("hidden",view!=="createView");
+  }
+  function setHeader(creating){
+    if(creating){ $("pageTitle").textContent="Make a poll in seconds"; }
+  }
+
+  async function renderPoll(id){
+    var poll=await loadPoll(id);
+    if(!poll){
+      // unknown poll -> show create view with a note
+      show("createView");
+      $("createErr").textContent="That poll link could not be found. You can make a new one below.";
+      return;
+    }
+    $("pageTitle").textContent="Poll";
+    $("pageSub").textContent="Pick an option below. Results update live as votes come in.";
+    var already=getVoted(id);
+    if(already){ renderResults(id,poll,already); }
+    else{ renderVote(id,poll); }
+  }
+
+  function renderVote(id,poll){
+    show("voteView");
+    $("voteQ").textContent=poll.question;
+    $("voteMeta").textContent=poll.multi?"Pick one or more":"Pick one";
+    var box=$("choices"); box.innerHTML=""; var picks=[];
+    poll.options.forEach(function(opt,i){
+      var b=document.createElement("button"); b.className="choice"; b.type="button";
+      b.innerHTML='<span class="tick"></span><span class="t">'+esc(opt)+'</span>';
+      b.addEventListener("click",function(){
+        if(poll.multi){
+          var pos=picks.indexOf(i);
+          if(pos>=0){ picks.splice(pos,1); b.classList.remove("sel"); }
+          else{ picks.push(i); b.classList.add("sel"); }
+        }else{
+          picks=[i];
+          Array.prototype.forEach.call(box.children,function(c){ c.classList.remove("sel"); });
+          b.classList.add("sel");
+        }
+        $("submitVote").disabled=picks.length===0;
+      });
+      box.appendChild(b);
+    });
+    var sv=$("submitVote"); sv.disabled=true; sv.textContent="Vote";
+    sv.onclick=async function(){
+      if(!picks.length) return;
+      sv.disabled=true; sv.textContent="Submitting…";
+      var ok=await castVotes(id,picks.slice());
+      if(ok){ renderResults(id,poll,picks.slice()); }
+      else{ $("voteErr").textContent="Could not record your vote. Try again."; sv.disabled=false; sv.textContent="Vote"; }
+    };
+  }
+
+  async function renderResults(id,poll,myPicks){
+    show("resultView");
+    $("resQ").textContent=poll.question;
+    $("shareUrl").value=location.origin+location.pathname+"#"+id;
+    var counts=await loadResults(id,poll.options.length);
+    paintBars(poll,counts,myPicks);
+    // light auto-refresh while the user is looking at results
+    if(autoTimer) clearInterval(autoTimer);
+    autoTimer=setInterval(async function(){
+      if(document.hidden) return;
+      var c=await loadResults(id,poll.options.length);
+      paintBars(poll,c,myPicks);
+    },6000);
+    $("refresh").onclick=async function(){ var c=await loadResults(id,poll.options.length); paintBars(poll,c,myPicks); toast("Updated"); };
+    $("copyLink").onclick=function(){
+      var u=$("shareUrl").value;
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(u).then(function(){ toast("Link copied"); },function(){ fallbackCopy(); }); }
+      else fallbackCopy();
+      function fallbackCopy(){ $("shareUrl").select(); try{ document.execCommand("copy"); toast("Link copied"); }catch(e){} }
+    };
+  }
+
+  function paintBars(poll,counts,myPicks){
+    var total=counts.reduce(function(a,b){ return a+b; },0);
+    var max=Math.max.apply(null,counts.concat([0]));
+    var box=$("resBars"); box.innerHTML="";
+    poll.options.forEach(function(opt,i){
+      var n=counts[i]||0;
+      var pct=total?Math.round(n/total*100):0;
+      var bar=document.createElement("div"); bar.className="bar"+((n===max&&max>0)?" win":"")+((myPicks&&myPicks.indexOf(i)>=0)?" youpick":"");
+      bar.innerHTML='<div class="fill" style="width:'+(total?pct:0)+'%"></div><div class="lbl"><span class="t">'+esc(opt)+'</span><span class="v">'+pct+'% · '+n+'</span></div>';
+      box.appendChild(bar);
+    });
+    $("resTot").textContent=total+(total===1?" vote":" votes")+(localMode?" · local":"");
+  }
+
+  // ====================== ROUTER ======================
+  function route(){
+    var id=(location.hash||"").replace(/^#/,"").trim();
+    if(autoTimer){ clearInterval(autoTimer); autoTimer=null; }
+    if(id&&/^[a-z0-9]{4,16}$/.test(id)){ renderPoll(id); }
+    else{ show("createView"); setHeader(true); }
+  }
+  window.addEventListener("hashchange",route);
+
+  // init
+  initCreate();
+  route();
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
