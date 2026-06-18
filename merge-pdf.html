@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Merge PDF Free — Combine PDF Files in Your Browser, No Upload</title>
+<meta name="description" content="Merge and combine multiple PDF files into one, right in your browser. Drag to reorder, rotate, and download. 100% private, nothing is uploaded, no sign-up, no limits." />
+<meta name="keywords" content="merge pdf, combine pdf, pdf merger, merge pdf free, combine pdf files, merge pdf without uploading, join pdf, merge pdf offline, free pdf merge no signup" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Merge PDF Free — Combine PDFs in your browser" />
+<meta property="og:description" content="Combine multiple PDFs into one. Drag to reorder, rotate, download. Private, no uploads, no sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/merge-pdf.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Merge PDF Free — Combine PDFs in your browser" />
+<meta name="twitter:description" content="Combine PDFs into one. Reorder, rotate, download. Private, no sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/merge-pdf.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Merge PDF","url":"https://hammyasf.github.io/merge-pdf.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Merge and combine multiple PDF files into one in the browser. Reorder, rotate, private, no upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my PDF files uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs in your browser. Your PDFs are merged locally and never leave your device, which makes it safe for contracts, IDs, and financial documents."}},{"@type":"Question","name":"Is there a limit on how many PDFs I can merge?","acceptedAnswer":{"@type":"Answer","text":"No. There is no sign-up and no file count or page limit. You are bounded only by your device's memory."}},{"@type":"Question","name":"Can I change the order of the files before merging?","acceptedAnswer":{"@type":"Answer","text":"Yes. Drag the files to reorder them, or use the up and down buttons. You can also rotate a file and remove any file before merging."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no watermark, no sign-up, and no daily limits."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:46px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 24px 22px;}
+  .summary{font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .summary b{color:var(--accent);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .list{display:grid;gap:10px;padding:0 24px 18px;}
+  .row{display:grid;grid-template-columns:auto 30px 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:rgba(var(--surfaceRGB),.4);transition:border-color .2s,background .2s;}
+  .row.drag{opacity:.5;}
+  .row.over{border-color:var(--accent);background:rgba(var(--accentRGB),.07);}
+  .handle{cursor:grab;color:var(--faint);font-size:18px;line-height:1;user-select:none;padding:0 2px;}
+  .idx{font-family:var(--mono);font-size:13px;color:var(--accent);text-align:center;}
+  .meta .n{font-size:14px;color:var(--ink);word-break:break-all;}
+  .meta .m{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:3px;}
+  .meta .rot{color:var(--accent);}
+  .ops{display:flex;gap:6px;align-items:center;}
+  .ops button{background:transparent;border:1px solid var(--line-2);color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-family:var(--mono);font-size:14px;line-height:1;transition:.15s;}
+  .ops button:hover{border-color:var(--accent);color:var(--accent);}
+  .ops button[disabled]{opacity:.3;cursor:not-allowed;}
+  .ops .del:hover{border-color:#ff6a6a;color:#ff6a6a;}
+  .err{color:#ff8a8a;font-family:var(--mono);font-size:12.5px;padding:0 24px 14px;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.row{grid-template-columns:auto 26px 1fr;}.ops{grid-column:2 / -1;justify-self:start;margin-top:4px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Merge PDF</h1>
+    <p class="sub">Combine multiple PDF files into one. Drag to reorder, rotate any file, then download. No upload, no watermark, no limits.</p>
+    <span class="priv">&#128274; 100% private — your files never leave your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add PDF files">
+      <h2>Drop PDF files here</h2>
+      <p>or click to choose files · add as many as you like</p>
+      <input type="file" id="file" accept="application/pdf,.pdf" multiple hidden />
+    </div>
+    <div class="err" id="err" hidden></div>
+    <div class="list" id="list"></div>
+    <div class="bar">
+      <button class="btn" id="go" disabled>Merge PDFs</button>
+      <button class="btn btn-out" id="clear" disabled>Clear all</button>
+      <span class="summary" id="sum"></span>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Drop in two or more PDFs and this tool stitches them into a single document using the pdf-lib engine, entirely inside your browser. You set the order by dragging the files or using the arrows, you can rotate any file by 90 degrees, and then you download the combined PDF. Nothing is sent to a server, so there is no upload wait and no privacy trade-off.</p>
+    <h2>Why merge in the browser instead of a website that uploads</h2>
+    <p>Most free PDF mergers send your files to their servers, cap how many you can do per day, or stamp a watermark unless you pay. That is a bad deal when the documents are contracts, tax forms, scanned IDs, or anything you would rather not hand to a third party. Here the work happens locally, which means it is faster, has no daily limit, and your documents stay on your machine.</p>
+    <h2>Tips</h2>
+    <p>Name your files in the order you want before dropping them in if you prefer, then fine-tune with the arrows. Use rotate for scans that came in sideways. If a file fails to load it is usually password protected, so remove the protection first and try again.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Are my PDFs uploaded anywhere?</summary><p>No. Everything runs locally in your browser. Your files never touch a server, which is why it is instant and safe for sensitive documents.</p></details>
+    <details><summary>Is there a file or page limit?</summary><p>No sign-up and no hard limit. Very large merges are bounded only by your device's memory.</p></details>
+    <details><summary>Can I reorder and rotate files?</summary><p>Yes. Drag files to reorder, or use the up and down arrows, and rotate any file 90 degrees before merging.</p></details>
+    <details><summary>Will there be a watermark?</summary><p>No. The output is a clean PDF with no watermark and no added pages.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var drop=document.getElementById("drop"),file=document.getElementById("file"),list=document.getElementById("list"),
+      go=document.getElementById("go"),clearBtn=document.getElementById("clear"),sum=document.getElementById("sum"),err=document.getElementById("err");
+  var items=[], uid=0, libPromise=null;
+
+  function loadLib(){ if(libPromise) return libPromise;
+    libPromise=new Promise(function(res,rej){ if(window.PDFLib) return res(window.PDFLib);
+      var s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js";
+      s.onload=function(){ res(window.PDFLib); }; s.onerror=function(){ rej(new Error("Could not load the PDF engine. Check your connection and retry.")); };
+      document.head.appendChild(s); });
+    return libPromise; }
+  // warm up the engine so the first merge is instant
+  loadLib().catch(function(){});
+
+  function showErr(m){ err.textContent=m; err.hidden=!m; }
+  function fmtSize(b){ return b<1024?b+" B":b<1048576?(b/1024).toFixed(1)+" KB":(b/1048576).toFixed(2)+" MB"; }
+
+  function refresh(){
+    list.innerHTML="";
+    items.forEach(function(it,i){
+      var row=document.createElement("div"); row.className="row"; row.draggable=true; row.dataset.id=it.id;
+      var pages=it.pages==null?"…":(it.pages+" page"+(it.pages>1?"s":""));
+      var rot=it.rot?' <span class="rot">· rotated '+it.rot+'°</span>':'';
+      row.innerHTML='<span class="handle" title="Drag to reorder">&#8942;&#8942;</span>'+
+        '<span class="idx">'+(i+1)+'</span>'+
+        '<div class="meta"><div class="n">'+it.name+'</div><div class="m">'+fmtSize(it.size)+' · '+pages+rot+'</div></div>'+
+        '<div class="ops">'+
+          '<button class="up" title="Move up"'+(i===0?' disabled':'')+'>&#8593;</button>'+
+          '<button class="down" title="Move down"'+(i===items.length-1?' disabled':'')+'>&#8595;</button>'+
+          '<button class="rot" title="Rotate 90°">&#8635;</button>'+
+          '<button class="del" title="Remove">&#10005;</button>'+
+        '</div>';
+      row.querySelector(".up").addEventListener("click",function(){ move(i,i-1); });
+      row.querySelector(".down").addEventListener("click",function(){ move(i,i+1); });
+      row.querySelector(".rot").addEventListener("click",function(){ it.rot=(it.rot+90)%360; refresh(); });
+      row.querySelector(".del").addEventListener("click",function(){ items.splice(i,1); refresh(); });
+      // drag to reorder
+      row.addEventListener("dragstart",function(e){ row.classList.add("drag"); e.dataTransfer.effectAllowed="move"; e.dataTransfer.setData("text/plain",it.id); });
+      row.addEventListener("dragend",function(){ row.classList.remove("drag"); });
+      row.addEventListener("dragover",function(e){ e.preventDefault(); row.classList.add("over"); });
+      row.addEventListener("dragleave",function(){ row.classList.remove("over"); });
+      row.addEventListener("drop",function(e){ e.preventDefault(); row.classList.remove("over");
+        var from=items.findIndex(function(x){return x.id==e.dataTransfer.getData("text/plain");});
+        if(from>-1&&from!==i) move(from,i); });
+      list.appendChild(row);
+    });
+    var n=items.length;
+    go.disabled=n<2; clearBtn.disabled=n===0;
+    sum.textContent=n?(n+" file"+(n>1?"s":"")+(n<2?" — add one more to merge":" ready")):"";
+  }
+  function move(from,to){ if(to<0||to>=items.length) return; var x=items.splice(from,1)[0]; items.splice(to,0,x); refresh(); }
+
+  function add(files){ showErr(""); var added=0;
+    for(var i=0;i<files.length;i++){ var f=files[i];
+      if(f.type==="application/pdf"||/\.pdf$/i.test(f.name)){ var it={id:++uid,file:f,name:f.name,size:f.size,pages:null,rot:0}; items.push(it); added++; countPages(it); }
+    }
+    if(!added) showErr("Please choose PDF files only.");
+    refresh();
+  }
+  function countPages(it){ loadLib().then(function(L){ var fr=new FileReader();
+    fr.onload=function(){ L.PDFDocument.load(fr.result,{ignoreEncryption:true}).then(function(doc){ it.pages=doc.getPageCount(); refresh(); }).catch(function(){ it.pages="?"; refresh(); }); };
+    fr.readAsArrayBuffer(it.file);
+  }).catch(function(){}); }
+
+  drop.addEventListener("click",function(){ file.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();file.click();} });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop",function(e){ add(e.dataTransfer.files); });
+  file.addEventListener("change",function(){ add(file.files); file.value=""; });
+  clearBtn.addEventListener("click",function(){ items=[]; showErr(""); refresh(); sum.textContent=""; });
+
+  go.addEventListener("click",function(){ if(items.length<2) return; showErr(""); go.disabled=true; var label=go.textContent; go.textContent="Merging…";
+    loadLib().then(function(L){
+      return L.PDFDocument.create().then(function(outDoc){
+        function step(i){ if(i>=items.length) return outDoc;
+          var it=items[i];
+          return it.file.arrayBuffer().then(function(buf){
+            return L.PDFDocument.load(buf,{ignoreEncryption:true}).then(function(src){
+              return outDoc.copyPages(src,src.getPageIndices()).then(function(pages){
+                pages.forEach(function(p){ if(it.rot){ p.setRotation(L.degrees((p.getRotation().angle+it.rot)%360)); } outDoc.addPage(p); });
+                return step(i+1);
+              });
+            });
+          });
+        }
+        return step(0).then(function(d){ return d.save(); });
+      });
+    }).then(function(bytes){
+      var blob=new Blob([bytes],{type:"application/pdf"});
+      var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="merged.pdf"; a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); },4000);
+      sum.innerHTML="Done · merged <b>"+items.length+"</b> files into "+fmtSize(blob.size);
+      go.textContent=label; go.disabled=false;
+    }).catch(function(e){ showErr((e&&e.message)||"Something went wrong merging these PDFs. One may be password protected or corrupted."); go.textContent=label; go.disabled=false; });
+  });
+
+  refresh();
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. Replace TOKEN with the token from your Cloudflare dashboard (free). -->
+<!-- <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"TOKEN"}'></script> -->
+</body>
+</html>
