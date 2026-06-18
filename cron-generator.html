@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cron Expression Generator &amp; Explainer — plain English + next run times</title>
+<meta name="description" content="Build, test, and understand cron expressions. Type a schedule and get a plain-English explanation plus the next run times instantly. Visual builder, presets, copy. Free, no sign-up." />
+<meta name="keywords" content="cron expression generator, crontab generator, cron expression explainer, cron schedule, cron parser, cron tester, crontab guru alternative, next run time, cron syntax, online cron tool" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Cron Expression Generator &amp; Explainer" />
+<meta property="og:description" content="Type a cron schedule, get a plain-English explanation and the next run times instantly. Visual builder, presets, copy. Free, no sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/cron-generator.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Cron Expression Generator &amp; Explainer" />
+<meta name="twitter:description" content="Type a cron schedule, get plain English and the next run times. Free, no sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/cron-generator.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Cron Expression Generator & Explainer","url":"https://hammyasf.github.io/cron-generator.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Build, test, and understand cron expressions. Get a plain-English explanation and the next run times instantly.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a cron expression?","acceptedAnswer":{"@type":"Answer","text":"A cron expression is five fields — minute, hour, day of month, month, and day of week — that together define a recurring schedule used by the Unix cron daemon and most schedulers."}},{"@type":"Question","name":"Does this tool send my expression to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Parsing, explanation, and next-run calculation all run locally in your browser. Nothing is uploaded."}},{"@type":"Question","name":"What timezone are the next run times in?","acceptedAnswer":{"@type":"Answer","text":"By default they are shown in your computer's local timezone. You can switch to UTC with one click."}},{"@type":"Question","name":"Does it support shortcuts like @daily?","acceptedAnswer":{"@type":"Answer","text":"Yes. Macros like @yearly, @monthly, @weekly, @daily, @hourly, and @midnight are supported, along with names like JAN or MON."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--bad:#ff7a6e;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;padding:22px;}
+  .exprow{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap;}
+  .exprow .field{flex:1;min-width:240px;position:relative;}
+  #expr{width:100%;background:rgba(var(--surfaceRGB),.7);border:1px solid var(--line-2);color:var(--ink);border-radius:12px;padding:16px 18px;font-family:var(--mono);font-size:clamp(18px,3.4vw,26px);letter-spacing:.04em;transition:border-color .2s;}
+  #expr:focus{outline:none;border-color:var(--accent);}
+  #expr.bad{border-color:var(--bad);}
+  .copybtn{font-family:var(--body);font-weight:700;font-size:14px;padding:0 20px;border-radius:12px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;white-space:nowrap;}
+  .copybtn:hover{transform:translateY(-2px);}
+  .legend{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px;}
+  .legend .col{text-align:center;border:1px solid var(--line);border-radius:10px;padding:8px 4px;background:rgba(var(--surfaceRGB),.35);}
+  .legend .col b{display:block;font-family:var(--mono);font-size:16px;color:var(--accent);word-break:break-all;}
+  .legend .col span{font-family:var(--mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);display:block;margin-top:4px;}
+  .legend .col small{font-family:var(--mono);font-size:9.5px;color:var(--faint);opacity:.7;}
+  .explain{margin-top:20px;font-family:var(--display);font-weight:500;font-size:clamp(20px,3.4vw,28px);line-height:1.3;color:var(--ink);min-height:1.3em;}
+  .explain.err{color:var(--bad);font-family:var(--mono);font-weight:400;font-size:16px;}
+  .next h3{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:22px 0 10px;display:flex;justify-content:space-between;align-items:center;}
+  .tztoggle{display:flex;border:1px solid var(--line-2);border-radius:8px;overflow:hidden;}
+  .tztoggle button{background:transparent;color:var(--muted);border:none;padding:5px 12px;font-family:var(--mono);font-size:11px;cursor:pointer;}
+  .tztoggle button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .runs{display:grid;gap:7px;}
+  .run{display:flex;justify-content:space-between;gap:14px;border:1px solid var(--line);border-radius:10px;padding:11px 14px;background:rgba(var(--surfaceRGB),.4);font-family:var(--mono);font-size:14px;}
+  .run .when{color:var(--ink);}
+  .run .rel{color:var(--accent);font-size:12.5px;}
+  .presets{margin-top:8px;}
+  .presets h3{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:22px 0 10px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-family:var(--mono);font-size:12.5px;color:var(--ink);border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.5);padding:8px 13px;border-radius:100px;cursor:pointer;transition:.15s;}
+  .chip:hover{border-color:var(--accent);color:var(--accent);}
+  .chip code{color:var(--accent);font-size:11px;opacity:.8;margin-left:6px;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  table.ref{width:100%;border-collapse:collapse;margin:14px 0;font-family:var(--mono);font-size:13.5px;}
+  table.ref th,table.ref td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);}
+  table.ref th{color:var(--faint);font-weight:500;font-size:11px;letter-spacing:.06em;text-transform:uppercase;}
+  table.ref td:first-child{color:var(--accent);}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.legend{grid-template-columns:repeat(5,1fr);gap:4px;}.legend .col{padding:6px 2px;}.legend .col b{font-size:13px;}.copybtn{flex:1;padding:12px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free dev tool · runs in your browser</div>
+    <h1>Cron Expression Generator</h1>
+    <p class="sub">Type a cron schedule and get a plain-English explanation plus the next run times instantly. Tap a preset, tweak a field, copy the result.</p>
+    <span class="priv">&#9889; Parses live · nothing is uploaded</span>
+  </header>
+
+  <div class="panel">
+    <div class="exprow">
+      <div class="field">
+        <input id="expr" type="text" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Cron expression" value="*/5 * * * *" />
+      </div>
+      <button class="copybtn" id="copy">Copy</button>
+    </div>
+
+    <div class="legend" id="legend">
+      <div class="col"><b>*/5</b><span>Minute</span><small>0-59</small></div>
+      <div class="col"><b>*</b><span>Hour</span><small>0-23</small></div>
+      <div class="col"><b>*</b><span>Day (M)</span><small>1-31</small></div>
+      <div class="col"><b>*</b><span>Month</span><small>1-12</small></div>
+      <div class="col"><b>*</b><span>Day (W)</span><small>0-6</small></div>
+    </div>
+
+    <div class="explain" id="explain">Every 5 minutes.</div>
+
+    <div class="next">
+      <h3>Next runs
+        <span class="tztoggle" id="tz"><button data-tz="local" class="on">Local</button><button data-tz="utc">UTC</button></span>
+      </h3>
+      <div class="runs" id="runs"></div>
+    </div>
+
+    <div class="presets">
+      <h3>Common schedules</h3>
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How cron expressions work</h2>
+    <p>A standard cron expression has five fields separated by spaces: minute, hour, day of month, month, and day of week. Each field accepts a single number, a list like <code>1,15,30</code>, a range like <code>9-17</code>, a step like <code>*/10</code>, or a star meaning "every". The scheduler runs your job at every moment where all the fields match the current time.</p>
+    <p>The day-of-week field uses 0 to 6 starting on Sunday, and 7 also means Sunday. You can use names too, so <code>MON-FRI</code> and <code>1-5</code> are the same thing. The one rule people forget: when both day-of-month and day-of-week are set to something other than a star, the job runs when <em>either</em> one matches, not both.</p>
+    <h2>Field reference</h2>
+    <table class="ref">
+      <tr><th>Field</th><th>Allowed</th><th>Special</th></tr>
+      <tr><td>Minute</td><td>0&ndash;59</td><td>* , - /</td></tr>
+      <tr><td>Hour</td><td>0&ndash;23</td><td>* , - /</td></tr>
+      <tr><td>Day of month</td><td>1&ndash;31</td><td>* , - /</td></tr>
+      <tr><td>Month</td><td>1&ndash;12 or JAN&ndash;DEC</td><td>* , - /</td></tr>
+      <tr><td>Day of week</td><td>0&ndash;7 or SUN&ndash;SAT</td><td>* , - /</td></tr>
+    </table>
+    <h2>Shortcuts you can type</h2>
+    <p>Instead of five fields you can use a macro: <code>@yearly</code> (or <code>@annually</code>), <code>@monthly</code>, <code>@weekly</code>, <code>@daily</code> (or <code>@midnight</code>), and <code>@hourly</code>. They expand to the equivalent five-field expression, which this tool shows you so you can learn the pattern.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my expression sent anywhere?</summary><p>No. The parser, the English explanation, and the next-run calculation all run locally in your browser. Nothing leaves your device.</p></details>
+    <details><summary>What timezone are the next runs in?</summary><p>Your computer's local timezone by default. Cron on a server runs in that server's timezone, so switch to UTC if your jobs run in UTC.</p></details>
+    <details><summary>Does it support names like MON or JAN?</summary><p>Yes, in the month and day-of-week fields. They are case-insensitive, so <code>jan</code>, <code>JAN</code>, and <code>Jan</code> all work, including ranges like <code>MON-FRI</code>.</p></details>
+    <details><summary>Why does my day-of-month and day-of-week combo run more than I expect?</summary><p>Because cron treats them as an OR when both are restricted. <code>0 0 1 * MON</code> runs on the 1st of the month and every Monday, not only Mondays that fall on the 1st.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var MONTHS=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  var DOWS=["SUN","MON","TUE","WED","THU","FRI","SAT"];
+  var MONTH_FULL=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var DOW_FULL=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var MACROS={"@yearly":"0 0 1 1 *","@annually":"0 0 1 1 *","@monthly":"0 0 1 * *","@weekly":"0 0 * * 0","@daily":"0 0 * * *","@midnight":"0 0 * * *","@hourly":"0 * * * *"};
+  var SPEC=[{name:"minute",min:0,max:59},{name:"hour",min:0,max:23},{name:"dom",min:1,max:31},{name:"month",min:1,max:12},{name:"dow",min:0,max:7}];
+
+  function normName(tok,idx){
+    tok=tok.toUpperCase();
+    if(idx===3){ var m=MONTHS.indexOf(tok); if(m>=0) return String(m+1); }
+    if(idx===4){ var d=DOWS.indexOf(tok); if(d>=0) return String(d); }
+    return tok;
+  }
+
+  // parse one field into a sorted unique array of allowed integers; throws on error
+  function parseField(raw,idx){
+    var spec=SPEC[idx], min=spec.min, max=spec.max;
+    var set={};
+    function add(v){ if(idx===4&&v===7)v=0; set[v]=1; }
+    raw.split(",").forEach(function(part){
+      if(part==="") throw new Error("empty value in "+spec.name);
+      var step=1, body=part;
+      var slash=part.split("/");
+      if(slash.length>2) throw new Error("bad step in "+spec.name);
+      if(slash.length===2){ step=parseInt(slash[1],10); body=slash[0]; if(!(step>=1)) throw new Error("step must be 1 or more in "+spec.name); }
+      var lo,hi;
+      if(body==="*"){ lo=min; hi=max; }
+      else if(body.indexOf("-")>0){
+        var r=body.split("-"); if(r.length!==2) throw new Error("bad range in "+spec.name);
+        lo=parseInt(normName(r[0],idx),10); hi=parseInt(normName(r[1],idx),10);
+      } else {
+        lo=parseInt(normName(body,idx),10);
+        hi=(slash.length===2)? max : lo; // n/step means n,n+step,... up to max
+      }
+      if(isNaN(lo)||isNaN(hi)) throw new Error("not a number in "+spec.name);
+      // day-of-week: accept 7 as Sunday
+      if(idx===4){ if(lo===7)lo=0; if(hi===7)hi=0; }
+      if(lo<min||lo>max||hi<min||hi>max) throw new Error(spec.name+" out of range ("+min+"-"+max+")");
+      if(lo<=hi){ for(var v=lo;v<=hi;v+=step) add(v); }
+      else { // wrap-around range, e.g. FRI-SUN (5-0) or NOV-FEB
+        if(step!==1) throw new Error("stepped wrap-around range not supported in "+spec.name);
+        for(var a=lo;a<=max;a++) add(a);
+        for(var b=min;b<=hi;b++) add(b);
+      }
+    });
+    var arr=Object.keys(set).map(Number).sort(function(a,b){return a-b;});
+    if(!arr.length) throw new Error("no values in "+spec.name);
+    return arr;
+  }
+
+  function parse(input){
+    var s=input.trim().replace(/\s+/g," ");
+    if(!s) throw new Error("Enter a cron expression.");
+    var lower=s.toLowerCase();
+    if(lower[0]==="@"){ if(MACROS[lower]) s=MACROS[lower]; else throw new Error("Unknown macro. Try @daily, @hourly, @weekly, @monthly, @yearly."); }
+    var f=s.split(" ");
+    if(f.length!==5) throw new Error("A cron expression needs 5 fields. You have "+f.length+".");
+    var fields=[]; var raws=[];
+    for(var i=0;i<5;i++){ fields.push(parseField(f[i],i)); raws.push(f[i]); }
+    return {fields:fields,raws:raws,normalized:s};
+  }
+
+  // ---- next run computation ----
+  function nextRuns(p,count,useUTC){
+    var mins=p.fields[0],hrs=p.fields[1],doms=p.fields[2],mons=p.fields[3],dows=p.fields[4];
+    var domStar=(p.raws[2]==="*"), dowStar=(p.raws[4]==="*");
+    var inq=function(a,v){ return a.indexOf(v)>=0; };
+    var out=[];
+    var d=new Date(); d.setSeconds(0,0); d.setMinutes(d.getMinutes()+1);
+    var guard=0, limit=525600*4; // up to ~4 years of minutes
+    while(out.length<count && guard<limit){
+      guard++;
+      var mo=(useUTC?d.getUTCMonth():d.getMonth())+1;
+      var dom=useUTC?d.getUTCDate():d.getDate();
+      var dow=useUTC?d.getUTCDay():d.getDay();
+      var hr=useUTC?d.getUTCHours():d.getHours();
+      var mi=useUTC?d.getUTCMinutes():d.getMinutes();
+      var dayOk;
+      if(!domStar && !dowStar) dayOk = inq(doms,dom)||inq(dows,dow);
+      else dayOk = (domStar||inq(doms,dom)) && (dowStar||inq(dows,dow));
+      if(inq(mons,mo) && dayOk && inq(hrs,hr) && inq(mins,mi)) out.push(new Date(d.getTime()));
+      d.setMinutes(d.getMinutes()+1);
+    }
+    return out;
+  }
+
+  // ---- english description ----
+  function ordinal(n){ var s=["th","st","nd","rd"],v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); }
+  function list(arr,fmt){ fmt=fmt||function(x){return x;}; arr=arr.map(fmt);
+    if(arr.length===1) return arr[0];
+    if(arr.length===2) return arr[0]+" and "+arr[1];
+    return arr.slice(0,-1).join(", ")+", and "+arr[arr.length-1]; }
+  function pad(n){ return (n<10?"0":"")+n; }
+
+  function fieldClause(raw,arr,idx){
+    // returns descriptive text for non-time fields
+    if(raw==="*") return null;
+    var stepM=raw.match(/^\*\/(\d+)$/);
+    if(idx===2){ // dom
+      if(stepM) return "every "+(+stepM[1])+" days of the month";
+      return "on the "+list(arr,function(x){return ordinal(x);})+" of the month";
+    }
+    if(idx===3){ // month
+      if(stepM) return "every "+(+stepM[1])+" months";
+      return "in "+list(arr,function(x){return MONTH_FULL[x-1];});
+    }
+    if(idx===4){ // dow
+      if(stepM) return "every "+(+stepM[1])+" days of the week";
+      var raw15=arr.slice().sort(function(a,b){return a-b;}).join(",");
+      if(raw15==="1,2,3,4,5") return "on weekdays";
+      if(raw15==="0,6") return "on weekends";
+      return "on "+list(arr,function(x){return DOW_FULL[x];});
+    }
+    return null;
+  }
+
+  function describe(p){
+    var raws=p.raws, f=p.fields;
+    var minRaw=raws[0], hrRaw=raws[1];
+    var minStep=minRaw.match(/^\*\/(\d+)$/), hrStep=hrRaw.match(/^\*\/(\d+)$/);
+    var time;
+    if(minRaw!=="*" && /^\d+$/.test(minRaw) && hrRaw!=="*" && /^\d+$/.test(hrRaw)){
+      time="At "+pad(+hrRaw)+":"+pad(+minRaw);
+    } else if(minStep && hrRaw==="*"){
+      time=(+minStep[1]===1)?"Every minute":"Every "+(+minStep[1])+" minutes";
+    } else if(minRaw==="*" && hrRaw==="*"){
+      time="Every minute";
+    } else if(/^\d+$/.test(minRaw) && hrRaw==="*"){
+      time="At minute "+(+minRaw)+" of every hour";
+    } else if(minRaw==="0" && hrStep){
+      time=(+hrStep[1]===1)?"Every hour":"Every "+(+hrStep[1])+" hours";
+    } else {
+      // generic
+      var mtxt = minRaw==="*"?"every minute":(minStep?"every "+(+minStep[1])+" minutes":"minute "+list(f[0],String));
+      var htxt = hrRaw==="*"?null:(hrStep?"every "+(+hrStep[1])+" hours":"hour "+list(f[1],String));
+      time="At "+mtxt+(htxt?" past "+htxt:"");
+    }
+    var clauses=[];
+    var c2=fieldClause(raws[2],f[2],2); if(c2) clauses.push(c2);
+    var c4=fieldClause(raws[4],f[4],4); if(c4) clauses.push(c4);
+    var c3=fieldClause(raws[3],f[3],3); if(c3) clauses.push(c3);
+    var txt=time;
+    if(clauses.length) txt+=" "+clauses.join(", ");
+    return txt.replace(/\s+/g," ").trim()+".";
+  }
+
+  // ---- wiring ----
+  var expr=document.getElementById("expr"), explain=document.getElementById("explain"),
+      legend=document.getElementById("legend"), runs=document.getElementById("runs"),
+      copyBtn=document.getElementById("copy"), chips=document.getElementById("chips");
+  var useUTC=false;
+  var LABELS=["Minute","Hour","Day (M)","Month","Day (W)"], RANGES=["0-59","0-23","1-31","1-12","0-6"];
+
+  var PRESETS=[
+    ["Every minute","* * * * *"],["Every 5 minutes","*/5 * * * *"],["Every 15 minutes","*/15 * * * *"],
+    ["Every hour","0 * * * *"],["Every day at midnight","0 0 * * *"],["Every day at 9am","0 9 * * *"],
+    ["Weekdays at 9am","0 9 * * 1-5"],["Every Monday 8am","0 8 * * 1"],["First of month","0 0 1 * *"],
+    ["Every 6 hours","0 */6 * * *"],["Weekends at noon","0 12 * * 6,0"],["Every Sunday 3am","0 3 * * 0"]
+  ];
+  PRESETS.forEach(function(p){ var b=document.createElement("button"); b.className="chip"; b.innerHTML=p[0]+' <code>'+p[1]+'</code>';
+    b.addEventListener("click",function(){ expr.value=p[1]; render(); expr.focus(); }); chips.appendChild(b); });
+
+  function relTime(ms){
+    var s=Math.round(ms/1000); if(s<60) return "in "+s+"s";
+    var m=Math.round(s/60); if(m<60) return "in "+m+" min";
+    var h=Math.floor(m/60), mm=m%60; if(h<24) return "in "+h+"h"+(mm?" "+mm+"m":"");
+    var dd=Math.floor(h/24), hh=h%24; if(dd<31) return "in "+dd+"d"+(hh?" "+hh+"h":"");
+    var mo=Math.floor(dd/30); return "in ~"+mo+" mo";
+  }
+  function fmtRun(d){
+    var opt={weekday:"short",year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false};
+    if(useUTC) opt.timeZone="UTC";
+    try{ return d.toLocaleString(undefined,opt); }catch(e){ return d.toString(); }
+  }
+
+  function render(){
+    var val=expr.value;
+    var p;
+    try{ p=parse(val); }
+    catch(err){
+      expr.classList.add("bad"); explain.classList.add("err"); explain.textContent=err.message;
+      runs.innerHTML=""; setLegend(val.trim().replace(/\s+/g," ").split(" ")); return;
+    }
+    expr.classList.remove("bad"); explain.classList.remove("err");
+    explain.textContent=describe(p);
+    setLegend(p.raws);
+    var list=nextRuns(p,6,useUTC);
+    if(!list.length){ runs.innerHTML='<div class="run"><span class="when">No upcoming runs in the next few years</span></div>'; return; }
+    var now=Date.now();
+    runs.innerHTML=list.map(function(d){ return '<div class="run"><span class="when">'+fmtRun(d)+'</span><span class="rel">'+relTime(d.getTime()-now)+'</span></div>'; }).join("");
+  }
+  function setLegend(parts){
+    var html="";
+    for(var i=0;i<5;i++){ var v=parts[i]||"·"; html+='<div class="col"><b>'+v.replace(/</g,"&lt;")+'</b><span>'+LABELS[i]+'</span><small>'+RANGES[i]+'</small></div>'; }
+    legend.innerHTML=html;
+  }
+
+  expr.addEventListener("input",render);
+  copyBtn.addEventListener("click",function(){
+    var v=expr.value.trim(); if(!v) return;
+    navigator.clipboard.writeText(v).then(function(){ var o=copyBtn.textContent; copyBtn.textContent="Copied"; setTimeout(function(){copyBtn.textContent=o;},1200); }).catch(function(){});
+  });
+  document.querySelectorAll("#tz button").forEach(function(b){ b.addEventListener("click",function(){
+    document.querySelectorAll("#tz button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on");
+    useUTC=b.getAttribute("data-tz")==="utc"; render(); }); });
+
+  render();
+})();
+</script>
+<!-- Monetization slots (left intentionally empty for now): AdSense / Polar.sh can be dropped in below. -->
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
