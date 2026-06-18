@@ -134,7 +134,7 @@
       <div class="ctl"><div class="lab"><span>Sensor distance</span><span class="v" id="vDist">9</span></div><input type="range" id="sDist" min="1" max="40" step="1" value="9" /></div>
       <div class="ctl"><div class="lab"><span>Turn speed</span><span class="v" id="vTurn">0.40</span></div><input type="range" id="sTurn" min="1" max="120" step="1" value="40" /></div>
       <div class="ctl"><div class="lab"><span>Move speed</span><span class="v" id="vMove">1.0</span></div><input type="range" id="sMove" min="2" max="40" step="1" value="10" /></div>
-      <div class="ctl"><div class="lab"><span>Deposit</span><span class="v" id="vDep">1.0</span></div><input type="range" id="sDep" min="2" max="40" step="1" value="10" /></div>
+      <div class="ctl"><div class="lab"><span>Deposit</span><span class="v" id="vDep">0.125</span></div><input type="range" id="sDep" min="2" max="40" step="1" value="10" /></div>
       <div class="ctl"><div class="lab"><span>Trail decay</span><span class="v" id="vDecay">0.90</span></div><input type="range" id="sDecay" min="70" max="99" step="1" value="90" /></div>
       <div class="ctl"><div class="lab"><span>Brightness</span><span class="v" id="vGain">1.2</span></div><input type="range" id="sGain" min="3" max="40" step="1" value="12" /></div>
     </div>
@@ -218,12 +218,12 @@ function fail(title, msg){
 // ---------- parameters / state ----------
 const isCoarse = window.matchMedia("(pointer:coarse)").matches;
 const P = {
-  agents: isCoarse ? 250000 : 700000,
+  agents: isCoarse ? 150000 : 450000,
   sensorAngle: 22 * Math.PI/180,
   sensorDist: 9,
   turnSpeed: 0.40,
   moveSpeed: 1.0,
-  deposit: 1.0,
+  deposit: 0.125,
   decay: 0.90,
   gain: 1.2,
   palette: 0,
@@ -248,7 +248,7 @@ const PRESETS = {
   if(q.has("sd")) P.sensorDist = num("sd", 9);
   if(q.has("ts")) P.turnSpeed = num("ts", 40)/100;
   if(q.has("ms")) P.moveSpeed = num("ms", 10)/10;
-  if(q.has("dp")) P.deposit = num("dp", 10)/10;
+  if(q.has("dp")) P.deposit = num("dp", 10)/80;
   if(q.has("dc")) P.decay = num("dc", 90)/100;
   if(q.has("g")) P.gain = num("g", 12)/10;
   if(q.has("p")) P.palette = Math.max(0, Math.min(4, Math.round(num("p", 0))));
@@ -423,7 +423,7 @@ let W = 2, H = 2;
 let agentBuf = null, fieldA = null, fieldB = null, depositBuf = null, paramsBuf = null;
 let movePipe, diffPipe, renderPipe;
 let moveBG = [null, null], diffBG = [null, null], renderBG = [null, null];
-let state = 0, frameNo = 0, paused = false;
+let state = 0, frameNo = 0, paused = false, SOFT = false;
 let mouseX = -1, mouseY = -1;
 const paramsAB = new ArrayBuffer(64);
 const pu32 = new Uint32Array(paramsAB);
@@ -437,6 +437,15 @@ async function boot(){
   let adapter;
   try { adapter = await navigator.gpu.requestAdapter({ powerPreference: "high-performance" }); } catch(e){}
   if(!adapter){ fail("No GPU adapter", "Your browser exposes WebGPU but no graphics adapter could be acquired. Try a different browser or device."); return; }
+  // detect a software / fallback backend and dial things down so the tab never freezes
+  SOFT = adapter.isFallbackAdapter === true;
+  try {
+    let info = adapter.info;
+    if(!info && adapter.requestAdapterInfo){ info = await adapter.requestAdapterInfo(); }
+    if(info){ const s = ((info.vendor||"")+" "+(info.architecture||"")+" "+(info.description||"")).toLowerCase();
+      if(/swiftshader|llvmpipe|software|microsoft basic|warp|paravirtual/.test(s)) SOFT = true; }
+  } catch(e){}
+  if(SOFT){ P.agents = Math.min(P.agents, 90000); }
   device = await adapter.requestDevice();
   device.lost.then(function(info){ fail("GPU connection lost", "The GPU device was lost (" + (info.message||"") + "). Reload to restart."); });
 
@@ -470,7 +479,7 @@ function computeSimSize(){
   const r = stage.getBoundingClientRect();
   const cssW = Math.max(320, Math.floor(r.width));
   const cssH = Math.max(320, Math.floor(r.height));
-  const cap = isCoarse ? 720 : 1180;
+  const cap = SOFT ? 480 : (isCoarse ? 720 : 1180);
   const scale = Math.min(1, cap / Math.max(cssW, cssH));
   W = Math.max(2, Math.floor(cssW * scale));
   H = Math.max(2, Math.floor(cssH * scale));
@@ -601,7 +610,7 @@ function bindUI(){
   bind("sDist", function(v){ P.sensorDist = v; }, {id:"vDist", fn:function(v){return v;}});
   bind("sTurn", function(v){ P.turnSpeed = v/100; }, {id:"vTurn", fn:function(v){return (v/100).toFixed(2);}});
   bind("sMove", function(v){ P.moveSpeed = v/10; }, {id:"vMove", fn:function(v){return (v/10).toFixed(1);}});
-  bind("sDep", function(v){ P.deposit = v/10; }, {id:"vDep", fn:function(v){return (v/10).toFixed(1);}});
+  bind("sDep", function(v){ P.deposit = v/80; }, {id:"vDep", fn:function(v){return (v/80).toFixed(3);}});
   bind("sDecay", function(v){ P.decay = v/100; }, {id:"vDecay", fn:function(v){return (v/100).toFixed(2);}});
   bind("sGain", function(v){ P.gain = v/10; }, {id:"vGain", fn:function(v){return (v/10).toFixed(1);}});
   $("sAgents").addEventListener("change", function(){ P.agents = parseInt(this.value,10); $("vAgents").textContent = fmtN(P.agents); seedAgents(); buildBindGroups(); });
@@ -661,7 +670,7 @@ function reflectControls(){
   $("sDist").value = P.sensorDist; $("vDist").textContent = P.sensorDist;
   $("sTurn").value = Math.round(P.turnSpeed*100); $("vTurn").textContent = P.turnSpeed.toFixed(2);
   $("sMove").value = Math.round(P.moveSpeed*10); $("vMove").textContent = P.moveSpeed.toFixed(1);
-  $("sDep").value = Math.round(P.deposit*10); $("vDep").textContent = P.deposit.toFixed(1);
+  $("sDep").value = Math.round(P.deposit*80); $("vDep").textContent = P.deposit.toFixed(3);
   $("sDecay").value = Math.round(P.decay*100); $("vDecay").textContent = P.decay.toFixed(2);
   $("sGain").value = Math.round(P.gain*10); $("vGain").textContent = P.gain.toFixed(1);
   setSeg("palette","p",P.palette); setSeg("spawn","s",P.spawn); setSeg("mouse","m",P.mouseMode);
@@ -679,7 +688,7 @@ function shareLink(){
   q.set("sd", P.sensorDist);
   q.set("ts", Math.round(P.turnSpeed*100));
   q.set("ms", Math.round(P.moveSpeed*10));
-  q.set("dp", Math.round(P.deposit*10));
+  q.set("dp", Math.round(P.deposit*80));
   q.set("dc", Math.round(P.decay*100));
   q.set("g", Math.round(P.gain*10));
   q.set("p", P.palette);
