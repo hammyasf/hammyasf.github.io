@@ -424,6 +424,7 @@ let agentBuf = null, fieldA = null, fieldB = null, depositBuf = null, paramsBuf 
 let movePipe, diffPipe, renderPipe;
 let moveBG = [null, null], diffBG = [null, null], renderBG = [null, null];
 let state = 0, frameNo = 0, paused = false, SOFT = false;
+let qScale = 1, autoTuned = false, perfChecks = 0;
 let mouseX = -1, mouseY = -1;
 const paramsAB = new ArrayBuffer(64);
 const pu32 = new Uint32Array(paramsAB);
@@ -479,7 +480,7 @@ function computeSimSize(){
   const r = stage.getBoundingClientRect();
   const cssW = Math.max(320, Math.floor(r.width));
   const cssH = Math.max(320, Math.floor(r.height));
-  const cap = SOFT ? 480 : (isCoarse ? 720 : 1180);
+  const cap = (SOFT ? 480 : (isCoarse ? 720 : 1180)) * qScale;
   const scale = Math.min(1, cap / Math.max(cssW, cssH));
   W = Math.max(2, Math.floor(cssW * scale));
   H = Math.max(2, Math.floor(cssH * scale));
@@ -597,6 +598,19 @@ function loop(now){
   fpsAcc += dt; fpsN++;
   if(fpsAcc > 400){ fps = Math.round(1000 / (fpsAcc / fpsN)); fpsAcc = 0; fpsN = 0;
     $("hudFps").textContent = fps; $("hudAgents").textContent = fmtN(P.agents); $("hudRes").textContent = W + "×" + H;
+    // adaptive quality: if the GPU can't keep up, scale down once or twice so the tab never janks
+    perfChecks++;
+    if(!autoTuned && perfChecks >= 3){
+      if(fps < 22){
+        qScale = (qScale > 0.55) ? 0.5 : 0.32;
+        P.agents = Math.max(60000, Math.round(P.agents * 0.4));
+        resize(); seedAgents(); buildBindGroups();
+        $("sAgents").value = P.agents; $("vAgents").textContent = fmtN(P.agents);
+        hint.hidden = false; hint.textContent = "Auto-tuned quality to stay smooth on this GPU";
+        perfChecks = 0;
+        if(qScale <= 0.32) autoTuned = true;
+      } else { autoTuned = true; }
+    }
   }
 }
 
