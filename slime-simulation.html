@@ -46,6 +46,8 @@
   .stage{position:relative;margin:24px 0 8px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#000;height:min(72vh,680px);min-height:380px;}
   #gpu{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair;}
   .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;background:rgba(7,16,14,.86);backdrop-filter:blur(4px);z-index:5;}
+  .overlay[hidden]{display:none;}
+  [hidden]{display:none !important;}
   .overlay .card{max-width:460px;}
   .overlay h2{font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:10px;}
   .overlay p{color:var(--muted);font-size:15px;}
@@ -312,9 +314,9 @@ fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
     let d = m - pos;
     let dist = length(d);
     if (dist < P.mouseRadius && dist > 0.5) {
-      var target = atan2(d.y, d.x);
-      if (P.mouseMode < 0.5) { target = atan2(-d.y, -d.x); }
-      var diff = target - angle;
+      var tgt = atan2(d.y, d.x);
+      if (P.mouseMode < 0.5) { tgt = atan2(-d.y, -d.x); }
+      var diff = tgt - angle;
       diff = atan2(sin(diff), cos(diff));
       angle = angle + diff * 0.35 * (1.0 - dist / P.mouseRadius);
     }
