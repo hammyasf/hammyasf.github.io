@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Live Beat Maker — collaborative drum machine in your browser</title>
+<meta name="description" content="A real-time multiplayer beat maker. Share a link and build a beat together live, in your browser. Synth drum machine and 16-step sequencer, no sign-up, no app, no install." />
+<meta name="keywords" content="beat maker, online beat maker, drum machine online, step sequencer online, make beats online, collaborative beat maker, multiplayer music maker, browser drum machine, free beat maker, online sequencer" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Live Beat Maker — make beats together in your browser" />
+<meta property="og:description" content="A real-time multiplayer drum machine. Share a link and build a beat with friends live. No sign-up, no install, runs in the browser." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/beat-maker.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Live Beat Maker — make beats together in your browser" />
+<meta name="twitter:description" content="Real-time multiplayer drum machine. Share a link, jam live. No sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/beat-maker.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Live Beat Maker","url":"https://hammyasf.github.io/beat-maker.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time multiplayer drum machine and 16-step sequencer that runs in the browser. Share a link to make a beat together live. All sound is synthesized with the Web Audio API.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does making a beat together work?","acceptedAnswer":{"@type":"Answer","text":"Each beat has its own room link. Anyone who opens that link joins the same room. Every cell you toggle, the tempo, and play and stop all sync live to everyone in the room over a real-time WebSocket channel, so you are building the same beat at the same time."}},{"@type":"Question","name":"Are the sounds real samples or synthesized?","acceptedAnswer":{"@type":"Answer","text":"Every drum sound is synthesized live in your browser with the Web Audio API. There are no audio files to download, so the page loads instantly and the timing stays tight."}},{"@type":"Question","name":"Is anything stored on a server?","acceptedAnswer":{"@type":"Answer","text":"No. Rooms are ephemeral. The beat lives only in the browsers of the people currently in the room and is relayed peer to peer through a real-time channel. Nothing is saved to a database."}},{"@type":"Question","name":"Do I need an account or an app?","acceptedAnswer":{"@type":"Answer","text":"No sign-up, no install, no app. It works in any modern browser on desktop or mobile."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:980px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  /* transport */
+  .transport{display:flex;flex-wrap:wrap;gap:16px 22px;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s,filter .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn:active{transform:translateY(0);}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:600;}
+  .btn-out:hover{border-color:var(--accent);}
+  .play{min-width:118px;justify-content:center;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .tempo{display:flex;align-items:center;gap:10px;}
+  input[type=range]{accent-color:var(--accent);width:150px;}
+  .bpm{font-family:var(--mono);font-size:14px;color:var(--accent);min-width:64px;}
+  .spacer{flex:1;}
+  /* presence */
+  .room{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .peers{display:flex;align-items:center;gap:-6px;}
+  .peer{width:22px;height:22px;border-radius:50%;border:2px solid var(--bg-2);margin-left:-6px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#07100e;font-family:var(--mono);}
+  .peer:first-child{margin-left:0;}
+  .live{display:inline-flex;align-items:center;gap:7px;}
+  .livedot{width:8px;height:8px;border-radius:50%;background:#3ad17a;box-shadow:0 0 8px #3ad17a;animation:pulse 1.6s infinite;}
+  .livedot.off{background:var(--faint);box-shadow:none;animation:none;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  /* sequencer */
+  .seqwrap{padding:14px 20px 8px;overflow-x:auto;position:relative;}
+  .seq{display:grid;gap:7px;min-width:640px;}
+  .seqrow{display:grid;grid-template-columns:96px repeat(16,1fr);gap:6px;align-items:center;}
+  .name{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;}
+  .name .sw{width:9px;height:9px;border-radius:2px;flex:none;}
+  .name:hover{color:var(--ink);}
+  .cell{aspect-ratio:1/1;border-radius:7px;border:1px solid var(--line);background:rgba(237,242,239,.03);cursor:pointer;transition:transform .06s,background .12s,box-shadow .12s;position:relative;}
+  .cell:hover{border-color:var(--line-2);}
+  .cell.g{margin-left:5px;}
+  .cell.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.45);}
+  .cell.on.alt{background:var(--accent-2);border-color:var(--accent-2);box-shadow:0 0 12px rgba(20,195,201,.4);}
+  .cell.flash{transform:scale(.86);}
+  .seqrow.beat .cell{outline:2px solid rgba(var(--accentRGB),.85);outline-offset:1px;}
+  .steplabels{display:grid;grid-template-columns:96px repeat(16,1fr);gap:6px;margin-bottom:4px;}
+  .steplabels span{font-family:var(--mono);font-size:10px;color:var(--faint);text-align:center;}
+  .steplabels .lead{}
+  /* remote cursors */
+  .cursors{position:absolute;inset:0;pointer-events:none;z-index:5;}
+  .cursor{position:absolute;transform:translate(-2px,-2px);transition:left .08s linear,top .08s linear;font-family:var(--mono);font-size:11px;white-space:nowrap;}
+  .cursor svg{display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5));}
+  .cursor span{display:inline-block;margin-left:2px;padding:1px 6px;border-radius:6px;color:#07100e;font-weight:700;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:6px 20px 20px;align-items:center;}
+  .note{font-family:var(--mono);font-size:12px;color:var(--faint);padding:0 20px 18px;}
+  .note b{color:var(--accent);}
+  /* copy */
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#07100e;font-family:var(--mono);font-size:13px;font-weight:700;padding:10px 18px;border-radius:100px;opacity:0;pointer-events:none;transition:.25s;z-index:120;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  @media(max-width:560px){.seqrow,.steplabels{grid-template-columns:64px repeat(16,1fr);}.name{font-size:11px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · real-time · runs in your browser</div>
+    <h1>Live Beat Maker</h1>
+    <p class="sub">A drum machine you play with other people. Share the room link and every beat you tap lands on everyone's grid at the same moment. All sound is synthesized live in the browser.</p>
+    <span class="priv">&#9889; Multiplayer · share a link, jam together · nothing stored on a server</span>
+  </header>
+
+  <div class="panel">
+    <div class="transport">
+      <button class="btn play" id="play" aria-label="Play or stop">&#9654; Play</button>
+      <div class="ctl"><label>Tempo</label>
+        <div class="tempo"><input type="range" id="tempo" min="60" max="180" value="96" /><span class="bpm" id="bpmv">96 BPM</span></div>
+      </div>
+      <button class="btn btn-out" id="rand">&#127922; Randomize</button>
+      <button class="btn btn-out" id="clear">Clear</button>
+      <div class="spacer"></div>
+      <div class="room">
+        <span class="live"><span class="livedot off" id="livedot"></span><span id="status">connecting…</span></span>
+        <span class="peers" id="peers"></span>
+        <button class="btn btn-out" id="share">&#128279; Share room</button>
+      </div>
+    </div>
+
+    <div class="seqwrap">
+      <div class="steplabels" id="steplabels"></div>
+      <div class="seq" id="seq" aria-label="Step sequencer grid"></div>
+      <div class="cursors" id="cursors"></div>
+    </div>
+    <div class="note" id="note">Press <b>Play</b> to hear the starter beat, then tap cells to change it. Open the share link in a second tab to see two players in the same room.</div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Each row is a synthesized drum, each column is a sixteenth note, and a playhead sweeps left to right at the tempo you set. Toggle a cell and that drum fires on that step. Everything you hear is generated on the fly with the Web Audio API, oscillators and filtered noise shaped into kicks, snares, hats and toms, so there are no samples to download and the timing stays rock solid.</p>
+    <h2>Why it is real-time</h2>
+    <p>The first time you open the page you get a fresh room with its own link. Anyone who opens that link joins the same room over a real-time WebSocket channel. Cell toggles, tempo changes, and play or stop are broadcast to everyone in the room as they happen, and you can see each other's live cursors moving across the grid. When a new person joins, someone already in the room hands over the current beat so they drop straight into the groove. Rooms are ephemeral, the beat lives only in the browsers that are currently connected.</p>
+    <h2>Make a beat in thirty seconds</h2>
+    <p>Put kicks on steps 1, 5, 9 and 13 for a steady four-on-the-floor. Add a snare or clap on 5 and 13 for the backbeat. Fill the closed hat across every other step to drive it forward, then sprinkle an open hat or a tom to taste. Hit Randomize when you want a starting point to mangle, and drag the tempo to find the pocket.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>How do we make a beat together?</summary><p>Click Share room to copy the link and send it to a friend. When they open it they join your room, and from then on every change either of you makes shows up for the other instantly, including live cursors. It works across phones and laptops anywhere in the world.</p></details>
+    <details><summary>Are the sounds real samples?</summary><p>No, every drum is synthesized live with the Web Audio API. That is why the page loads instantly with no files to fetch, and why the playback timing is tight.</p></details>
+    <details><summary>Is my beat saved anywhere?</summary><p>No. Rooms are ephemeral and nothing is written to a database. The beat exists only in the browsers of the people currently in the room. Bookmark the room link if you want to come back to the same room while people are still in it.</p></details>
+    <details><summary>It says solo mode, what happened?</summary><p>That means the real-time connection could not be established, usually a network or firewall issue. The drum machine still works perfectly on its own, you just will not see other people. Reload to try reconnecting.</p></details>
+    <details><summary>Do I need an account?</summary><p>No sign-up, no install, no app. Open the page and play.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+/* ---------- config ---------- */
+const SUPABASE_URL = "https://cunynpmbjogrexkrxbwf.supabase.co";
+const SUPABASE_ANON = "sb_publishable_cOG9I9Rh6NJNEUxM4MDT4A_KceeVBsQ";
+
+const STEPS = 16;
+const TRACKS = [
+  { id:"kick",  name:"Kick",      alt:false },
+  { id:"snare", name:"Snare",     alt:false },
+  { id:"clap",  name:"Clap",      alt:true  },
+  { id:"chat",  name:"Closed Hat",alt:true  },
+  { id:"ohat",  name:"Open Hat",  alt:true  },
+  { id:"ltom",  name:"Low Tom",   alt:false },
+  { id:"htom",  name:"Hi Tom",    alt:false },
+  { id:"cow",   name:"Cowbell",   alt:true  }
+];
+
+/* starter beat so Play does something instantly */
+function starterGrid(){
+  const g = TRACKS.map(()=> new Array(STEPS).fill(false));
+  const set=(r,arr)=>arr.forEach(c=>g[r][c]=true);
+  set(0,[0,4,8,12]);          // kick four-on-floor
+  set(1,[4,12]);              // snare backbeat
+  set(3,[0,2,4,6,8,10,12,14]);// closed hat eighths
+  set(4,[14]);               // open hat pickup
+  set(7,[7,15]);             // cowbell accents
+  return g;
+}
+
+let grid = starterGrid();
+let bpm = 96;
+let playing = false;
+
+/* ---------- audio engine (Web Audio synthesis) ---------- */
+let ac = null, master = null, noiseBuf = null;
+function initAudio(){
+  if(ac) return;
+  ac = new (window.AudioContext||window.webkitAudioContext)();
+  master = ac.createGain(); master.gain.value = 0.9; master.connect(ac.destination);
+  // pre-render a noise buffer
+  const len = Math.floor(ac.sampleRate * 1.0);
+  noiseBuf = ac.createBuffer(1, len, ac.sampleRate);
+  const d = noiseBuf.getChannelData(0);
+  for(let i=0;i<len;i++) d[i] = Math.random()*2-1;
+}
+function noiseSrc(){ const s=ac.createBufferSource(); s.buffer=noiseBuf; return s; }
+function env(g, t, peak, dur, a){ a=a||0.001; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(peak,t+a); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); }
+
+const VOICES = {
+  kick(t){ const o=ac.createOscillator(),g=ac.createGain(); o.type="sine"; o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(48,t+0.12); env(g,t,1.0,0.42,0.002); o.connect(g).connect(master); o.start(t); o.stop(t+0.45); },
+  snare(t){ const n=noiseSrc(),nf=ac.createBiquadFilter(),ng=ac.createGain(); nf.type="highpass"; nf.frequency.value=1400; env(ng,t,0.55,0.2); n.connect(nf).connect(ng).connect(master); n.start(t); n.stop(t+0.22);
+            const o=ac.createOscillator(),g=ac.createGain(); o.type="triangle"; o.frequency.setValueAtTime(190,t); env(g,t,0.4,0.12); o.connect(g).connect(master); o.start(t); o.stop(t+0.14); },
+  clap(t){ const offs=[0,0.012,0.024,0.05]; offs.forEach((off,i)=>{ const n=noiseSrc(),f=ac.createBiquadFilter(),g=ac.createGain(); f.type="bandpass"; f.frequency.value=1100; f.Q.value=0.7; const tt=t+off; env(g,tt,i===offs.length-1?0.5:0.32, i===offs.length-1?0.2:0.05); n.connect(f).connect(g).connect(master); n.start(tt); n.stop(tt+0.22); }); },
+  chat(t){ const n=noiseSrc(),f=ac.createBiquadFilter(),g=ac.createGain(); f.type="highpass"; f.frequency.value=8000; env(g,t,0.32,0.045); n.connect(f).connect(g).connect(master); n.start(t); n.stop(t+0.06); },
+  ohat(t){ const n=noiseSrc(),f=ac.createBiquadFilter(),g=ac.createGain(); f.type="highpass"; f.frequency.value=7000; env(g,t,0.3,0.32); n.connect(f).connect(g).connect(master); n.start(t); n.stop(t+0.34); },
+  ltom(t){ const o=ac.createOscillator(),g=ac.createGain(); o.type="sine"; o.frequency.setValueAtTime(140,t); o.frequency.exponentialRampToValueAtTime(80,t+0.18); env(g,t,0.7,0.3,0.002); o.connect(g).connect(master); o.start(t); o.stop(t+0.32); },
+  htom(t){ const o=ac.createOscillator(),g=ac.createGain(); o.type="sine"; o.frequency.setValueAtTime(250,t); o.frequency.exponentialRampToValueAtTime(150,t+0.16); env(g,t,0.65,0.26,0.002); o.connect(g).connect(master); o.start(t); o.stop(t+0.28); },
+  cow(t){ [540,800].forEach((fr,i)=>{ const o=ac.createOscillator(),f=ac.createBiquadFilter(),g=ac.createGain(); o.type="square"; o.frequency.value=fr; f.type="bandpass"; f.frequency.value=fr; f.Q.value=2; env(g,t,i?0.18:0.22,0.12); o.connect(f).connect(g).connect(master); o.start(t); o.stop(t+0.14); }); }
+};
+function trig(id,t){ const v=VOICES[id]; if(v){ try{ v(t); }catch(e){} } }
+
+/* ---------- scheduler (lookahead clock) ---------- */
+let current16th = 0, nextNoteTime = 0, timer = null;
+const LOOKAHEAD = 25, AHEAD = 0.1;
+function secondsPerStep(){ return (60.0/bpm)/4; }
+function scheduleStep(step,time){
+  for(let r=0;r<TRACKS.length;r++){ if(grid[r][step]) trig(TRACKS[r].id, time); }
+  // visual highlight scheduled for when it sounds
+  const delay = (time - ac.currentTime)*1000;
+  setTimeout(()=>highlight(step), Math.max(0,delay));
+}
+function scheduler(){
+  while(nextNoteTime < ac.currentTime + AHEAD){
+    scheduleStep(current16th, nextNoteTime);
+    nextNoteTime += secondsPerStep();
+    current16th = (current16th+1)%STEPS;
+  }
+}
+function startTransport(){
+  initAudio(); if(ac.state==="suspended") ac.resume();
+  if(playing) return; playing=true;
+  current16th=0; nextNoteTime=ac.currentTime+0.06;
+  timer=setInterval(scheduler,LOOKAHEAD);
+  setPlayUI();
+}
+function stopTransport(){
+  playing=false; if(timer) clearInterval(timer); timer=null;
+  if(lastStep>=0){ setCol(lastStep,false); lastStep=-1; }
+  setPlayUI();
+}
+function setPlayUI(){ playEl.innerHTML = playing? "&#9632; Stop" : "&#9654; Play"; }
+
+/* ---------- DOM build ---------- */
+const seqEl=document.getElementById("seq");
+const labelsEl=document.getElementById("steplabels");
+const playEl=document.getElementById("play");
+const tempoEl=document.getElementById("tempo");
+const bpmvEl=document.getElementById("bpmv");
+const cursorsEl=document.getElementById("cursors");
+const peersEl=document.getElementById("peers");
+const statusEl=document.getElementById("status");
+const livedotEl=document.getElementById("livedot");
+
+(function buildLabels(){
+  labelsEl.innerHTML="<span class='lead'></span>";
+  for(let s=0;s<STEPS;s++){ const sp=document.createElement("span"); sp.textContent=(s%4===0)?(s/4+1):""; labelsEl.appendChild(sp); }
+})();
+
+const cellEls=[];
+function buildGrid(){
+  seqEl.innerHTML="";
+  for(let r=0;r<TRACKS.length;r++){
+    const row=document.createElement("div"); row.className="seqrow"; row.dataset.row=r;
+    const nm=document.createElement("div"); nm.className="name";
+    nm.innerHTML="<span class='sw' style='background:"+(TRACKS[r].alt?"var(--accent-2)":"var(--accent)")+"'></span>"+TRACKS[r].name;
+    nm.title="Preview "+TRACKS[r].name;
+    nm.addEventListener("click",()=>{ initAudio(); if(ac.state==="suspended")ac.resume(); trig(TRACKS[r].id, ac.currentTime+0.01); });
+    row.appendChild(nm);
+    cellEls[r]=[];
+    for(let c=0;c<STEPS;c++){
+      const cell=document.createElement("button"); cell.className="cell"+(c%4===0&&c>0?" g":""); cell.dataset.r=r; cell.dataset.c=c;
+      cell.setAttribute("aria-label",TRACKS[r].name+" step "+(c+1));
+      if(grid[r][c]) cell.classList.add("on", TRACKS[r].alt?"alt":"");
+      cell.addEventListener("click",()=>toggle(r,c,true));
+      row.appendChild(cell); cellEls[r][c]=cell;
+    }
+    seqEl.appendChild(row);
+  }
+}
+function paintCell(r,c){
+  const cell=cellEls[r][c]; if(!cell) return;
+  cell.classList.toggle("on", grid[r][c]);
+  cell.classList.toggle("alt", grid[r][c] && TRACKS[r].alt);
+}
+function repaintAll(){ for(let r=0;r<TRACKS.length;r++)for(let c=0;c<STEPS;c++)paintCell(r,c); }
+
+function toggle(r,c,local){
+  grid[r][c]=!grid[r][c]; paintCell(r,c);
+  if(grid[r][c]){ initAudio(); if(ac.state==="suspended")ac.resume(); trig(TRACKS[r].id, ac.currentTime+0.01);
+    const cell=cellEls[r][c]; cell.classList.add("flash"); setTimeout(()=>cell.classList.remove("flash"),90); }
+  if(local) send("toggle",{r,c,on:grid[r][c]});
+}
+let lastStep=-1;
+function setCol(col,on){ for(let r=0;r<TRACKS.length;r++){ const cell=cellEls[r][col]; if(cell){ cell.style.outline = on?"2px solid rgba(var(--accentRGB),.85)":""; cell.style.outlineOffset = on?"1px":""; } } }
+function highlight(step){ if(lastStep===step) return; if(lastStep>=0) setCol(lastStep,false); setCol(step,true); lastStep=step; }
+
+buildGrid();
+
+/* ---------- transport controls ---------- */
+playEl.addEventListener("click",()=>{ if(playing){ stopTransport(); send("transport",{playing:false}); } else { startTransport(); send("transport",{playing:true}); } });
+tempoEl.addEventListener("input",()=>{ bpm=+tempoEl.value; bpmvEl.textContent=bpm+" BPM"; });
+tempoEl.addEventListener("change",()=>{ send("tempo",{bpm}); });
+document.getElementById("clear").addEventListener("click",()=>{ grid=TRACKS.map(()=>new Array(STEPS).fill(false)); repaintAll(); send("state",{grid,bpm,playing}); });
+document.getElementById("rand").addEventListener("click",()=>{
+  const dens=[0.55,0.35,0.25,0.55,0.12,0.1,0.1,0.18];
+  grid=TRACKS.map((t,r)=> new Array(STEPS).fill(false).map((_,c)=> Math.random()<dens[r] ));
+  repaintAll(); send("state",{grid,bpm,playing});
+});
+
+/* ---------- realtime (Supabase broadcast + presence) ---------- */
+function roomId(){
+  let h=location.hash.replace(/^#/,"");
+  const m=new URLSearchParams(h);
+  let id=m.get("room");
+  if(!id){ id=Math.random().toString(36).slice(2,8); location.replace("#room="+id); }
+  return id;
+}
+const ROOM=roomId();
+const ME=Math.random().toString(36).slice(2,10);
+const COLORS=["#2be3b0","#14c3c9","#ffb454","#ff6a8a","#b07cff","#67d96b","#5aa9ff","#ff8f3d"];
+const MYCOLOR=COLORS[Math.floor(Math.random()*COLORS.length)];
+const ANIMALS=["Fox","Owl","Cat","Wolf","Bee","Lynx","Crow","Moth","Newt","Hare"];
+const MYNAME=ANIMALS[Math.floor(Math.random()*ANIMALS.length)];
+
+let channel=null, connected=false, gotState=false;
+function send(event,payload){ if(channel&&connected){ channel.send({type:"broadcast",event,payload}); } }
+
+function setStatus(txt,on){ statusEl.textContent=txt; livedotEl.classList.toggle("off",!on); }
+
+try{
+  const sb=createClient(SUPABASE_URL,SUPABASE_ANON,{realtime:{params:{eventsPerSecond:24}}});
+  channel=sb.channel("beat:"+ROOM,{config:{broadcast:{self:false},presence:{key:ME}}});
+
+  channel.on("broadcast",{event:"toggle"},({payload})=>{ const{r,c,on}=payload; grid[r][c]=on; paintCell(r,c); });
+  channel.on("broadcast",{event:"transport"},({payload})=>{ if(payload.playing) startTransport(); else stopTransport(); });
+  channel.on("broadcast",{event:"tempo"},({payload})=>{ bpm=payload.bpm; tempoEl.value=bpm; bpmvEl.textContent=bpm+" BPM"; });
+  channel.on("broadcast",{event:"state"},({payload})=>{ grid=payload.grid.map(row=>row.slice()); repaintAll(); if(typeof payload.bpm==="number"){bpm=payload.bpm;tempoEl.value=bpm;bpmvEl.textContent=bpm+" BPM";} });
+  channel.on("broadcast",{event:"sync-req"},()=>{ // someone joined; share current beat after a small jitter so only one likely answers first
+    setTimeout(()=>send("state",{grid,bpm,playing}), Math.random()*400);
+  });
+  channel.on("broadcast",{event:"cursor"},({payload})=>{ moveCursor(payload); });
+
+  channel.on("presence",{event:"sync"},()=>{ renderPeers(channel.presenceState()); });
+  channel.on("presence",{event:"leave"},({key})=>{ removeCursor(key); });
+
+  channel.subscribe(async (st)=>{
+    if(st==="SUBSCRIBED"){
+      connected=true; setStatus("live",true);
+      await channel.track({id:ME,color:MYCOLOR,name:MYNAME});
+      send("sync-req",{id:ME});
+      // if nobody answers within 1.2s we're first in the room — keep starter beat
+      setTimeout(()=>{ gotState=true; },1400);
+    } else if(st==="CHANNEL_ERROR"||st==="TIMED_OUT"){
+      connected=false; setStatus("solo mode",false);
+    }
+  });
+}catch(e){ setStatus("solo mode",false); }
+
+/* presence avatars */
+function renderPeers(state){
+  const ids=Object.keys(state);
+  peersEl.innerHTML="";
+  let count=0;
+  ids.forEach(k=>{ const meta=(state[k]&&state[k][0])||{}; count++;
+    const d=document.createElement("span"); d.className="peer"; d.style.background=meta.color||"#888"; d.title=meta.name||"player"; d.textContent=(meta.name||"?")[0]; peersEl.appendChild(d);
+  });
+  if(count>0) setStatus(count+(count===1?" here":" here"),true);
+}
+
+/* remote cursors over the grid */
+const cursorMap={};
+const seqRect=()=>seqEl.getBoundingClientRect();
+let lastSent=0;
+seqEl.addEventListener("pointermove",(e)=>{
+  const now=performance.now(); if(now-lastSent<45) return; lastSent=now;
+  const rc=seqRect(); const x=(e.clientX-rc.left)/rc.width, y=(e.clientY-rc.top)/rc.height;
+  if(x<0||x>1||y<0||y>1) return;
+  send("cursor",{id:ME,x,y,color:MYCOLOR,name:MYNAME});
+});
+function moveCursor(p){
+  let el=cursorMap[p.id];
+  if(!el){
+    el=document.createElement("div"); el.className="cursor";
+    el.innerHTML="<svg width='16' height='16' viewBox='0 0 16 16'><path d='M1 1 L1 12 L4.5 8.8 L7 14 L9 13 L6.6 8 L11 8 Z' fill='"+p.color+"'/></svg><span style='background:"+p.color+"'>"+(p.name||"")+"</span>";
+    cursorsEl.appendChild(el); cursorMap[p.id]=el;
+  }
+  const rc=seqRect(); const host=cursorsEl.getBoundingClientRect();
+  el.style.left=(rc.left-host.left + p.x*rc.width)+"px";
+  el.style.top=(rc.top-host.top + p.y*rc.height)+"px";
+  clearTimeout(el._t); el._t=setTimeout(()=>{ el.style.opacity=0; },2500); el.style.opacity=1;
+}
+function removeCursor(id){ const el=cursorMap[id]; if(el){ el.remove(); delete cursorMap[id]; } }
+
+/* ---------- share ---------- */
+const toast=document.getElementById("toast");
+function showToast(m){ toast.textContent=m; toast.classList.add("show"); setTimeout(()=>toast.classList.remove("show"),1900); }
+document.getElementById("share").addEventListener("click",async ()=>{
+  const url=location.href;
+  try{ await navigator.clipboard.writeText(url); showToast("Room link copied"); }
+  catch(e){ prompt("Copy this room link:",url); }
+});
+
+/* spacebar = play/stop */
+document.addEventListener("keydown",(e)=>{ if(e.code==="Space" && e.target.tagName!=="INPUT"){ e.preventDefault(); playEl.click(); } });
+</script>
+
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
