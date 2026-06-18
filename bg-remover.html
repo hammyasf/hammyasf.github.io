@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Free AI Background Remover — runs in your browser, no upload</title>
+<meta name="description" content="Remove the background from any image with a real AI model that runs 100% in your browser. No upload, no sign-up, no watermark. Get a transparent PNG in seconds, fully private." />
+<meta name="keywords" content="background remover, remove background, remove image background, transparent png, ai background remover, free background remover, no upload background remover, remove bg" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Free AI Background Remover — runs in your browser" />
+<meta property="og:description" content="A real AI model removes image backgrounds entirely on your device. No upload, no sign-up, no watermark. Transparent PNG in seconds." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/bg-remover.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Free AI Background Remover — in your browser" />
+<meta name="twitter:description" content="A real AI model removes backgrounds on-device. No upload, no sign-up, no watermark." />
+<link rel="canonical" href="https://hammyasf.github.io/bg-remover.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"AI Background Remover","url":"https://hammyasf.github.io/bg-remover.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Remove image backgrounds with an AI model that runs entirely in the browser. Private, no upload, transparent PNG output.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my images uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI model is downloaded once to your browser and every image is processed on your own device. Your photos never leave your computer."}},{"@type":"Question","name":"Is it really free with no watermark?","acceptedAnswer":{"@type":"Answer","text":"Yes. No sign-up, no credits, no watermark, and no limit on how many images you process."}},{"@type":"Question","name":"What model does it use?","acceptedAnswer":{"@type":"Answer","text":"It runs RMBG-1.4, an open background-removal model, in your browser via transformers.js and WebAssembly. The first run downloads the model (about 45 MB) and then caches it."}},{"@type":"Question","name":"What do I get out?","acceptedAnswer":{"@type":"Answer","text":"A transparent PNG. You can also drop a solid color behind the cutout before downloading."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:46px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .drop .or{margin-top:14px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .status{margin:0 18px 18px;border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:rgba(var(--surfaceRGB),.5);font-family:var(--mono);font-size:13px;color:var(--muted);display:none;}
+  .status.show{display:block;}
+  .status b{color:var(--accent);}
+  .prog{height:7px;border-radius:6px;background:rgba(237,242,239,.1);overflow:hidden;margin-top:10px;}
+  .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s;}
+  .bgrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:0 24px 8px;font-family:var(--mono);font-size:12px;color:var(--faint);}
+  .bgrow .sw{width:26px;height:26px;border-radius:7px;border:1px solid var(--line-2);cursor:pointer;padding:0;}
+  .bgrow .sw.on{outline:2px solid var(--accent);outline-offset:2px;}
+  .bgrow .check{background-image:linear-gradient(45deg,#888 25%,transparent 25%),linear-gradient(-45deg,#888 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#888 75%),linear-gradient(-45deg,transparent 75%,#888 75%);background-size:10px 10px;background-position:0 0,0 5px,5px -5px,-5px 0;background-color:#bbb;}
+  input[type=color]{width:26px;height:26px;border:none;background:none;padding:0;cursor:pointer;}
+  .results{display:grid;gap:14px;padding:14px 24px 24px;}
+  .item{border:1px solid var(--line);border-radius:14px;padding:14px;background:rgba(var(--surfaceRGB),.4);}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:560px){.pair{grid-template-columns:1fr;}}
+  .ph{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);min-height:120px;display:flex;align-items:center;justify-content:center;}
+  .ph.check{background-image:linear-gradient(45deg,#9aa3a0 25%,transparent 25%),linear-gradient(-45deg,#9aa3a0 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#9aa3a0 75%),linear-gradient(-45deg,transparent 75%,#9aa3a0 75%);background-size:18px 18px;background-position:0 0,0 9px,9px -9px,-9px 0;background-color:#cdd3d1;}
+  .ph img,.ph canvas{display:block;max-width:100%;height:auto;}
+  .ph .lab{position:absolute;top:8px;left:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#07100e;background:var(--accent);padding:3px 8px;border-radius:6px;}
+  .ph .spin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;color:var(--ink);background:rgba(7,16,14,.55);}
+  .spin .ring{width:24px;height:24px;border:3px solid rgba(237,242,239,.25);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;margin-right:10px;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  .item .meta{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;}
+  .item .n{font-size:14px;color:var(--ink);word-break:break-all;}
+  .item .dl{font-family:var(--mono);font-size:12.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:8px 14px;border-radius:8px;cursor:pointer;background:transparent;white-space:nowrap;}
+  .item .dl[disabled]{opacity:.4;cursor:not-allowed;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · AI runs in your browser</div>
+    <h1>AI Background Remover</h1>
+    <p class="sub">Drop in a photo and a real AI model cuts out the background, right here on your device. No upload, no sign-up, no watermark. You get a clean transparent PNG.</p>
+    <span class="priv">&#128274; 100% private — the model runs locally, your photos never leave your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add images">
+      <h2>Drop an image here</h2>
+      <p>or click to choose files · PNG, JPG, WebP · add several at once</p>
+      <div class="or"><button class="btn btn-out" id="sample" type="button">Try a sample photo</button></div>
+      <input type="file" id="file" accept="image/*" multiple hidden />
+    </div>
+
+    <div class="status" id="status"><span id="statusText">Preparing…</span><div class="prog" id="progWrap" style="display:none;"><i id="progBar"></i></div></div>
+
+    <div class="bgrow" id="bgrow" style="display:none;">
+      <span>Backdrop:</span>
+      <button class="sw check on" data-bg="transparent" title="Transparent" aria-label="Transparent"></button>
+      <button class="sw" data-bg="#ffffff" style="background:#fff" title="White" aria-label="White"></button>
+      <button class="sw" data-bg="#000000" style="background:#000" title="Black" aria-label="Black"></button>
+      <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">custom <input type="color" id="bgcolor" value="#2be3b0" /></label>
+    </div>
+
+    <div class="results" id="out"></div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>This runs RMBG-1.4, an open image-segmentation model, directly in your browser using transformers.js and WebAssembly. The first time you use it, the model downloads once (about 45 MB) and is then cached, so every image after that is instant. Each photo is processed on your own machine, which is why there is no upload, no queue, and nothing private leaving your device.</p>
+    <h2>Why on-device matters</h2>
+    <p>Most background removers send your photo to a server, put it behind a sign-up, and stamp a watermark on the result. Running the model locally removes all of that. Your images stay yours, it works the same whether you do one or fifty, and there is no account to create. It even keeps working offline once the model is cached.</p>
+    <h2>Getting the cleanest cutout</h2>
+    <p>Clear subjects with decent contrast against the background give the best edges. For people, products, and pets it is excellent. After the cutout, you can leave it transparent for design work or drop a solid color behind it for a quick profile photo or store listing, then download the PNG.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Are my images uploaded anywhere?</summary><p>No. The AI model is downloaded to your browser and every image is processed locally. Your photos never touch a server.</p></details>
+    <details><summary>Is it free, and is there a watermark?</summary><p>Completely free, no sign-up, no credits, and no watermark on the output.</p></details>
+    <details><summary>Why is the first image slow?</summary><p>The first run downloads the model (about 45 MB). After that it is cached by your browser and every image is fast.</p></details>
+    <details><summary>What format do I get?</summary><p>A transparent PNG. You can also place a solid color behind the cutout before downloading.</p></details>
+    <details><summary>Does it work on phones?</summary><p>It works in modern mobile browsers, but background removal is heavy, so a laptop or desktop is faster and more reliable for large images.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>AI runs in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<script type="module">
+import { AutoModel, AutoProcessor, env, RawImage } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1";
+env.allowLocalModels = false;
+
+var MODEL_ID = "briaai/RMBG-1.4";
+var modelPromise = null, model = null, processor = null, backend = "wasm";
+
+var drop=document.getElementById("drop"), file=document.getElementById("file"), out=document.getElementById("out"),
+    sampleBtn=document.getElementById("sample"), statusBox=document.getElementById("status"), statusText=document.getElementById("statusText"),
+    progWrap=document.getElementById("progWrap"), progBar=document.getElementById("progBar"), bgrow=document.getElementById("bgrow");
+
+var items = [];      // {id, name, sourceCanvas, cutCanvas, done}
+var currentBg = "transparent";
+var seq = 0;
+
+function setStatus(html, showProg){ statusBox.classList.add("show"); statusText.innerHTML=html; progWrap.style.display = showProg ? "block" : "none"; }
+function clearStatus(){ statusBox.classList.remove("show"); }
+
+// ---- model loading (downloads once, then cached by the browser) ----
+function loadModel(){
+  if(modelPromise) return modelPromise;
+  setStatus("Loading the AI model for the first time. This downloads once (~45 MB) then is cached.", true);
+  var files = {};
+  function onProgress(p){
+    if(p && p.status === "progress" && p.file){
+      files[p.file] = (p.loaded||0)/(p.total||1);
+      var vals = Object.keys(files).map(function(k){return files[k];});
+      var avg = vals.reduce(function(a,b){return a+b;},0)/vals.length;
+      progBar.style.width = Math.round(avg*100) + "%";
+    }
+  }
+  modelPromise = (async function(){
+    var useGpu = !!navigator.gpu;
+    try{
+      model = await AutoModel.from_pretrained(MODEL_ID, useGpu
+        ? { progress_callback:onProgress, device:"webgpu", config:{model_type:"custom"} }
+        : { progress_callback:onProgress, config:{model_type:"custom"} });
+      backend = useGpu ? "webgpu" : "wasm";
+    }catch(e){
+      // fall back to CPU/WASM if WebGPU path fails
+      model = await AutoModel.from_pretrained(MODEL_ID, { progress_callback:onProgress, config:{model_type:"custom"} });
+      backend = "wasm";
+    }
+    processor = await AutoProcessor.from_pretrained(MODEL_ID, { config:{
+      do_normalize:true, do_pad:false, do_rescale:true, do_resize:true,
+      image_mean:[0.5,0.5,0.5], image_std:[1,1,1], resample:2,
+      rescale_factor:0.00392156862745098, size:{ width:1024, height:1024 }
+    }});
+    progBar.style.width = "100%";
+    return true;
+  })();
+  return modelPromise;
+}
+
+// ---- per-image background removal ----
+async function removeBg(rawImage){
+  var processed = await processor(rawImage);
+  var result = await model({ input: processed.pixel_values });
+  var output = result.output;
+  var mask = await RawImage.fromTensor(output[0].mul(255).to("uint8")).resize(rawImage.width, rawImage.height);
+  var canvas = document.createElement("canvas");
+  canvas.width = rawImage.width; canvas.height = rawImage.height;
+  var ctx = canvas.getContext("2d");
+  ctx.drawImage(rawImage.toCanvas(), 0, 0);
+  var pix = ctx.getImageData(0,0,canvas.width,canvas.height);
+  for(var i=0;i<mask.data.length;i++){ pix.data[4*i+3] = mask.data[i]; }
+  ctx.putImageData(pix,0,0);
+  return canvas;
+}
+
+// composite a cutout over the chosen backdrop -> returns a canvas
+function withBackdrop(cut, bg){
+  if(bg === "transparent") return cut;
+  var c=document.createElement("canvas"); c.width=cut.width; c.height=cut.height;
+  var x=c.getContext("2d"); x.fillStyle=bg; x.fillRect(0,0,c.width,c.height); x.drawImage(cut,0,0);
+  return c;
+}
+
+function downloadCanvas(canvas, name){ canvas.toBlob(function(b){ var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=name; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},2000); }, "image/png"); }
+
+function renderItem(it){
+  var el=document.createElement("div"); el.className="item"; el.id="it-"+it.id;
+  el.innerHTML =
+    '<div class="pair">'
+    + '<div class="ph"><span class="lab">Before</span></div>'
+    + '<div class="ph check"><span class="lab">After</span><div class="spin"><span class="ring"></span>Removing background…</div></div>'
+    + '</div>'
+    + '<div class="meta"><span class="n">'+it.name+'</span><button class="dl" disabled>Download PNG</button></div>';
+  var phs=el.querySelectorAll(".ph");
+  phs[0].appendChild(it.sourceCanvas);
+  it._afterPh=phs[1]; it._dl=el.querySelector(".dl"); it._spin=el.querySelector(".spin");
+  out.appendChild(el);
+}
+
+function showAfter(it){
+  // remove any existing canvas (keep the label), add the composited result
+  var ph=it._afterPh;
+  var old=ph.querySelector("canvas"); if(old) old.remove();
+  var shown=withBackdrop(it.cutCanvas, currentBg);
+  ph.classList.toggle("check", currentBg==="transparent");
+  if(currentBg!=="transparent") ph.style.background=currentBg;
+  ph.appendChild(shown);
+  it._shown=shown;
+}
+
+async function handleRaw(name, rawImage){
+  var it={ id:++seq, name:name.replace(/\.[^.]+$/,"")+"-no-bg.png", sourceCanvas:rawImage.toCanvas(), cutCanvas:null, done:false };
+  items.push(it); renderItem(it);
+  try{
+    await loadModel();
+    setStatus("Model ready (" + (backend==="webgpu"?"GPU":"CPU/WASM") + "). Processing your image locally…", false);
+    it.cutCanvas = await removeBg(rawImage);
+    it.done=true; if(it._spin) it._spin.remove();
+    showAfter(it);
+    it._dl.disabled=false;
+    it._dl.addEventListener("click", function(){ downloadCanvas(it._shown||it.cutCanvas, it.name); });
+    bgrow.style.display="flex";
+    setStatus("Done. Everything ran on your device &mdash; <b>nothing was uploaded</b>.", false);
+  }catch(err){
+    if(it._spin) it._spin.innerHTML="Could not process this image";
+    setStatus("Something went wrong loading or running the model. Try a different image or a desktop browser.", false);
+    console.error(err);
+  }
+}
+
+async function addFiles(files){
+  for(var i=0;i<files.length;i++){
+    var f=files[i]; if(f.type.indexOf("image/")!==0) continue;
+    var url=URL.createObjectURL(f);
+    try{ var raw=await RawImage.fromURL(url); await handleRaw(f.name, raw); }
+    catch(e){ console.error(e); }
+    finally{ URL.revokeObjectURL(url); }
+  }
+}
+
+// re-render all afters when the backdrop changes
+document.querySelectorAll("#bgrow .sw").forEach(function(sw){
+  sw.addEventListener("click", function(){
+    document.querySelectorAll("#bgrow .sw").forEach(function(x){x.classList.remove("on");});
+    sw.classList.add("on"); currentBg=sw.getAttribute("data-bg");
+    items.forEach(function(it){ if(it.done) showAfter(it); });
+  });
+});
+document.getElementById("bgcolor").addEventListener("input", function(e){
+  currentBg=e.target.value;
+  document.querySelectorAll("#bgrow .sw").forEach(function(x){x.classList.remove("on");});
+  items.forEach(function(it){ if(it.done) showAfter(it); });
+});
+
+// inputs
+drop.addEventListener("click", function(e){ if(e.target.id!=="sample") file.click(); });
+drop.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); file.click(); } });
+["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+drop.addEventListener("drop", function(e){ addFiles(e.dataTransfer.files); });
+file.addEventListener("change", function(){ addFiles(file.files); });
+sampleBtn.addEventListener("click", async function(e){
+  e.stopPropagation();
+  var sample="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80&fit=crop";
+  try{ setStatus("Loading a sample photo…", false); var raw=await RawImage.fromURL(sample); await handleRaw("sample.jpg", raw); }
+  catch(err){ setStatus("Could not load the sample. Try dropping your own image instead.", false); }
+});
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon (public client token). -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
