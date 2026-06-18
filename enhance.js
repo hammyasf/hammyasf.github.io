@@ -70,6 +70,11 @@
   ".gh-item:hover{border-color:rgba(var(--accentRGB,43,227,176),.4);transform:translateY(-3px);background:rgba(var(--accentRGB,43,227,176),.05);}"+
   ".gh-item .n{font-family:var(--display,sans-serif);font-weight:600;font-size:18px;color:var(--ink,#edf2ef);letter-spacing:-.01em;}"+
   ".gh-item .d{font-size:14px;color:var(--muted,#93a8a1);margin-top:6px;}.gh-item .m{font-family:var(--mono,monospace);font-size:11.5px;color:var(--faint,#7c8b84);margin-top:10px;display:flex;gap:14px;}.gh-item .m b{color:var(--accent,#2be3b0);font-weight:400;}"+
+  "a:focus-visible,button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent,#2be3b0);outline-offset:3px;border-radius:5px;}"+
+  ":where([id]){scroll-margin-top:92px;}"+
+  ":root{--scrim:rgba(var(--surfaceRGB,11,23,20),.8);}"+
+  "::selection{background:var(--accent,#2be3b0);color:#07100e;}"+
+  "::-webkit-scrollbar{width:10px;height:10px;}::-webkit-scrollbar-thumb{background:rgba(var(--accentRGB,43,227,176),.45);border-radius:8px;border:2px solid transparent;background-clip:content-box;}::-webkit-scrollbar-thumb:hover{background:rgba(var(--accentRGB,43,227,176),.7);}::-webkit-scrollbar-track{background:transparent;}"+
   "@media(prefers-reduced-motion:reduce){#xcurtain,#cmdk,#term,#cheat{transition:none;animation:none;}}";
   var st=D.createElement("style"); st.textContent=css; D.head.appendChild(st);
 
@@ -226,7 +231,7 @@
   function buildCheat(){
     if(cheatBuilt)return; cheatBuilt=true;
     cheatOv=D.createElement("div"); cheatOv.className="ov"; cheatOv.id="cheat-ov";
-    var rows=[["&#8984;K / Ctrl+K","Command palette"],["`","Terminal"],["?","This cheat sheet"],["t","Cycle theme"],["p","Play the game"],["g then h","Home"],["g then w","Work"],["g then b","Blog"],["g then c","Contact"],["esc","Close"]];
+    var rows=[["&#8984;K / Ctrl+K","Command palette"],["`","Terminal"],["?","This cheat sheet"],["g then h","Home"],["g then w","Work"],["g then b","Blog"],["g then c","Contact"],["esc","Close"],["&#8984;K","Theme, game &amp; more"]];
     cheatOv.innerHTML='<div id="cheat" role="dialog" aria-label="Keyboard shortcuts"><h3>Keyboard shortcuts</h3>'+rows.map(function(r){return '<div class="k"><span>'+r[1]+'</span><kbd>'+r[0]+'</kbd></div>';}).join("")+'</div>';
     D.body.appendChild(cheatOv); cheatOv.addEventListener("click",function(e){ if(e.target===cheatOv) cheatOv.classList.remove("on"); });
   }
@@ -253,9 +258,6 @@
     }
     if(k==="?"){ e.preventDefault(); openCheat(); }
     else if(k==="`"){ e.preventDefault(); if(termOv&&termOv.classList.contains("on"))closeTerm(); else openTerm(); }
-    else if(k==="t"){ cycleTheme(); }
-    else if(k==="p"){ playGame(); }
-    else if(k==="k"){ openP(); }
     else if(k==="g"){ gPending=true; clearTimeout(gT); gT=setTimeout(function(){gPending=false;},800); }
   });
 
