@@ -17,6 +17,9 @@
     root.style.setProperty("--accentRGB",t.rgb); root.style.setProperty("--lime",t.a); root.style.setProperty("--lime-2",t.l2);
     try{localStorage.setItem("siteTheme",name);}catch(e){}
     try{ var tr=JSON.parse(localStorage.getItem("themesTried")||"[]"); if(tr.indexOf(name)<0){tr.push(name);localStorage.setItem("themesTried",JSON.stringify(tr));} if(tr.length>=4) unlock("themer"); }catch(e){}
+    window.__accentRGB=t.rgb.split(",").map(function(n){return +n/255;});
+    try{ var ic=document.querySelector('link[rel="icon"]'); if(!ic){ic=document.createElement("link");ic.setAttribute("rel","icon");document.head.appendChild(ic);} ic.setAttribute("href","data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="26" fill="'+t.a+'"/><text x="50" y="72" font-size="60" font-family="Arial,sans-serif" font-weight="800" fill="#07100e" text-anchor="middle">H</text></svg>')); }catch(e){}
+    try{ window.dispatchEvent(new Event("themechange")); }catch(e){}
   }
   function currentTheme(){ try{return localStorage.getItem("siteTheme")||"jade";}catch(e){return "jade";} }
   function cycleTheme(){ var i=THEME_ORDER.indexOf(currentTheme()); var n=THEME_ORDER[(i+1)%THEME_ORDER.length]; applyTheme(n); showToast("Theme: "+n.charAt(0).toUpperCase()+n.slice(1)); }
