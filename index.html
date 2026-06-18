@@ -833,7 +833,8 @@
       scrollVel+=(velTarget-scrollVel)*0.25; if(Math.abs(scrollVel)<0.01)scrollVel=0; raf(tick); } raf(tick); })();
 
   /* ---------- section index ---------- */
-  (function(){ var sn=document.getElementById('six-n'),snm=document.getElementById('six-name'),tot=document.getElementById('six-tot'),box=document.getElementById('secidx');
+  (function(){ var raf=window.requestAnimationFrame?window.requestAnimationFrame.bind(window):function(f){setTimeout(f,16);};
+    var sn=document.getElementById('six-n'),snm=document.getElementById('six-name'),tot=document.getElementById('six-tot'),box=document.getElementById('secidx');
     var all=Array.prototype.slice.call(document.querySelectorAll('[data-name]')); if(!all.length)return;
     function pad(n){return ('0'+n).slice(-2);}
     function visible(){ return all.filter(function(s){ var r=s.getBoundingClientRect(); return s.offsetParent!==null && r.height>0; }); }
