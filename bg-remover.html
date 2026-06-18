@@ -225,6 +225,10 @@ async function removeBg(rawImage){
   return canvas;
 }
 
+// RawImage.toCanvas() can return an OffscreenCanvas, which cannot be added to the DOM.
+// Copy it into a real <canvas> so it can be displayed.
+function toDomCanvas(src){ var c=document.createElement("canvas"); c.width=src.width; c.height=src.height; c.getContext("2d").drawImage(src,0,0); return c; }
+
 // composite a cutout over the chosen backdrop -> returns a canvas
 function withBackdrop(cut, bg){
   if(bg === "transparent") return cut;
@@ -261,7 +265,7 @@ function showAfter(it){
 }
 
 async function handleRaw(name, rawImage){
-  var it={ id:++seq, name:name.replace(/\.[^.]+$/,"")+"-no-bg.png", sourceCanvas:rawImage.toCanvas(), cutCanvas:null, done:false };
+  var it={ id:++seq, name:name.replace(/\.[^.]+$/,"")+"-no-bg.png", sourceCanvas:toDomCanvas(rawImage.toCanvas()), cutCanvas:null, done:false };
   items.push(it); renderItem(it);
   try{
     await loadModel();
