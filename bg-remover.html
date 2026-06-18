@@ -321,9 +321,16 @@ drop.addEventListener("drop", function(e){ addFiles(e.dataTransfer.files); });
 file.addEventListener("change", function(){ addFiles(file.files); });
 sampleBtn.addEventListener("click", async function(e){
   e.stopPropagation();
-  var sample="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80&fit=crop";
-  try{ setStatus("Loading a sample photo…", false); var raw=await RawImage.fromURL(sample); await handleRaw("sample.jpg", raw); }
-  catch(err){ setStatus("Could not load the sample. Try dropping your own image instead.", false); }
+  var samples=[
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80",
+    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=600&q=80"
+  ];
+  setStatus("Loading a sample photo…", false);
+  for(var i=0;i<samples.length;i++){
+    try{ var raw=await RawImage.fromURL(samples[i]); await handleRaw("sample.jpg", raw); return; }
+    catch(err){ /* try next */ }
+  }
+  setStatus("Could not load the sample. Try dropping your own image instead.", false);
 });
 </script>
 <!-- Analytics: Cloudflare Web Analytics beacon (public client token). -->
