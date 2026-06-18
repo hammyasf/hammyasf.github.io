@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Image to PDF Converter — JPG &amp; PNG to PDF, Free &amp; Private</title>
+<meta name="description" content="Convert JPG, PNG, and WebP images into a single PDF right in your browser. Reorder pages, set page size, orientation, and margins. 100% private, nothing is uploaded, no sign-up." />
+<meta name="keywords" content="image to pdf, jpg to pdf, png to pdf, photo to pdf, convert images to pdf, combine images into pdf, picture to pdf, free image to pdf converter" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Image to PDF Converter — JPG &amp; PNG to PDF" />
+<meta property="og:description" content="Turn JPG, PNG, and WebP images into one PDF in your browser. Reorder, set page size and margins. No uploads, no sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/image-to-pdf.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Image to PDF Converter — JPG &amp; PNG to PDF" />
+<meta name="twitter:description" content="Turn JPG, PNG, and WebP images into one PDF in your browser. Private, no sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/image-to-pdf.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Image to PDF Converter","url":"https://hammyasf.github.io/image-to-pdf.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Convert JPG, PNG and WebP images into a single PDF in the browser. Reorder, page size, orientation, margins. Private, no upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my images uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The PDF is built entirely in your browser. Your images never leave your device, which is why it is instant and private."}},{"@type":"Question","name":"What image formats can I turn into a PDF?","acceptedAnswer":{"@type":"Answer","text":"JPG, PNG, WebP, GIF, and BMP. Each image becomes one page in the PDF, in the order you arrange them."}},{"@type":"Question","name":"Can I change the order of the images?","acceptedAnswer":{"@type":"Answer","text":"Yes. Drag the thumbnails to reorder them, or use the up and down buttons. You can also remove any image before building the PDF."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up and no limit on the number of images."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:46px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .controls{display:flex;flex-wrap:wrap;gap:18px 28px;padding:0 24px 20px;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 15px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  input[type=range]{accent-color:var(--accent);width:150px;}
+  input[type=number]{width:90px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:13px;}
+  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:34px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 24px 22px;}
+  .summary{font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .summary b{color:var(--accent);}
+  .results{display:grid;gap:12px;padding:0 24px 24px;}
+  .item{display:grid;grid-template-columns:24px 56px 1fr auto;gap:14px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:rgba(var(--surfaceRGB),.4);cursor:grab;}
+  .item.dragging{opacity:.45;}
+  .item .ord{font-family:var(--mono);font-size:13px;color:var(--faint);text-align:center;}
+  .item img{width:56px;height:56px;object-fit:cover;border-radius:8px;background:#0a0a0a;}
+  .item .n{font-size:14px;color:var(--ink);word-break:break-all;}
+  .item .m{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:3px;}
+  .item .ops{display:flex;gap:6px;align-items:center;}
+  .item .ops button{font-family:var(--mono);font-size:13px;color:var(--muted);border:1px solid var(--line-2);background:transparent;border-radius:8px;width:30px;height:30px;cursor:pointer;transition:.15s;}
+  .item .ops button:hover{color:var(--accent);border-color:rgba(var(--accentRGB),.5);}
+  .item .ops .rm:hover{color:#ff7a7a;border-color:rgba(255,122,122,.5);}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.item{grid-template-columns:20px 44px 1fr;}.item .ops{grid-column:2/4;justify-self:start;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Image to PDF Converter</h1>
+    <p class="sub">Turn JPG, PNG, and WebP images into a single PDF. Drag to reorder, pick the page size, and download. One image per page.</p>
+    <span class="priv">&#128274; 100% private — your images never leave your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add images">
+      <h2>Drop images here</h2>
+      <p>or click to choose files · JPG, PNG, WebP, GIF, BMP</p>
+      <input type="file" id="file" accept="image/*" multiple hidden />
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Page size</label>
+        <div class="seg" id="size">
+          <button data-s="fit" class="on">Fit to image</button>
+          <button data-s="a4">A4</button>
+          <button data-s="letter">Letter</button>
+        </div>
+      </div>
+      <div class="ctl"><label>Orientation</label>
+        <div class="seg" id="orient">
+          <button data-o="auto" class="on">Auto</button>
+          <button data-o="portrait">Portrait</button>
+          <button data-o="landscape">Landscape</button>
+        </div>
+      </div>
+      <div class="ctl"><label>Margin (mm)</label>
+        <input type="number" id="margin" value="10" min="0" max="50" />
+      </div>
+      <div class="ctl"><label>Image quality</label>
+        <div style="display:flex;align-items:center;gap:10px;"><input type="range" id="q" min="60" max="100" value="92" /><span class="qval" id="qv">92</span></div>
+      </div>
+    </div>
+    <div class="bar">
+      <button class="btn" id="go" disabled>Create PDF</button>
+      <button class="btn btn-out" id="clear" disabled>Clear all</button>
+      <span class="summary" id="sum"></span>
+    </div>
+    <div class="results" id="out"></div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Drop in your images, arrange them in the order you want, and the tool writes a real PDF file in your browser with one image per page. There is no upload and no waiting in a queue, because the whole PDF is assembled locally on your device. That is what makes it instant and keeps your photos and documents private.</p>
+    <h2>Page size and margins</h2>
+    <p>Use Fit to image when you want each page to match the picture exactly, which is ideal for screenshots, receipts, and artwork. Choose A4 or Letter when the PDF needs to print on standard paper, and set a margin in millimetres so nothing runs to the edge. Auto orientation picks portrait or landscape per page based on the shape of each image.</p>
+    <h2>Tips for a clean PDF</h2>
+    <p>Drag the thumbnails to reorder pages before you build the file. Keep image quality around 90 for sharp photos at a sensible size, and drop it lower if you need a smaller PDF to email. For multi-page scans of a document, A4 or Letter with a small margin reads best on screen and on paper.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Are my images uploaded anywhere?</summary><p>No. The PDF is built locally in your browser. Your files never touch a server, which is why it is instant and private.</p></details>
+    <details><summary>What image formats does it support?</summary><p>JPG, PNG, WebP, GIF, and BMP. Each image becomes one page in the order you arrange them.</p></details>
+    <details><summary>Can I reorder or remove images?</summary><p>Yes. Drag a thumbnail to move it, use the up and down arrows, or remove any image before building the PDF.</p></details>
+    <details><summary>Is there a limit on how many images?</summary><p>No sign-up and no hard limit. Very large batches are bounded only by your device's memory.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var drop=document.getElementById("drop"),file=document.getElementById("file"),out=document.getElementById("out"),
+      go=document.getElementById("go"),clearBtn=document.getElementById("clear"),sum=document.getElementById("sum"),
+      q=document.getElementById("q"),qv=document.getElementById("qv"),marginEl=document.getElementById("margin");
+  var sizeMode="fit", orient="auto", items=[], uid=0, dragId=null;
+  var PT=0.75, MM=72/25.4; // px->pt at 96dpi; mm->pt
+
+  document.querySelectorAll("#size button").forEach(function(b){ b.addEventListener("click",function(){ document.querySelectorAll("#size button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); sizeMode=b.getAttribute("data-s"); }); });
+  document.querySelectorAll("#orient button").forEach(function(b){ b.addEventListener("click",function(){ document.querySelectorAll("#orient button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); orient=b.getAttribute("data-o"); }); });
+  q.addEventListener("input",function(){ qv.textContent=q.value; });
+  drop.addEventListener("click",function(){ file.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();file.click();} });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop",function(e){ addFiles(e.dataTransfer.files); });
+  file.addEventListener("change",function(){ addFiles(file.files); file.value=""; });
+
+  function fmtSize(b){ return b<1024?b+" B":b<1048576?(b/1024).toFixed(1)+" KB":(b/1048576).toFixed(2)+" MB"; }
+
+  function addFiles(files){
+    var pending=0;
+    for(var i=0;i<files.length;i++){ (function(f){
+      if(f.type.indexOf("image/")!==0) return;
+      pending++;
+      var url=URL.createObjectURL(f), img=new Image();
+      img.onload=function(){
+        items.push({id:++uid,file:f,w:img.naturalWidth,h:img.naturalHeight,thumb:url});
+        if(--pending===0) render();
+      };
+      img.onerror=function(){ URL.revokeObjectURL(url); if(--pending===0) render(); };
+      img.src=url;
+    })(files[i]); }
+    if(pending===0) render();
+  }
+
+  function move(id,dir){ var i=items.findIndex(function(x){return x.id===id;}); var j=i+dir; if(j<0||j>=items.length)return; var t=items[i];items[i]=items[j];items[j]=t; render(); }
+  function remove(id){ var i=items.findIndex(function(x){return x.id===id;}); if(i>=0){ if(items[i].thumb) URL.revokeObjectURL(items[i].thumb); items.splice(i,1);} render(); }
+
+  function render(){
+    out.innerHTML="";
+    items.forEach(function(it,idx){
+      var el=document.createElement("div"); el.className="item"; el.draggable=true; el.dataset.id=it.id;
+      el.innerHTML='<div class="ord">'+(idx+1)+'</div><img src="'+it.thumb+'" alt=""><div><div class="n">'+escapeHtml(it.file.name)+'</div><div class="m">'+it.w+' &times; '+it.h+' px · '+fmtSize(it.file.size)+'</div></div>'+
+        '<div class="ops"><button class="up" title="Move up" aria-label="Move up">&#8593;</button><button class="dn" title="Move down" aria-label="Move down">&#8595;</button><button class="rm" title="Remove" aria-label="Remove">&times;</button></div>';
+      el.querySelector(".up").addEventListener("click",function(){ move(it.id,-1); });
+      el.querySelector(".dn").addEventListener("click",function(){ move(it.id,1); });
+      el.querySelector(".rm").addEventListener("click",function(){ remove(it.id); });
+      el.addEventListener("dragstart",function(){ dragId=it.id; el.classList.add("dragging"); });
+      el.addEventListener("dragend",function(){ dragId=null; el.classList.remove("dragging"); });
+      el.addEventListener("dragover",function(e){ e.preventDefault(); });
+      el.addEventListener("drop",function(e){ e.preventDefault(); if(dragId==null||dragId===it.id)return;
+        var from=items.findIndex(function(x){return x.id===dragId;}), to=items.findIndex(function(x){return x.id===it.id;});
+        var m=items.splice(from,1)[0]; items.splice(to,0,m); render();
+      });
+      out.appendChild(el);
+    });
+    var n=items.length;
+    go.disabled=n===0; clearBtn.disabled=n===0;
+    sum.textContent=n? (n+" image"+(n>1?"s":"")+" · "+n+" page"+(n>1?"s":"")) : "";
+  }
+
+  function escapeHtml(s){ return s.replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
+
+  clearBtn.addEventListener("click",function(){ items.forEach(function(it){ if(it.thumb)URL.revokeObjectURL(it.thumb); }); items=[]; render(); sum.textContent=""; });
+
+  // ---- render one image to a JPEG byte array via canvas ----
+  function imageToJpegBytes(fileObj,quality){ return new Promise(function(res,rej){
+    var url=URL.createObjectURL(fileObj), img=new Image();
+    img.onload=function(){
+      var c=document.createElement("canvas"); c.width=img.naturalWidth; c.height=img.naturalHeight;
+      var ctx=c.getContext("2d"); ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,c.width,c.height); ctx.drawImage(img,0,0);
+      URL.revokeObjectURL(url);
+      var durl=c.toDataURL("image/jpeg",quality);
+      var b64=durl.substring(durl.indexOf(",")+1);
+      var bin=atob(b64), len=bin.length, bytes=new Uint8Array(len);
+      for(var i=0;i<len;i++) bytes[i]=bin.charCodeAt(i);
+      res({bytes:bytes,w:c.width,h:c.height});
+    };
+    img.onerror=function(){ URL.revokeObjectURL(url); rej(new Error("decode failed")); };
+    img.src=url;
+  }); }
+
+  // ---- page geometry in PDF points ----
+  function geom(iw,ih){
+    var iwpt=iw*PT, ihpt=ih*PT;
+    if(sizeMode==="fit"){ return {pw:iwpt,ph:ihpt,x:0,y:0,w:iwpt,h:ihpt}; }
+    var base = sizeMode==="a4"?[595.28,841.89]:[612,792];
+    var portrait=base, land=[base[1],base[0]], page;
+    if(orient==="portrait")page=portrait; else if(orient==="landscape")page=land; else page=(iw>ih)?land:portrait;
+    var m=Math.max(0,parseFloat(marginEl.value)||0)*MM;
+    var availW=Math.max(1,page[0]-2*m), availH=Math.max(1,page[1]-2*m);
+    var scale=Math.min(availW/iwpt, availH/ihpt);
+    var dw=iwpt*scale, dh=ihpt*scale;
+    return {pw:page[0],ph:page[1],x:(page[0]-dw)/2,y:(page[1]-dh)/2,w:dw,h:dh};
+  }
+
+  function fmtN(n){ return (Math.round(n*100)/100).toString(); }
+  function pad10(n){ return ("0000000000"+n).slice(-10); }
+
+  function buildPDF(pages){
+    var chunks=[], offset=0, objOff=[];
+    function strBytes(s){ var a=new Uint8Array(s.length); for(var i=0;i<s.length;i++)a[i]=s.charCodeAt(i)&0xff; return a; }
+    function push(arr){ chunks.push(arr); offset+=arr.length; }
+    function pushStr(s){ push(strBytes(s)); }
+    pushStr("%PDF-1.4\n%ÿÿÿÿ\n");
+    var N=pages.length, totalObjs=2+N*3;
+    objOff[1]=offset; pushStr("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+    var kids=""; for(var k=0;k<N;k++) kids+=(3+k*3)+" 0 R ";
+    objOff[2]=offset; pushStr("2 0 obj\n<< /Type /Pages /Kids ["+kids.trim()+"] /Count "+N+" >>\nendobj\n");
+    for(var k=0;k<N;k++){
+      var p=pages[k], pageNum=3+k*3, contentNum=4+k*3, imgNum=5+k*3, g=p.g;
+      objOff[pageNum]=offset;
+      pushStr(pageNum+" 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+fmtN(g.pw)+" "+fmtN(g.ph)+"] /Resources << /XObject << /Im0 "+imgNum+" 0 R >> >> /Contents "+contentNum+" 0 R >>\nendobj\n");
+      var content="q\n"+fmtN(g.w)+" 0 0 "+fmtN(g.h)+" "+fmtN(g.x)+" "+fmtN(g.y)+" cm\n/Im0 Do\nQ\n";
+      objOff[contentNum]=offset;
+      pushStr(contentNum+" 0 obj\n<< /Length "+content.length+" >>\nstream\n"+content+"endstream\nendobj\n");
+      objOff[imgNum]=offset;
+      pushStr(imgNum+" 0 obj\n<< /Type /XObject /Subtype /Image /Width "+p.w+" /Height "+p.h+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+p.bytes.length+" >>\nstream\n");
+      push(p.bytes); pushStr("\nendstream\nendobj\n");
+    }
+    var xrefPos=offset, size=totalObjs+1, xref="xref\n0 "+size+"\n0000000000 65535 f \n";
+    for(var n=1;n<=totalObjs;n++) xref+=pad10(objOff[n])+" 00000 n \n";
+    pushStr(xref);
+    pushStr("trailer\n<< /Size "+size+" /Root 1 0 R >>\nstartxref\n"+xrefPos+"\n%%EOF");
+    var totalLen=0; chunks.forEach(function(c){totalLen+=c.length;});
+    var all=new Uint8Array(totalLen), pos=0; chunks.forEach(function(c){all.set(c,pos);pos+=c.length;});
+    return new Blob([all],{type:"application/pdf"});
+  }
+
+  go.addEventListener("click",function(){
+    if(!items.length) return;
+    go.disabled=true; clearBtn.disabled=true; sum.textContent="Building PDF…";
+    var quality=parseInt(q.value,10)/100, pages=[], i=0;
+    (function next(){
+      if(i>=items.length){
+        try{
+          var blob=buildPDF(pages);
+          var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="images.pdf"; a.click();
+          setTimeout(function(){ URL.revokeObjectURL(a.href); },4000);
+          sum.innerHTML="Done · <b>"+pages.length+" page"+(pages.length>1?"s":"")+"</b> · "+fmtSize(blob.size);
+        }catch(err){ sum.textContent="Something went wrong building the PDF. Try fewer or smaller images."; }
+        go.disabled=false; clearBtn.disabled=false; return;
+      }
+      var it=items[i];
+      imageToJpegBytes(it.file,quality).then(function(r){
+        pages.push({bytes:r.bytes,w:r.w,h:r.h,g:geom(r.w,r.h)});
+        i++; sum.textContent="Building PDF… "+i+"/"+items.length; next();
+      }).catch(function(){ i++; next(); });
+    })();
+  });
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. Replace TOKEN with the token from your Cloudflare dashboard (free). -->
+<!-- <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"TOKEN"}'></script> -->
+</body>
+</html>
