@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Free Audio to Text — Whisper transcription in your browser, no upload</title>
+<meta name="description" content="Transcribe audio to text and subtitles with a real Whisper AI model that runs 100% in your browser. No upload, no sign-up, no limits. Export TXT, SRT and VTT, fully private." />
+<meta name="keywords" content="audio to text, transcribe audio, speech to text, whisper in browser, audio to subtitles, generate srt, audio to srt, free transcription, transcribe audio no upload, speech to text free" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Free Audio to Text — Whisper transcription in your browser" />
+<meta property="og:description" content="A real Whisper AI model transcribes audio entirely on your device. No upload, no sign-up. Export transcript, SRT and VTT subtitles." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/audio-to-text.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Free Audio to Text — Whisper in your browser" />
+<meta name="twitter:description" content="A real Whisper model transcribes audio on-device. No upload, no sign-up. TXT, SRT, VTT export." />
+<link rel="canonical" href="https://hammyasf.github.io/audio-to-text.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Audio to Text — Whisper in your browser","url":"https://hammyasf.github.io/audio-to-text.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Transcribe audio to text and subtitles with a Whisper AI model that runs entirely in the browser. Private, no upload, exports TXT, SRT and VTT.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my audio uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The Whisper model is downloaded once to your browser and every file is transcribed on your own device. Your audio never leaves your computer."}},{"@type":"Question","name":"Is it really free with no limits?","acceptedAnswer":{"@type":"Answer","text":"Yes. No sign-up, no minutes cap, no watermark. Because it runs on your machine there is no per-minute cost to pass on to you."}},{"@type":"Question","name":"What model does it use?","acceptedAnswer":{"@type":"Answer","text":"It runs OpenAI's Whisper (base) in your browser via transformers.js, on WebGPU when available and WebAssembly otherwise. The first run downloads the model (about 80 MB) and then caches it."}},{"@type":"Question","name":"Can I get subtitles?","acceptedAnswer":{"@type":"Answer","text":"Yes. It produces timestamped segments and you can export them as SRT or VTT subtitle files, or as plain text."}},{"@type":"Question","name":"What languages are supported?","acceptedAnswer":{"@type":"Answer","text":"Whisper is multilingual and auto-detects the spoken language. You can also have it translate the audio into English."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:42px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .btn-rec{background:#ff5a5a;color:#0c0606;}
+  .opts{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:0 24px 6px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  .opts label{display:inline-flex;align-items:center;gap:7px;cursor:pointer;}
+  .opts select{font-family:var(--mono);font-size:12.5px;background:rgba(var(--surfaceRGB),.7);color:var(--ink);border:1px solid var(--line-2);border-radius:8px;padding:6px 9px;cursor:pointer;}
+  .status{margin:0 18px 18px;border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:rgba(var(--surfaceRGB),.5);font-family:var(--mono);font-size:13px;color:var(--muted);display:none;}
+  .status.show{display:block;}
+  .status b{color:var(--accent);}
+  .prog{height:7px;border-radius:6px;background:rgba(237,242,239,.1);overflow:hidden;margin-top:10px;}
+  .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s;}
+  .prog.indet i{width:35%;animation:slide 1.1s var(--ease) infinite;}
+  @keyframes slide{0%{margin-left:-35%;}100%{margin-left:100%;}}
+  .reclive{display:none;align-items:center;justify-content:center;gap:12px;margin:0 18px 18px;font-family:var(--mono);font-size:13px;color:#ff8a8a;}
+  .reclive.show{display:flex;}
+  .reclive .blink{width:11px;height:11px;border-radius:50%;background:#ff5a5a;animation:bk 1s steps(2,start) infinite;}
+  @keyframes bk{50%{opacity:.2;}}
+  .result{display:none;padding:6px 24px 24px;}
+  .result.show{display:block;}
+  .rhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:10px 0 12px;}
+  .rhead .ttl{font-family:var(--display);font-weight:600;font-size:18px;}
+  .exports{display:flex;gap:8px;flex-wrap:wrap;}
+  .exports button{font-family:var(--mono);font-size:12.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:8px 13px;border-radius:8px;cursor:pointer;background:transparent;white-space:nowrap;transition:background .2s;}
+  .exports button:hover{background:rgba(var(--accentRGB),.1);}
+  .ta{width:100%;min-height:150px;resize:vertical;font-family:var(--body);font-size:15.5px;line-height:1.7;color:var(--ink);background:rgba(var(--surfaceRGB),.4);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+  .segs{margin-top:16px;border-top:1px solid var(--line);}
+  .seg{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line);font-size:15px;}
+  .seg .t{font-family:var(--mono);font-size:11.5px;color:var(--accent);padding-top:2px;}
+  .seg .t b{display:block;color:var(--faint);font-weight:400;}
+  .seg .x{color:#dbe4e0;}
+  @media(max-width:520px){.seg{grid-template-columns:74px 1fr;}}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 20px;border-radius:100px;opacity:0;pointer-events:none;transition:.25s;z-index:99;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · Whisper runs in your browser</div>
+    <h1>Audio to Text</h1>
+    <p class="sub">Drop in a recording and a real Whisper AI model transcribes it, right here on your device. No upload, no sign-up, no minute limits. Get clean text plus timestamped SRT and VTT subtitles.</p>
+    <span class="priv">&#128274; 100% private — the model runs locally, your audio never leaves your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add audio">
+      <h2>Drop an audio or video file here</h2>
+      <p>or click to choose · MP3, WAV, M4A, OGG, WebM, MP4 · any length</p>
+      <div class="actions">
+        <button class="btn btn-rec" id="recBtn" type="button">&#127908; Record from mic</button>
+        <button class="btn btn-out" id="sample" type="button">Try a sample clip</button>
+      </div>
+      <input type="file" id="file" accept="audio/*,video/*" hidden />
+    </div>
+
+    <div class="opts">
+      <label>Task
+        <select id="task">
+          <option value="transcribe" selected>Transcribe (same language)</option>
+          <option value="translate">Translate to English</option>
+        </select>
+      </label>
+      <label>Engine <span id="engine">detecting…</span></label>
+    </div>
+
+    <div class="reclive" id="reclive"><span class="blink"></span> Recording <span id="recTime">0:00</span> — <a href="#" id="recStop" style="color:#ff8a8a;text-decoration:underline;">stop &amp; transcribe</a></div>
+
+    <div class="status" id="status"><span id="statusText">Preparing…</span><div class="prog" id="progWrap" style="display:none;"><i id="progBar"></i></div></div>
+
+    <div class="result" id="result">
+      <div class="rhead">
+        <span class="ttl">Transcript</span>
+        <div class="exports">
+          <button id="copyBtn">Copy text</button>
+          <button id="txtBtn">Download .txt</button>
+          <button id="srtBtn">Download .srt</button>
+          <button id="vttBtn">Download .vtt</button>
+        </div>
+      </div>
+      <textarea class="ta" id="ta" spellcheck="false" aria-label="Transcript text"></textarea>
+      <div class="segs" id="segs"></div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How does this run locally?</h2>
+    <p>This page runs OpenAI's Whisper speech-recognition model directly in your browser using transformers.js. When your device supports WebGPU it runs on the GPU; otherwise it falls back to WebAssembly on the CPU. The model downloads once (about 80 MB) and is then cached, so later files start instantly. Your audio is decoded and transcribed on your own machine, which is why there is no upload, no queue, and nothing private leaving your device.</p>
+    <h2>Why on-device matters</h2>
+    <p>Most transcription tools send your audio to a server, meter you by the minute, and hide the result behind a sign-up. Running the model locally removes all of that. Your recordings stay yours, it costs nothing per minute, and there is no account to create. It even keeps working offline once the model is cached, which is handy for interviews, lectures, and voice notes you would rather not hand to a third party.</p>
+    <h2>Transcript and subtitles</h2>
+    <p>You get an editable transcript plus a list of timestamped segments. Export plain text for notes, or SRT and VTT subtitle files to drop straight into a video editor or upload alongside a clip. Whisper is multilingual and detects the spoken language automatically, and you can switch the task to translate non-English audio into English text.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my audio uploaded anywhere?</summary><p>No. The Whisper model is downloaded to your browser and every file is transcribed locally. Your audio never touches a server.</p></details>
+    <details><summary>Is it free, and are there limits?</summary><p>Completely free, no sign-up, no per-minute cap, no watermark. It runs on your machine, so there is no cost to pass on.</p></details>
+    <details><summary>Why is the first run slow?</summary><p>The first time, the model downloads (about 80 MB) and your browser caches it. After that it loads instantly and transcription is much faster, especially on a machine with WebGPU.</p></details>
+    <details><summary>What can I export?</summary><p>An editable text transcript, a plain .txt file, and SRT or VTT subtitle files with timestamps for video.</p></details>
+    <details><summary>Does it work on phones?</summary><p>It runs in modern mobile browsers, but transcription is heavy. A laptop or desktop, ideally with WebGPU, is faster and more reliable for longer recordings.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>AI runs in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<div class="toast" id="toast">Copied</div>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var drop=document.getElementById("drop"), file=document.getElementById("file"), sampleBtn=document.getElementById("sample"),
+      recBtn=document.getElementById("recBtn"), reclive=document.getElementById("reclive"), recStop=document.getElementById("recStop"), recTime=document.getElementById("recTime"),
+      statusBox=document.getElementById("status"), statusText=document.getElementById("statusText"), progWrap=document.getElementById("progWrap"), progBar=document.getElementById("progBar"),
+      result=document.getElementById("result"), ta=document.getElementById("ta"), segsEl=document.getElementById("segs"),
+      taskSel=document.getElementById("task"), engineEl=document.getElementById("engine"), toast=document.getElementById("toast");
+
+  var hasWebGPU = !!(navigator.gpu);
+  engineEl.textContent = hasWebGPU ? "WebGPU (fast)" : "WebAssembly (CPU)";
+
+  var worker=null, workerReady=false, modelLoading=false, busy=false;
+  var segments=[]; // {timestamp:[s,e], text}
+
+  function setStatus(html, prog){ statusBox.classList.add("show"); statusText.innerHTML=html; if(prog===false){progWrap.style.display="none";} else if(prog==="indet"){progWrap.style.display="block";progWrap.classList.add("indet");progBar.style.width="";} else {progWrap.style.display="block";progWrap.classList.remove("indet");} }
+  function showToast(msg){ toast.textContent=msg; toast.classList.add("show"); setTimeout(function(){toast.classList.remove("show");},1400); }
+
+  // ---------- Worker (created from a Blob so the whole app stays a single file) ----------
+  var WORKER_SRC = [
+    'import { pipeline } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1";',
+    'let transcriber=null, device="wasm";',
+    'async function load(useGPU){',
+    '  if(transcriber) return;',
+    '  device = useGPU ? "webgpu" : "wasm";',
+    '  const opts = { progress_callback:(p)=>self.postMessage({type:"progress",p}) };',
+    '  if(device==="webgpu"){ opts.device="webgpu"; opts.dtype={ encoder_model:"fp32", decoder_model_merged:"fp32" }; }',
+    '  else { opts.dtype={ encoder_model:"fp32", decoder_model_merged:"q8" }; }',
+    '  transcriber = await pipeline("automatic-speech-recognition","onnx-community/whisper-base",opts);',
+    '}',
+    'self.onmessage = async (e)=>{',
+    '  const d=e.data;',
+    '  if(d.type==="load"){ try{ await load(d.useGPU); self.postMessage({type:"ready",device}); }catch(err){ self.postMessage({type:"error",error:String(err&&err.message||err)}); } return; }',
+    '  if(d.type==="run"){',
+    '    try{',
+    '      await load(d.useGPU);',
+    '      self.postMessage({type:"phase",phase:"transcribing"});',
+    '      const out = await transcriber(d.audio, { return_timestamps:true, chunk_length_s:30, stride_length_s:5, task:d.task, language:(d.task==="translate"?null:null) });',
+    '      self.postMessage({type:"result", text:out.text, chunks:out.chunks||[]});',
+    '    }catch(err){ self.postMessage({type:"error",error:String(err&&err.message||err)}); }',
+    '  }',
+    '};'
+  ].join("\n");
+
+  function ensureWorker(){
+    if(worker) return worker;
+    var blob=new Blob([WORKER_SRC],{type:"text/javascript"});
+    worker=new Worker(URL.createObjectURL(blob),{type:"module"});
+    var files={};
+    worker.onmessage=function(e){
+      var m=e.data;
+      if(m.type==="progress"){
+        var p=m.p;
+        if(p&&p.status==="progress"&&p.file){ files[p.file]=(p.loaded||0)/(p.total||1); var v=Object.keys(files).map(function(k){return files[k];}); var avg=v.reduce(function(a,b){return a+b;},0)/v.length; progBar.style.width=Math.round(avg*100)+"%"; }
+      } else if(m.type==="ready"){
+        workerReady=true; modelLoading=false;
+      } else if(m.type==="phase"){
+        if(m.phase==="transcribing") setStatus("Model ready on <b>"+(hasWebGPU?"WebGPU":"CPU/WASM")+"</b>. Transcribing your audio locally…","indet");
+      } else if(m.type==="result"){
+        busy=false; onResult(m.text, m.chunks);
+      } else if(m.type==="error"){
+        busy=false; modelLoading=false;
+        setStatus("Something went wrong: "+m.error+". Try a shorter clip or a desktop browser (Chrome/Edge work best).",false);
+        enable();
+      }
+    };
+    return worker;
+  }
+
+  // ---------- audio decode -> 16 kHz mono Float32 ----------
+  async function decodeTo16k(arrayBuffer){
+    var AC = window.AudioContext||window.webkitAudioContext;
+    var ac = new AC();
+    var decoded = await ac.decodeAudioData(arrayBuffer);
+    try{ ac.close(); }catch(e){}
+    if(decoded.sampleRate===16000 && decoded.numberOfChannels===1){ return decoded.getChannelData(0); }
+    var len = Math.max(1, Math.ceil(decoded.duration*16000));
+    var off = new OfflineAudioContext(1, len, 16000);
+    var src = off.createBufferSource(); src.buffer=decoded; src.connect(off.destination); src.start(0);
+    var rendered = await off.startRendering();
+    return rendered.getChannelData(0);
+  }
+
+  function disable(){ busy=true; [recBtn,sampleBtn].forEach(function(b){b.disabled=true;}); drop.style.pointerEvents="none"; drop.style.opacity=".6"; }
+  function enable(){ busy=false; [recBtn,sampleBtn].forEach(function(b){b.disabled=false;}); drop.style.pointerEvents=""; drop.style.opacity=""; }
+
+  async function transcribeBuffer(arrayBuffer){
+    if(busy) return;
+    disable(); result.classList.remove("show");
+    try{
+      setStatus("Decoding audio on your device…","indet");
+      var audio = await decodeTo16k(arrayBuffer);
+      if(!audio || audio.length<1600){ setStatus("That file is too short or could not be decoded. Try another file.",false); enable(); return; }
+      ensureWorker();
+      if(!workerReady && !modelLoading){ modelLoading=true; setStatus("Loading the Whisper model for the first time. This downloads once (~80 MB) then is cached.","det"); }
+      else { setStatus("Transcribing your audio locally…","indet"); }
+      worker.postMessage({type:"run", audio:audio, useGPU:hasWebGPU, task:taskSel.value}, [audio.buffer]);
+    }catch(err){
+      console.error(err);
+      setStatus("Could not read that file. Make sure it is an audio or video file your browser can play.",false);
+      enable();
+    }
+  }
+
+  // ---------- subtitle / text building ----------
+  function pad(n,l){ l=l||2; return String(n).padStart(l,"0"); }
+  function fmt(t, vtt){ if(t==null||isNaN(t)||t<0) t=0; var h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=Math.floor(t%60),ms=Math.round((t-Math.floor(t))*1000); return pad(h)+":"+pad(m)+":"+pad(s)+(vtt?".":",")+pad(ms,3); }
+  function safeEnd(c, next){ var e=c.timestamp&&c.timestamp[1]; if(e==null||isNaN(e)){ e=(next&&next.timestamp&&next.timestamp[0]) || ((c.timestamp&&c.timestamp[0])||0)+2.5; } return e; }
+  function buildSRT(){ return segments.map(function(c,i){ var st=(c.timestamp&&c.timestamp[0])||0; var en=safeEnd(c,segments[i+1]); return (i+1)+"\n"+fmt(st)+" --> "+fmt(en)+"\n"+(c.text||"").trim()+"\n"; }).join("\n"); }
+  function buildVTT(){ return "WEBVTT\n\n"+segments.map(function(c,i){ var st=(c.timestamp&&c.timestamp[0])||0; var en=safeEnd(c,segments[i+1]); return fmt(st,true)+" --> "+fmt(en,true)+"\n"+(c.text||"").trim(); }).join("\n\n")+"\n"; }
+  function tlabel(t){ if(t==null||isNaN(t))t=0; var m=Math.floor(t/60),s=Math.floor(t%60); return m+":"+pad(s); }
+
+  function onResult(text, chunks){
+    segments = (chunks&&chunks.length) ? chunks : [{timestamp:[0,null],text:text}];
+    ta.value = (text||"").trim();
+    segsEl.innerHTML="";
+    segments.forEach(function(c,i){
+      var st=(c.timestamp&&c.timestamp[0])||0, en=safeEnd(c,segments[i+1]);
+      var row=document.createElement("div"); row.className="seg";
+      row.innerHTML='<div class="t">'+tlabel(st)+'<b>'+tlabel(en)+'</b></div><div class="x"></div>';
+      row.querySelector(".x").textContent=(c.text||"").trim();
+      segsEl.appendChild(row);
+    });
+    result.classList.add("show");
+    setStatus("Done. Everything ran on your device &mdash; <b>nothing was uploaded</b>. Edit the text or export below.",false);
+    enable();
+  }
+
+  function download(content, name, mime){ var b=new Blob([content],{type:mime||"text/plain;charset=utf-8"}); var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=name; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},1500); }
+  document.getElementById("copyBtn").addEventListener("click",function(){ navigator.clipboard.writeText(ta.value).then(function(){showToast("Copied");},function(){showToast("Copy failed");}); });
+  document.getElementById("txtBtn").addEventListener("click",function(){ download(ta.value,"transcript.txt"); });
+  document.getElementById("srtBtn").addEventListener("click",function(){ download(buildSRT(),"subtitles.srt"); });
+  document.getElementById("vttBtn").addEventListener("click",function(){ download(buildVTT(),"subtitles.vtt"); });
+
+  // ---------- inputs ----------
+  async function handleFile(f){ if(!f) return; var buf=await f.arrayBuffer(); transcribeBuffer(buf); }
+  drop.addEventListener("click",function(e){ if(e.target.id==="recBtn"||e.target.id==="sample"||busy) return; file.click(); });
+  drop.addEventListener("keydown",function(e){ if((e.key==="Enter"||e.key===" ")&&!busy){ e.preventDefault(); file.click(); } });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop",function(e){ if(busy) return; var f=e.dataTransfer.files&&e.dataTransfer.files[0]; handleFile(f); });
+  file.addEventListener("change",function(){ handleFile(file.files&&file.files[0]); });
+
+  sampleBtn.addEventListener("click",async function(e){
+    e.stopPropagation(); if(busy) return;
+    setStatus("Loading a sample clip…","indet");
+    try{
+      var r=await fetch("https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/jfk.wav");
+      var buf=await r.arrayBuffer(); transcribeBuffer(buf);
+    }catch(err){ setStatus("Could not load the sample (network). Try dropping your own file instead.",false); }
+  });
+
+  // ---------- mic recording ----------
+  var mediaRec=null, chunks=[], recTimer=null, recStart=0;
+  recBtn.addEventListener("click",async function(e){
+    e.stopPropagation(); if(busy) return;
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ setStatus("This browser does not allow microphone access.",false); return; }
+    try{
+      var stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      chunks=[]; mediaRec=new MediaRecorder(stream);
+      mediaRec.ondataavailable=function(ev){ if(ev.data&&ev.data.size) chunks.push(ev.data); };
+      mediaRec.onstop=async function(){ stream.getTracks().forEach(function(t){t.stop();}); reclive.classList.remove("show"); clearInterval(recTimer); var blob=new Blob(chunks,{type:mediaRec.mimeType||"audio/webm"}); var buf=await blob.arrayBuffer(); transcribeBuffer(buf); };
+      mediaRec.start(); recStart=Date.now(); reclive.classList.add("show"); statusBox.classList.remove("show");
+      recTimer=setInterval(function(){ var s=Math.floor((Date.now()-recStart)/1000); recTime.textContent=Math.floor(s/60)+":"+pad(s%60); },300);
+    }catch(err){ setStatus("Microphone permission was blocked. Allow it and try again.",false); }
+  });
+  recStop.addEventListener("click",function(e){ e.preventDefault(); if(mediaRec&&mediaRec.state!=="inactive") mediaRec.stop(); });
+
+  // warm the model in the background so the first real run is faster
+  window.addEventListener("load",function(){ setTimeout(function(){ try{ ensureWorker(); if(!workerReady&&!modelLoading){ modelLoading=true; worker.postMessage({type:"load",useGPU:hasWebGPU}); } }catch(e){} },1200); });
+})();
+</script>
+<!-- Polar.sh / AdSense slot (left intentionally empty for later) -->
+<!-- Analytics: Cloudflare Web Analytics beacon (public client token). -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
