@@ -309,7 +309,7 @@ function buildGrid(){
     for(let c=0;c<STEPS;c++){
       const cell=document.createElement("button"); cell.className="cell"+(c%4===0&&c>0?" g":""); cell.dataset.r=r; cell.dataset.c=c;
       cell.setAttribute("aria-label",TRACKS[r].name+" step "+(c+1));
-      if(grid[r][c]) cell.classList.add("on", TRACKS[r].alt?"alt":"");
+      if(grid[r][c]){ cell.classList.add("on"); if(TRACKS[r].alt) cell.classList.add("alt"); }
       cell.addEventListener("click",()=>toggle(r,c,true));
       row.appendChild(cell); cellEls[r][c]=cell;
     }
