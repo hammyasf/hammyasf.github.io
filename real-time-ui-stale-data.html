@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Why your real-time UI lies after a websocket reconnect — Harman Kamboj</title>
+<meta name="description" content="What happens to a real-time UI when the websocket drops and reconnects: stale data, missed events, and the resync patterns that keep live numbers honest." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Why your real-time UI lies after a websocket reconnect — Harman Kamboj" />
+<meta property="og:description" content="What happens to a real-time UI when the websocket drops and reconnects: stale data, missed events, and the resync patterns that keep live numbers honest." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/real-time-ui-stale-data.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Why your real-time UI lies after a websocket reconnect — Harman Kamboj" />
+<meta name="twitter:description" content="What happens to a real-time UI when the websocket drops and reconnects: stale data, missed events, and the resync patterns that keep live numbers honest." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/real-time-ui-stale-data.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Why your real-time UI lies after a websocket reconnect","description":"What happens to a real-time UI when the websocket drops and reconnects: stale data, missed events, and the resync patterns that keep live numbers honest.","datePublished":"2026-06-18","dateModified":"2026-06-18","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/real-time-ui-stale-data.html","url":"https://hammyasf.github.io/real-time-ui-stale-data.html","keywords":"Real-time, WebSockets, Frontend, Full-stack","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(43,227,176,.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(20,195,201,.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(7,16,14,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(43,227,176,.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(43,227,176,.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(43,227,176,.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(43,227,176,.28);border-radius:22px;background:linear-gradient(150deg,rgba(43,227,176,.12),rgba(43,227,176,.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Why your real-time UI lies after a websocket reconnect</h1>
+   <div class="pmeta"><span>June 18, 2026</span><span>4 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Real-time</span><span>WebSockets</span><span>Frontend</span><span>Full-stack</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>Every real-time UI I have shipped looked perfect in the demo. The price ticked up, the balance moved the second a transaction confirmed, the chart slid along like it was breathing. Then it met a real network. A laptop waking from sleep, hotel wifi, a phone switching from cell to wifi mid-swap. That is when the illusion broke, and it broke in a way the demo never showed me.</p>
+<p>I learned this building live trading surfaces. A token swap and a cross-chain bridge while I was at Shiba Inu, where the number on screen was a balance someone was about to move real money against. When a websocket drops and reconnects, the worst outcome is not a blank screen. It is a screen that looks fine and is quietly wrong.</p>
+<h2>What a dropped socket actually does to your UI</h2>
+<p>The connection rarely dies politely. Most of the failure modes are silent, which is exactly why they bite in production and not in the demo.</p>
+<ul><li>It dies without telling you. A TCP socket can sit half open for a long time. Your code still thinks it is connected, no messages arrive, and the UI freezes on the last value it ever saw. No error, no spinner, just a stale number sitting there looking confident.</li><li>The events you missed are gone. While you were offline the server kept emitting. A price moved, an order filled, a balance changed. You reconnect, new events start flowing, and the gap in the middle is invisible. Your state is now built on a version of the world that skipped a chapter.</li><li>Everyone reconnects at once. If the server restarts, every client tries to reconnect in the same second. That thundering herd can knock the server straight back over.</li></ul>
+<p>None of these show up when you test against localhost with the tab in focus. They show up three weeks after launch when a user emails you a screenshot of a balance that has not been true for two minutes.</p>
+<h2>Reconnecting is the easy twenty percent</h2>
+<p>Most tutorials stop at the reconnect loop, and the reconnect loop is the part that is basically solved. Use exponential backoff with jitter so clients do not all retry on the same tick. Start around a second, double each attempt, cap it near thirty seconds. Check your auth token before you reconnect, because firing a connection with an expired token just burns a retry and slows recovery. A dozen libraries do all of this for you.</p>
+<p>The hard part is what happens in the half second after you are connected again. You have a fresh, healthy socket and a UI full of data you can no longer trust. Getting the bytes flowing again is not the same as being correct.</p>
+<h2>Resync, do not just resume</h2>
+<p>The rule I follow now is simple. On every reconnect, assume your local state is stale and rebuild it. There are two patterns I trust, and which one you want depends on how big your state is.</p>
+<ul><li>Sequence numbers. Every message carries a number that only goes up. The client remembers the last one it processed. On reconnect it tells the server that number and the server replays everything after it. This is precise and cheap on bandwidth. The catch is the server has to buffer recent messages, and if a client was gone longer than the buffer, you need a fallback.</li><li>Full snapshot. The server sends the current state on reconnect and the client throws away what it had and replaces it. Wasteful if the state is large, but it is dead simple and it is always correct.</li></ul>
+<p>For anything tied to money I default to the snapshot. A balance or a quote is small, and correctness beats elegance every time. For a high volume feed where a full snapshot would be huge, I use sequence replay with a snapshot as the fallback when the buffer has expired. The thing I never do is let new events paper over the gap and hope nobody notices.</p>
+<h2>Tell the user when the data is stale</h2>
+<p>This is the part almost every UI skips, and it is the part that actually protects users. A live number with no freshness signal is a lie waiting to happen. The fix is a heartbeat. If no message arrives within a few seconds, mark the data stale before the user acts on it.</p>
+<p>When state goes stale I dim the number, show a small reconnecting indicator, and disable the action that depends on it. You should not let someone sign a swap against a quote that is forty seconds old. That is the same class of bug I wrote about in <a href="token-swap-frontend-pitfalls.html">the token swap frontend pitfalls that cost real money</a>, and it is closely related to being honest about cost in <a href="gas-aware-frontend.html">a gas-aware frontend</a>. Showing uncertainty feels worse in a design review and saves you in production.</p>
+<h2>How I wire it now</h2>
+<p>One connection manager owns the socket. It holds a small state machine with connected, reconnecting, and stale states, runs the backoff, kicks off a resync on every reconnect, and exposes a freshness timestamp the UI can read. Components subscribe to data and read that timestamp. They never touch the socket directly, so the messy reconnection logic lives in exactly one place instead of leaking into every widget.</p>
+<p>That separation is most of the battle. The transport is a raw pipe with no memory of what you missed, so the honesty has to be built on top of it by you. Treat the socket as something that will drop, design the moment it comes back, and your real-time UI stops lying the first time the network does something rude. If you want more on the frontend side of this, I keep related notes in my <a href="full-stack.html">full-stack writing</a>, and the rest is on the <a href="index.html">homepage</a>.</p>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the live data layer or the hard part of your product is fighting you, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="indexing-onchain-data-subsquid-the-graph.html">Indexing on-chain data without losing your mind →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+</body></html>
