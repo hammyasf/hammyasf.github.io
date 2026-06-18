@@ -2,6 +2,8 @@
   "use strict";
   var D=document, root=D.documentElement;
   var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+  var ANALYTICS_TOKEN="";
+  if(ANALYTICS_TOKEN){ var ab=document.createElement("script"); ab.defer=true; ab.src="https://static.cloudflareinsights.com/beacon.min.js"; ab.setAttribute("data-cf-beacon",JSON.stringify({token:ANALYTICS_TOKEN})); document.head.appendChild(ab); }
 
   /* ===== theme ===== */
   var THEMES={
@@ -109,6 +111,8 @@
     {t:"Home",g:"Go",u:"index.html"},{t:"Selected work",g:"Go",u:"index.html#work"},{t:"About",g:"Go",u:"index.html#about"},
     {t:"Experience",g:"Go",u:"index.html#career"},{t:"Writing / Blog",g:"Go",u:"blog.html"},{t:"Playground game",g:"Go",u:"index.html#play"},
     {t:"Get in touch",g:"Go",u:"index.html#contact"},
+    {t:"The Lab (free tools)",g:"Go",u:"lab.html"},
+    {t:"Image Converter tool",g:"Tool",u:"image-converter.html"},
     {t:"Open terminal",g:"Tool",run:function(){openTerm();}},
     {t:"Keyboard shortcuts",g:"Tool",run:function(){openCheat();}},
     {t:"View achievements",g:"Tool",run:function(){openTerm(); termPrint(achvText());}},

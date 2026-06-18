@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Free Image Converter &amp; Compressor — PNG, JPG, WebP in your browser</title>
+<meta name="description" content="Convert and compress images between PNG, JPG, and WebP right in your browser. Batch convert, resize, and shrink file size. 100% private, nothing is uploaded, no sign-up." />
+<meta name="keywords" content="image converter, compress image, png to jpg, jpg to webp, convert to webp, image compressor, resize image, reduce image size, free image tool" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Free Image Converter &amp; Compressor" />
+<meta property="og:description" content="Convert and compress PNG, JPG, and WebP in your browser. Batch, resize, private. No uploads, no sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/image-converter.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Free Image Converter &amp; Compressor" />
+<meta name="twitter:description" content="Convert and compress PNG, JPG, and WebP in your browser. Private, no sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/image-converter.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Image Converter & Compressor","url":"https://hammyasf.github.io/image-converter.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Convert and compress images between PNG, JPG and WebP in the browser. Batch, resize, private.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my images uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs in your browser using the Canvas API. Your images never leave your device."}},{"@type":"Question","name":"What formats can I convert between?","acceptedAnswer":{"@type":"Answer","text":"PNG, JPEG, and WebP. You can convert any of these to any other, compress them, and resize them."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up and no limits on how many images you convert."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:46px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .controls{display:flex;flex-wrap:wrap;gap:18px 28px;padding:0 24px 20px;align-items:center;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 15px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  input[type=range]{accent-color:var(--accent);width:160px;}
+  input[type=number]{width:90px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:13px;}
+  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:34px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 24px 22px;}
+  .summary{font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .summary b{color:var(--accent);}
+  .results{display:grid;gap:12px;padding:0 24px 24px;}
+  .item{display:grid;grid-template-columns:56px 1fr auto;gap:14px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:rgba(var(--surfaceRGB),.4);}
+  .item img{width:56px;height:56px;object-fit:cover;border-radius:8px;background:#0a0a0a;}
+  .item .n{font-size:14px;color:var(--ink);word-break:break-all;}
+  .item .m{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:3px;}
+  .item .m .save{color:var(--accent);}
+  .item .dl{font-family:var(--mono);font-size:12.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:7px 12px;border-radius:8px;cursor:pointer;background:transparent;white-space:nowrap;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.item{grid-template-columns:44px 1fr;}.item .dl{grid-column:2;justify-self:start;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Image Converter &amp; Compressor</h1>
+    <p class="sub">Convert and compress PNG, JPG, and WebP, resize in bulk, and shrink file size. Drag in as many images as you like.</p>
+    <span class="priv">&#128274; 100% private — your images never leave your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add images">
+      <h2>Drop images here</h2>
+      <p>or click to choose files · PNG, JPG, WebP, GIF, BMP</p>
+      <input type="file" id="file" accept="image/*" multiple hidden />
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Output format</label>
+        <div class="seg" id="fmt">
+          <button data-f="image/webp" class="on">WebP</button>
+          <button data-f="image/jpeg">JPG</button>
+          <button data-f="image/png">PNG</button>
+        </div>
+      </div>
+      <div class="ctl"><label>Quality</label>
+        <div style="display:flex;align-items:center;gap:10px;"><input type="range" id="q" min="10" max="100" value="80" /><span class="qval" id="qv">80</span></div>
+      </div>
+      <div class="ctl"><label>Max width (px, optional)</label>
+        <input type="number" id="mw" placeholder="e.g. 1600" min="16" />
+      </div>
+    </div>
+    <div class="bar">
+      <button class="btn" id="go" disabled>Convert images</button>
+      <button class="btn btn-out" id="all" disabled>Download all (.zip)</button>
+      <span class="summary" id="sum"></span>
+    </div>
+    <div class="results" id="out"></div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>This tool uses your browser's built-in Canvas engine to re-encode images. You pick a format and quality, optionally cap the width, and it produces a smaller, converted copy on the spot. Because the work happens locally, there is no upload, no queue, and no privacy trade-off. It also means it stays fast no matter how many images you drop in.</p>
+    <h2>When to use each format</h2>
+    <p>WebP gives the smallest files for the same quality and is supported everywhere that matters in 2026, so it is the best default for the web. JPG is the safe choice for photos when you need maximum compatibility. PNG is for graphics, screenshots, and anything that needs a transparent background or crisp edges.</p>
+    <h2>Tips for smaller files</h2>
+    <p>Convert photos to WebP at quality 75 to 82 for a big size drop with no visible loss. Resize down to the largest size you actually display, since a 4000px photo shown at 800px is wasted bytes. For screenshots and logos, stay on PNG so text and lines stay sharp.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Are my images uploaded anywhere?</summary><p>No. Everything runs locally in your browser. Your files never touch a server, which is why it is instant and private.</p></details>
+    <details><summary>What formats does it support?</summary><p>It reads PNG, JPG, WebP, GIF, and BMP, and writes WebP, JPG, or PNG.</p></details>
+    <details><summary>Is there a limit?</summary><p>No sign-up and no hard limit. Very large batches are bounded only by your device's memory.</p></details>
+    <details><summary>Does compressing reduce quality?</summary><p>WebP and JPG are lossy, so lower quality means smaller files. PNG is lossless. The quality slider lets you find the right balance.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var drop=document.getElementById("drop"),file=document.getElementById("file"),out=document.getElementById("out"),
+      go=document.getElementById("go"),allBtn=document.getElementById("all"),sum=document.getElementById("sum"),
+      q=document.getElementById("q"),qv=document.getElementById("qv"),mw=document.getElementById("mw");
+  var fmt="image/webp", queue=[], done=[];
+  document.querySelectorAll("#fmt button").forEach(function(b){ b.addEventListener("click",function(){ document.querySelectorAll("#fmt button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); fmt=b.getAttribute("data-f"); }); });
+  q.addEventListener("input",function(){ qv.textContent=q.value; });
+  drop.addEventListener("click",function(){ file.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();file.click();} });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop",function(e){ add(e.dataTransfer.files); });
+  file.addEventListener("change",function(){ add(file.files); });
+  function add(files){ for(var i=0;i<files.length;i++){ if(files[i].type.indexOf("image/")===0) queue.push(files[i]); } if(queue.length){ go.disabled=false; sum.textContent=queue.length+" image"+(queue.length>1?"s":"")+" ready"; } }
+  function fmtSize(b){ return b<1024?b+" B":b<1048576?(b/1024).toFixed(1)+" KB":(b/1048576).toFixed(2)+" MB"; }
+  function ext(){ return fmt==="image/webp"?"webp":fmt==="image/jpeg"?"jpg":"png"; }
+  function process(fileObj){ return new Promise(function(res){
+    var img=new Image(), url=URL.createObjectURL(fileObj);
+    img.onload=function(){ var w=img.width,h=img.height; var max=parseInt(mw.value,10);
+      if(max&&w>max){ h=Math.round(h*max/w); w=max; }
+      var c=document.createElement("canvas"); c.width=w; c.height=h; var ctx=c.getContext("2d");
+      if(fmt!=="image/png"){ ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,w,h); }
+      ctx.drawImage(img,0,0,w,h);
+      c.toBlob(function(blob){ URL.revokeObjectURL(url);
+        res({name:fileObj.name.replace(/\.[^.]+$/,"")+"."+ext(),orig:fileObj.size,size:blob.size,blob:blob,thumb:c.toDataURL("image/png")});
+      }, fmt, parseInt(q.value,10)/100);
+    };
+    img.onerror=function(){ URL.revokeObjectURL(url); res(null); };
+    img.src=url;
+  }); }
+  go.addEventListener("click",function(){ if(!queue.length)return; go.disabled=true; out.innerHTML=""; done=[]; var totO=0,totN=0,i=0;
+    (function next(){ if(i>=queue.length){ allBtn.disabled=done.length===0; var pct=totO?Math.round((1-totN/totO)*100):0; sum.innerHTML="Done · "+done.length+" images · <b>"+(pct>=0?pct:0)+"% smaller</b> ("+fmtSize(totO)+" &rarr; "+fmtSize(totN)+")"; go.disabled=false; return; }
+      process(queue[i]).then(function(r){ if(r){ totO+=r.orig; totN+=r.size; done.push(r); var save=r.orig?Math.round((1-r.size/r.orig)*100):0;
+        var el=document.createElement("div"); el.className="item";
+        el.innerHTML='<img src="'+r.thumb+'" alt=""><div><div class="n">'+r.name+'</div><div class="m">'+fmtSize(r.orig)+' &rarr; '+fmtSize(r.size)+' <span class="save">'+(save>=0?save+"% smaller":Math.abs(save)+"% larger")+'</span></div></div><button class="dl">Download</button>';
+        el.querySelector(".dl").addEventListener("click",function(){ var a=document.createElement("a"); a.href=URL.createObjectURL(r.blob); a.download=r.name; a.click(); });
+        out.appendChild(el);
+      } i++; next(); });
+    })();
+  });
+  allBtn.addEventListener("click",function(){ if(!done.length)return;
+    var s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+    s.onload=function(){ var zip=new JSZip(); done.forEach(function(r){ zip.file(r.name,r.blob); }); zip.generateAsync({type:"blob"}).then(function(b){ var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="converted-images.zip"; a.click(); }); };
+    if(window.JSZip){ s.onload(); } else document.head.appendChild(s);
+  });
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. Replace TOKEN with the token from your Cloudflare dashboard (free). -->
+<!-- <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"TOKEN"}'></script> -->
+</body>
+</html>
