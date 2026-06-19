@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Theme Finder — group text by meaning, in your browser (AI, no upload)</title>
+<meta name="description" content="Paste survey responses, reviews, feedback, or notes and a real AI model groups them into themes by meaning. Runs 100% in your browser with on-device embeddings. Nothing is uploaded." />
+<meta name="keywords" content="cluster text by meaning, group similar text, theme finder, thematic analysis tool, group survey responses by theme, categorize feedback, affinity diagram tool, semantic clustering online, ai text clustering, code open ended responses" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Theme Finder — group text by meaning, in your browser" />
+<meta property="og:description" content="Paste messy text and a real AI model groups it into themes by meaning. 100% on-device, nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/theme-finder.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Theme Finder — group text by meaning, in your browser" />
+<meta name="twitter:description" content="Paste messy text and a real AI model groups it into themes by meaning. On-device, private." />
+<link rel="canonical" href="https://hammyasf.github.io/theme-finder.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Theme Finder","url":"https://hammyasf.github.io/theme-finder.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Group survey responses, reviews and notes into themes by meaning using an on-device AI embedding model. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI embedding model runs entirely in your browser. Your text never leaves your device, which is why it is safe for confidential feedback and survey data."}},{"@type":"Question","name":"How does it group text by meaning?","acceptedAnswer":{"@type":"Answer","text":"Each line is turned into a 384-dimension vector by a sentence-embedding model (all-MiniLM-L6-v2) running on-device. Lines with similar meaning end up close together, and a k-means pass groups them into themes. It is meaning-based, so it groups 'shipping was slow' and 'my order took forever' together even with no shared words."}},{"@type":"Question","name":"What can I use it for?","acceptedAnswer":{"@type":"Answer","text":"Coding open-ended survey answers, grouping customer feedback or reviews, sorting support tickets, affinity-mapping research notes, de-duplicating ideas, and triaging any long list of short text into themes."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up. The model downloads once (about 25 MB) and is then cached for instant use."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  textarea#src{width:calc(100% - 36px);margin:18px;height:190px;resize:vertical;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:14px;padding:14px 16px;font-family:var(--mono);font-size:13.5px;line-height:1.7;}
+  textarea#src:focus{outline:none;border-color:var(--accent);}
+  .controls{display:flex;flex-wrap:wrap;gap:16px 22px;padding:0 24px 8px;align-items:center;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  select#k{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:13px;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:14px 24px 22px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .linkish{background:none;border:none;color:var(--accent);font-family:var(--mono);font-size:12.5px;cursor:pointer;padding:0;}
+  .summary{font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .summary b{color:var(--accent);}
+  .status{display:none;margin:0 24px 18px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:rgba(var(--surfaceRGB),.5);font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .status.show{display:block;}
+  .status b{color:var(--accent);}
+  .prog{height:7px;border-radius:99px;background:rgba(var(--accentRGB),.14);margin-top:10px;overflow:hidden;display:none;}
+  .prog.show{display:block;}
+  .prog>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .25s;}
+  .stat{display:none;flex-wrap:wrap;gap:10px 26px;align-items:center;padding:2px 24px 6px;font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .stat.show{display:flex;}
+  .stat b{color:var(--ink);}
+  .themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;padding:14px 24px 24px;}
+  .theme{border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px;background:rgba(var(--surfaceRGB),.45);position:relative;overflow:hidden;}
+  .theme::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--tc,var(--accent));}
+  .theme .top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .theme .name{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.01em;text-transform:capitalize;}
+  .theme .cnt{font-family:var(--mono);font-size:12px;color:var(--tc,var(--accent));white-space:nowrap;}
+  .theme .quote{margin-top:9px;font-size:14px;color:#cdd8d3;font-style:italic;border-left:2px solid var(--line-2);padding-left:10px;}
+  .theme ul{list-style:none;margin-top:12px;max-height:0;overflow:hidden;transition:max-height .3s var(--ease);}
+  .theme ul.open{max-height:1400px;overflow:auto;}
+  .theme li{font-size:13px;color:var(--muted);padding:6px 0;border-top:1px solid var(--line);word-break:break-word;}
+  .theme .toggle{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--tc,var(--accent));background:none;border:none;cursor:pointer;padding:0;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · AI runs in your browser</div>
+    <h1>Theme Finder</h1>
+    <p class="sub">Paste a pile of survey answers, reviews, or notes — one per line — and a real AI model groups them into themes by <em>meaning</em>, not keywords. It runs entirely on your device.</p>
+    <span class="priv">&#128274; 100% private — the model runs locally, your text never leaves your device</span>
+  </header>
+
+  <div class="panel">
+    <textarea id="src" placeholder="Paste one item per line…&#10;e.g. survey responses, app reviews, support tickets, feedback, ideas, notes&#10;&#10;The more lines you give it, the better the themes."></textarea>
+    <div class="controls">
+      <div class="ctl"><label>Number of themes</label>
+        <select id="k">
+          <option value="auto" selected>Auto (recommended)</option>
+          <option value="2">2</option><option value="3">3</option><option value="4">4</option>
+          <option value="5">5</option><option value="6">6</option><option value="7">7</option>
+          <option value="8">8</option><option value="10">10</option><option value="12">12</option>
+        </select>
+      </div>
+      <div class="ctl"><label>Load example</label>
+        <button class="linkish" id="sample">Use sample feedback &rarr;</button>
+      </div>
+      <div class="ctl"><label>From a file</label>
+        <button class="linkish" id="pick">Open a .txt or .csv &rarr;</button>
+        <input type="file" id="file" accept=".txt,.csv,.tsv,text/plain" hidden />
+      </div>
+    </div>
+    <div class="bar">
+      <button class="btn" id="go">Find themes</button>
+      <button class="btn btn-out" id="csv" disabled>Download CSV</button>
+      <button class="btn btn-out" id="copy" disabled>Copy summary</button>
+      <span class="summary" id="sum"></span>
+    </div>
+    <div class="status" id="status"><span id="statusText"></span><div class="prog" id="prog"><i id="progBar"></i></div></div>
+    <div class="stat" id="stat"></div>
+    <div class="themes" id="themes"></div>
+  </div>
+
+  <section class="copy">
+    <h2>What it does</h2>
+    <p>Drop in any long list of short text — open-ended survey answers, app-store reviews, customer feedback, support tickets, user-research notes, a brain-dump of ideas — and Theme Finder sorts it into a handful of themes. Because it groups by meaning, it puts "checkout kept crashing" and "the payment screen froze" in the same theme even though they share no words. You get a labelled bucket for each theme, a representative quote, the full list of items in it, and a CSV you can take into a spreadsheet.</p>
+    <h2>How it works (and how it runs locally)</h2>
+    <p>When you click Find themes, an open sentence-embedding model called all-MiniLM-L6-v2 loads straight into your browser through transformers.js and WebAssembly (it can use WebGPU when your browser supports it). Every line is turned into a 384-number vector that captures its meaning, so similar sentences land near each other in that space. A k-means pass then groups the vectors, and a small scoring step picks the most distinctive words in each group to name it and the line closest to the centre as the example quote. The first run downloads the model once (about 25 MB) and caches it; after that it is instant and works offline.</p>
+    <h2>Why on-device matters</h2>
+    <p>Feedback and survey data are often confidential. Sending them to a cloud API can be a non-starter for legal, privacy, or contract reasons. Here nothing is uploaded — the model executes on your own machine — so you can throw real, sensitive data at it without it ever leaving the page. It is also free, has no row limits, and keeps working with your network off.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my text uploaded anywhere?</summary><p>No. The AI model runs locally in your browser via WebAssembly/WebGPU. Your text never touches a server, which is why it is safe for confidential feedback and survey data.</p></details>
+    <details><summary>How is this different from keyword grouping?</summary><p>It groups by meaning, not matching words. "Shipping was slow" and "my order took forever" go in the same theme even with nothing in common on the surface, because the embedding model understands they mean the same thing.</p></details>
+    <details><summary>How many lines should I give it?</summary><p>It works from a handful, but themes get sharper with more — 30 to a few hundred lines is the sweet spot. It handles over a thousand; very large lists are limited only by your device's memory.</p></details>
+    <details><summary>Can I control the number of themes?</summary><p>Yes. Leave it on Auto and it picks a sensible number, or set an exact count. Changing the count re-groups instantly without re-loading the model.</p></details>
+    <details><summary>Is it free?</summary><p>Completely free, no sign-up. The model downloads once (~25 MB) and is cached after that.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- ===== Monetization slots (left intentionally empty for later) =====
+<div class="adslot"><!-- AdSense / Polar.sh upgrade slot --></div>
+====================================================================== -->
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<script type="module">
+import { pipeline, env } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1";
+env.allowLocalModels = false;
+
+/* ===================== pure clustering core =====================
+   These functions are dependency-free and unit-tested in Node so the
+   grouping maths is provably correct. Vectors are L2-normalised, so
+   squared Euclidean distance ||a-b||^2 = 2 - 2*cos(a,b).
+   ================================================================ */
+function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function sqdist(a,b){ var s=0; for(var i=0;i<a.length;i++){ var d=a[i]-b[i]; s+=d*d; } return s; }
+function kmeansPP(vecs,k,rnd){
+  var n=vecs.length, centers=[], first=Math.floor(rnd()*n);
+  centers.push(vecs[first].slice());
+  var d2=new Array(n).fill(Infinity);
+  for(var c=1;c<k;c++){
+    var sum=0;
+    for(var i=0;i<n;i++){ var dd=sqdist(vecs[i],centers[c-1]); if(dd<d2[i])d2[i]=dd; sum+=d2[i]; }
+    var target=rnd()*sum, acc=0, pick=n-1;
+    for(var j=0;j<n;j++){ acc+=d2[j]; if(acc>=target){ pick=j; break; } }
+    centers.push(vecs[pick].slice());
+  }
+  return centers;
+}
+function kmeansOnce(vecs,k,rnd,iters){
+  var n=vecs.length, dim=vecs[0].length, centers=kmeansPP(vecs,k,rnd), assign=new Array(n).fill(0);
+  for(var it=0;it<iters;it++){
+    var changed=false;
+    for(var i=0;i<n;i++){
+      var best=0,bd=Infinity;
+      for(var c=0;c<k;c++){ var d=sqdist(vecs[i],centers[c]); if(d<bd){bd=d;best=c;} }
+      if(assign[i]!==best){ assign[i]=best; changed=true; }
+    }
+    var sums=[],cnt=new Array(k).fill(0);
+    for(var c2=0;c2<k;c2++){ sums.push(new Float64Array(dim)); }
+    for(var i2=0;i2<n;i2++){ var a=assign[i2],v=vecs[i2]; cnt[a]++; var s=sums[a]; for(var dd2=0;dd2<dim;dd2++)s[dd2]+=v[dd2]; }
+    for(var c3=0;c3<k;c3++){
+      if(cnt[c3]===0){ centers[c3]=vecs[Math.floor(rnd()*n)].slice(); continue; }
+      var s2=sums[c3]; for(var d3=0;d3<dim;d3++) centers[c3][d3]=s2[d3]/cnt[c3];
+    }
+    if(!changed && it>0) break;
+  }
+  var inertia=0; for(var i3=0;i3<n;i3++) inertia+=sqdist(vecs[i3],centers[assign[i3]]);
+  return {assign:assign,centers:centers,inertia:inertia};
+}
+function kmeans(vecs,k,seed,restarts){
+  restarts=restarts||4; var best=null;
+  for(var r=0;r<restarts;r++){
+    var res=kmeansOnce(vecs,k,mulberry32(seed+r*7919),28);
+    if(!best||res.inertia<best.inertia) best=res;
+  }
+  return best;
+}
+// mean silhouette (sampled when n is large), higher is better
+function silhouette(vecs,assign,k,seed){
+  var n=vecs.length;
+  var idx=[]; for(var i=0;i<n;i++) idx.push(i);
+  if(n>340){ var rnd=mulberry32(seed||1); for(var s=n-1;s>0;s--){ var j=Math.floor(rnd()*(s+1)); var t=idx[s];idx[s]=idx[j];idx[j]=t; } idx=idx.slice(0,340); }
+  var byC=[]; for(var c=0;c<k;c++) byC.push([]);
+  for(var p=0;p<n;p++) byC[assign[p]].push(p);
+  var total=0,used=0;
+  for(var m=0;m<idx.length;m++){
+    var ii=idx[m], own=assign[ii], ownArr=byC[own];
+    if(ownArr.length<=1){ continue; }
+    var a=0; for(var q=0;q<ownArr.length;q++){ if(ownArr[q]!==ii) a+=Math.sqrt(sqdist(vecs[ii],vecs[ownArr[q]])); } a/=(ownArr.length-1);
+    var b=Infinity;
+    for(var c2=0;c2<k;c2++){ if(c2===own||byC[c2].length===0) continue; var arr=byC[c2],sb=0; for(var w=0;w<arr.length;w++) sb+=Math.sqrt(sqdist(vecs[ii],vecs[arr[w]])); sb/=arr.length; if(sb<b)b=sb; }
+    if(b===Infinity) continue;
+    total += (b-a)/Math.max(a,b); used++;
+  }
+  return used? total/used : -1;
+}
+function chooseK(vecs,seed){
+  var n=vecs.length;
+  var kMax=Math.min(12, Math.max(2, Math.floor(n/3)));
+  if(n<6) return Math.min(2,n);
+  var best=2,bestS=-2;
+  for(var k=2;k<=kMax;k++){
+    var res=kmeans(vecs,k,seed,3);
+    var sil=silhouette(vecs,res.assign,k,seed);
+    // tiny penalty so we don't over-split when scores are close
+    var score=sil-0.012*k;
+    if(score>bestS){ bestS=score; best=k; }
+  }
+  return best;
+}
+var STOP=("a an the and or but if then else of to in on for with at by from up down out over under again further once here there all any both each few more most other some such no nor not only own same so than too very can will just dont should now i me my we our you your it its is are was were be been being this that these those they them he she his her as about into your you're it's i'm we're they're have has had do does did getting got really much also new use used using would could been very there their").split(" ");
+var STOPSET={}; STOP.forEach(function(w){STOPSET[w]=1;});
+function tokens(s){ return (s.toLowerCase().match(/[a-z][a-z'+-]{2,}/g)||[]).filter(function(w){ return !STOPSET[w] && w.length>=3; }); }
+// c-TF-IDF style label: distinctive words for a cluster vs the whole set
+function labelCluster(items, memberIdx, globalDF, N){
+  var localDF={}, size=memberIdx.length;
+  for(var m=0;m<size;m++){
+    var seen={}, toks=tokens(items[memberIdx[m]]);
+    for(var t=0;t<toks.length;t++){ var w=toks[t]; if(!seen[w]){ seen[w]=1; localDF[w]=(localDF[w]||0)+1; } }
+  }
+  var scored=[];
+  for(var w2 in localDF){
+    var lf=localDF[w2]/size;                       // how common in this cluster
+    var idf=Math.log(1 + N/(globalDF[w2]||1));     // how rare overall
+    scored.push([w2, lf*idf, localDF[w2]]);
+  }
+  scored.sort(function(a,b){ return b[1]-a[1] || b[2]-a[2]; });
+  var top=scored.slice(0,3).map(function(x){return x[0];});
+  return top.length? top.join(" · ") : "(theme "+ (memberIdx[0]) +")";
+}
+function representative(vecs, memberIdx, center){
+  var best=memberIdx[0], bd=Infinity;
+  for(var m=0;m<memberIdx.length;m++){ var d=sqdist(vecs[memberIdx[m]],center); if(d<bd){bd=d;best=memberIdx[m];} }
+  return best;
+}
+// build the full grouped result from vectors + items
+function groupAll(items, vecs, kSel, seed){
+  var n=items.length;
+  var k = kSel==="auto" ? chooseK(vecs,seed) : Math.min(parseInt(kSel,10), n);
+  if(k<1) k=1;
+  var res = k<=1 ? {assign:new Array(n).fill(0),centers:[meanVec(vecs)]} : kmeans(vecs,k,seed,5);
+  // global document frequency for labelling
+  var globalDF={};
+  for(var i=0;i<n;i++){ var seen={},toks=tokens(items[i]); for(var t=0;t<toks.length;t++){ var w=toks[t]; if(!seen[w]){seen[w]=1; globalDF[w]=(globalDF[w]||0)+1;} } }
+  var groups=[];
+  for(var c=0;c<res.centers.length;c++){
+    var mem=[]; for(var p=0;p<n;p++) if(res.assign[p]===c) mem.push(p);
+    if(!mem.length) continue;
+    groups.push({ members:mem, label:labelCluster(items,mem,globalDF,n), rep:representative(vecs,mem,res.centers[c]), size:mem.length });
+  }
+  groups.sort(function(a,b){ return b.size-a.size; });
+  return groups;
+}
+function meanVec(vecs){ var dim=vecs[0].length,out=new Float64Array(dim); for(var i=0;i<vecs.length;i++){var v=vecs[i];for(var d=0;d<dim;d++)out[d]+=v[d];} for(var d2=0;d2<dim;d2++)out[d2]/=vecs.length; return Array.from(out); }
+/* expose for the Node test harness (no effect in the browser) */
+if(typeof window!=="undefined"){ window.__themeCore={kmeans:kmeans,silhouette:silhouette,chooseK:chooseK,groupAll:groupAll,labelCluster:labelCluster,tokens:tokens}; }
+
+/* ===================== UI + on-device embeddings ===================== */
+var srcEl=document.getElementById("src"), kEl=document.getElementById("k"),
+    goBtn=document.getElementById("go"), csvBtn=document.getElementById("csv"), copyBtn=document.getElementById("copy"),
+    sumEl=document.getElementById("sum"), statusEl=document.getElementById("status"), statusText=document.getElementById("statusText"),
+    progEl=document.getElementById("prog"), progBar=document.getElementById("progBar"),
+    statEl=document.getElementById("stat"), themesEl=document.getElementById("themes"),
+    sampleBtn=document.getElementById("sample"), pickBtn=document.getElementById("pick"), fileEl=document.getElementById("file");
+
+var PALETTE=["#2be3b0","#7c9cff","#ffb14e","#ff6a8b","#9b8cff","#43d4e6","#c2e34e","#ff8e5e","#5ee0a8","#e89bff","#7fd1ff","#ffd166"];
+var SAMPLE=[
+"Shipping took almost two weeks, way longer than promised","My order still has not arrived after 10 days","Delivery was super fast, got it the next morning","The package showed up damaged and soaking wet","Tracking never updated so I had no idea where it was","Got my parcel in 2 days, really impressed with the speed",
+"The app crashes every time I open the camera","Checkout freezes on the payment step and I lose my cart","It keeps logging me out randomly","The new update made the whole thing really laggy","Search bar does nothing when I tap it","Photos fail to upload about half the time",
+"Way too expensive for what you get","The subscription price went up again with no warning","Honestly great value for the money","Hidden fees at checkout that I did not expect","Cancelled because the monthly cost is just too high","Cheaper than every competitor I tried, love that",
+"Support never answered my emails","Took three days to hear back from customer service","The rep was incredibly helpful and sorted it in minutes","Chat support just kept sending me canned replies","Phone line puts you on hold forever","Their support team went above and beyond, really kind",
+"Absolutely love this product, use it every single day","Best purchase I have made all year","The design is beautiful and so easy to use","Recommended it to all my friends already","Quality feels premium and well built","This has genuinely made my mornings better",
+"Setup was confusing and took way too long","Could not figure out how to connect my account","Onboarding walked me through everything nicely","The tutorial is unclear and skips steps","Signing up was quick and painless","I gave up during registration, too many steps"
+];
+
+env.backends = env.backends || {};
+var extractor=null, extractorP=null, backend="wasm";
+var lastVecs=null, lastItems=null, lastGroups=null;
+
+function setStatus(html, prog){ statusEl.classList.add("show"); statusText.innerHTML=html; if(prog){progEl.classList.add("show");}else{progEl.classList.remove("show");} }
+function hideStatus(){ statusEl.classList.remove("show"); }
+
+function loadModel(){
+  if(extractorP) return extractorP;
+  setStatus("Loading the AI model for the first time. This downloads once (~25 MB) then is cached.", true);
+  var files={};
+  function onProgress(p){ if(p && p.status==="progress" && p.file){ files[p.file]=(p.loaded||0)/(p.total||1); var v=Object.keys(files).map(function(k){return files[k];}); progBar.style.width=Math.round(v.reduce(function(a,b){return a+b;},0)/v.length*100)+"%"; } }
+  extractorP=(async function(){
+    var opts={ progress_callback:onProgress };
+    try{
+      if(navigator.gpu){ extractor=await pipeline("feature-extraction","Xenova/all-MiniLM-L6-v2",Object.assign({device:"webgpu",dtype:"fp32"},opts)); backend="webgpu"; }
+      else { throw new Error("no-webgpu"); }
+    }catch(e){
+      extractor=await pipeline("feature-extraction","Xenova/all-MiniLM-L6-v2",Object.assign({device:"wasm",dtype:"q8"},opts)); backend="wasm";
+    }
+    progBar.style.width="100%";
+    return extractor;
+  })();
+  return extractorP;
+}
+
+async function embed(items){
+  var vecs=new Array(items.length), B=24;
+  for(var i=0;i<items.length;i+=B){
+    var batch=items.slice(i,i+B);
+    var out=await extractor(batch,{pooling:"mean",normalize:true});
+    var arr=out.tolist();
+    for(var j=0;j<arr.length;j++) vecs[i+j]=arr[j];
+    setStatus("Reading meaning of your text on-device… <b>"+Math.min(i+B,items.length)+"/"+items.length+"</b>", true);
+    progBar.style.width=Math.round(Math.min(i+B,items.length)/items.length*100)+"%";
+    await new Promise(function(r){ setTimeout(r,0); });
+  }
+  return vecs;
+}
+
+function parseItems(text){
+  var seen={}, out=[];
+  text.split(/\r?\n/).forEach(function(line){
+    var s=line.trim().replace(/^["']|["']$/g,"").trim();
+    if(s.length<2) return;
+    var key=s.toLowerCase();
+    if(seen[key]) return; seen[key]=1; out.push(s);
+  });
+  return out;
+}
+
+function render(items, groups){
+  themesEl.innerHTML="";
+  var N=items.length;
+  groups.forEach(function(g,gi){
+    var color=PALETTE[gi%PALETTE.length];
+    var pct=Math.round(g.size/N*100);
+    var el=document.createElement("div"); el.className="theme"; el.style.setProperty("--tc",color);
+    var lis=g.members.map(function(idx){ return "<li>"+esc(items[idx])+"</li>"; }).join("");
+    el.innerHTML=
+      '<div class="top"><span class="name">'+esc(g.label)+'</span><span class="cnt">'+g.size+' · '+pct+'%</span></div>'
+      +'<div class="quote">"'+esc(trunc(items[g.rep],160))+'"</div>'
+      +'<button class="toggle">Show all '+g.size+' &rarr;</button>'
+      +'<ul>'+lis+'</ul>';
+    var ul=el.querySelector("ul"), tg=el.querySelector(".toggle");
+    tg.addEventListener("click",function(){ var open=ul.classList.toggle("open"); tg.innerHTML=open?"Hide &uarr;":("Show all "+g.size+" &rarr;"); });
+    themesEl.appendChild(el);
+  });
+}
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function trunc(s,n){ return s.length>n? s.slice(0,n-1)+"…" : s; }
+
+async function run(){
+  var items=parseItems(srcEl.value);
+  if(items.length<2){ setStatus("Add at least a few lines of text — one item per line.", false); return; }
+  if(items.length>1500){ items=items.slice(0,1500); }
+  goBtn.disabled=true; csvBtn.disabled=true; copyBtn.disabled=true; statEl.classList.remove("show"); themesEl.innerHTML="";
+  try{
+    var needEmbed = !(lastItems && lastItems.length===items.length && lastItems.join("")===items.join(""));
+    if(needEmbed){
+      await loadModel();
+      setStatus("Reading meaning of your text on-device…", true);
+      lastVecs=await embed(items); lastItems=items;
+    }
+    setStatus("Grouping into themes…", true);
+    await new Promise(function(r){ setTimeout(r,10); });
+    var groups=groupAll(items,lastVecs,kEl.value,12345);
+    lastGroups=groups;
+    render(items,groups);
+    var big=groups[0];
+    statEl.innerHTML="<span><b>"+items.length+"</b> items</span><span><b>"+groups.length+"</b> themes</span><span>biggest: <b>"+esc(big.label)+"</b> ("+big.size+")</span><span>ran <b>"+(backend==="webgpu"?"on your GPU":"on-device")+"</b> · nothing uploaded</span>";
+    statEl.classList.add("show");
+    hideStatus(); sumEl.textContent="";
+    csvBtn.disabled=false; copyBtn.disabled=false;
+  }catch(err){
+    setStatus("Something went wrong loading the model. Check your connection and try again. <span style='color:var(--faint)'>("+esc(String(err&&err.message||err))+")</span>", false);
+  }
+  goBtn.disabled=false;
+}
+
+function downloadCSV(){
+  if(!lastGroups) return;
+  var rows=[["theme","item"]];
+  lastGroups.forEach(function(g){ g.members.forEach(function(idx){ rows.push([g.label, lastItems[idx]]); }); });
+  var csv=rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(","); }).join("\r\n");
+  var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="themes.csv"; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
+}
+function copySummary(){
+  if(!lastGroups) return;
+  var N=lastItems.length;
+  var txt=lastGroups.map(function(g){ var pct=Math.round(g.size/N*100); return "• "+g.label+" — "+g.size+" ("+pct+"%)\n  e.g. \""+trunc(lastItems[g.rep],160)+"\""; }).join("\n");
+  navigator.clipboard.writeText(txt).then(function(){ copyBtn.textContent="Copied ✓"; setTimeout(function(){copyBtn.textContent="Copy summary";},1500); });
+}
+
+goBtn.addEventListener("click",run);
+csvBtn.addEventListener("click",downloadCSV);
+copyBtn.addEventListener("click",copySummary);
+kEl.addEventListener("change",function(){ if(lastVecs && lastItems){ run(); } });
+sampleBtn.addEventListener("click",function(){ srcEl.value=SAMPLE.join("\n"); lastItems=null; sumEl.textContent=SAMPLE.length+" sample lines loaded — click Find themes"; });
+pickBtn.addEventListener("click",function(){ fileEl.click(); });
+fileEl.addEventListener("change",function(){ var f=fileEl.files[0]; if(!f)return; var rd=new FileReader(); rd.onload=function(){ srcEl.value=String(rd.result); lastItems=null; var c=parseItems(srcEl.value).length; sumEl.textContent=c+" lines loaded — click Find themes"; }; rd.readAsText(f); });
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
