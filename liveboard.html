@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Liveboard — free real-time collaborative whiteboard, no login</title>
+<meta name="description" content="A free online whiteboard you draw on together in real time. Share a link, see everyone's live cursors, sketch and drop sticky notes with anyone. No sign-up, no install, nothing stored." />
+<meta name="keywords" content="online whiteboard, collaborative whiteboard, free whiteboard, multiplayer whiteboard, whiteboard no login, shared whiteboard, real time whiteboard, online whiteboard free, draw together online, team whiteboard, virtual whiteboard, whiteboard with friends, live cursors" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Liveboard — real-time collaborative whiteboard" />
+<meta property="og:description" content="Share a link and draw together live. See everyone's cursors in real time. No sign-up, nothing stored." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/liveboard.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Liveboard — real-time collaborative whiteboard" />
+<meta name="twitter:description" content="Share a link, draw together live with cursors. No sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/liveboard.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Liveboard","url":"https://hammyasf.github.io/liveboard.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free real-time collaborative whiteboard. Share a link and draw together live with shared cursors, no sign-up.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an account to use the whiteboard?","acceptedAnswer":{"@type":"Answer","text":"No. There is no sign-up and no install. Open the page, share the link, and anyone who opens it draws on the same board with you instantly."}},{"@type":"Question","name":"Is my drawing stored on a server?","acceptedAnswer":{"@type":"Answer","text":"No. The board lives in the browsers of the people in the room and is relayed live between them. Nothing is written to a database. When everyone leaves the room, the board is gone."}},{"@type":"Question","name":"How many people can draw at once?","acceptedAnswer":{"@type":"Answer","text":"A handful of people can collaborate comfortably in real time. It is built for small teams, classes, and friends, not for hundreds at once."}},{"@type":"Question","name":"How do I invite someone?","acceptedAnswer":{"@type":"Answer","text":"Click Copy link and send it. The link contains the room code, so anyone who opens it lands on the exact same board and starts drawing with you live."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:30px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  /* App */
+  .app{margin:22px 0 8px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .toolbar{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line);background:rgba(var(--surfaceRGB),.6);}
+  .tgroup{display:flex;align-items:center;gap:6px;}
+  .tbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:38px;height:38px;border-radius:10px;border:1px solid var(--line-2);background:transparent;color:var(--muted);cursor:pointer;transition:.15s;font-family:var(--mono);font-size:13px;}
+  .tbtn:hover{color:var(--ink);border-color:var(--accent);}
+  .tbtn.on{background:var(--accent);color:#07100e;border-color:var(--accent);}
+  .tbtn svg{width:19px;height:19px;}
+  .swatches{display:flex;gap:6px;align-items:center;}
+  .sw{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s;}
+  .sw:hover{transform:scale(1.12);}
+  .sw.on{border-color:var(--ink);box-shadow:0 0 0 2px rgba(0,0,0,.4) inset;}
+  .sizes{display:flex;gap:6px;align-items:center;}
+  .sizebtn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line-2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .sizebtn.on{border-color:var(--accent);}
+  .sizebtn i{display:block;border-radius:50%;background:var(--muted);}
+  .sizebtn.on i{background:var(--accent);}
+  .spacer{flex:1 1 auto;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;white-space:nowrap;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
+  .who{display:flex;align-items:center;gap:8px;}
+  .avs{display:flex;}
+  .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:#07100e;margin-left:-8px;border:2px solid var(--bg-2);}
+  .av:first-child{margin-left:0;}
+  .cnt{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .namewrap{display:flex;align-items:center;gap:6px;}
+  .nameinput{width:120px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:7px 10px;font-family:var(--mono);font-size:12.5px;}
+
+  .stage{position:relative;width:100%;aspect-ratio:16/10;background:#0e1a17;overflow:hidden;touch-action:none;}
+  #board{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  #surface{position:absolute;inset:0;cursor:crosshair;}
+  #notes,#cursors{position:absolute;inset:0;pointer-events:none;}
+  .note{position:absolute;width:170px;min-height:120px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);pointer-events:auto;display:flex;flex-direction:column;overflow:hidden;font-family:var(--body);}
+  .note .nh{height:22px;cursor:grab;display:flex;align-items:center;justify-content:flex-end;padding:0 6px;background:rgba(0,0,0,.12);}
+  .note .nh button{background:transparent;border:none;color:rgba(0,0,0,.55);cursor:pointer;font-size:14px;line-height:1;padding:2px 4px;}
+  .note textarea{flex:1;border:none;background:transparent;resize:none;outline:none;padding:8px 10px;font-family:var(--body);font-size:14px;color:#1a1a1a;line-height:1.4;}
+  .cursor{position:absolute;transform:translate(-2px,-2px);transition:left .08s linear,top .08s linear;will-change:left,top;}
+  .cursor svg{display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));}
+  .cursor .lbl{position:absolute;left:14px;top:14px;font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:8px;color:#07100e;white-space:nowrap;font-weight:700;}
+
+  .statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .conn{display:inline-flex;align-items:center;gap:7px;}
+  .led{width:8px;height:8px;border-radius:50%;background:var(--faint);box-shadow:0 0 8px currentColor;}
+  .led.live{background:#2be3b0;color:#2be3b0;}
+  .led.off{background:#ff6a5d;color:#ff6a5d;}
+  .hint{color:var(--faint);}
+
+  /* intro overlay */
+  .intro{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(7,16,14,.78);backdrop-filter:blur(4px);text-align:center;padding:24px;}
+  .intro .card{max-width:460px;}
+  .intro h3{font-family:var(--display);font-weight:600;font-size:26px;}
+  .intro p{color:#cdd8d3;font-size:15px;margin-top:10px;}
+  .intro .row{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+  .toast{position:absolute;left:50%;bottom:18px;transform:translateX(-50%) translateY(20px);z-index:40;background:var(--ink);color:#07100e;font-family:var(--mono);font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:100px;opacity:0;transition:.25s;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  section.copy{padding:24px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:640px){.nameinput{width:88px;}.hint{display:none;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · real-time, no sign-up</div>
+    <h1>Liveboard</h1>
+    <p class="sub">A whiteboard you draw on together. Share the link, watch everyone's cursors move in real time, and sketch or drop sticky notes side by side. No account, nothing stored.</p>
+    <span class="priv">&#9889; Live multiplayer — share the link, draw together instantly</span>
+  </header>
+
+  <div class="app">
+    <div class="toolbar">
+      <div class="tgroup" id="tools">
+        <button class="tbtn on" data-tool="pen" title="Pen (P)" aria-label="Pen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path></svg></button>
+        <button class="tbtn" data-tool="marker" title="Highlighter (H)" aria-label="Highlighter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l-4 4v4h4l4-4"></path><path d="M14 6l4 4"></path><path d="M3 21h6"></path><path d="M18 2l4 4-9 9-4-4 9-9z"></path></svg></button>
+        <button class="tbtn" data-tool="eraser" title="Eraser (E)" aria-label="Eraser"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H8.5L3 14.5a2 2 0 0 1 0-3L13 2l8 8-9 9"></path><path d="M6 11l7 7"></path></svg></button>
+        <button class="tbtn" data-tool="note" title="Sticky note (N)" aria-label="Sticky note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v11l-5 5H4z"></path><path d="M20 15h-5v5"></path></svg></button>
+      </div>
+      <div class="swatches" id="swatches"></div>
+      <div class="sizes" id="sizes">
+        <button class="sizebtn" data-size="3" title="Thin"><i style="width:5px;height:5px"></i></button>
+        <button class="sizebtn on" data-size="6" title="Medium"><i style="width:9px;height:9px"></i></button>
+        <button class="sizebtn" data-size="12" title="Thick"><i style="width:15px;height:15px"></i></button>
+      </div>
+      <div class="tgroup">
+        <button class="tbtn" id="undo" title="Undo your last stroke (Ctrl+Z)" aria-label="Undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg></button>
+        <button class="tbtn" id="clear" title="Clear the whole board" aria-label="Clear board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path></svg></button>
+      </div>
+      <div class="spacer"></div>
+      <div class="namewrap"><input class="nameinput" id="name" maxlength="18" aria-label="Your name" /></div>
+      <div class="who"><div class="avs" id="avs"></div><span class="cnt" id="cnt">1 here</span></div>
+      <button class="btn" id="share">Copy link</button>
+      <button class="btn btn-out" id="png" title="Download a PNG of the board">Save PNG</button>
+    </div>
+
+    <div class="stage" id="stage">
+      <canvas id="board" width="1600" height="1000"></canvas>
+      <div id="surface"></div>
+      <div id="notes"></div>
+      <div id="cursors"></div>
+      <div class="intro" id="intro">
+        <div class="card">
+          <h3>You're in a private room.</h3>
+          <p>Share the link and anyone who opens it draws on this board with you, live. To feel it right now, open the link in a second tab and watch the cursors move.</p>
+          <div class="row">
+            <button class="btn" id="introCopy">Copy invite link</button>
+            <button class="btn btn-out" id="introGo">Start drawing</button>
+          </div>
+        </div>
+      </div>
+      <div class="toast" id="toast">Link copied</div>
+    </div>
+
+    <div class="statusbar">
+      <span class="conn"><span class="led" id="led"></span><span id="connlbl">Connecting…</span></span>
+      <span class="hint">Tip: double-click empty space to drop a sticky note · drag a note by its top bar</span>
+      <span id="room"></span>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Every board is a private room with its own link. When you open the page you are dropped into a fresh room, and the room code rides in the URL. Send that link to anyone and the moment they open it they are on the same canvas as you, with a live cursor that you can see moving as they draw. Pen strokes, highlighter, the eraser, and sticky notes all stream to everyone in the room as they happen.</p>
+    <h2>How is it live without a server I have to run?</h2>
+    <p>The drawing data is relayed through a realtime message channel, not saved into a database. Each stroke is broadcast as a small batch of points while you draw, and the other browsers in the room replay it onto their own canvas. Presence (who is in the room and where their cursor is) rides on the same channel. When a new person joins, one of the people already in the room hands them the current board in a single message, so a late arrival sees everything that is already drawn. Because nothing is written to disk, the board exists only for as long as people are in the room, which is exactly what you want for a quick brainstorm or a sketch with a friend.</p>
+    <h2>Good things to try</h2>
+    <p>Run a quick standup sketch with a teammate, explain a bug with a diagram while you talk, play a round of pictionary, plan a trip on a shared map sketch, or teach someone a concept by drawing it as they watch. Open the link on your phone and your laptop at the same time and use the phone as a second drawing surface. When you want to keep the result, hit Save PNG.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Do I need to sign up?</summary><p>No. There is no account and no install. Open the page, copy the link, and share it. Anyone who opens the link joins your board instantly.</p></details>
+    <details><summary>Is anything saved or uploaded?</summary><p>No. The board is relayed live between the browsers in the room and is never written to a database. When everyone closes the tab, the board is gone. If you want to keep it, use Save PNG.</p></details>
+    <details><summary>How many people can it handle?</summary><p>It is built for small groups, a handful of people drawing together comfortably in real time, like a team, a class, or friends. It is not meant for hundreds of simultaneous editors.</p></details>
+    <details><summary>Can I undo someone else's drawing?</summary><p>Undo removes your own most recent stroke. Anyone can use Clear to wipe the whole board for everyone, so use it with care.</p></details>
+    <details><summary>Does it work on mobile?</summary><p>Yes, you can draw with your finger. It works best with a stylus or a mouse, but touch is fully supported.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build a tool like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Real-time in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- Ad slot (commented for later):
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXImage" data-ad-slot="XX" data-ad-format="auto"></ins>
+-->
+<!-- Monetization (Polar.sh) slot for a future Pro: persistent boards, bigger rooms. -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  "use strict";
+  // ---- match the portfolio's saved theme ----
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var tt=T[localStorage.getItem("siteTheme")]; if(tt){var r=document.documentElement.style; r.setProperty("--accent",tt[0]);r.setProperty("--accent-2",tt[1]);r.setProperty("--accentRGB",tt[2]);r.setProperty("--surfaceRGB",tt[3]);r.setProperty("--bg",tt[4]);r.setProperty("--bg-2",tt[5]);} }catch(e){}
+
+  // ---- Supabase config (anon/publishable key is public and safe to embed; no tables, broadcast+presence only) ----
+  var SUPA_URL="https://cunynpmbjogrexkrxbwf.supabase.co";
+  var SUPA_KEY="sb_publishable_cOG9I9Rh6NJNEUxM4MDT4A_KceeVBsQ";
+
+  // ===================== PURE HELPERS (unit-tested) =====================
+  function clamp(v,lo,hi){ return v<lo?lo:v>hi?hi:v; }
+  function roomFromHash(h){ var m=/[#&]r=([A-Za-z0-9_-]{4,24})/.exec(h||""); return m?m[1]:""; }
+  function makeRoom(rnd){ var s="",a="abcdefghijkmnpqrstuvwxyz23456789"; for(var i=0;i<8;i++){ s+=a[Math.floor((rnd?rnd():Math.random())*a.length)]; } return s; }
+  function hashStr(s){ var h=2166136261; for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=(h*16777619)>>>0; } return h>>>0; }
+  function colorFor(id){ var hues=[8,28,48,140,168,190,210,260,300,330]; var h=hues[hashStr(id)%hues.length]; return "hsl("+h+",70%,58%)"; }
+  function noteColorFor(id){ var hs=[48,95,170,205,275,330,18]; var h=hs[hashStr(id)%hs.length]; return "hsl("+h+",85%,78%)"; }
+  function initials(name){ name=(name||"").trim(); if(!name) return "?"; var p=name.split(/\s+/); return (p.length>1?(p[0][0]+p[1][0]):name.slice(0,2)).toUpperCase(); }
+  var ANIMALS=["Fox","Owl","Wolf","Bear","Hawk","Lynx","Otter","Crane","Puma","Heron","Mole","Wren","Seal","Koi","Ibex"];
+  function randomName(rnd){ var f=function(){return (rnd?rnd():Math.random());}; return ANIMALS[Math.floor(f()*ANIMALS.length)]+"-"+(10+Math.floor(f()*90)); }
+  function shortId(){ try{ return (crypto.randomUUID().replace(/-/g,"")).slice(0,12); }catch(e){ return (Date.now().toString(36)+Math.random().toString(36).slice(2,8)); } }
+  function pickResponder(memberIds, requesterId, selfId){
+    var others=memberIds.filter(function(x){return x!==requesterId;}).sort();
+    return others.length>0 && others[0]===selfId;
+  }
+  function strokeStyle(tool,color,size){
+    if(tool==="eraser") return {op:"source-over",stroke:"#f7f9f8",width:size*3.2,alpha:1};
+    if(tool==="marker") return {op:"source-over",stroke:color,width:size*3.0,alpha:0.32};
+    return {op:"source-over",stroke:color,width:size,alpha:1};
+  }
+  // expose pure helpers for live unit testing
+  window.__lb={clamp:clamp,roomFromHash:roomFromHash,makeRoom:makeRoom,hashStr:hashStr,colorFor:colorFor,noteColorFor:noteColorFor,initials:initials,randomName:randomName,pickResponder:pickResponder,strokeStyle:strokeStyle};
+  // ===================== END PURE HELPERS =====================
+
+  var W=1600, H=1000;
+  var SWATCHES=["#0f0f12","#ff5d5d","#ff9a3d","#ffd23d","#3ddc84","#2bd4e3","#4d8bff","#b07cff","#ff7ad1","#ffffff"];
+
+  // ---- state ----
+  var selfId=shortId();
+  var myName=("");
+  try{ myName=localStorage.getItem("lb_name")||""; }catch(e){}
+  if(!myName) myName=randomName();
+  var myColor=colorFor(selfId);
+  var tool="pen", color="#0f0f12", size=6, drawing=false, synced=false;
+  var strokes=[];                 // committed: {id,tool,color,size,pts:[{x,y}...]}
+  var inprog={};                  // id -> stroke being drawn (local or remote)
+  var myStrokeIds=[];             // for undo
+  var notes={};                   // id -> {id,x,y,text,color,author}
+  var cursors={};                 // id -> {el,name,color,x,y,last}
+  var channel=null, live=false, strokeCounter=0;
+
+  // ---- elements ----
+  var stage=document.getElementById("stage"), canvas=document.getElementById("board"), ctx=canvas.getContext("2d");
+  var surface=document.getElementById("surface"), notesEl=document.getElementById("notes"), cursorsEl=document.getElementById("cursors");
+  var avsEl=document.getElementById("avs"), cntEl=document.getElementById("cnt"), roomEl=document.getElementById("room");
+  var ledEl=document.getElementById("led"), connlbl=document.getElementById("connlbl"), nameInput=document.getElementById("name");
+  var intro=document.getElementById("intro"), toast=document.getElementById("toast");
+  nameInput.value=myName;
+
+  // ---- room ----
+  var room=roomFromHash(location.hash);
+  if(!room){ room=makeRoom(); history.replaceState(null,"","#r="+room); }
+  roomEl.textContent="Room "+room;
+
+  // ---- rendering ----
+  var dirty=true;
+  function markDirty(){ dirty=true; }
+  function drawStroke(s){
+    if(!s||!s.pts||s.pts.length===0) return;
+    var st=strokeStyle(s.tool,s.color,s.size);
+    ctx.globalCompositeOperation=st.op;
+    ctx.globalAlpha=st.alpha;
+    ctx.strokeStyle=st.stroke; ctx.fillStyle=st.stroke;
+    ctx.lineWidth=st.width; ctx.lineCap="round"; ctx.lineJoin="round";
+    var p=s.pts;
+    if(p.length===1){ ctx.beginPath(); ctx.arc(p[0].x,p[0].y,st.width/2,0,Math.PI*2); ctx.fill(); return; }
+    ctx.beginPath(); ctx.moveTo(p[0].x,p[0].y);
+    for(var i=1;i<p.length;i++){ var mx=(p[i-1].x+p[i].x)/2, my=(p[i-1].y+p[i].y)/2; ctx.quadraticCurveTo(p[i-1].x,p[i-1].y,mx,my); }
+    ctx.lineTo(p[p.length-1].x,p[p.length-1].y); ctx.stroke();
+  }
+  function render(){
+    if(dirty){
+      dirty=false;
+      ctx.globalCompositeOperation="source-over"; ctx.globalAlpha=1;
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle="#f7f9f8"; ctx.fillRect(0,0,W,H);
+      for(var i=0;i<strokes.length;i++) drawStroke(strokes[i]);
+      for(var k in inprog) if(inprog.hasOwnProperty(k)) drawStroke(inprog[k]);
+      ctx.globalCompositeOperation="source-over"; ctx.globalAlpha=1;
+    }
+    // cursor staleness sweep
+    var now=Date.now();
+    for(var c in cursors){ if(cursors.hasOwnProperty(c)){ if(now-cursors[c].last>6000){ if(cursors[c].el&&cursors[c].el.parentNode) cursors[c].el.parentNode.removeChild(cursors[c].el); delete cursors[c]; } } }
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+
+  // ---- coordinate mapping ----
+  function toWorld(clientX,clientY){
+    var rc=stage.getBoundingClientRect();
+    return { x:clamp((clientX-rc.left)/rc.width*W,0,W), y:clamp((clientY-rc.top)/rc.height*H,0,H) };
+  }
+  function worldToScreen(x,y){
+    var rc=stage.getBoundingClientRect();
+    return { x:x/W*rc.width, y:y/H*rc.height };
+  }
+
+  // ---- broadcast helper ----
+  function bcast(event,payload){ if(channel&&live){ try{ channel.send({type:"broadcast",event:event,payload:payload}); }catch(e){} } }
+
+  // ---- drawing ----
+  var lastSent=0, sendBuffer=[];
+  function startStroke(w){
+    if(tool==="note") return;
+    drawing=true; strokeCounter++;
+    var id=selfId+"-"+strokeCounter;
+    var s={id:id,tool:tool,color:color,size:size,pts:[{x:w.x,y:w.y}]};
+    inprog[id]=s; window.__lb._cur=id; sendBuffer=[{x:w.x,y:w.y}]; lastSent=0;
+    markDirty();
+    bcast("draw",{id:id,tool:tool,color:color,size:size,pts:[{x:w.x,y:w.y}],start:true});
+  }
+  function extendStroke(w){
+    var id=window.__lb._cur; var s=inprog[id]; if(!s) return;
+    var last=s.pts[s.pts.length-1];
+    if(Math.abs(last.x-w.x)<0.8 && Math.abs(last.y-w.y)<0.8) return;
+    s.pts.push({x:w.x,y:w.y}); sendBuffer.push({x:w.x,y:w.y}); markDirty();
+    var now=Date.now();
+    if(now-lastSent>45){ lastSent=now; bcast("draw",{id:id,pts:sendBuffer.splice(0,sendBuffer.length)}); }
+  }
+  function endStroke(){
+    if(!drawing) return; drawing=false;
+    var id=window.__lb._cur; var s=inprog[id]; if(!s) return;
+    if(sendBuffer.length){ bcast("draw",{id:id,pts:sendBuffer.splice(0,sendBuffer.length)}); }
+    bcast("draw",{id:id,end:true});
+    strokes.push(s); delete inprog[id]; myStrokeIds.push(id); markDirty();
+  }
+
+  // ---- remote draw ----
+  function onRemoteDraw(p){
+    if(p.start){ inprog[p.id]={id:p.id,tool:p.tool,color:p.color,size:p.size,pts:p.pts?p.pts.slice():[]}; markDirty(); return; }
+    if(p.end){ var s=inprog[p.id]; if(s){ strokes.push(s); delete inprog[p.id]; } markDirty(); return; }
+    var t=inprog[p.id];
+    if(!t){ t=inprog[p.id]={id:p.id,tool:p.tool||"pen",color:p.color||"#0f0f12",size:p.size||6,pts:[]}; }
+    if(p.pts){ for(var i=0;i<p.pts.length;i++) t.pts.push(p.pts[i]); }
+    markDirty();
+  }
+
+  // ---- notes ----
+  function renderNote(n){
+    var el=document.getElementById("note-"+n.id);
+    if(!el){
+      el=document.createElement("div"); el.className="note"; el.id="note-"+n.id;
+      el.innerHTML='<div class="nh"><button title="Delete note">&times;</button></div><textarea placeholder="Type…"></textarea>';
+      notesEl.appendChild(el);
+      var ta=el.querySelector("textarea"), nh=el.querySelector(".nh");
+      ta.addEventListener("input",function(){ n.text=ta.value; bcast("note",{id:n.id,x:n.x,y:n.y,text:n.text,color:n.color,author:n.author}); });
+      ta.addEventListener("pointerdown",function(e){ e.stopPropagation(); });
+      el.querySelector(".nh button").addEventListener("click",function(e){ e.stopPropagation(); delete notes[n.id]; if(el.parentNode)el.parentNode.removeChild(el); bcast("note-del",{id:n.id}); });
+      // drag
+      var dragging=false, off={x:0,y:0};
+      nh.addEventListener("pointerdown",function(e){ if(e.target.tagName==="BUTTON")return; dragging=true; nh.setPointerCapture(e.pointerId); var w=toWorld(e.clientX,e.clientY); off={x:w.x-n.x,y:w.y-n.y}; e.stopPropagation(); e.preventDefault(); });
+      nh.addEventListener("pointermove",function(e){ if(!dragging)return; var w=toWorld(e.clientX,e.clientY); n.x=clamp(w.x-off.x,0,W-10); n.y=clamp(w.y-off.y,0,H-10); placeNote(n,el); bcast("note",{id:n.id,x:n.x,y:n.y,text:n.text,color:n.color,author:n.author}); });
+      nh.addEventListener("pointerup",function(e){ dragging=false; try{nh.releasePointerCapture(e.pointerId);}catch(_){} });
+    }
+    el.style.background=n.color; el.querySelector("textarea").value=n.text||"";
+    placeNote(n,el);
+  }
+  function placeNote(n,el){ var sc=worldToScreen(n.x,n.y); var rc=stage.getBoundingClientRect(); el.style.left=sc.x+"px"; el.style.top=sc.y+"px"; el.style.transform="none"; el.style.width=Math.max(120,170/W*rc.width)+"px"; }
+  function repositionAll(){ for(var id in notes){ if(notes.hasOwnProperty(id)){ var el=document.getElementById("note-"+id); if(el) placeNote(notes[id],el); } } for(var c in cursors){ if(cursors.hasOwnProperty(c)) placeCursor(cursors[c]); } }
+  function addNote(w){
+    var id=selfId+"-n-"+(++strokeCounter);
+    var n={id:id,x:clamp(w.x-85,0,W-10),y:clamp(w.y-10,0,H-10),text:"",color:noteColorFor(selfId),author:myName};
+    notes[id]=n; renderNote(n);
+    var ta=document.getElementById("note-"+id).querySelector("textarea"); if(ta) ta.focus();
+    bcast("note",{id:n.id,x:n.x,y:n.y,text:n.text,color:n.color,author:n.author});
+  }
+  function onRemoteNote(p){ var n=notes[p.id]; if(!n){ n=notes[p.id]={id:p.id,x:p.x,y:p.y,text:p.text||"",color:p.color,author:p.author}; } else { n.x=p.x; n.y=p.y; n.text=p.text; } renderNote(n); }
+
+  // ---- cursors ----
+  function placeCursor(c){ var sc=worldToScreen(c.x,c.y); c.el.style.left=sc.x+"px"; c.el.style.top=sc.y+"px"; }
+  function onRemoteCursor(p){
+    var c=cursors[p.id];
+    if(!c){
+      var el=document.createElement("div"); el.className="cursor";
+      el.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="'+p.color+'"><path d="M5 3l15 9-6.5 1.2L17 20l-3 1.3-3-6.4L6.5 19z"/></svg><span class="lbl" style="background:'+p.color+'">'+(p.name||"Guest").replace(/[<>&]/g,"")+'</span>';
+      cursorsEl.appendChild(el); c=cursors[p.id]={el:el,name:p.name,color:p.color,x:p.x,y:p.y,last:Date.now()};
+    }
+    c.x=p.x; c.y=p.y; c.last=Date.now();
+    if(p.name && c.lbl!==p.name){ var lbl=c.el.querySelector(".lbl"); if(lbl) lbl.textContent=(p.name||"Guest"); c.lbl=p.name; }
+    placeCursor(c);
+  }
+
+  // ---- pointer input on surface ----
+  var lastCursorSent=0;
+  surface.addEventListener("pointerdown",function(e){
+    if(e.button!==0 && e.pointerType==="mouse") return;
+    hideIntro();
+    if(tool==="note"){ addNote(toWorld(e.clientX,e.clientY)); return; }
+    surface.setPointerCapture(e.pointerId);
+    startStroke(toWorld(e.clientX,e.clientY)); e.preventDefault();
+  });
+  surface.addEventListener("pointermove",function(e){
+    var w=toWorld(e.clientX,e.clientY);
+    if(drawing) extendStroke(w);
+    var now=Date.now();
+    if(now-lastCursorSent>40){ lastCursorSent=now; bcast("cursor",{id:selfId,name:myName,color:myColor,x:w.x,y:w.y}); }
+  });
+  window.addEventListener("pointerup",endStroke);
+  surface.addEventListener("pointercancel",endStroke);
+  surface.addEventListener("dblclick",function(e){ hideIntro(); addNote(toWorld(e.clientX,e.clientY)); });
+
+  // ---- toolbar wiring ----
+  function selTool(t){ tool=t; document.querySelectorAll("#tools .tbtn").forEach(function(b){ b.classList.toggle("on",b.getAttribute("data-tool")===t); }); surface.style.cursor=(t==="note"?"copy":"crosshair"); }
+  document.querySelectorAll("#tools .tbtn").forEach(function(b){ b.addEventListener("click",function(){ selTool(b.getAttribute("data-tool")); }); });
+  var swEl=document.getElementById("swatches");
+  SWATCHES.forEach(function(col,i){ var d=document.createElement("div"); d.className="sw"+(col===color?" on":""); d.style.background=col; d.title=col; d.addEventListener("click",function(){ color=col; document.querySelectorAll(".sw").forEach(function(x){x.classList.remove("on");}); d.classList.add("on"); if(tool==="eraser")selTool("pen"); }); swEl.appendChild(d); });
+  document.querySelectorAll("#sizes .sizebtn").forEach(function(b){ b.addEventListener("click",function(){ size=parseInt(b.getAttribute("data-size"),10); document.querySelectorAll("#sizes .sizebtn").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); }); });
+  document.getElementById("undo").addEventListener("click",doUndo);
+  function doUndo(){ if(!myStrokeIds.length) return; var id=myStrokeIds.pop(); for(var i=strokes.length-1;i>=0;i--){ if(strokes[i].id===id){ strokes.splice(i,1); break; } } markDirty(); bcast("undo",{id:id}); }
+  document.getElementById("clear").addEventListener("click",function(){ if(confirm("Clear the board for everyone in the room?")){ doClear(); bcast("clear",{}); } });
+  function doClear(){ strokes=[]; inprog={}; myStrokeIds=[]; for(var id in notes){ if(notes.hasOwnProperty(id)){ var el=document.getElementById("note-"+id); if(el&&el.parentNode)el.parentNode.removeChild(el); } } notes={}; markDirty(); }
+  nameInput.addEventListener("change",function(){ myName=(nameInput.value||"").trim().slice(0,18)||randomName(); nameInput.value=myName; try{localStorage.setItem("lb_name",myName);}catch(e){} if(channel&&live){ try{channel.track({name:myName,color:myColor});}catch(e){} } });
+
+  // keyboard shortcuts
+  window.addEventListener("keydown",function(e){
+    if(e.target&&(e.target.tagName==="TEXTAREA"||e.target.tagName==="INPUT")) return;
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){ e.preventDefault(); doUndo(); return; }
+    var k=e.key.toLowerCase();
+    if(k==="p")selTool("pen"); else if(k==="h")selTool("marker"); else if(k==="e")selTool("eraser"); else if(k==="n")selTool("note");
+  });
+
+  // ---- share / png / intro ----
+  function showToast(msg){ toast.textContent=msg; toast.classList.add("show"); setTimeout(function(){ toast.classList.remove("show"); },1600); }
+  function copyLink(){ var url=location.origin+location.pathname+"#r="+room; var done=function(){ showToast("Invite link copied"); }; if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done,function(){ prompt("Copy this link:",url); }); } else { prompt("Copy this link:",url); } }
+  document.getElementById("share").addEventListener("click",copyLink);
+  document.getElementById("introCopy").addEventListener("click",copyLink);
+  function hideIntro(){ intro.style.display="none"; }
+  document.getElementById("introGo").addEventListener("click",hideIntro);
+  document.getElementById("png").addEventListener("click",function(){
+    var tmp=document.createElement("canvas"); tmp.width=W; tmp.height=H; var tx=tmp.getContext("2d");
+    tx.fillStyle="#f7f9f8"; tx.fillRect(0,0,W,H);
+    tx.drawImage(canvas,0,0);
+    // burn notes into the export
+    for(var id in notes){ if(notes.hasOwnProperty(id)){ var n=notes[id]; tx.fillStyle=n.color; tx.fillRect(n.x,n.y,170,120); tx.fillStyle="#1a1a1a"; tx.font="22px sans-serif"; wrapText(tx,n.text||"",n.x+12,n.y+34,146,26); } }
+    tmp.toBlob(function(b){ var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="liveboard-"+room+".png"; a.click(); });
+  });
+  function wrapText(ctx2,text,x,y,maxW,lh){ var words=String(text).split(/\s+/),line="",yy=y; for(var i=0;i<words.length;i++){ var test=line+words[i]+" "; if(ctx2.measureText(test).width>maxW&&line){ ctx2.fillText(line,x,yy); line=words[i]+" "; yy+=lh; if(yy>y+96)return; } else line=test; } ctx2.fillText(line,x,yy); }
+
+  window.addEventListener("resize",repositionAll);
+
+  // ===================== REALTIME =====================
+  function setLed(state){ ledEl.className="led"+(state==="live"?" live":state==="off"?" off":""); connlbl.textContent=(state==="live"?"Live · synced":state==="off"?"Offline — drawing solo":"Connecting…"); }
+  function updatePresence(){
+    if(!channel){ return; }
+    var st={}; try{ st=channel.presenceState(); }catch(e){ st={}; }
+    var ids=Object.keys(st);
+    if(ids.indexOf(selfId)<0) ids.push(selfId);
+    avsEl.innerHTML="";
+    var seen={}, shown=0;
+    ids.forEach(function(id){
+      if(seen[id]||shown>=6) return; seen[id]=1; shown++;
+      var meta=(st[id]&&st[id][0])||{}; var nm=id===selfId?myName:(meta.name||"Guest"); var cl=id===selfId?myColor:(meta.color||colorFor(id));
+      var a=document.createElement("div"); a.className="av"; a.style.background=cl; a.textContent=initials(nm); a.title=nm; avsEl.appendChild(a);
+    });
+    var n=ids.length; cntEl.textContent=n+" here";
+  }
+
+  function connect(){
+    if(!window.supabase||!window.supabase.createClient){ setLed("off"); window.__lbLive=false; return; }
+    var client;
+    try{ client=window.supabase.createClient(SUPA_URL,SUPA_KEY,{realtime:{params:{eventsPerSecond:40}}}); }
+    catch(e){ setLed("off"); window.__lbLive=false; return; }
+    channel=client.channel("liveboard:"+room,{config:{presence:{key:selfId},broadcast:{self:false}}});
+
+    channel.on("broadcast",{event:"draw"},function(m){ onRemoteDraw(m.payload); });
+    channel.on("broadcast",{event:"cursor"},function(m){ onRemoteCursor(m.payload); });
+    channel.on("broadcast",{event:"note"},function(m){ onRemoteNote(m.payload); });
+    channel.on("broadcast",{event:"note-del"},function(m){ var id=m.payload.id; delete notes[id]; var el=document.getElementById("note-"+id); if(el&&el.parentNode)el.parentNode.removeChild(el); });
+    channel.on("broadcast",{event:"undo"},function(m){ var id=m.payload.id; for(var i=strokes.length-1;i>=0;i--){ if(strokes[i].id===id){ strokes.splice(i,1); break; } } markDirty(); });
+    channel.on("broadcast",{event:"clear"},function(){ doClear(); });
+    channel.on("broadcast",{event:"sync-req"},function(m){
+      var st={}; try{ st=channel.presenceState(); }catch(e){}
+      var ids=Object.keys(st); if(ids.indexOf(selfId)<0) ids.push(selfId);
+      if(pickResponder(ids,m.payload.from,selfId)){
+        var notesArr=[]; for(var k in notes){ if(notes.hasOwnProperty(k)) notesArr.push(notes[k]); }
+        channel.send({type:"broadcast",event:"sync-res",payload:{to:m.payload.from,strokes:strokes,notes:notesArr}});
+      }
+    });
+    channel.on("broadcast",{event:"sync-res"},function(m){
+      if(m.payload.to!==selfId||synced) return; synced=true;
+      if(m.payload.strokes&&m.payload.strokes.length){ strokes=m.payload.strokes.concat(strokes); }
+      if(m.payload.notes){ m.payload.notes.forEach(function(n){ if(!notes[n.id]){ notes[n.id]=n; renderNote(n); } }); }
+      markDirty();
+    });
+    channel.on("presence",{event:"sync"},updatePresence);
+    channel.on("presence",{event:"join"},updatePresence);
+    channel.on("presence",{event:"leave"},updatePresence);
+
+    channel.subscribe(function(status){
+      if(status==="SUBSCRIBED"){
+        live=true; window.__lbLive=true; setLed("live");
+        try{ channel.track({name:myName,color:myColor}); }catch(e){}
+        updatePresence();
+        // ask the room for the current board
+        setTimeout(function(){ if(!synced) channel.send({type:"broadcast",event:"sync-req",payload:{from:selfId}}); },350);
+      } else if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"||status==="CLOSED"){
+        live=false; window.__lbLive=false; setLed("off");
+      }
+    });
+    window.addEventListener("beforeunload",function(){ try{ channel.untrack(); client.removeChannel(channel); }catch(e){} });
+  }
+  setLed("connecting");
+  connect();
+
+  // expose a tiny bit of state for live verification
+  window.__lbState=function(){ return {room:room,selfId:selfId,live:!!live,synced:synced,strokes:strokes.length,inprog:Object.keys(inprog).length,notes:Object.keys(notes).length,cursors:Object.keys(cursors).length,name:myName}; };
+  window.__lbBoot=true;
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
