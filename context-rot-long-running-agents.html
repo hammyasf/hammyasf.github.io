@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Context rot: why a bigger context window will not fix your agent — Harman Kamboj</title>
+<meta name="description" content="Context rot is why long-running AI agents get worse as the prompt fills up. Why bigger windows do not help, and how I budget context to keep an agent sharp." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Context rot: why a bigger context window will not fix your agent — Harman Kamboj" />
+<meta property="og:description" content="Context rot is why long-running AI agents get worse as the prompt fills up. Why bigger windows do not help, and how I budget context to keep an agent sharp." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/context-rot-long-running-agents.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Context rot: why a bigger context window will not fix your agent — Harman Kamboj" />
+<meta name="twitter:description" content="Context rot is why long-running AI agents get worse as the prompt fills up. Why bigger windows do not help, and how I budget context to keep an agent sharp." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/context-rot-long-running-agents.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Context rot: why a bigger context window will not fix your agent","description":"Context rot is why long-running AI agents get worse as the prompt fills up. Why bigger windows do not help, and how I budget context to keep an agent sharp.","datePublished":"2026-06-19","dateModified":"2026-06-19","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/context-rot-long-running-agents.html","url":"https://hammyasf.github.io/context-rot-long-running-agents.html","keywords":"AI, Agents, Context, LLMs","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  .blist{padding:30px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:30px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(24px,3.2vw,34px);letter-spacing:-.02em;margin:10px 0 8px;}
+  .bcard p{color:var(--muted);font-size:16px;}
+  .bhero{padding:150px 0 10px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Context rot: why a bigger context window will not fix your agent</h1>
+   <div class="pmeta"><span>June 19, 2026</span><span>4 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>AI</span><span>Agents</span><span>Context</span><span>LLMs</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>I keep watching teams treat the context window like a bucket. Bigger bucket, more room, fewer problems. Then they point an agent at a task that runs for twenty minutes, pour every tool result and every past message into the prompt, and watch it slowly lose the plot. This is context rot, and it is the most common reason a demo that looked sharp falls apart once the task gets long. The window never filled up. The model just got worse at using what was already in there.</p>
+<p>I have been wiring LLM features and small agents into real products for a while now, and the lesson took me a few painful sessions to actually believe. A million token window does not buy you a smarter agent. It mostly buys you more room to confuse one.</p>
+<h2>What context rot actually is</h2>
+<p>Context rot is the drop in answer quality as the prompt grows, and it starts well before you hit the token limit. You can be at thirty percent of the window and already see it. The model starts ignoring an instruction it followed five steps ago. It answers based on a stale tool result instead of the fresh one. It contradicts a decision it made earlier in the same run.</p>
+<p>The cause is not mysterious. Attention has to spread across everything you hand the model. The more you stuff in, the thinner each token gets weighted, and the easier it is for the important sentence to get drowned out by three hundred lines of JSON you dumped in from an API call. People have measured this across the major models, and the curve bends down long before the advertised limit. The big number on the box is a ceiling, not a promise that quality holds all the way up to it.</p>
+<h2>Why more tokens stops helping</h2>
+<p>Once you have seen a long run go sideways, the pattern is always one of these.</p>
+<ul><li>Old information outweighs new. The agent fetched a file, the file changed, it fetched it again, and now both versions sit in the prompt. The model has no clock. It cannot tell which one is current, so it sometimes picks the dead one.</li><li>Tool output buries the goal. A single search or query can return thousands of tokens of noise. The one instruction that matters is now sitting between two walls of logs, and the model reads it like a footnote.</li><li>The agent argues with its past self. Early in the run it decided to use approach A. Halfway through it reconsiders, but the original reasoning is still in context pulling it back, so it flip flops and wastes turns.</li></ul>
+<p>None of this gets better by adding more window. You are handing the model a longer book and asking it to remember page two. What it needs is a shorter, cleaner book.</p>
+<h2>Treat context as a budget you spend, not a bucket you fill</h2>
+<p>The mental shift that fixed most of my agent reliability was to stop asking how much I can fit and start asking what earns its place. Every token in the prompt is competing for attention with every other token. So I spend the budget on purpose.</p>
+<ul><li>Summarize and compact. When a sub task finishes, I replace the full transcript of it with a short summary of what happened and what the agent learned. The raw back and forth is gone. The conclusion stays.</li><li>Retrieve instead of carry. I do not keep the whole knowledge base in the prompt. I pull the few chunks that matter for the current step, which is the same discipline I wrote about in <a href="rag-that-actually-works.html">making RAG actually work</a>. Relevance beats volume every time.</li><li>Trim dead tool output. Once the agent has extracted the three fields it needed from a giant API response, the rest of that response is just noise. I drop it and keep the extract.</li></ul>
+<p>There is a cost angle here too. Every stale token you carry is a token you pay for on the next call, on every call, for the rest of the run. Context discipline and a sane bill turn out to be the same project, which is part of why I keep <a href="llm-cost-control.html">LLM cost under control</a> by watching what goes into the prompt rather than just what comes out.</p>
+<h2>How I structure a long-running agent now</h2>
+<p>The shape I trust looks less like one giant conversation and more like a working set with a memory behind it. The prompt holds the current goal, the recent few steps, and whatever I just retrieved for this exact task. Everything else lives outside the window in a store the agent can query when it needs to, and gets summarized back in as a compact note rather than a full replay. That separation between a small live context and a larger external memory is the same idea I dug into in <a href="agent-architecture-basics.html">agent architecture basics</a>, and it matters more the longer the agent runs.</p>
+<p>The point is that the model should never have to read its whole history to make the next move. It reads a tight, current slice, and trusts the memory layer to surface anything older that turns out to be relevant.</p>
+<h2>The cheap test most teams skip</h2>
+<p>Before you blame the model or reach for a bigger window, measure quality against context length on your own task. Run the agent, log how full the context is at each step, and note where the answers start drifting. You will usually find a point where it reliably falls apart, and it is almost always lower than you expected. That number is your real working budget. Build the agent to stay under it.</p>
+<p>Most agent failures I get called in to fix are not a weak model. They are a model drowning in its own history. Keep the context short and current, lean on retrieval and summaries for everything else, and the same model that looked unreliable starts behaving like the one in the demo. If you want more on this, I keep related notes in my <a href="ai.html">AI writing</a>, and the rest is on the <a href="index.html">homepage</a>.</p>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If your agent or the hard part of your product is fighting you, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="agent-architecture-basics.html">Agent architecture basics, minus the hype →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>
