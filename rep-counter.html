@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Rep Counter — count workout reps with your webcam, in your browser</title>
+<meta name="description" content="Count your squats, push-ups, curls, sit-ups and jumping jacks automatically using your webcam. A real pose-tracking AI model runs entirely in your browser — your camera never leaves your device. Free, no sign-up." />
+<meta name="keywords" content="rep counter, ai rep counter, pushup counter, squat counter, webcam workout counter, count reps automatically, pose detection workout, exercise counter online, form checker, ai workout tracker" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="AI Rep Counter — count reps with your webcam" />
+<meta property="og:description" content="A real AI pose model counts your squats, push-ups, curls and more, entirely in your browser. Nothing is uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/rep-counter.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="AI Rep Counter — count reps with your webcam" />
+<meta name="twitter:description" content="A real AI pose model counts your reps in the browser. Private, no upload, no sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/rep-counter.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"AI Rep Counter","url":"https://hammyasf.github.io/rep-counter.html","applicationCategory":"HealthApplication","operatingSystem":"Any (web browser with a camera)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Count workout reps automatically from your webcam using an on-device pose-detection AI model. Squats, push-ups, curls, sit-ups, jumping jacks. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my camera video uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The pose-detection model runs entirely in your browser using WebAssembly and your GPU. Your camera frames are processed on your device and never sent to any server."}},{"@type":"Question","name":"How does it count reps?","acceptedAnswer":{"@type":"Answer","text":"A pose model finds 33 body landmarks in each camera frame. The app measures the relevant joint angle for your chosen exercise (knee angle for squats, elbow angle for push-ups and curls, and so on) and counts a rep each time you complete a full range-of-motion cycle."}},{"@type":"Question","name":"Which exercises are supported?","acceptedAnswer":{"@type":"Answer","text":"Squats, push-ups, bicep curls, sit-ups, and jumping jacks, with live form feedback and range-of-motion tracking for each."}},{"@type":"Question","name":"Do I need to install anything?","acceptedAnswer":{"@type":"Answer","text":"No. It runs in any modern browser with a webcam. There is no sign-up and no app to download."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--warn:#ffb454;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:980px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 12px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .ex-row{display:flex;flex-wrap:wrap;gap:10px;padding:18px 18px 6px;}
+  .ex{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--muted);border:1px solid var(--line-2);border-radius:100px;padding:9px 16px;font-family:var(--body);font-weight:500;font-size:14px;cursor:pointer;transition:.15s;}
+  .ex:hover{border-color:rgba(var(--accentRGB),.5);color:var(--ink);}
+  .ex.on{background:var(--accent);color:#07100e;border-color:var(--accent);font-weight:700;}
+  .stage{position:relative;margin:16px 18px;border-radius:16px;overflow:hidden;background:#05100d;aspect-ratio:4/3;border:1px solid var(--line);}
+  .stage video,.stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);}
+  .stage video{opacity:.96;}
+  .empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:14px;z-index:3;}
+  .empty h2{font-family:var(--display);font-weight:600;font-size:24px;}
+  .empty p{color:var(--muted);font-size:14px;max-width:420px;}
+  .hud{position:absolute;left:0;right:0;bottom:0;z-index:4;display:flex;align-items:flex-end;justify-content:space-between;gap:14px;padding:16px 18px;pointer-events:none;
+    background:linear-gradient(0deg,rgba(3,9,7,.78),rgba(3,9,7,0));}
+  .repbox{display:flex;flex-direction:column;}
+  .repbox .rn{font-family:var(--display);font-weight:700;font-size:clamp(54px,11vw,90px);line-height:.92;color:var(--accent);text-shadow:0 2px 24px rgba(var(--accentRGB),.4);}
+  .repbox .rl{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#cdd8d3;margin-top:2px;}
+  .hud-r{text-align:right;font-family:var(--mono);font-size:12.5px;color:#cdd8d3;display:flex;flex-direction:column;gap:5px;}
+  .hud-r .fb{font-family:var(--body);font-weight:700;font-size:15px;color:var(--accent);max-width:240px;}
+  .hud-r .fb.warn{color:var(--warn);}
+  .gauge{width:160px;max-width:42vw;height:8px;border-radius:5px;background:rgba(255,255,255,.14);overflow:hidden;margin-left:auto;}
+  .gauge i{display:block;height:100%;width:0;background:var(--accent);transition:width .08s linear;}
+  .badge{position:absolute;top:12px;left:12px;z-index:4;font-family:var(--mono);font-size:11.5px;color:#cdd8d3;background:rgba(3,9,7,.6);border:1px solid var(--line);padding:5px 10px;border-radius:100px;display:flex;align-items:center;gap:7px;}
+  .badge .ld{width:8px;height:8px;border-radius:50%;background:var(--warn);box-shadow:0 0 8px var(--warn);}
+  .badge.live .ld{background:var(--accent);box-shadow:0 0 8px var(--accent);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:4px 18px 18px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .stat-strip{display:flex;flex-wrap:wrap;gap:10px 26px;padding:0 18px 18px;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .stat-strip b{color:var(--accent);font-weight:500;}
+  .toggle{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;}
+  .toggle input{accent-color:var(--accent);width:16px;height:16px;}
+  .note{padding:0 18px 16px;font-family:var(--mono);font-size:12px;color:var(--faint);}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.hud-r .fb{max-width:150px;font-size:13px;}.gauge{width:110px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · AI runs in your browser</div>
+    <h1>AI Rep Counter</h1>
+    <p class="sub">Point your webcam at yourself and it counts your squats, push-ups, curls, sit-ups and jumping jacks automatically — with live form feedback. A real pose-tracking model runs on your device, so your camera never leaves your machine.</p>
+    <span class="priv">&#128274; 100% private — your camera feed never leaves your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="ex-row" id="exRow">
+      <button class="ex on" data-ex="squat">Squats</button>
+      <button class="ex" data-ex="pushup">Push-ups</button>
+      <button class="ex" data-ex="curl">Bicep curls</button>
+      <button class="ex" data-ex="situp">Sit-ups</button>
+      <button class="ex" data-ex="jumpingjack">Jumping jacks</button>
+    </div>
+
+    <div class="stage" id="stage">
+      <video id="video" playsinline muted></video>
+      <canvas id="canvas"></canvas>
+      <div class="badge" id="badge"><span class="ld"></span><span id="badgeTxt">Model not loaded</span></div>
+      <div class="empty" id="empty">
+        <h2>Count reps with your camera</h2>
+        <p>Start your camera to begin, or watch a quick demo with no camera needed. The AI model (about 5&nbsp;MB) downloads once, then is cached.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+          <button class="btn" id="startBtn">Start camera</button>
+          <button class="btn btn-out" id="demoBtn">Watch demo (no camera)</button>
+        </div>
+      </div>
+      <div class="hud" id="hud" style="display:none;">
+        <div class="repbox"><span class="rn" id="repN">0</span><span class="rl" id="repL">Squats</span></div>
+        <div class="hud-r">
+          <span class="fb" id="fb">Get into frame</span>
+          <span>Range of motion</span>
+          <div class="gauge"><i id="gauge"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bar">
+      <button class="btn" id="stopBtn" style="display:none;">Stop</button>
+      <button class="btn btn-out" id="resetBtn" style="display:none;">Reset count</button>
+      <label class="toggle"><input type="checkbox" id="voice"> Speak the count</label>
+    </div>
+    <div class="stat-strip" id="stats" style="display:none;">
+      <span>Reps: <b id="sReps">0</b></span>
+      <span>Set time: <b id="sTime">0:00</b></span>
+      <span>Last rep: <b id="sTempo">—</b></span>
+      <span>Avg tempo: <b id="sAvg">—</b></span>
+      <span id="sEngine">Engine: <b>on-device</b></span>
+    </div>
+    <div class="note" id="errNote" style="display:none;"></div>
+  </div>
+
+  <section class="copy">
+    <h2>How it counts your reps</h2>
+    <p>When you start your camera, the page loads a pose-detection model called MediaPipe Pose Landmarker. On every frame it finds 33 points on your body — shoulders, elbows, wrists, hips, knees, ankles and more. From those points it measures the one joint angle that defines your chosen exercise: the knee angle for squats, the elbow angle for push-ups and curls, the hip angle for sit-ups, and the shoulder angle for jumping jacks.</p>
+    <p>A small state machine watches that angle. Each time you move from the resting position, through the full range of the movement, and back, it logs one rep. It also tracks how deep you went and how long the rep took, so it can nudge you when your range of motion gets shallow or your tempo drifts.</p>
+    <h2>Why it can run entirely in your browser</h2>
+    <p>The model is compiled to WebAssembly and runs on your GPU through the browser. Once it has downloaded (about five megabytes, cached after the first visit), every camera frame is processed locally. There is no server in the loop, which is exactly why your video never leaves your device and why it works even on a flaky connection once loaded.</p>
+    <h2>Tips for an accurate count</h2>
+    <p>Stand back far enough that your whole body is in frame, with even lighting and a reasonably clear background. For squats and push-ups a side-on angle reads depth best; for curls and jumping jacks face the camera. Loose, contrasting clothing helps the model find your joints. If the count pauses, it usually means part of your body left the frame.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my camera video uploaded anywhere?</summary><p>No. The pose model runs entirely in your browser. Frames are processed on your device and never sent to a server, which is why it is private and works offline once the model has loaded.</p></details>
+    <details><summary>Which exercises does it support?</summary><p>Squats, push-ups, bicep curls, sit-ups, and jumping jacks, each with its own joint-angle logic, range-of-motion gauge, and form feedback.</p></details>
+    <details><summary>Why is the first load slow?</summary><p>It downloads the pose model (about 5&nbsp;MB) once. After that your browser caches it, so future visits start almost instantly.</p></details>
+    <details><summary>It is not counting — what is wrong?</summary><p>Make sure your whole body is in frame and well lit. The counter only advances when it can clearly see the joints for your exercise, so step back or improve the lighting if it stalls.</p></details>
+    <details><summary>Does it work on my phone?</summary><p>Yes, in most modern mobile browsers. Prop the phone up so it can see your full body. Performance depends on your device, but the lite model is tuned to run smoothly on phones.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- ===== core app + rep engine (plain script, unit-tested in Node) ===== -->
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  /* ---------- pure geometry + rep engine (also exported for Node tests) ---------- */
+  function clamp(v,lo,hi){ return v<lo?lo:v>hi?hi:v; }
+  // interior angle at b formed by a-b-c, in degrees, using 2D coords
+  function angle(a,b,c){
+    var v1x=a.x-b.x, v1y=a.y-b.y, v2x=c.x-b.x, v2y=c.y-b.y;
+    var m1=Math.hypot(v1x,v1y), m2=Math.hypot(v2x,v2y);
+    if(m1===0||m2===0) return 0;
+    var cos=clamp((v1x*v2x+v1y*v2y)/(m1*m2),-1,1);
+    return Math.acos(cos)*180/Math.PI;
+  }
+  function vis(lm,i){ var p=lm[i]; return !!p && (p.visibility==null || p.visibility>0.5); }
+  function jointAngle(lm,a,b,c){ if(!vis(lm,a)||!vis(lm,b)||!vis(lm,c)) return null; return angle(lm[a],lm[b],lm[c]); }
+  function avgAngle(lm,sets){ var vals=[]; for(var i=0;i<sets.length;i++){ var v=jointAngle(lm,sets[i][0],sets[i][1],sets[i][2]); if(v!=null) vals.push(v); } if(!vals.length) return null; var s=0; for(var j=0;j<vals.length;j++)s+=vals[j]; return s/vals.length; }
+
+  // BlazePose 33-landmark indices used: 11/12 shoulders, 13/14 elbows, 15/16 wrists, 23/24 hips, 25/26 knees, 27/28 ankles
+  var EXERCISES={
+    squat:{ label:"Squats", startHigh:true, top:160, bottom:100,
+      measure:function(lm){ return avgAngle(lm,[[23,25,27],[24,26,28]]); },
+      form:function(min,max,rom){ return min>112 ? {t:"Go deeper — aim for parallel",warn:true} : {t:"Nice depth",warn:false}; } },
+    pushup:{ label:"Push-ups", startHigh:true, top:155, bottom:95,
+      measure:function(lm){ return avgAngle(lm,[[11,13,15],[12,14,16]]); },
+      form:function(min,max,rom){ return min>105 ? {t:"Lower your chest more",warn:true} : {t:"Full range, clean rep",warn:false}; } },
+    curl:{ label:"Bicep curls", startHigh:true, top:150, bottom:55,
+      measure:function(lm){ return avgAngle(lm,[[11,13,15],[12,14,16]]); },
+      form:function(min,max,rom){ return min>62 ? {t:"Curl all the way up",warn:true} : {t:"Full contraction",warn:false}; } },
+    situp:{ label:"Sit-ups", startHigh:true, top:128, bottom:72,
+      measure:function(lm){ return avgAngle(lm,[[11,23,25],[12,24,26]]); },
+      form:function(min,max,rom){ return min>88 ? {t:"Come up a little higher",warn:true} : {t:"Good range",warn:false}; } },
+    jumpingjack:{ label:"Jumping jacks", startHigh:false, top:135, bottom:45,
+      measure:function(lm){ return avgAngle(lm,[[23,11,15],[24,12,16]]); },
+      form:function(min,max,rom){ return max<120 ? {t:"Get your arms fully overhead",warn:true} : {t:"Full extension",warn:false}; } }
+  };
+
+  // Rep counter state machine. A rep = leave rest -> reach the away extreme -> return to rest.
+  function RepCounter(exKey){ this.setExercise(exKey); }
+  RepCounter.prototype.setExercise=function(exKey){ this.ex=EXERCISES[exKey]; this.key=exKey; this.reset(); };
+  RepCounter.prototype.reset=function(){ this.reps=0; this.armed=false; this.minV=Infinity; this.maxV=-Infinity; this.repStart=0; this.value=null; this.visible=false; this.depth=0; this.lastDur=null; this.totalDur=0; this.feedback=this.ex?{t:"Get into frame",warn:false}:null; };
+  // returns "rep" when a rep is completed this frame
+  RepCounter.prototype.update=function(lm,now){
+    var m=this.ex.measure(lm);
+    if(m==null){ this.visible=false; return null; }
+    this.visible=true; this.value=m;
+    var top=this.ex.top, bottom=this.ex.bottom, startHigh=this.ex.startHigh;
+    // depth: 0 at rest, 1 at full movement
+    this.depth = startHigh ? clamp((top-m)/(top-bottom),0,1) : clamp((m-bottom)/(top-bottom),0,1);
+    var atRest = startHigh ? (m>=top) : (m<=bottom);
+    var atAway = startHigh ? (m<=bottom) : (m>=top);
+    if(this.armed){ if(m<this.minV)this.minV=m; if(m>this.maxV)this.maxV=m; }
+    if(atAway && !this.armed){ this.armed=true; this.repStart=now; this.minV=m; this.maxV=m; }
+    if(atRest && this.armed){
+      this.reps++; this.armed=false;
+      var rom=this.maxV-this.minV, dur=(now-this.repStart)/1000;
+      this.lastDur=dur; this.totalDur+=dur;
+      this.feedback=this.ex.form(this.minV,this.maxV,rom);
+      this.minV=Infinity; this.maxV=-Infinity;
+      return "rep";
+    }
+    return null;
+  };
+
+  // ---------- demo skeleton generator (side-view squat), for the no-camera demo + tests ----------
+  function demoFrame(kind,phase){
+    // phase 0..1 ; depth follows a smooth up/down cycle
+    var depth=(1-Math.cos(phase*Math.PI*2))/2; // 0 at start/end, 1 mid
+    var lm=new Array(33);
+    for(var i=0;i<33;i++) lm[i]={x:0.5,y:0.5,visibility:0.95};
+    function set(i,x,y){ lm[i]={x:x,y:y,visibility:0.96}; }
+    if(kind==="situp"){
+      // side-view crunch: hip & bent knees fixed, torso rises toward the knees
+      var sHipX=0.50, sHipY=0.70;
+      var sKneeX=0.62, sKneeY=0.62, sAnkX=0.70, sAnkY=0.72;
+      var sShX=0.30+0.22*depth, sShY=0.72-0.27*depth;
+      set(11,sShX,sShY-0.02); set(12,sShX,sShY+0.02);
+      set(23,sHipX-0.02,sHipY); set(24,sHipX+0.02,sHipY);
+      set(25,sKneeX-0.02,sKneeY); set(26,sKneeX+0.02,sKneeY);
+      set(27,sAnkX-0.02,sAnkY); set(28,sAnkX+0.02,sAnkY);
+      // hands toward the head
+      set(13,sShX-0.04,sShY-0.05); set(14,sShX-0.04,sShY+0.05);
+      set(15,sShX+0.02,sShY-0.08); set(16,sShX+0.02,sShY+0.08);
+      set(0,sShX+0.04,sShY-0.07);
+    } else if(kind==="squat"){
+      var hipX=0.50-0.05*depth, hipY=0.50+0.18*depth;
+      var kneeX=0.50+0.12*depth, kneeY=0.72-0.02*depth;
+      var ankX=0.50, ankY=0.92;
+      var shX=hipX+0.06*depth, shY=hipY-0.22;
+      set(11,shX-0.03,shY); set(12,shX+0.03,shY);
+      set(23,hipX-0.03,hipY); set(24,hipX+0.03,hipY);
+      set(25,kneeX-0.03,kneeY); set(26,kneeX+0.03,kneeY);
+      set(27,ankX-0.03,ankY); set(28,ankX+0.03,ankY);
+      // arms forward
+      set(13,shX+0.08,shY+0.05); set(14,shX+0.08,shY+0.05);
+      set(15,shX+0.18,shY+0.07); set(16,shX+0.18,shY+0.07);
+      set(0,shX+0.04,shY-0.09);
+    } else { // pushup/curl/jumpingjack share an arm-driven figure
+      var elbowFlex=depth; // 1 = arms bent
+      var shX2=0.50, shY2=0.42;
+      set(11,shX2-0.10,shY2); set(12,shX2+0.10,shY2);
+      set(23,shX2-0.08,0.66); set(24,shX2+0.08,0.66);
+      set(25,shX2-0.08,0.84); set(26,shX2+0.08,0.84);
+      set(27,shX2-0.08,0.97); set(28,shX2+0.08,0.97);
+      set(0,shX2,shY2-0.10);
+      if(kind==="jumpingjack"){
+        // arms swing from down (by sides) to overhead
+        var a=depth; // 0 down, 1 up
+        var elbY=shY2 - (a*0.30) + (1-a)*0.16;
+        var wrY=shY2 - (a*0.34) + (1-a)*0.30;
+        var spread=0.10+0.04*a;
+        set(13,shX2-0.10-0.02*a,elbY); set(14,shX2+0.10+0.02*a,elbY);
+        set(15,shX2-spread,wrY); set(16,shX2+spread,wrY);
+      } else {
+        // pushup / curl: elbow bends, wrist rises toward shoulder
+        var elbX=0.16;
+        set(13,shX2-elbX,shY2+0.16); set(14,shX2+elbX,shY2+0.16);
+        var wY = shY2 + 0.30 - 0.26*elbowFlex; // extended low -> flexed high (near shoulder)
+        var wX = 0.16 - 0.06*elbowFlex;
+        set(15,shX2-wX,wY); set(16,shX2+wX,wY);
+      }
+    }
+    return lm;
+  }
+
+  // pose connections for drawing
+  var CONN=[[11,12],[11,23],[12,24],[23,24],[11,13],[13,15],[12,14],[14,16],[23,25],[25,27],[24,26],[26,28]];
+
+  // expose for tests / live verification
+  window.__rep={ clamp:clamp, angle:angle, jointAngle:jointAngle, avgAngle:avgAngle, EXERCISES:EXERCISES, RepCounter:RepCounter, demoFrame:demoFrame };
+  if(typeof module!=="undefined"&&module.exports){ module.exports=window.__rep; }
+
+  /* ---------- DOM wiring ---------- */
+  if(typeof document==="undefined") return;
+  var $=function(id){ return document.getElementById(id); };
+  var video=$("video"), canvas=$("canvas"), ctx=canvas.getContext("2d");
+  var empty=$("empty"), hud=$("hud"), badge=$("badge"), badgeTxt=$("badgeTxt");
+  var repN=$("repN"), repL=$("repL"), fbEl=$("fb"), gauge=$("gauge");
+  var startBtn=$("startBtn"), demoBtn=$("demoBtn"), stopBtn=$("stopBtn"), resetBtn=$("resetBtn");
+  var stats=$("stats"), sReps=$("sReps"), sTime=$("sTime"), sTempo=$("sTempo"), sAvg=$("sAvg"), sEngine=$("sEngine");
+  var voiceCb=$("voice"), errNote=$("errNote");
+
+  var curKey="squat", counter=new RepCounter("squat");
+  var landmarker=null, stream=null, raf=null, demoT=null, running=false, mode=null, setStart=0;
+  var accent=function(){ return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#2be3b0"; };
+
+  document.querySelectorAll(".ex").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll(".ex").forEach(function(x){x.classList.remove("on");});
+      b.classList.add("on"); curKey=b.getAttribute("data-ex");
+      counter.setExercise(curKey); repL.textContent=EXERCISES[curKey].label;
+      renderHud(true);
+    });
+  });
+
+  function fmtTime(s){ s=Math.max(0,Math.floor(s)); var m=Math.floor(s/60); return m+":"+("0"+(s%60)).slice(-2); }
+  function renderHud(resetVisual){
+    repN.textContent=counter.reps;
+    repL.textContent=EXERCISES[curKey].label;
+    if(counter.feedback){ fbEl.textContent=counter.visible?counter.feedback.t:"Step back into frame"; fbEl.className="fb"+((counter.feedback.warn&&counter.visible)?" warn":""); }
+    gauge.style.width=(resetVisual?0:Math.round(counter.depth*100))+"%";
+    sReps.textContent=counter.reps;
+    sTime.textContent=fmtTime((performance.now()-setStart)/1000);
+    sTempo.textContent=counter.lastDur!=null?counter.lastDur.toFixed(1)+"s":"—";
+    sAvg.textContent=counter.reps>0?(counter.totalDur/counter.reps).toFixed(1)+"s/rep":"—";
+  }
+
+  function speak(n){ if(!voiceCb.checked||!("speechSynthesis"in window))return; try{ var u=new SpeechSynthesisUtterance(String(n)); u.rate=1.05; u.volume=1; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
+
+  function drawSkeleton(lm,w,h){
+    ctx.save();
+    ctx.lineWidth=Math.max(3,w*0.006); ctx.strokeStyle=accent(); ctx.lineCap="round";
+    ctx.shadowColor=accent(); ctx.shadowBlur=12;
+    for(var i=0;i<CONN.length;i++){ var a=lm[CONN[i][0]],b=lm[CONN[i][1]]; if(!a||!b)continue; if((a.visibility!=null&&a.visibility<0.4)||(b.visibility!=null&&b.visibility<0.4))continue; ctx.beginPath(); ctx.moveTo(a.x*w,a.y*h); ctx.lineTo(b.x*w,b.y*h); ctx.stroke(); }
+    ctx.shadowBlur=0; ctx.fillStyle="#fff";
+    var pts=[0,11,12,13,14,15,16,23,24,25,26,27,28];
+    for(var j=0;j<pts.length;j++){ var p=lm[pts[j]]; if(!p)continue; if(p.visibility!=null&&p.visibility<0.4)continue; ctx.beginPath(); ctx.arc(p.x*w,p.y*h,Math.max(3.5,w*0.008),0,7); ctx.fill(); }
+    ctx.restore();
+  }
+  function sizeCanvas(w,h){ if(canvas.width!==w||canvas.height!==h){ canvas.width=w; canvas.height=h; } }
+
+  async function ensureModel(){
+    if(landmarker) return landmarker;
+    if(!window.__MP){ throw new Error("nomp"); }
+    badge.classList.remove("live"); badgeTxt.textContent="Loading AI model…";
+    var FilesetResolver=window.__MP.FilesetResolver, PoseLandmarker=window.__MP.PoseLandmarker;
+    var fileset=await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm");
+    var delegate="GPU";
+    try{
+      landmarker=await PoseLandmarker.createFromOptions(fileset,{ baseOptions:{ modelAssetPath:"https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task", delegate:delegate }, runningMode:"VIDEO", numPoses:1 });
+    }catch(e){
+      landmarker=await PoseLandmarker.createFromOptions(fileset,{ baseOptions:{ modelAssetPath:"https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task", delegate:"CPU" }, runningMode:"VIDEO", numPoses:1 });
+    }
+    return landmarker;
+  }
+
+  function showErr(msg){ errNote.style.display="block"; errNote.textContent=msg; }
+
+  async function startCamera(){
+    stopDemo();
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ showErr("This browser does not support camera access."); return; }
+    startBtn.disabled=true; demoBtn.disabled=true;
+    try{
+      await ensureModel();
+    }catch(e){
+      startBtn.disabled=false; demoBtn.disabled=false;
+      showErr("Could not load the pose model. Check your connection and try again. ("+(e&&e.message||e)+")");
+      return;
+    }
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({ video:{ facingMode:"user", width:{ideal:960}, height:{ideal:720} }, audio:false });
+    }catch(e){
+      startBtn.disabled=false; demoBtn.disabled=false;
+      showErr("Camera permission was denied. Allow camera access, or try the demo. ("+(e&&e.name||e)+")");
+      return;
+    }
+    video.srcObject=stream; await video.play().catch(function(){});
+    mode="camera"; running=true;
+    empty.style.display="none"; hud.style.display="flex"; stats.style.display="flex";
+    stopBtn.style.display=""; resetBtn.style.display="";
+    badge.classList.add("live"); badgeTxt.textContent="Live · on-device";
+    sEngine.innerHTML="Engine: <b>"+(landmarker?"on-device GPU/WASM":"on-device")+"</b>";
+    counter.setExercise(curKey); setStart=performance.now();
+    loopCamera();
+  }
+
+  function loopCamera(){
+    if(!running||mode!=="camera"){ return; }
+    var w=video.videoWidth||960, h=video.videoHeight||720; sizeCanvas(w,h);
+    var res=null;
+    try{ res=landmarker.detectForVideo(video, performance.now()); }catch(e){}
+    ctx.clearRect(0,0,w,h);
+    if(res&&res.landmarks&&res.landmarks.length){
+      var lm=res.landmarks[0];
+      drawSkeleton(lm,w,h);
+      var r=counter.update(lm, performance.now());
+      if(r==="rep") speak(counter.reps);
+    } else { counter.visible=false; }
+    renderHud(false);
+    raf=requestAnimationFrame(loopCamera);
+  }
+
+  function startDemo(){
+    stopRunning();
+    mode="demo"; running=true;
+    empty.style.display="none"; hud.style.display="flex"; stats.style.display="flex";
+    stopBtn.style.display=""; resetBtn.style.display="";
+    badge.classList.add("live"); badgeTxt.textContent="Demo · synthetic skeleton";
+    sEngine.innerHTML="Engine: <b>demo (no camera)</b>";
+    counter.setExercise(curKey); setStart=performance.now();
+    var w=640,h=480; sizeCanvas(w,h);
+    var phase=0;
+    function tick(){
+      if(!running||mode!=="demo")return;
+      phase=(phase+0.012)%1;
+      var lm=demoFrame(curKey,phase);
+      ctx.clearRect(0,0,w,h);
+      drawSkeleton(lm,w,h);
+      var r=counter.update(lm, performance.now());
+      if(r==="rep") speak(counter.reps);
+      renderHud(false);
+      demoT=requestAnimationFrame(tick);
+    }
+    tick();
+  }
+
+  function stopDemo(){ if(demoT){ cancelAnimationFrame(demoT); demoT=null; } }
+  function stopRunning(){
+    running=false; stopDemo();
+    if(raf){ cancelAnimationFrame(raf); raf=null; }
+    if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; video.srcObject=null; }
+  }
+  function stopAll(){
+    stopRunning(); mode=null;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    hud.style.display="none"; stats.style.display="none";
+    stopBtn.style.display="none"; resetBtn.style.display="none";
+    empty.style.display="flex"; startBtn.disabled=false; demoBtn.disabled=false;
+    badge.classList.remove("live"); badgeTxt.textContent= landmarker?"Model ready":"Model not loaded";
+  }
+
+  startBtn.addEventListener("click",startCamera);
+  demoBtn.addEventListener("click",startDemo);
+  stopBtn.addEventListener("click",stopAll);
+  resetBtn.addEventListener("click",function(){ counter.reset(); setStart=performance.now(); renderHud(true); });
+
+  // MediaPipe arrives from the module script below
+  window.__onMP=function(){ if(!landmarker&&!running){ badgeTxt.textContent="Model ready (start camera)"; } };
+  repL.textContent=EXERCISES[curKey].label;
+})();
+</script>
+
+<!-- ===== MediaPipe loader (ES module) ===== -->
+<script type="module">
+  try{
+    const m = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/vision_bundle.mjs");
+    window.__MP = { FilesetResolver:m.FilesetResolver, PoseLandmarker:m.PoseLandmarker, DrawingUtils:m.DrawingUtils };
+    if(window.__onMP) window.__onMP();
+  }catch(e){ console.warn("MediaPipe failed to load", e); }
+</script>
+
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+
+<!-- AdSense / Polar.sh monetization slot (left intentionally empty for later) -->
+
+</body>
+</html>
