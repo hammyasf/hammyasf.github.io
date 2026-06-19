@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fluid Simulation — real-time WebGPU fluid you paint, in your browser</title>
+<meta name="description" content="A real-time Navier-Stokes fluid simulation running entirely on your GPU with WebGPU. Stir glowing ink with your mouse, drop a photo and melt it into liquid, tweak vorticity, and record a clip. No upload, no sign-up." />
+<meta name="keywords" content="fluid simulation, webgpu fluid simulation, interactive fluid simulation, fluid simulation online, fluid simulation browser, navier stokes browser, liquid simulation, paint with fluid, fluid art generator, photo to liquid, gpu compute, real time fluid" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Fluid Simulation — real-time WebGPU fluid you paint" />
+<meta property="og:description" content="A real Navier-Stokes fluid solver running on your GPU with WebGPU. Stir glowing ink, melt a photo into liquid, record a clip — all in your browser, nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/fluid-sim.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Fluid Simulation — real-time WebGPU fluid you paint" />
+<meta name="twitter:description" content="A real Navier-Stokes fluid solver on your GPU via WebGPU. Stir ink, melt a photo into liquid, record a clip — all in your browser." />
+<link rel="canonical" href="https://hammyasf.github.io/fluid-sim.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Fluid Simulation — WebGPU Fluid Playground","url":"https://hammyasf.github.io/fluid-sim.html","applicationCategory":"GameApplication","operatingSystem":"Any (WebGPU browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time Navier-Stokes fluid simulation running on the GPU with WebGPU compute shaders, entirely in the browser. Stir ink, melt a photo into liquid, record a clip.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does a real fluid simulation run in a browser?","acceptedAnswer":{"@type":"Answer","text":"It uses WebGPU compute shaders. The velocity field, the ink, and the pressure solve all live in GPU buffers, and every cell of the grid is updated in parallel on your graphics card each frame. There is no server and nothing is uploaded."}},{"@type":"Question","name":"What kind of fluid solver is this?","acceptedAnswer":{"@type":"Answer","text":"It is a grid-based Navier-Stokes solver in the style of Jos Stam's stable-fluids method: advect the velocity, add vorticity, compute divergence, solve for pressure with Jacobi iterations, then subtract the pressure gradient so the flow stays incompressible. The ink is then carried along by that velocity field."}},{"@type":"Question","name":"Can I turn a photo into liquid?","acceptedAnswer":{"@type":"Answer","text":"Yes. Drop in any image and its pixels are loaded as ink into the fluid, so you can stir, swirl, and melt your own photo in real time, then record the result."}},{"@type":"Question","name":"Is anything uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. The whole thing is one HTML file that runs on your GPU. Your photos and your recordings never leave your device and there is no sign-up."}},{"@type":"Question","name":"Why does it say my browser is not supported?","acceptedAnswer":{"@type":"Answer","text":"It needs WebGPU, available in recent Chrome, Edge, and Safari, and behind a flag in Firefox. Update your browser or open it in desktop Chrome."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1040px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 12px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,50px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  .stage{position:relative;margin:24px 0 8px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#000;height:min(72vh,680px);min-height:380px;}
+  #gpu{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair;}
+  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;background:rgba(7,16,14,.86);backdrop-filter:blur(4px);z-index:5;}
+  .overlay[hidden]{display:none;}
+  [hidden]{display:none !important;}
+  .overlay .card{max-width:480px;}
+  .overlay h2{font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:10px;}
+  .overlay p{color:var(--muted);font-size:15px;}
+  .overlay a{font-weight:600;}
+  .hud{position:absolute;top:12px;left:12px;z-index:4;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(7,16,14,.55);border:1px solid var(--line);padding:6px 10px;border-radius:8px;pointer-events:none;backdrop-filter:blur(6px);}
+  .hud b{color:var(--accent);}
+  .hint{position:absolute;bottom:12px;left:12px;z-index:4;font-family:var(--mono);font-size:11px;color:var(--faint);background:rgba(7,16,14,.45);border:1px solid var(--line);padding:5px 9px;border-radius:8px;pointer-events:none;}
+  .recdot{position:absolute;top:12px;right:12px;z-index:6;display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;color:#ff6a6a;background:rgba(7,16,14,.6);border:1px solid rgba(255,106,106,.4);padding:5px 10px;border-radius:8px;}
+  .recdot .b{width:8px;height:8px;border-radius:50%;background:#ff5a5a;box-shadow:0 0 8px #ff5a5a;animation:blink 1s steps(2) infinite;}
+  @keyframes blink{50%{opacity:.25;}}
+
+  .panel{margin:8px 0 26px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);padding:18px 20px;}
+  .rowtop{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+  .presets{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);background:transparent;padding:7px 13px;border-radius:100px;cursor:pointer;transition:.15s;}
+  .chip:hover{color:var(--ink);border-color:rgba(var(--accentRGB),.5);}
+  .chip.on{background:var(--accent);color:#07100e;font-weight:600;border-color:var(--accent);}
+  .spacer{flex:1;}
+  .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:600;}
+  .sliders{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px 26px;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl .lab{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);}
+  .ctl .lab .v{color:var(--accent);}
+  input[type=range]{accent-color:var(--accent);width:100%;}
+  .segwrap{display:flex;flex-wrap:wrap;gap:18px 26px;margin-top:16px;align-items:flex-end;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;flex-wrap:wrap;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 13px;font-family:var(--mono);font-size:12px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .seglab{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:6px;display:block;}
+
+  section.copy{padding:26px 0 8px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  section.copy code{font-family:var(--mono);font-size:14px;background:rgba(var(--surfaceRGB),.7);border:1px solid var(--line);padding:2px 6px;border-radius:6px;color:var(--accent);}
+  .faq{border-top:1px solid var(--line);margin-top:12px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.stage{height:62vh;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">WebGPU · runs on your GPU</div>
+    <h1>Fluid Simulation</h1>
+    <p class="sub">A real Navier-Stokes fluid solver running on your graphics card. Stir glowing ink with your mouse, or drop in a photo and melt it into liquid. Every frame is computed on your GPU — no server, no upload.</p>
+    <span class="priv">&#9889; 100% on-device — your GPU solves every frame</span>
+  </header>
+
+  <div class="stage" id="stage">
+    <canvas id="gpu"></canvas>
+    <div class="hud" id="hud" hidden><b id="hudRes">0&times;0</b> grid · <b id="hudFps">0</b> fps</div>
+    <div class="hint" id="hint" hidden>Drag on the canvas to stir the fluid</div>
+    <div class="recdot" id="recdot" hidden><span class="b"></span> REC <span id="recTime">0:00</span></div>
+    <div class="overlay" id="overlay"><div class="card">
+      <h2 id="ovTitle">Starting the GPU…</h2>
+      <p id="ovMsg">Setting up WebGPU and seeding the fluid field.</p>
+    </div></div>
+  </div>
+
+  <div class="panel" id="panel" hidden>
+    <div class="rowtop">
+      <div class="presets" id="presets"></div>
+      <span class="spacer"></span>
+      <button class="btn btn-out" id="splat">Splat</button>
+      <button class="btn btn-out" id="photo">Drop a photo</button>
+      <input type="file" id="file" accept="image/*" hidden />
+      <button class="btn btn-out" id="pause">Pause</button>
+      <button class="btn btn-out" id="clear">Clear</button>
+      <button class="btn btn-out" id="png">Save PNG</button>
+      <button class="btn btn-out" id="rec">Record</button>
+      <button class="btn" id="share">Copy share link</button>
+    </div>
+
+    <div class="sliders">
+      <div class="ctl"><div class="lab"><span>Swirl (vorticity)</span><span class="v" id="vVort">26</span></div><input type="range" id="sVort" min="0" max="60" step="1" value="26" /></div>
+      <div class="ctl"><div class="lab"><span>Ink fade</span><span class="v" id="vDye">0.4%</span></div><input type="range" id="sDye" min="0" max="40" step="1" value="4" /></div>
+      <div class="ctl"><div class="lab"><span>Drag (velocity fade)</span><span class="v" id="vVel">1.2%</span></div><input type="range" id="sVel" min="0" max="60" step="1" value="12" /></div>
+      <div class="ctl"><div class="lab"><span>Brush size</span><span class="v" id="vBrush">14</span></div><input type="range" id="sBrush" min="4" max="48" step="1" value="14" /></div>
+      <div class="ctl"><div class="lab"><span>Force</span><span class="v" id="vForce">1.0</span></div><input type="range" id="sForce" min="2" max="40" step="1" value="10" /></div>
+      <div class="ctl"><div class="lab"><span>Brightness</span><span class="v" id="vGain">1.0</span></div><input type="range" id="sGain" min="4" max="32" step="1" value="10" /></div>
+      <div class="ctl"><div class="lab"><span>Pressure quality</span><span class="v" id="vIter">24</span></div><input type="range" id="sIter" min="8" max="48" step="2" value="24" /></div>
+    </div>
+
+    <div class="segwrap">
+      <div><span class="seglab">Ink color</span>
+        <div class="seg" id="palette">
+          <button data-p="0" class="on">Rainbow</button>
+          <button data-p="1">Jade</button>
+          <button data-p="2">Magma</button>
+          <button data-p="3">Ice</button>
+          <button data-p="4">Mono</button>
+          <button data-p="5">True color</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How does a real fluid run in your browser?</h2>
+    <p>Every frame the simulation does the full incompressible fluid pipeline on your GPU through WebGPU compute shaders. It <em>advects</em> the velocity field along itself, adds a little <em>vorticity</em> so small eddies keep their spin, measures how much the flow is compressing or expanding (its <em>divergence</em>), then runs a batch of <em>Jacobi</em> iterations to solve for the pressure that cancels that divergence and subtracts the pressure gradient back out. The result is a velocity field that conserves mass, and the ink you paint is simply carried along by it. Because each grid cell is updated by its own GPU thread, a laptop can solve a grid of hundreds of thousands of cells dozens of times per second without ever touching a server.</p>
+    <h2>What you are looking at</h2>
+    <p>This is the same family of math used for smoke, water, and explosions in films and games — Jos Stam's <code>stable fluids</code> method, which stays numerically stable no matter how hard you stir. Drag to push the fluid and inject ink, and the swirls, vortices, and mixing you see are not painted by hand; they fall out of the equations. Switch the ink to <strong>True color</strong> and drop in a photo to load your own image as ink, then watch your picture dissolve into flowing liquid.</p>
+    <h2>Things to try</h2>
+    <p>Crank <strong>Swirl</strong> up for tight, energetic vortices or down for slow lazy currents. Drop <strong>Ink fade</strong> to near zero and the colors build into dense marbled paint; raise it for wispy trails that vanish. Lower <strong>Drag</strong> so the fluid keeps its momentum and sloshes for a long time after you let go. Hit <strong>Splat</strong> for a burst of random jets, <strong>Drop a photo</strong> to liquefy an image, and when you find a look you like, <strong>Record</strong> a clip or <strong>Save PNG</strong> for a wallpaper. <strong>Copy share link</strong> packs your exact settings into the URL.</p>
+    <h2>Privacy and performance</h2>
+    <p>Nothing is uploaded and there is no account. The solver, the rendering, the photo you drop, and the clip you record all stay on your machine. It needs a WebGPU-capable browser — recent Chrome, Edge, or Safari work well; Firefox needs WebGPU enabled. If your device is modest, the grid resolution and pressure quality scale down automatically to hold a steady frame rate.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>How can a real fluid simulation run client-side?</summary><p>WebGPU exposes your graphics card to the page. The velocity field, the ink, the divergence, and the pressure all live in GPU buffers, and compute shaders update every cell in parallel — so there is no per-cell JavaScript loop and no server round trip.</p></details>
+    <details><summary>What solver is this?</summary><p>A grid-based Navier-Stokes solver using Jos Stam's stable-fluids approach: semi-Lagrangian advection, vorticity confinement, and a Jacobi pressure projection that keeps the fluid incompressible. The "Pressure quality" slider sets how many Jacobi iterations run per frame.</p></details>
+    <details><summary>Can I melt my own photo?</summary><p>Yes. Click "Drop a photo" (or drag an image onto the canvas) and its pixels are loaded straight into the ink field, so you can stir and swirl your own picture into liquid, then record it. The image never leaves your device.</p></details>
+    <details><summary>My browser says it is not supported.</summary><p>It needs WebGPU. Update to a current Chrome, Edge, or Safari, or enable WebGPU in Firefox. A desktop GPU gives the smoothest result.</p></details>
+    <details><summary>Is it really private?</summary><p>Yes. The whole thing is one HTML file that runs locally on your GPU. No upload, no tracking of your inputs, no sign-up.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build things like this for a living.</h3>
+    <p>Senior full-stack engineer comfortable from WebGPU compute shaders to production backends, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- AdSense slot (enable later): <ins class="adsbygoogle" ...></ins> -->
+<!-- Polar.sh "support this tool" slot (enable later) -->
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<script type="module">
+const $ = function(id){ return document.getElementById(id); };
+const canvas = $("gpu"), stage = $("stage"), overlay = $("overlay"), ovTitle = $("ovTitle"), ovMsg = $("ovMsg"), panel = $("panel"), hud = $("hud"), hint = $("hint");
+
+function fail(title, msg){ overlay.hidden = false; ovTitle.textContent = title; ovMsg.innerHTML = msg; }
+
+/* ===================== PURE HELPERS (unit-tested) ===================== */
+function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+function hsv2rgb(h,s,v){
+  h = ((h%1)+1)%1; const i = Math.floor(h*6); const f = h*6 - i;
+  const p = v*(1-s), q = v*(1-f*s), t = v*(1-(1-f)*s);
+  let r,g,b;
+  switch(i%6){ case 0: r=v;g=t;b=p;break; case 1: r=q;g=v;b=p;break; case 2: r=p;g=v;b=t;break;
+    case 3: r=p;g=q;b=v;break; case 4: r=t;g=p;b=v;break; default: r=v;g=p;b=q; }
+  return [r,g,b];
+}
+function fmtPct(x){ return (x*100).toFixed(1)+"%"; }
+function fmtTime(sec){ const m=Math.floor(sec/60), s=Math.floor(sec%60); return m+":"+(s<10?"0":"")+s; }
+// settings <-> URL query (share links)
+function encodeSettings(P){
+  const q = new URLSearchParams();
+  q.set("vo", Math.round(P.vort));
+  q.set("dy", Math.round(P.dyeDissUI));
+  q.set("ve", Math.round(P.velDissUI));
+  q.set("br", Math.round(P.brush));
+  q.set("fo", Math.round(P.forceUI));
+  q.set("ga", Math.round(P.gainUI));
+  q.set("it", P.iters);
+  q.set("pa", P.palette);
+  return q.toString();
+}
+function decodeSettings(search){
+  const q = new URLSearchParams(search); const out = {};
+  const num = function(k){ const v = parseFloat(q.get(k)); return isFinite(v)? v : null; };
+  if(q.has("vo")) out.vort = clamp(num("vo"),0,60);
+  if(q.has("dy")) out.dyeDissUI = clamp(num("dy"),0,40);
+  if(q.has("ve")) out.velDissUI = clamp(num("ve"),0,60);
+  if(q.has("br")) out.brush = clamp(num("br"),4,48);
+  if(q.has("fo")) out.forceUI = clamp(num("fo"),2,40);
+  if(q.has("ga")) out.gainUI = clamp(num("ga"),4,32);
+  if(q.has("it")) out.iters = clamp(Math.round(num("it")),8,48);
+  if(q.has("pa")) out.palette = clamp(Math.round(num("pa")),0,5);
+  return out;
+}
+window.__fluidPure = { clamp, hsv2rgb, fmtPct, fmtTime, encodeSettings, decodeSettings };
+/* =================== END PURE HELPERS =================== */
+
+const isCoarse = window.matchMedia("(pointer:coarse)").matches;
+// UI-facing params (slider units) + derived solver values
+const P = {
+  vort: 26,
+  dyeDissUI: 4,     // -> dissipation per frame = ui/1000
+  velDissUI: 12,    // -> dissipation per frame = ui/1000
+  brush: 14,
+  forceUI: 10,      // -> force scale = ui/10
+  gainUI: 10,       // -> brightness = ui/10
+  iters: 24,
+  palette: 0
+};
+Object.assign(P, decodeSettings(location.search));
+
+const PRESETS = {
+  "Ink":     {vort:26,dyeDissUI:4, velDissUI:12,brush:14,forceUI:10,gainUI:10,iters:24,palette:0},
+  "Smoke":   {vort:14,dyeDissUI:9, velDissUI:6, brush:18,forceUI:8, gainUI:9, iters:28,palette:4},
+  "Marble":  {vort:38,dyeDissUI:0, velDissUI:20,brush:12,forceUI:12,gainUI:11,iters:30,palette:2},
+  "Plasma":  {vort:48,dyeDissUI:6, velDissUI:8, brush:10,forceUI:16,gainUI:13,iters:22,palette:0},
+  "Calm":    {vort:8, dyeDissUI:3, velDissUI:24,brush:20,forceUI:7, gainUI:9, iters:20,palette:3}
+};
+
+/* ===================== WGSL ===================== */
+const COMMON = `
+struct Params {
+  width: u32, height: u32, frame: u32, splat: u32,
+  dt: f32, velDiss: f32, dyeDiss: f32, vort: f32,
+  bx: f32, by: f32, br: f32, bvx: f32,
+  bvy: f32, dr: f32, dg: f32, db: f32,
+  gain: f32, palette: f32, pad0: f32, pad1: f32,
+};
+fn ix(x: i32, y: i32, w: i32, h: i32) -> u32 {
+  let xx = clamp(x, 0, w - 1);
+  let yy = clamp(y, 0, h - 1);
+  return u32(yy * w + xx);
+}
+`;
+
+// velocity ping-pong advection
+const ADVECT_VEL = COMMON + `
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read> velIn: array<vec2<f32>>;
+@group(0) @binding(2) var<storage, read_write> velOut: array<vec2<f32>>;
+fn sampleVel(px: f32, py: f32) -> vec2<f32> {
+  let w = i32(P.width); let h = i32(P.height);
+  let x = clamp(px, 0.0, f32(w) - 1.001);
+  let y = clamp(py, 0.0, f32(h) - 1.001);
+  let x0 = i32(floor(x)); let y0 = i32(floor(y));
+  let fx = x - f32(x0); let fy = y - f32(y0);
+  let v00 = velIn[ix(x0, y0, w, h)];
+  let v10 = velIn[ix(x0 + 1, y0, w, h)];
+  let v01 = velIn[ix(x0, y0 + 1, w, h)];
+  let v11 = velIn[ix(x0 + 1, y0 + 1, w, h)];
+  return mix(mix(v00, v10, fx), mix(v01, v11, fx), fy);
+}
+@compute @workgroup_size(8, 8)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (gid.x >= P.width || gid.y >= P.height) { return; }
+  let i = gid.y * P.width + gid.x;
+  let here = velIn[i];
+  let px = f32(gid.x) - P.dt * here.x;
+  let py = f32(gid.y) - P.dt * here.y;
+  velOut[i] = sampleVel(px, py) * (1.0 - P.velDiss);
+}
+`;
+
+// curl of velocity
+const CURL = COMMON + `
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read> vel: array<vec2<f32>>;
+@group(0) @binding(2) var<storage, read_write> curl: array<f32>;
+@compute @workgroup_size(8, 8)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (gid.x >= P.width || gid.y >= P.height) { return; }
+  let w = i32(P.width); let h = i32(P.height);
+  let x = i32(gid.x); let y = i32(gid.y);
+  let r = vel[ix(x + 1, y, w, h)].y;
+  let l = vel[ix(x - 1, y, w, h)].y;
+  let t = vel[ix(x, y + 1, w, h)].x;
+  let b = vel[ix(x, y - 1, w, h)].x;
+  curl[gid.y * P.width + gid.x] = 0.5 * ((r - l) - (t - b));
+}
+`;
+
+// vorticity confinement (adds force to vel in place; reads curl neighbours only)
+const VORT = COMMON + `
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read> curl: array<f32>;
+@group(0) @binding(2) var<storage, read_write> vel: array<vec2<f32>>;
+@compute @workgroup_size(8, 8)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (gid.x >= P.width || gid.y >= P.height) { return; }
+  let w = i32(P.width); let h = i32(P.height);
+  let x = i32(gid.x); let y = i32(gid.y);
+  let cR = abs(curl[ix(x + 1, y, w, h)]);
+  let cL = abs(curl[ix(x - 1, y, w, h)]);
+  let cT = abs(curl[ix(x, y + 1, w, h)]);
+  let cB = abs(curl[ix(x, y - 1, w, h)]);
+  let i = gid.y * P.width + gid.x;
+  let c = curl[i];
+  var n = vec2<f32>(cR - cL, cT - cB) * 0.5;
+  let len = max(length(n), 1e-5);
+  n = n / len;
+  let force = vec2<f32>(n.y, -n.x) * c * P.vort;
+  vel[i] = vel[i] + force * P.dt;
+}
+`;
+
+// divergence
+const DIVERGENCE = COMMON + `
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read> vel: array<vec2<f32>>;
+@group(0) @binding(2) var<storage, read_write> diverg: array<f32>;
+@compute @workgroup_size(8, 8)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (gid.x >= P.width || gid.y >= P.height) { return; }
+  let w = i32(P.width); let h = i32(P.height);
+  let x = i32(gid.x); let y = i32(gid.y);
+  let r = vel[ix(x + 1, y, w, h)].x;
+  let l = vel[ix(x - 1, y, w, h)].x;
+  let t = vel[ix(x, y + 1, w, h)].y;
+  let b = vel[ix(x, y - 1, w, h)].y;
+  diverg[gid.y * P.width + gid.x] = 0.5 * ((r - l) + (t - b));
+}
+`;
+
+// jacobi pressure iteration (ping-pong)
+const JACOBI = COMMON + `
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read> prIn: array<f32>;
+@group(0) @binding(2) var<storage, read> diverg: array<f32>;
+@group(0) @binding(3) var<storage, read_write> prOut: array<f32>;
+@compute @workgroup_size(8, 8)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (gid.x >= P.width || gid.y >= P.height) { return; }
+  let w = i32(P.width); let h = i32(P.height);
+  let x = i32(gid.x); let y = i32(gid.y);
+  let pl = prIn[ix(x - 1, y, w, h)];
+  let pr = prIn[ix(x + 1, y, w, h)];
+  let pt = prIn[ix(x, y + 1, w, h)];
+  let pb = prIn[ix(x, y - 1, w, h)];
+  let d = diverg[gid.y * P.width + gid.x];
+  prOut[gid.y * P.width + gid.x] = (pl + pr + pt + pb - d) * 0.25;
+}
+`;
+
+// subtract pressure gradient from velocity (in place)
+const GRADSUB = COMMON + `
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read> pressure: array<f32>;
+@group(0) @binding(2) var<storage, read_write> vel: array<vec2<f32>>;
+@compute @workgroup_size(8, 8)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (gid.x >= P.width || gid.y >= P.height) { return; }
+  let w = i32(P.width); let h = i32(P.height);
+  let x = i32(gid.x); let y = i32(gid.y);
+  let pl = pressure[ix(x - 1, y, w, h)];
+  let pr = pressure[ix(x + 1, y, w, h)];
+  let pt = pressure[ix(x, y + 1, w, h)];
+  let pb = pressure[ix(x, y - 1, w, h)];
+  let i = gid.y * P.width + gid.x;
+  var v = vel[i];
+  v = v - 0.5 * vec2<f32>(pr - pl, pt - pb);
+  vel[i] = v;
+}
+`;
+
+// splat force + ink (in place on vel and dye)
+const SPLAT = COMMON + `
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read_write> vel: array<vec2<f32>>;
+@group(0) @binding(2) var<storage, read_write> dye: array<vec4<f32>>;
+@compute @workgroup_size(8, 8)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (gid.x >= P.width || gid.y >= P.height) { return; }
+  let i = gid.y * P.width + gid.x;
+  let dx = f32(gid.x) - P.bx;
+  let dy = f32(gid.y) - P.by;
+  let d2 = dx * dx + dy * dy;
+  let r2 = P.br * P.br;
+  let e = exp(-d2 / r2);
+  vel[i] = vel[i] + vec2<f32>(P.bvx, P.bvy) * e;
+  let cur = dye[i];
+  let add = vec3<f32>(P.dr, P.dg, P.db) * e;
+  dye[i] = vec4<f32>(cur.xyz + add, 1.0);
+}
+`;
+
+// advect dye (ping-pong)
+const ADVECT_DYE = COMMON + `
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read> dyeIn: array<vec4<f32>>;
+@group(0) @binding(2) var<storage, read> vel: array<vec2<f32>>;
+@group(0) @binding(3) var<storage, read_write> dyeOut: array<vec4<f32>>;
+fn sampleDye(px: f32, py: f32) -> vec3<f32> {
+  let w = i32(P.width); let h = i32(P.height);
+  let x = clamp(px, 0.0, f32(w) - 1.001);
+  let y = clamp(py, 0.0, f32(h) - 1.001);
+  let x0 = i32(floor(x)); let y0 = i32(floor(y));
+  let fx = x - f32(x0); let fy = y - f32(y0);
+  let v00 = dyeIn[ix(x0, y0, w, h)].xyz;
+  let v10 = dyeIn[ix(x0 + 1, y0, w, h)].xyz;
+  let v01 = dyeIn[ix(x0, y0 + 1, w, h)].xyz;
+  let v11 = dyeIn[ix(x0 + 1, y0 + 1, w, h)].xyz;
+  return mix(mix(v00, v10, fx), mix(v01, v11, fx), fy);
+}
+@compute @workgroup_size(8, 8)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  if (gid.x >= P.width || gid.y >= P.height) { return; }
+  let i = gid.y * P.width + gid.x;
+  let v = vel[i];
+  let px = f32(gid.x) - P.dt * v.x;
+  let py = f32(gid.y) - P.dt * v.y;
+  let c = sampleDye(px, py) * (1.0 - P.dyeDiss);
+  dyeOut[i] = vec4<f32>(c, 1.0);
+}
+`;
+
+const RENDER = COMMON + `
+@group(0) @binding(0) var<uniform> P: Params;
+@group(0) @binding(1) var<storage, read> dye: array<vec4<f32>>;
+@vertex fn vs(@builtin(vertex_index) vi: u32) -> @builtin(position) vec4<f32> {
+  var p = array<vec2<f32>, 3>(vec2<f32>(-1.0, -1.0), vec2<f32>(3.0, -1.0), vec2<f32>(-1.0, 3.0));
+  return vec4<f32>(p[vi], 0.0, 1.0);
+}
+fn grad4(t: f32, c0: vec3<f32>, c1: vec3<f32>, c2: vec3<f32>, c3: vec3<f32>) -> vec3<f32> {
+  let s = clamp(t, 0.0, 1.0) * 3.0;
+  if (s < 1.0) { return mix(c0, c1, s); }
+  else if (s < 2.0) { return mix(c1, c2, s - 1.0); }
+  return mix(c2, c3, s - 2.0);
+}
+fn hsv(h: f32, s: f32, v: f32) -> vec3<f32> {
+  let hh = fract(h) * 6.0;
+  let c = v * s;
+  let xx = c * (1.0 - abs((hh % 2.0) - 1.0));
+  let m = v - c;
+  var r = vec3<f32>(0.0);
+  if (hh < 1.0) { r = vec3<f32>(c, xx, 0.0); }
+  else if (hh < 2.0) { r = vec3<f32>(xx, c, 0.0); }
+  else if (hh < 3.0) { r = vec3<f32>(0.0, c, xx); }
+  else if (hh < 4.0) { r = vec3<f32>(0.0, xx, c); }
+  else if (hh < 5.0) { r = vec3<f32>(xx, 0.0, c); }
+  else { r = vec3<f32>(c, 0.0, xx); }
+  return r + vec3<f32>(m);
+}
+@fragment fn fs(@builtin(position) fc: vec4<f32>) -> @location(0) vec4<f32> {
+  let x = u32(fc.x); let y = u32(fc.y);
+  if (x >= P.width || y >= P.height) { return vec4<f32>(0.0, 0.0, 0.0, 1.0); }
+  let raw = dye[y * P.width + x].xyz;
+  let pal = P.palette;
+  var col = vec3<f32>(0.0);
+  if (pal > 4.5) {
+    // true color: ink already carries rgb (e.g. a melted photo)
+    col = vec3<f32>(1.0) - exp(-raw * P.gain);
+  } else {
+    let inten = clamp((raw.x + raw.y + raw.z) / 3.0, 0.0, 4.0);
+    let t = 1.0 - exp(-inten * P.gain);
+    if (pal < 0.5) { col = hsv(fract(raw.x * 0.5 + raw.z * 0.5 + 0.55), 0.85, t); }
+    else if (pal < 1.5) { col = grad4(t, vec3<f32>(0.020,0.055,0.047), vec3<f32>(0.043,0.231,0.188), vec3<f32>(0.169,0.890,0.690), vec3<f32>(0.851,1.000,0.949)); }
+    else if (pal < 2.5) { col = grad4(t, vec3<f32>(0.020,0.010,0.030), vec3<f32>(0.290,0.055,0.300), vec3<f32>(0.910,0.392,0.235), vec3<f32>(1.000,0.902,0.659)); }
+    else if (pal < 3.5) { col = grad4(t, vec3<f32>(0.008,0.024,0.059), vec3<f32>(0.039,0.227,0.400), vec3<f32>(0.212,0.773,1.000), vec3<f32>(0.918,1.000,1.000)); }
+    else { col = vec3<f32>(t); }
+  }
+  return vec4<f32>(col, 1.0);
+}
+`;
+
+/* ===================== boot ===================== */
+let device, context, format;
+let W = 2, H = 2;
+let vel = [null, null], dye = [null, null], pr = [null, null], divg = null, curl = null, paramsBuf = null;
+let velState = 0, dyeState = 0;
+let pipes = {}, SOFT = false, qScale = 1, autoTuned = false, perfChecks = 0;
+let frameNo = 0, paused = false;
+let pointer = { active:false, x:0, y:0, px:0, py:0, hue:0 };
+let demoUntil = 0, demoT = 0;
+let captureWanted = false;
+const paramsAB = new ArrayBuffer(80);
+const pu32 = new Uint32Array(paramsAB);
+const pf32 = new Float32Array(paramsAB);
+
+async function boot(){
+  if(!navigator.gpu){
+    fail("WebGPU isn't available here", "This fluid simulation needs WebGPU. Try the latest <b>Chrome</b>, <b>Edge</b>, or <b>Safari</b> on desktop, or enable WebGPU in Firefox. Everything else in <a href='lab.html'>the lab</a> works without it.");
+    return;
+  }
+  let adapter;
+  try { adapter = await navigator.gpu.requestAdapter({ powerPreference: "high-performance" }); } catch(e){}
+  if(!adapter){ fail("No GPU adapter", "Your browser exposes WebGPU but no graphics adapter could be acquired. Try a different browser or device."); return; }
+  SOFT = adapter.isFallbackAdapter === true;
+  try {
+    let info = adapter.info; if(!info && adapter.requestAdapterInfo){ info = await adapter.requestAdapterInfo(); }
+    if(info){ const s = ((info.vendor||"")+" "+(info.architecture||"")+" "+(info.description||"")).toLowerCase();
+      if(/swiftshader|llvmpipe|software|microsoft basic|warp|paravirtual/.test(s)) SOFT = true; }
+  } catch(e){}
+  device = await adapter.requestDevice();
+  device.lost.then(function(info){ if(info && info.reason !== "destroyed") fail("GPU connection lost", "The GPU device was lost (" + (info.message||"") + "). Reload to restart."); });
+
+  context = canvas.getContext("webgpu");
+  format = navigator.gpu.getPreferredCanvasFormat();
+  context.configure({ device: device, format: format, alphaMode: "opaque" });
+
+  const cs = function(code){ return device.createShaderModule({ code: code }); };
+  const cp = function(code){ return device.createComputePipeline({ layout:"auto", compute:{ module: cs(code), entryPoint:"main" }}); };
+  pipes.advectVel = cp(ADVECT_VEL);
+  pipes.curl = cp(CURL);
+  pipes.vort = cp(VORT);
+  pipes.divg = cp(DIVERGENCE);
+  pipes.jacobi = cp(JACOBI);
+  pipes.gradsub = cp(GRADSUB);
+  pipes.splat = cp(SPLAT);
+  pipes.advectDye = cp(ADVECT_DYE);
+  pipes.render = device.createRenderPipeline({ layout:"auto",
+    vertex:{ module: cs(RENDER), entryPoint:"vs" },
+    fragment:{ module: cs(RENDER), entryPoint:"fs", targets:[{format:format}] },
+    primitive:{ topology:"triangle-list" }
+  });
+
+  paramsBuf = device.createBuffer({ size:80, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
+
+  resize();
+  bindUI();
+  reflectControls();
+
+  overlay.hidden = true; panel.hidden = false; hud.hidden = false; hint.hidden = false;
+  // expose for verification
+  window.__fluid = { get device(){return device;}, get W(){return W;}, get H(){return H;}, dyeBuf:function(){return dye[dyeState];}, velBuf:function(){return vel[velState];}, probe:probe };
+  window.__fluidBoot = true;
+
+  startDemo();
+  requestAnimationFrame(loop);
+}
+
+function computeSimSize(){
+  const r = stage.getBoundingClientRect();
+  const cssW = Math.max(320, Math.floor(r.width));
+  const cssH = Math.max(320, Math.floor(r.height));
+  const cap = (SOFT ? 320 : (isCoarse ? 560 : 900)) * qScale;
+  const scale = Math.min(1, cap / Math.max(cssW, cssH));
+  W = Math.max(2, Math.floor(cssW * scale));
+  H = Math.max(2, Math.floor(cssH * scale));
+  canvas.width = W; canvas.height = H;
+}
+
+function makeBuffers(){
+  [vel[0],vel[1],dye[0],dye[1],pr[0],pr[1],divg,curl].forEach(function(b){ if(b) b.destroy(); });
+  const cells = W * H;
+  const ST = GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST;
+  const STSRC = ST | GPUBufferUsage.COPY_SRC;
+  vel[0] = device.createBuffer({ size: cells * 8, usage: STSRC });
+  vel[1] = device.createBuffer({ size: cells * 8, usage: STSRC });
+  dye[0] = device.createBuffer({ size: cells * 16, usage: STSRC });
+  dye[1] = device.createBuffer({ size: cells * 16, usage: STSRC });
+  pr[0] = device.createBuffer({ size: cells * 4, usage: ST });
+  pr[1] = device.createBuffer({ size: cells * 4, usage: ST });
+  divg = device.createBuffer({ size: cells * 4, usage: ST });
+  curl = device.createBuffer({ size: cells * 4, usage: ST });
+  velState = 0; dyeState = 0;
+}
+
+function resize(){ computeSimSize(); makeBuffers(); }
+
+function bg(pipe, entries){ return device.createBindGroup({ layout: pipe.getBindGroupLayout(0), entries: entries }); }
+function B(buffer){ return { resource:{ buffer: buffer } }; }
+
+function writeParams(opt){
+  opt = opt || {};
+  pu32[0] = W; pu32[1] = H; pu32[2] = frameNo; pu32[3] = opt.splat ? 1 : 0;
+  pf32[4] = opt.dt != null ? opt.dt : 1.0;
+  pf32[5] = P.velDissUI/1000;
+  pf32[6] = P.dyeDissUI/1000;
+  pf32[7] = P.vort/10;
+  pf32[8] = opt.bx||0; pf32[9] = opt.by||0; pf32[10] = opt.br||1; pf32[11] = opt.bvx||0;
+  pf32[12] = opt.bvy||0; pf32[13] = opt.dr||0; pf32[14] = opt.dg||0; pf32[15] = opt.db||0;
+  pf32[16] = P.gainUI/10; pf32[17] = P.palette; pf32[18] = 0; pf32[19] = 0;
+  device.queue.writeBuffer(paramsBuf, 0, paramsAB);
+}
+
+const WG = function(n){ return Math.ceil(n/8); };
+function runPass(enc, pipe, bindGroup){
+  const p = enc.beginComputePass();
+  p.setPipeline(pipe); p.setBindGroup(0, bindGroup);
+  p.dispatchWorkgroups(WG(W), WG(H));
+  p.end();
+}
+
+// Each splat self-submits: its uniform write must be ordered immediately before its own
+// dispatch on the queue timeline, otherwise a later writeParams would overwrite the brush
+// params before the GPU runs the pass. So a splat is its own write+encode+submit.
+function doSplat(x, y, vx, vy, r, col){
+  writeParams({ splat:true, bx:x, by:y, bvx:vx, bvy:vy, br:r, dr:col[0], dg:col[1], db:col[2] });
+  const enc = device.createCommandEncoder();
+  runPass(enc, pipes.splat, bg(pipes.splat, [ B(paramsBuf), B(vel[velState]), B(dye[dyeState]) ]));
+  device.queue.submit([enc.finish()]);
+}
+
+let lastT = performance.now(), fpsAcc = 0, fpsN = 0;
+function loop(now){
+  requestAnimationFrame(loop);
+  if(paused){ lastT = now; return; }
+  frameNo++;
+
+  // --- inputs: pointer drag and/or demo splats (each self-submits) ---
+  if(pointer.active){
+    const dx = pointer.x - pointer.px, dy = pointer.y - pointer.py;
+    const fScale = P.forceUI/10;
+    pointer.hue = (pointer.hue + 0.004) % 1;
+    const col = window.__fluidPure.hsv2rgb(pointer.hue, 0.9, 1.0).map(function(c){ return c * 1.6; });
+    doSplat(pointer.x, pointer.y, dx*fScale*6, dy*fScale*6, P.brush, col);
+    pointer.px = pointer.x; pointer.py = pointer.y;
+  }
+  if(now < demoUntil){
+    demoT += 0.03;
+    const cx = W*(0.5 + 0.32*Math.cos(demoT*0.9));
+    const cy = H*(0.5 + 0.32*Math.sin(demoT*1.3));
+    const ang = demoT*2.1;
+    const col = window.__fluidPure.hsv2rgb((demoT*0.13)%1, 0.9, 1.0).map(function(c){ return c*1.7; });
+    doSplat(cx, cy, Math.cos(ang)*W*0.05, Math.sin(ang)*H*0.05, P.brush*1.1, col);
+  }
+
+  // --- solver: all passes share one uniform write, one submit ---
+  const enc = device.createCommandEncoder();
+  // 1. advect velocity (ping-pong)
+  writeParams({ dt: 1.0 });
+  runPass(enc, pipes.advectVel, bg(pipes.advectVel, [ B(paramsBuf), B(vel[velState]), B(vel[1-velState]) ]));
+  velState = 1 - velState;
+  // 2. curl
+  runPass(enc, pipes.curl, bg(pipes.curl, [ B(paramsBuf), B(vel[velState]), B(curl) ]));
+  // 3. vorticity confinement (in place)
+  runPass(enc, pipes.vort, bg(pipes.vort, [ B(paramsBuf), B(curl), B(vel[velState]) ]));
+  // 4. divergence
+  runPass(enc, pipes.divg, bg(pipes.divg, [ B(paramsBuf), B(vel[velState]), B(divg) ]));
+  // 5. pressure jacobi
+  enc.clearBuffer(pr[0]); enc.clearBuffer(pr[1]);
+  let pin = 0;
+  const iters = P.iters|0;
+  for(let k=0;k<iters;k++){
+    runPass(enc, pipes.jacobi, bg(pipes.jacobi, [ B(paramsBuf), B(pr[pin]), B(divg), B(pr[1-pin]) ]));
+    pin = 1 - pin;
+  }
+  // 6. subtract gradient (in place)
+  runPass(enc, pipes.gradsub, bg(pipes.gradsub, [ B(paramsBuf), B(pr[pin]), B(vel[velState]) ]));
+  // 7. advect dye (ping-pong)
+  runPass(enc, pipes.advectDye, bg(pipes.advectDye, [ B(paramsBuf), B(dye[dyeState]), B(vel[velState]), B(dye[1-dyeState]) ]));
+  dyeState = 1 - dyeState;
+  // 8. render
+  {
+    const view = context.getCurrentTexture().createView();
+    const p = enc.beginRenderPass({ colorAttachments:[{ view: view, loadOp:"clear", clearValue:{r:0,g:0,b:0,a:1}, storeOp:"store" }] });
+    p.setPipeline(pipes.render);
+    p.setBindGroup(0, bg(pipes.render, [ B(paramsBuf), B(dye[dyeState]) ]));
+    p.draw(3); p.end();
+  }
+  device.queue.submit([enc.finish()]);
+
+  if(captureWanted){ captureWanted = false;
+    canvas.toBlob(function(b){ if(!b) return; const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="fluid-"+Date.now()+".png"; a.click(); });
+  }
+
+  // fps + adaptive quality
+  const ddt = now - lastT; lastT = now; fpsAcc += ddt; fpsN++;
+  if(fpsAcc > 450){ const fps = Math.round(1000/(fpsAcc/fpsN)); fpsAcc = 0; fpsN = 0;
+    $("hudFps").textContent = fps; $("hudRes").textContent = W + "×" + H;
+    perfChecks++;
+    if(!autoTuned && perfChecks >= 3){
+      if(fps < 24){ qScale = (qScale > 0.6) ? 0.55 : 0.4; if(P.iters>16){ P.iters = 16; $("sIter").value=16; $("vIter").textContent=16; } resize(); if(qScale<=0.4) autoTuned=true; hint.textContent = "Auto-tuned quality to stay smooth on this GPU"; }
+      else { autoTuned = true; }
+      perfChecks = 0;
+    }
+    if(recTimer){ $("recTime").textContent = window.__fluidPure.fmtTime((performance.now()-recStart)/1000); }
+  }
+}
+
+function startDemo(){ demoUntil = performance.now() + 4500; demoT = 0; }
+
+// random burst
+function splatBurst(){
+  const n = 6 + Math.floor(Math.random()*5);
+  for(let k=0;k<n;k++){
+    const x = Math.random()*W, y = Math.random()*H, a = Math.random()*Math.PI*2, s = (0.03+Math.random()*0.06);
+    const col = window.__fluidPure.hsv2rgb(Math.random(), 0.9, 1.0).map(function(c){ return c*1.8; });
+    doSplat(x, y, Math.cos(a)*W*s, Math.sin(a)*H*s, P.brush*(0.8+Math.random()), col);
+  }
+}
+
+// load an image as ink into the dye buffer
+function loadImage(imgOrBitmap){
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const ctx = c.getContext("2d");
+  // cover-fit
+  const iw = imgOrBitmap.width, ih = imgOrBitmap.height;
+  const scale = Math.max(W/iw, H/ih);
+  const dw = iw*scale, dh = ih*scale;
+  ctx.drawImage(imgOrBitmap, (W-dw)/2, (H-dh)/2, dw, dh);
+  const data = ctx.getImageData(0,0,W,H).data;
+  const arr = new Float32Array(W*H*4);
+  for(let i=0;i<W*H;i++){
+    arr[i*4]   = data[i*4]/255;
+    arr[i*4+1] = data[i*4+1]/255;
+    arr[i*4+2] = data[i*4+2]/255;
+    arr[i*4+3] = 1;
+  }
+  device.queue.writeBuffer(dye[dyeState], 0, arr);
+  // switch to true-color so the photo shows faithfully
+  P.palette = 5; setSeg("palette","p",5);
+  // give it a gentle stir so it visibly liquefies
+  for(let k=0;k<5;k++){
+    const x = Math.random()*W, y = Math.random()*H, a = Math.random()*Math.PI*2;
+    doSplat(x, y, Math.cos(a)*W*0.04, Math.sin(a)*H*0.04, P.brush*1.4, [0,0,0]);
+  }
+  hint.textContent = "Stir your photo into liquid";
+}
+
+function clearField(){
+  const cells = W*H;
+  device.queue.writeBuffer(dye[0], 0, new Float32Array(cells*4));
+  device.queue.writeBuffer(dye[1], 0, new Float32Array(cells*4));
+  device.queue.writeBuffer(vel[0], 0, new Float32Array(cells*2));
+  device.queue.writeBuffer(vel[1], 0, new Float32Array(cells*2));
+}
+
+/* ---------- readback probe (used by automated verification) ---------- */
+async function probe(which){
+  const buf = which === "vel" ? vel[velState] : dye[dyeState];
+  const comps = which === "vel" ? 2 : 4;
+  const cells = W*H;
+  const bytes = cells*comps*4;
+  const stage = device.createBuffer({ size: bytes, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ });
+  const enc = device.createCommandEncoder();
+  enc.copyBufferToBuffer(buf, 0, stage, 0, bytes);
+  device.queue.submit([enc.finish()]);
+  await stage.mapAsync(GPUMapMode.READ);
+  const a = new Float32Array(stage.getMappedRange().slice(0));
+  stage.unmap(); stage.destroy();
+  let sum=0, max=0, nan=0, nonzero=0;
+  for(let i=0;i<a.length;i++){ const v=a[i]; if(!isFinite(v)){ nan++; continue; } const av=Math.abs(v); sum+=av; if(av>max)max=av; if(av>1e-4)nonzero++; }
+  return { cells:cells, comps:comps, sum:sum, max:max, nan:nan, nonzero:nonzero, fracNonzero:nonzero/a.length };
+}
+
+/* ===================== UI ===================== */
+let recorder = null, recChunks = [], recTimer = null, recStart = 0;
+function bindUI(){
+  const bind = function(id, key, vid, fmt){ const el=$(id); el.addEventListener("input", function(){ const val=parseFloat(el.value); P[key]=val; $(vid).textContent = fmt(val); }); };
+  bind("sVort","vort","vVort", function(v){ return v; });
+  bind("sDye","dyeDissUI","vDye", function(v){ return window.__fluidPure.fmtPct(v/1000); });
+  bind("sVel","velDissUI","vVel", function(v){ return window.__fluidPure.fmtPct(v/1000); });
+  bind("sBrush","brush","vBrush", function(v){ return v; });
+  bind("sForce","forceUI","vForce", function(v){ return (v/10).toFixed(1); });
+  bind("sGain","gainUI","vGain", function(v){ return (v/10).toFixed(1); });
+  bind("sIter","iters","vIter", function(v){ return v; });
+
+  document.querySelectorAll("#palette button").forEach(function(b){
+    b.addEventListener("click", function(){ document.querySelectorAll("#palette button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); P.palette = parseInt(b.getAttribute("data-p"),10); });
+  });
+
+  const pc = $("presets");
+  Object.keys(PRESETS).forEach(function(name){
+    const b = document.createElement("button"); b.className="chip"; b.textContent = name;
+    b.addEventListener("click", function(){ applyPreset(name); document.querySelectorAll("#presets .chip").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); });
+    pc.appendChild(b);
+  });
+
+  $("splat").addEventListener("click", function(){ splatBurst(); });
+  $("pause").addEventListener("click", function(){ paused=!paused; this.textContent = paused?"Play":"Pause"; });
+  $("clear").addEventListener("click", function(){ clearField(); });
+  $("png").addEventListener("click", function(){ captureWanted=true; });
+  $("share").addEventListener("click", shareLink);
+  $("rec").addEventListener("click", toggleRec);
+  $("photo").addEventListener("click", function(){ $("file").click(); });
+  $("file").addEventListener("change", function(){ const f=this.files[0]; if(f) handleFile(f); this.value=""; });
+
+  // drag-drop an image onto the stage
+  ["dragover","dragenter"].forEach(function(ev){ stage.addEventListener(ev, function(e){ e.preventDefault(); }); });
+  stage.addEventListener("drop", function(e){ e.preventDefault(); const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if(f && f.type.indexOf("image/")===0) handleFile(f); });
+
+  // pointer
+  const setP = function(e){ const r = canvas.getBoundingClientRect(); pointer.x = (e.clientX-r.left)/r.width*W; pointer.y = (e.clientY-r.top)/r.height*H; };
+  canvas.addEventListener("pointerdown", function(e){ setP(e); pointer.px=pointer.x; pointer.py=pointer.y; pointer.active=true; demoUntil=0; try{canvas.setPointerCapture(e.pointerId);}catch(_){} });
+  canvas.addEventListener("pointermove", function(e){ if(pointer.active){ setP(e); } });
+  canvas.addEventListener("pointerup", function(){ pointer.active=false; });
+  canvas.addEventListener("pointerleave", function(){ pointer.active=false; });
+
+  window.addEventListener("resize", debounce(function(){ resize(); startDemo(); }, 250));
+}
+
+function handleFile(f){
+  if(window.createImageBitmap){
+    createImageBitmap(f).then(function(bm){ loadImage(bm); }).catch(function(){ fallbackImg(f); });
+  } else { fallbackImg(f); }
+}
+function fallbackImg(f){
+  const img = new Image(); const url = URL.createObjectURL(f);
+  img.onload = function(){ loadImage(img); URL.revokeObjectURL(url); };
+  img.onerror = function(){ URL.revokeObjectURL(url); };
+  img.src = url;
+}
+
+function applyPreset(name){ const pr = PRESETS[name]; Object.assign(P, pr); reflectControls(); }
+
+function reflectControls(){
+  $("sVort").value = P.vort; $("vVort").textContent = P.vort;
+  $("sDye").value = P.dyeDissUI; $("vDye").textContent = window.__fluidPure.fmtPct(P.dyeDissUI/1000);
+  $("sVel").value = P.velDissUI; $("vVel").textContent = window.__fluidPure.fmtPct(P.velDissUI/1000);
+  $("sBrush").value = P.brush; $("vBrush").textContent = P.brush;
+  $("sForce").value = P.forceUI; $("vForce").textContent = (P.forceUI/10).toFixed(1);
+  $("sGain").value = P.gainUI; $("vGain").textContent = (P.gainUI/10).toFixed(1);
+  $("sIter").value = P.iters; $("vIter").textContent = P.iters;
+  setSeg("palette","p",P.palette);
+}
+function setSeg(groupId, attr, val){
+  document.querySelectorAll("#"+groupId+" button").forEach(function(b){ b.classList.toggle("on", parseInt(b.getAttribute("data-"+attr),10)===val); });
+}
+
+function shareLink(){
+  const url = location.origin + location.pathname + "?" + window.__fluidPure.encodeSettings(P);
+  const btn = $("share");
+  const done = function(){ const t=btn.textContent; btn.textContent="Link copied!"; setTimeout(function(){ btn.textContent=t; },1400); };
+  if(navigator.clipboard){ navigator.clipboard.writeText(url).then(done, function(){ prompt("Copy this link:", url); }); }
+  else { prompt("Copy this link:", url); }
+}
+
+function toggleRec(){
+  if(recorder){ recorder.stop(); return; }
+  if(!canvas.captureStream || !window.MediaRecorder){ alert("Recording needs a browser with MediaRecorder + canvas.captureStream."); return; }
+  let mime = "video/webm;codecs=vp9"; if(!MediaRecorder.isTypeSupported(mime)) mime = "video/webm";
+  const stream = canvas.captureStream(30);
+  recChunks = [];
+  try { recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 12000000 }); }
+  catch(e){ alert("Could not start recording: " + e.message); return; }
+  recorder.ondataavailable = function(e){ if(e.data && e.data.size) recChunks.push(e.data); };
+  recorder.onstop = function(){
+    const blob = new Blob(recChunks, { type:"video/webm" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "fluid-"+Date.now()+".webm"; a.click();
+    recorder = null; clearInterval(recTimer); recTimer=null; $("recdot").hidden=true; $("rec").textContent="Record"; $("rec").classList.remove("btn"); $("rec").classList.add("btn-out");
+  };
+  recorder.start();
+  recStart = performance.now(); $("recdot").hidden=false; $("rec").textContent="Stop"; recTimer = setInterval(function(){ $("recTime").textContent = window.__fluidPure.fmtTime((performance.now()-recStart)/1000); }, 500);
+}
+
+function debounce(fn, ms){ let t; return function(){ clearTimeout(t); t=setTimeout(fn,ms); }; }
+
+boot().catch(function(e){ fail("Could not start the simulation", "An unexpected error occurred: " + (e && e.message ? e.message : e) + ". Try reloading or a different browser."); });
+</script>
+
+<!-- Analytics: Cloudflare Web Analytics beacon -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
