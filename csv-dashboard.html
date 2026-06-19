@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Instant CSV Dashboard — explore any CSV with cross-filtering, in your browser</title>
+<meta name="description" content="Drop a CSV and get an instant interactive dashboard. Click any chart to cross-filter every other chart, live. Auto-detects columns, handles big files, 100% in your browser. Nothing is uploaded." />
+<meta name="keywords" content="csv to dashboard, visualize csv online, csv dashboard, csv chart maker, interactive csv viewer, cross filter dashboard, explore csv, csv analytics online, csv pivot, no upload csv" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Instant CSV Dashboard — cross-filter any CSV in your browser" />
+<meta property="og:description" content="Drop a CSV and get linked, brushable charts. Click one chart and every other chart re-filters instantly. 100% private, nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/csv-dashboard.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Instant CSV Dashboard — cross-filter any CSV in your browser" />
+<meta name="twitter:description" content="Drop a CSV, click any chart, watch every chart re-filter live. Private, no sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/csv-dashboard.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Instant CSV Dashboard","url":"https://hammyasf.github.io/csv-dashboard.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Drop a CSV and get an interactive cross-filtering dashboard. Click any chart to filter every other chart, live. Runs entirely in the browser, nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my CSV uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The file is parsed and analysed entirely in your browser with JavaScript. Your data never leaves your device, so it works offline and stays private."}},{"@type":"Question","name":"What is cross-filtering?","acceptedAnswer":{"@type":"Answer","text":"Click a bar or drag a range on any chart and every other chart instantly re-aggregates to show only the matching rows. It is the brushing-and-linking interaction used in business intelligence tools, running live on your own data."}},{"@type":"Question","name":"How big a file can it handle?","acceptedAnswer":{"@type":"Answer","text":"Tens of thousands of rows stay smooth because the cross-filter engine works over typed integer indexes, not the raw text. Very large files are limited only by your device's memory."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, and no limits on how many files you explore."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1120px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:46px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .drop .or{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .err{margin:0 18px 18px;padding:12px 16px;border:1px solid #ff6a6a55;background:#ff6a6a14;border-radius:12px;color:#ffb3b3;font-size:14px;display:none;}
+  .toolbar{display:none;flex-wrap:wrap;gap:14px 22px;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line);}
+  .toolbar .fileinfo{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .toolbar .fileinfo b{color:var(--accent);font-weight:400;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);}
+  .row-i{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  select,input[type=text]{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:13px;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 13px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .chk{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;}
+  .chk input{accent-color:var(--accent);}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;padding:14px 22px 0;}
+  .chip{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12px;color:var(--ink);background:rgba(var(--accentRGB),.13);border:1px solid rgba(var(--accentRGB),.3);padding:5px 10px;border-radius:100px;}
+  .chip b{color:var(--accent);font-weight:500;}
+  .chip .x{cursor:pointer;color:var(--faint);font-weight:700;}.chip .x:hover{color:var(--ink);}
+  .stats{display:none;flex-wrap:wrap;gap:26px;padding:18px 22px;border-bottom:1px solid var(--line);}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:26px;letter-spacing:-.01em;color:var(--ink);}
+  .stat .v.acc{color:var(--accent);}
+  .stat .l{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:2px;}
+  .facets{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;padding:20px 22px;}
+  .facet{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(var(--surfaceRGB),.4);min-width:0;}
+  .facet .fh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+  .facet .fh .name{font-family:var(--display);font-weight:600;font-size:15px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .facet .fh .kind{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);}
+  .facet .clr{font-family:var(--mono);font-size:11px;color:var(--accent);cursor:pointer;visibility:hidden;}
+  .facet .clr.show{visibility:visible;}
+  .barlist{display:flex;flex-direction:column;gap:3px;max-height:260px;overflow:auto;}
+  .barrow{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:5px 8px;border-radius:7px;cursor:pointer;font-size:13px;overflow:hidden;}
+  .barrow .fill{position:absolute;inset:0;background:rgba(var(--accentRGB),.14);border-radius:7px;z-index:0;transition:width .2s var(--ease);}
+  .barrow .lbl{position:relative;z-index:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);}
+  .barrow .val{position:relative;z-index:1;font-family:var(--mono);font-size:12px;color:var(--faint);}
+  .barrow:hover{background:rgba(var(--accentRGB),.05);}
+  .barrow.sel .fill{background:rgba(var(--accentRGB),.34);}
+  .barrow.sel .lbl{color:var(--ink);}.barrow.sel .val{color:var(--accent);}
+  .barrow.dim{opacity:.42;}
+  .more{font-family:var(--mono);font-size:11px;color:var(--faint);padding:5px 8px;}
+  .histwrap{position:relative;}
+  canvas.hist{display:block;width:100%;height:120px;cursor:crosshair;touch-action:none;}
+  .histax{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:4px;}
+  .histread{font-family:var(--mono);font-size:11.5px;color:var(--accent);margin-top:6px;min-height:16px;}
+  .tablewrap{display:none;padding:0 22px 22px;}
+  .tablehead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 2px;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .tscroll{overflow:auto;border:1px solid var(--line);border-radius:12px;max-height:420px;}
+  table{border-collapse:collapse;width:100%;font-size:13px;}
+  thead th{position:sticky;top:0;background:#0c1815;text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);padding:9px 12px;border-bottom:1px solid var(--line-2);white-space:nowrap;}
+  tbody td{padding:8px 12px;border-bottom:1px solid var(--line);color:#cdd8d3;white-space:nowrap;max-width:280px;overflow:hidden;text-overflow:ellipsis;}
+  tbody td.num{font-family:var(--mono);text-align:right;color:var(--ink);}
+  tbody tr:hover td{background:rgba(var(--accentRGB),.04);}
+  .chooser{position:relative;}
+  .chooser .pop{display:none;position:absolute;z-index:30;top:calc(100% + 8px);left:0;width:260px;max-height:320px;overflow:auto;background:#0c1815;border:1px solid var(--line-2);border-radius:12px;padding:10px;box-shadow:0 24px 60px rgba(0,0,0,.5);}
+  .chooser.open .pop{display:block;}
+  .chooser .pop .ci{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;font-size:13px;color:var(--muted);cursor:pointer;}
+  .chooser .pop .ci:hover{background:rgba(var(--accentRGB),.06);}
+  .chooser .pop .ci input{accent-color:var(--accent);}
+  .chooser .pop .ci .k{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--faint);text-transform:uppercase;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.stats{gap:18px;}.stat .v{font-size:22px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Instant CSV Dashboard</h1>
+    <p class="sub">Drop a CSV and get a live dashboard. Click any chart or drag across a range and every other chart re-filters in the same instant. The whole engine runs on your machine.</p>
+    <span class="priv">&#128274; 100% private — your file never leaves your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add a CSV file">
+      <h2>Drop a CSV file here</h2>
+      <p>or click to choose a file · .csv or .tsv</p>
+      <input type="file" id="file" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden />
+      <div class="or"><button class="btn" id="sample" type="button">Try it with sample data</button></div>
+    </div>
+    <div class="err" id="err"></div>
+
+    <div class="toolbar" id="toolbar">
+      <span class="fileinfo" id="fileinfo"></span>
+      <label class="chk"><input type="checkbox" id="hasHeader" checked /> First row is a header</label>
+      <div class="ctl"><label>Measure</label>
+        <div class="row-i">
+          <div class="seg" id="metricSeg">
+            <button data-m="count" class="on">Records</button>
+            <button data-m="sum">Sum</button>
+            <button data-m="avg">Average</button>
+          </div>
+          <select id="measureSel" title="Numeric column to aggregate"></select>
+        </div>
+      </div>
+      <div class="chooser" id="chooser">
+        <button class="btn btn-out" id="chooserBtn" type="button">Columns &#9662;</button>
+        <div class="pop" id="chooserPop"></div>
+      </div>
+      <button class="btn btn-out" id="reset" type="button">Reset filters</button>
+      <button class="btn btn-out" id="exportBtn" type="button">Export filtered CSV</button>
+    </div>
+
+    <div class="chips" id="chips"></div>
+
+    <div class="stats" id="stats"></div>
+    <div class="facets" id="facets"></div>
+
+    <div class="tablewrap" id="tablewrap">
+      <div class="tablehead"><span id="tablecount"></span></div>
+      <div class="tscroll"><table id="table"><thead></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>What this does</h2>
+    <p>Most CSV viewers show you a table. This one turns a CSV into a set of linked charts so you can actually explore it. Pick a slice on one chart and the rest of the dashboard answers the question "and what does everything else look like for just those rows?" That brushing-and-linking interaction is the core of how analysts read data, and here it works on your own file with no setup and no upload.</p>
+    <h2>How does this run entirely in the browser?</h2>
+    <p>When you drop a file it is parsed locally, then each column is profiled: numbers, dates, and categories are detected automatically. The dashboard does not keep re-reading the text. Instead every row is reduced to small integer indexes, one per chart, so a filter becomes a fast integer comparison rather than a string scan. Each chart shows its data filtered by every other chart except itself, which is the classic cross-filter rule, and the whole recompute runs in a few milliseconds even for tens of thousands of rows. Nothing is sent anywhere, so it keeps working with your network unplugged.</p>
+    <h2>Tips</h2>
+    <p>Click several bars in a category to select more than one at once. Drag left-to-right across a histogram to keep a numeric or date range, and double-click the chart to clear it. Switch the measure from Records to Sum or Average of a numeric column to see totals instead of row counts. When you have the slice you want, export it back out as a clean CSV.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my CSV uploaded anywhere?</summary><p>No. The file is read and analysed entirely in your browser. It never touches a server, which is why it is instant, private, and works offline.</p></details>
+    <details><summary>What is cross-filtering?</summary><p>Click a bar or drag a range on any chart and every other chart instantly re-aggregates to show only the matching rows. It is the same brushing-and-linking you see in business intelligence dashboards, running live on your own data.</p></details>
+    <details><summary>How large a file can it handle?</summary><p>Tens of thousands of rows stay smooth because filtering happens over typed integer indexes rather than raw text. Very large files are bounded only by your device's memory.</p></details>
+    <details><summary>Does it support TSV or other delimiters?</summary><p>Yes. Comma and tab files are detected automatically, along with quoted fields and common date formats.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  /* ---------- elements ---------- */
+  var $=function(id){return document.getElementById(id);};
+  var drop=$("drop"),file=$("file"),sampleBtn=$("sample"),err=$("err"),toolbar=$("toolbar"),fileinfo=$("fileinfo"),
+      hasHeader=$("hasHeader"),metricSeg=$("metricSeg"),measureSel=$("measureSel"),chooser=$("chooser"),chooserBtn=$("chooserBtn"),
+      chooserPop=$("chooserPop"),resetBtn=$("reset"),exportBtn=$("exportBtn"),chips=$("chips"),statsEl=$("stats"),
+      facetsEl=$("facets"),tablewrap=$("tablewrap"),tableEl=$("table"),tablecount=$("tablecount");
+
+  /* ---------- state ---------- */
+  var DATA=null;        // {header:[], nRows, cols:[{name,type,vals,codes,labels,distinct}]}
+  var activeCols=[];    // column indices currently shown as facets, in order
+  var facetByCol={};    // col index -> facet object (persists selection)
+  var metricMode="count", measureCol=null;
+  var accentRGB=function(){ return getComputedStyle(document.documentElement).getPropertyValue("--accentRGB").trim()||"43,227,176"; };
+
+  /* ---------- CSV parsing (PapaParse, lazy) ---------- */
+  var papaReady=false;
+  function ensurePapa(cb){
+    if(papaReady && window.Papa){ cb(); return; }
+    if(window.Papa){ papaReady=true; cb(); return; }
+    var s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js";
+    s.onload=function(){ papaReady=true; cb(); };
+    s.onerror=function(){ showErr("Could not load the CSV parser. Check your connection and try again."); };
+    document.head.appendChild(s);
+  }
+  function showErr(m){ err.textContent=m; err.style.display="block"; }
+  function clearErr(){ err.style.display="none"; }
+
+  function parseFile(f){
+    clearErr();
+    if(f.size>120*1024*1024){ showErr("That file is larger than 120 MB. Try a smaller slice."); return; }
+    ensurePapa(function(){
+      window.Papa.parse(f,{worker:f.size>1024*1024, skipEmptyLines:"greedy", dynamicTyping:false,
+        complete:function(res){ onParsed(res.data, f.name); },
+        error:function(){ showErr("Could not read that file as a CSV."); }
+      });
+    });
+  }
+  function parseText(text,name){
+    clearErr();
+    ensurePapa(function(){
+      window.Papa.parse(text,{skipEmptyLines:"greedy", dynamicTyping:false,
+        complete:function(res){ onParsed(res.data, name); },
+        error:function(){ showErr("Could not parse the sample data."); }
+      });
+    });
+  }
+
+  /* ---------- type inference ---------- */
+  function parseNum(s){
+    if(s==null) return NaN;
+    s=(""+s).trim(); if(!s) return NaN;
+    var neg=false;
+    if(/^\(.*\)$/.test(s)){ neg=true; s=s.slice(1,-1); }
+    s=s.replace(/[$,\s]/g,"");
+    var pct=false; if(/%$/.test(s)){ pct=true; s=s.slice(0,-1); }
+    if(!/^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(s)) return NaN;
+    var n=parseFloat(s); if(isNaN(n)) return NaN;
+    if(pct) n=n/100; if(neg) n=-n; return n;
+  }
+  var MONTHS=/^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i;
+  function parseDate(s){
+    if(s==null) return NaN;
+    s=(""+s).trim(); if(!s) return NaN;
+    if(/^\d+(\.\d+)?$/.test(s)) return NaN; // pure number is not a date
+    var looksDate=(s.indexOf("-")>-1||s.indexOf("/")>-1||s.indexOf(":")>-1||MONTHS.test(s));
+    if(!looksDate || s.length>40) return NaN;
+    var m=s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/); // YYYY-MM-DD
+    if(m){ var t=Date.UTC(+m[1],+m[2]-1,+m[3]); return isNaN(t)?NaN:t; }
+    m=s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{2,4})/); // M/D/Y
+    if(m){ var y=+m[3]; if(y<100) y+=2000; var t2=Date.UTC(y,+m[1]-1,+m[2]); return isNaN(t2)?NaN:t2; }
+    var t3=Date.parse(s); return isNaN(t3)?NaN:t3;
+  }
+  function frac(arr,fn){ var ok=0,tot=0; for(var i=0;i<arr.length;i++){ var v=arr[i]; if(v==null||(""+v).trim()==="")continue; tot++; if(!isNaN(fn(v)))ok++; } return tot?ok/tot:0; }
+
+  function onParsed(rows, name){
+    if(!rows || !rows.length){ showErr("That file appears to be empty."); return; }
+    // header
+    var header, body;
+    if(hasHeader.checked){ header=rows[0].map(function(h,i){ h=(h==null?"":(""+h)).trim(); return h||("Column "+(i+1)); }); body=rows.slice(1); }
+    else { var n=rows[0].length; header=[]; for(var i=0;i<n;i++)header.push("Column "+(i+1)); body=rows; }
+    // de-dupe header names
+    var seen={}; header=header.map(function(h){ if(seen[h]==null){seen[h]=0;return h;} seen[h]++; return h+" ("+seen[h]+")"; });
+    var ncol=header.length, nRows=body.length;
+    if(nRows<1){ showErr("No data rows found. Try toggling 'First row is a header'."); return; }
+
+    // build columns
+    var cols=[];
+    for(var c=0;c<ncol;c++){
+      var raw=new Array(nRows);
+      for(var r=0;r<nRows;r++){ var row=body[r]; raw[r]=(row&&c<row.length)?row[c]:""; }
+      // sample for typing
+      var sample=raw.length>2000? raw.filter(function(_,k){return k%Math.ceil(raw.length/2000)===0;}) : raw;
+      var fNum=frac(sample,parseNum), fDate=frac(sample,parseDate);
+      var type;
+      if(fDate>=0.85 && fDate>=fNum) type="date";
+      else if(fNum>=0.85) type="number";
+      else type="category";
+      var col={name:header[c], type:type};
+      if(type==="number"||type==="date"){
+        var vals=new Float64Array(nRows); var mn=Infinity,mx=-Infinity,cnt=0;
+        var fn=type==="date"?parseDate:parseNum;
+        for(var r2=0;r2<nRows;r2++){ var v=fn(raw[r2]); vals[r2]=v; if(!isNaN(v)){ if(v<mn)mn=v; if(v>mx)mx=v; cnt++; } }
+        col.vals=vals; col.min=mn; col.max=mx; col.validCount=cnt;
+        // distinct (cheap, capped) to decide low-card numbers
+        var ds={},dn=0; for(var r3=0;r3<nRows && dn<=40;r3++){ var vv=vals[r3]; if(!isNaN(vv) && ds[vv]==null){ds[vv]=1;dn++;} }
+        col.distinctApprox=dn;
+        col.allInt=true; for(var r4=0;r4<nRows;r4++){ var vi=vals[r4]; if(!isNaN(vi) && vi!==Math.round(vi)){ col.allInt=false; break; } }
+      } else {
+        // category: codes + labels
+        var map={}, labels=[], codes=new Int32Array(nRows);
+        for(var r5=0;r5<nRows;r5++){
+          var sv=raw[r5]; sv=(sv==null?"":(""+sv)).trim();
+          if(sv===""){ codes[r5]=-1; continue; }
+          var id=map[sv]; if(id==null){ id=labels.length; map[sv]=id; labels.push(sv); } codes[r5]=id;
+        }
+        col.codes=codes; col.labels=labels; col.distinct=labels.length;
+        // base counts per label
+        var bc=new Float64Array(labels.length); for(var r6=0;r6<nRows;r6++){ var cc=codes[r6]; if(cc>=0)bc[cc]++; }
+        col.baseCounts=bc;
+      }
+      cols.push(col);
+    }
+
+    DATA={header:header, nRows:nRows, cols:cols, name:name};
+    facetByCol={}; activeCols=[];
+    metricMode="count"; measureCol=null;
+    setupMeasures();
+    autoPickFacets();
+    buildChooser();
+    setMetricUI();
+    toolbar.style.display="flex"; statsEl.style.display="flex"; tablewrap.style.display="block";
+    drop.querySelector("h2").textContent="Loaded ✓  Drop another file to switch";
+    fileinfo.innerHTML="<b>"+escapeHtml(name)+"</b> · "+fmtInt(nRows)+" rows · "+ncol+" columns";
+    buildFacets(); buildTableHead(); recompute();
+    statsEl.scrollIntoView({behavior:"smooth",block:"nearest"});
+  }
+
+  /* ---------- facet eligibility & auto-pick ---------- */
+  function eligible(c){
+    var col=DATA.cols[c];
+    if(col.type==="category"){ return col.distinct>=2 && col.distinct<=2000 && !(col.distinct>50 && col.distinct>0.92*DATA.nRows); }
+    if(col.type==="number"){ return col.validCount>0 && col.max>col.min || (col.distinctApprox>1); }
+    if(col.type==="date"){ return col.validCount>0 && col.max>col.min; }
+    return false;
+  }
+  function facetKind(c){
+    var col=DATA.cols[c];
+    if(col.type==="category") return "cat";
+    if(col.type==="date") return "date";
+    if(col.type==="number"){ return (col.distinctApprox<=12 && col.allInt) ? "catnum" : "num"; }
+    return "num";
+  }
+  function autoPickFacets(){
+    var elig=[]; for(var c=0;c<DATA.cols.length;c++){ if(eligible(c)) elig.push(c); }
+    // rank: categorical moderate-card first, then date, then numeric
+    elig.sort(function(a,b){ return rank(a)-rank(b); });
+    activeCols=elig.slice(0,8);
+  }
+  function rank(c){
+    var col=DATA.cols[c], k=facetKind(c);
+    if(k==="cat"||k==="catnum"){ var d=col.distinct||col.distinctApprox; var ideal=Math.abs((d||0)-7); return 0+ideal*0.01; }
+    if(k==="date") return 1;
+    return 2;
+  }
+
+  /* ---------- measure selector ---------- */
+  function setupMeasures(){
+    measureSel.innerHTML="";
+    var nums=[]; for(var c=0;c<DATA.cols.length;c++){ if(DATA.cols[c].type==="number"){ nums.push(c); var o=document.createElement("option"); o.value=c; o.textContent=DATA.cols[c].name; measureSel.appendChild(o); } }
+    if(nums.length){ measureCol=nums[0]; measureSel.value=nums[0]; measureSel.disabled=false; }
+    else { measureCol=null; measureSel.disabled=true; var o2=document.createElement("option"); o2.textContent="(no numeric column)"; measureSel.appendChild(o2); }
+  }
+  function setMetricUI(){
+    [].forEach.call(metricSeg.children,function(b){ b.classList.toggle("on", b.getAttribute("data-m")===metricMode); });
+    measureSel.style.opacity=(metricMode==="count"||measureCol==null)?".45":"1";
+  }
+
+  /* ---------- facet objects ---------- */
+  var NBINS=32;
+  function getFacet(c){
+    if(facetByCol[c]) return facetByCol[c];
+    var col=DATA.cols[c], k=facetKind(c), f={col:c, name:col.name, kind:k};
+    if(k==="cat"){ f.codes=col.codes; f.labels=col.labels; f.selected={}; f.selCount=0; }
+    else if(k==="catnum"){
+      // build labels from distinct numeric values, sorted
+      var set={}, vals=col.vals; for(var i=0;i<DATA.nRows;i++){ var v=vals[i]; if(!isNaN(v)) set[v]=1; }
+      var uniq=Object.keys(set).map(Number).sort(function(a,b){return a-b;});
+      var idx={}; uniq.forEach(function(v,j){ idx[v]=j; });
+      var codes=new Int32Array(DATA.nRows);
+      for(var i2=0;i2<DATA.nRows;i2++){ var v2=vals[i2]; codes[i2]=isNaN(v2)?-1:idx[v2]; }
+      f.codes=codes; f.labels=uniq.map(function(v){ return col.allInt? (""+v) : fmtNum(v); }); f.selected={}; f.selCount=0;
+    } else {
+      // numeric / date histogram
+      f.min=col.min; f.max=col.max; f.vals=col.vals; f.isDate=(k==="date");
+      var span=(col.max-col.min)||1; f.bw=span/NBINS;
+      var bins=new Int32Array(DATA.nRows);
+      for(var i3=0;i3<DATA.nRows;i3++){ var v3=col.vals[i3]; if(isNaN(v3)){ bins[i3]=-1; continue; } var b=Math.floor((v3-col.min)/f.bw); if(b<0)b=0; if(b>=NBINS)b=NBINS-1; bins[i3]=b; }
+      f.bins=bins; f.range=null;
+    }
+    facetByCol[c]=f; return f;
+  }
+  function facetActive(f){ // has a filter?
+    if(f.kind==="cat"||f.kind==="catnum") return f.selCount>0;
+    return f.range!=null;
+  }
+  function facetPass(f,i){
+    if(f.kind==="cat"||f.kind==="catnum"){ if(f.selCount===0) return true; var c=f.codes[i]; return c>=0 && f.selected[c]===1; }
+    if(f.range==null) return true; var v=f.vals[i]; return !isNaN(v) && v>=f.range[0] && v<=f.range[1];
+  }
+
+  /* ---------- core cross-filter recompute ---------- */
+  var lastResult=null;
+  function recompute(){
+    if(!DATA) return;
+    var facets=activeCols.map(getFacet);
+    var F=facets.length, n=DATA.nRows;
+    var failCount=new Int32Array(n), lastFail=new Int32Array(n);
+    for(var fi=0;fi<F;fi++){ var f=facets[fi]; if(!facetActive(f)) continue;
+      for(var i=0;i<n;i++){ if(!facetPass(f,i)){ failCount[i]++; lastFail[i]=fi; } }
+    }
+    // prepare aggregation arrays
+    var agg=[]; for(var a=0;a<F;a++){ var fa=facets[a];
+      if(fa.kind==="cat"||fa.kind==="catnum"){ agg.push({sum:new Float64Array(fa.labels.length), cnt:new Float64Array(fa.labels.length)}); }
+      else { agg.push({cnt:new Float64Array(NBINS)}); }
+    }
+    var measVals=(metricMode!=="count" && measureCol!=null)? DATA.cols[measureCol].vals : null;
+    // global stats over rows passing ALL facets
+    var gCount=0, gSum=0, gN=0, gMin=Infinity, gMax=-Infinity;
+    for(var i2=0;i2<n;i2++){
+      var fc=failCount[i2];
+      if(fc===0){
+        gCount++;
+        if(measureCol!=null){ var mv=DATA.cols[measureCol].vals[i2]; if(!isNaN(mv)){ gSum+=mv; gN++; if(mv<gMin)gMin=mv; if(mv>gMax)gMax=mv; } }
+        for(var fj=0;fj<F;fj++) addAgg(facets[fj],agg[fj],i2,measVals);
+      } else if(fc===1){
+        var ff=lastFail[i2]; addAgg(facets[ff],agg[ff],i2,measVals);
+      }
+    }
+    lastResult={facets:facets, agg:agg, failCount:failCount, gCount:gCount, gSum:gSum, gN:gN, gMin:gMin, gMax:gMax};
+    renderStats(); renderFacets(); renderChips(); scheduleTable();
+  }
+  function addAgg(f,a,i,measVals){
+    if(f.kind==="cat"||f.kind==="catnum"){ var c=f.codes[i]; if(c<0)return;
+      if(measVals){ var v=measVals[i]; if(!isNaN(v)){ a.sum[c]+=v; a.cnt[c]++; } } else { a.cnt[c]++; }
+    } else { var b=f.bins[i]; if(b<0)return; a.cnt[b]++; }
+  }
+
+  /* ---------- rendering ---------- */
+  function buildFacets(){
+    facetsEl.innerHTML="";
+    activeCols.forEach(function(c){
+      var f=getFacet(c);
+      var el=document.createElement("div"); el.className="facet"; el.dataset.col=c;
+      var kindLabel=f.kind==="cat"?"Category":f.kind==="catnum"?"Category":f.isDate?"Date":"Number";
+      el.innerHTML='<div class="fh"><span class="name" title="'+escapeHtml(f.name)+'">'+escapeHtml(f.name)+'</span>'+
+        '<span class="kind">'+kindLabel+'</span><span class="clr" data-clr="'+c+'">clear</span></div>'+
+        (f.kind==="num"||f.kind==="date"
+          ? '<div class="histwrap"><canvas class="hist" data-col="'+c+'"></canvas></div><div class="histax"><span class="axlo"></span><span class="axhi"></span></div><div class="histread"></div>'
+          : '<div class="barlist" data-col="'+c+'"></div>');
+      facetsEl.appendChild(el);
+      if(f.kind==="num"||f.kind==="date") attachHist(el,f);
+    });
+    // delegated clear
+  }
+  facetsEl.addEventListener("click",function(e){
+    var clr=e.target.closest("[data-clr]");
+    if(clr){ var f=getFacet(+clr.getAttribute("data-clr")); clearFacet(f); recompute(); return; }
+    var row=e.target.closest(".barrow");
+    if(row){ var host=row.closest(".barlist"); var f2=getFacet(+host.getAttribute("data-col")); var code=+row.getAttribute("data-code");
+      if(f2.selected[code]===1){ delete f2.selected[code]; f2.selCount--; } else { f2.selected[code]=1; f2.selCount++; }
+      recompute(); }
+  });
+  function clearFacet(f){ if(f.kind==="cat"||f.kind==="catnum"){ f.selected={}; f.selCount=0; } else { f.range=null; } }
+
+  function renderStats(){
+    var r=lastResult; var html="";
+    html+='<div class="stat"><div class="v acc">'+fmtInt(r.gCount)+'</div><div class="l">Records'+(r.gCount!==DATA.nRows?(" of "+fmtInt(DATA.nRows)):"")+'</div></div>';
+    if(measureCol!=null){
+      var nm=DATA.cols[measureCol].name;
+      html+='<div class="stat"><div class="v">'+fmtNum(r.gSum)+'</div><div class="l">Sum of '+escapeHtml(nm)+'</div></div>';
+      html+='<div class="stat"><div class="v">'+(r.gN?fmtNum(r.gSum/r.gN):"–")+'</div><div class="l">Average</div></div>';
+      html+='<div class="stat"><div class="v">'+(r.gN?fmtNum(r.gMin):"–")+'</div><div class="l">Min</div></div>';
+      html+='<div class="stat"><div class="v">'+(r.gN?fmtNum(r.gMax):"–")+'</div><div class="l">Max</div></div>';
+    }
+    statsEl.innerHTML=html;
+  }
+  function renderFacets(){
+    var r=lastResult;
+    r.facets.forEach(function(f,fi){
+      var el=facetsEl.querySelector('.facet[data-col="'+f.col+'"]'); if(!el) return;
+      var clr=el.querySelector(".clr"); if(clr) clr.classList.toggle("show", facetActive(f));
+      if(f.kind==="cat"||f.kind==="catnum"){ renderBars(el,f,r.agg[fi]); }
+      else { drawHist(el,f,r.agg[fi].cnt); }
+    });
+  }
+  function renderBars(el,f,a){
+    var host=el.querySelector(".barlist");
+    var vals=(metricMode!=="count" && measureCol!=null)
+      ? a.sum.map ? a.sum : Array.prototype.slice.call(a.sum)
+      : a.cnt;
+    var display=[];
+    for(var i=0;i<f.labels.length;i++){
+      var v = (metricMode==="avg" && measureCol!=null) ? (a.cnt[i]? a.sum[i]/a.cnt[i] : 0)
+            : (metricMode==="sum" && measureCol!=null) ? a.sum[i]
+            : a.cnt[i];
+      display.push({code:i, label:f.labels[i], v:v, base:f.baseCounts?f.baseCounts[i]:1});
+    }
+    // sort: selected first, then by value desc
+    display.sort(function(x,y){
+      var sx=f.selected[x.code]===1?1:0, sy=f.selected[y.code]===1?1:0;
+      if(sx!==sy) return sy-sx;
+      return y.v-x.v;
+    });
+    var max=0; for(var m=0;m<display.length;m++){ if(display[m].v>max)max=display[m].v; }
+    var TOP=18, shown=display.slice(0,TOP), html="";
+    shown.forEach(function(d){
+      var w=max>0?Math.max(2,(d.v/max)*100):0;
+      var sel=f.selCount>0 && f.selected[d.code]===1;
+      var dim=f.selCount>0 && !sel;
+      html+='<div class="barrow'+(sel?" sel":"")+(dim?" dim":"")+'" data-code="'+d.code+'" title="'+escapeHtml(d.label)+'">'+
+        '<span class="fill" style="width:'+w+'%"></span>'+
+        '<span class="lbl">'+escapeHtml(d.label)+'</span>'+
+        '<span class="val">'+fmtNum(d.v)+'</span></div>';
+    });
+    if(display.length>TOP) html+='<div class="more">+ '+(display.length-TOP)+' more categories</div>';
+    host.innerHTML=html;
+  }
+
+  /* ---------- histogram canvas + brushing ---------- */
+  function attachHist(el,f){
+    var cv=el.querySelector("canvas.hist");
+    var dragging=false, x0=0;
+    function xToVal(x){ var cw=cv.clientWidth||1; var t=Math.max(0,Math.min(1,x/cw)); return f.min + t*(f.max-f.min); }
+    function localX(e){ var rect=cv.getBoundingClientRect(); var cx=(e.touches?e.touches[0].clientX:e.clientX); return cx-rect.left; }
+    cv.addEventListener("pointerdown",function(e){ dragging=true; x0=localX(e); cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener("pointermove",function(e){ if(!dragging)return; var x1=localX(e); var lo=Math.min(x0,x1),hi=Math.max(x0,x1);
+      f.range=[xToVal(lo),xToVal(hi)]; scheduleRecompute(); });
+    function up(e){ if(!dragging)return; dragging=false; var x1=localX(e); if(Math.abs(x1-x0)<3){ f.range=null; recompute(); } else recompute(); }
+    cv.addEventListener("pointerup",up); cv.addEventListener("pointercancel",up);
+    cv.addEventListener("dblclick",function(){ f.range=null; recompute(); });
+    f._cv=cv;
+  }
+  var rcPending=false;
+  function scheduleRecompute(){ if(rcPending)return; rcPending=true; requestAnimationFrame(function(){ rcPending=false; recompute(); }); }
+  function drawHist(el,f,cnt){
+    var cv=f._cv||el.querySelector("canvas.hist"); if(!cv) return;
+    var dpr=window.devicePixelRatio||1;
+    var cw=cv.clientWidth||cv.parentNode.clientWidth||280, ch=120;
+    if(cv.width!==Math.round(cw*dpr)||cv.height!==Math.round(ch*dpr)){ cv.width=Math.round(cw*dpr); cv.height=Math.round(ch*dpr); }
+    var ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,cw,ch);
+    var max=0; for(var i=0;i<cnt.length;i++){ if(cnt[i]>max)max=cnt[i]; }
+    var rgb=accentRGB();
+    var gap=1, bw=(cw-(NBINS-1)*gap)/NBINS;
+    for(var b=0;b<NBINS;b++){
+      var h=max>0?(cnt[b]/max)*(ch-6):0; var x=b*(bw+gap), y=ch-h;
+      ctx.fillStyle="rgba("+rgb+",.55)"; ctx.fillRect(x,y,bw,h);
+    }
+    // committed brush overlay
+    if(f.range){
+      var span=(f.max-f.min)||1;
+      var lx=((f.range[0]-f.min)/span)*cw, hx=((f.range[1]-f.min)/span)*cw;
+      ctx.fillStyle="rgba("+rgb+",.16)"; ctx.fillRect(lx,0,Math.max(2,hx-lx),ch);
+      ctx.strokeStyle="rgba("+rgb+",.9)"; ctx.lineWidth=1.5; ctx.strokeRect(lx,1,Math.max(2,hx-lx),ch-2);
+    }
+    // axis labels + readout
+    var axlo=el.querySelector(".axlo"), axhi=el.querySelector(".axhi"), rd=el.querySelector(".histread");
+    if(axlo) axlo.textContent=fmtAxis(f,f.min); if(axhi) axhi.textContent=fmtAxis(f,f.max);
+    if(rd){ rd.textContent = f.range ? (fmtAxis(f,f.range[0])+"  →  "+fmtAxis(f,f.range[1])+"   (drag to change · double-click to clear)") : "Drag across the bars to filter a range"; }
+  }
+  function fmtAxis(f,v){ return f.isDate? fmtDate(v) : fmtNum(v); }
+
+  /* ---------- chips ---------- */
+  function renderChips(){
+    var html=""; var any=false;
+    activeCols.map(getFacet).forEach(function(f){
+      if(f.kind==="cat"||f.kind==="catnum"){ if(f.selCount>0){ any=true;
+        var names=Object.keys(f.selected).map(function(c){return f.labels[+c];}).slice(0,3);
+        var extra=f.selCount>3?(" +"+(f.selCount-3)):"";
+        html+=chip(f.col, f.name, names.join(", ")+extra); }
+      } else if(f.range){ any=true; html+=chip(f.col, f.name, fmtAxis(f,f.range[0])+" – "+fmtAxis(f,f.range[1])); }
+    });
+    chips.innerHTML=html; chips.style.display=any?"flex":"none";
+  }
+  function chip(col,name,val){ return '<span class="chip"><b>'+escapeHtml(name)+'</b> '+escapeHtml(val)+' <span class="x" data-chipclr="'+col+'">×</span></span>'; }
+  chips.addEventListener("click",function(e){ var x=e.target.closest("[data-chipclr]"); if(x){ clearFacet(getFacet(+x.getAttribute("data-chipclr"))); recompute(); } });
+
+  /* ---------- table ---------- */
+  function buildTableHead(){
+    var thead=tableEl.querySelector("thead"), tr=document.createElement("tr");
+    DATA.header.forEach(function(h){ var th=document.createElement("th"); th.textContent=h; tr.appendChild(th); });
+    thead.innerHTML=""; thead.appendChild(tr);
+  }
+  var tPending=false;
+  function scheduleTable(){ if(tPending)return; tPending=true; setTimeout(function(){ tPending=false; renderTable(); },60); }
+  function renderTable(){
+    if(!lastResult) return;
+    var fc=lastResult.failCount, n=DATA.nRows, CAP=100, body=[], shown=0;
+    var numCols={}; DATA.cols.forEach(function(c,i){ if(c.type==="number"||c.type==="date") numCols[i]=c; });
+    for(var i=0;i<n && shown<CAP;i++){ if(fc[i]!==0) continue; shown++;
+      var tds="";
+      for(var c=0;c<DATA.cols.length;c++){
+        var col=DATA.cols[c], cell, isNum=false;
+        if(col.type==="number"){ var v=col.vals[i]; cell=isNaN(v)?"":fmtNum(v); isNum=true; }
+        else if(col.type==="date"){ var d=col.vals[i]; cell=isNaN(d)?"":fmtDate(d); isNum=true; }
+        else { var code=col.codes[i]; cell=code>=0?col.labels[code]:""; }
+        tds+='<td'+(isNum?' class="num"':'')+'>'+escapeHtml(cell)+'</td>';
+      }
+      body.push("<tr>"+tds+"</tr>");
+    }
+    tableEl.querySelector("tbody").innerHTML=body.join("");
+    tablecount.innerHTML="Showing "+fmtInt(Math.min(lastResult.gCount,CAP))+" of <b style='color:var(--accent);font-weight:400'>"+fmtInt(lastResult.gCount)+"</b> matching rows";
+  }
+
+  /* ---------- column chooser ---------- */
+  function buildChooser(){
+    var html="";
+    for(var c=0;c<DATA.cols.length;c++){ if(!eligible(c)) continue;
+      var k=facetKind(c); var kl=(k==="cat"||k==="catnum")?"cat":(k==="date"?"date":"num");
+      var on=activeCols.indexOf(c)>-1;
+      html+='<label class="ci"><input type="checkbox" data-col="'+c+'"'+(on?" checked":"")+'> '+escapeHtml(DATA.cols[c].name)+'<span class="k">'+kl+'</span></label>';
+    }
+    chooserPop.innerHTML=html||'<div class="more">No chartable columns detected</div>';
+  }
+  chooserBtn.addEventListener("click",function(e){ e.stopPropagation(); chooser.classList.toggle("open"); });
+  document.addEventListener("click",function(e){ if(!chooser.contains(e.target)) chooser.classList.remove("open"); });
+  chooserPop.addEventListener("change",function(e){ var cb=e.target.closest("input[data-col]"); if(!cb)return;
+    var c=+cb.getAttribute("data-col");
+    if(cb.checked){ if(activeCols.indexOf(c)<0) activeCols.push(c); }
+    else { var ix=activeCols.indexOf(c); if(ix>-1) activeCols.splice(ix,1); }
+    buildFacets(); recompute();
+  });
+
+  /* ---------- toolbar wiring ---------- */
+  [].forEach.call(metricSeg.children,function(b){ b.addEventListener("click",function(){ metricMode=b.getAttribute("data-m"); setMetricUI(); recompute(); }); });
+  measureSel.addEventListener("change",function(){ measureCol=+measureSel.value; recompute(); });
+  resetBtn.addEventListener("click",function(){ activeCols.map(getFacet).forEach(clearFacet); recompute(); });
+  hasHeader.addEventListener("change",function(){ if(DATA) showErr("Re-drop the file to apply the header change."); });
+  exportBtn.addEventListener("click",exportCSV);
+  function exportCSV(){
+    if(!lastResult) return; var fc=lastResult.failCount, n=DATA.nRows;
+    var lines=[DATA.header.map(csvCell).join(",")];
+    for(var i=0;i<n;i++){ if(fc[i]!==0) continue; var row=[];
+      for(var c=0;c<DATA.cols.length;c++){ var col=DATA.cols[c], cell;
+        if(col.type==="number"){ var v=col.vals[i]; cell=isNaN(v)?"":v; }
+        else if(col.type==="date"){ var d=col.vals[i]; cell=isNaN(d)?"":fmtDate(d); }
+        else { var code=col.codes[i]; cell=code>=0?col.labels[code]:""; }
+        row.push(csvCell(cell));
+      }
+      lines.push(row.join(","));
+    }
+    var blob=new Blob([lines.join("\n")],{type:"text/csv"}); var a=document.createElement("a");
+    a.href=URL.createObjectURL(blob); a.download=(DATA.name||"data").replace(/\.[^.]+$/,"")+"-filtered.csv"; a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
+  }
+  function csvCell(v){ v=(v==null?"":(""+v)); if(/[",\n]/.test(v)) return '"'+v.replace(/"/g,'""')+'"'; return v; }
+
+  /* ---------- drop zone ---------- */
+  drop.addEventListener("click",function(e){ if(e.target===sampleBtn)return; file.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); file.click(); } });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop",function(e){ var f=e.dataTransfer.files[0]; if(f) parseFile(f); });
+  file.addEventListener("change",function(){ if(file.files[0]) parseFile(file.files[0]); });
+  sampleBtn.addEventListener("click",function(e){ e.stopPropagation(); parseText(sampleCSV(), "sample-orders.csv"); });
+
+  window.addEventListener("resize",function(){ if(lastResult) renderFacets(); });
+
+  /* ---------- formatting ---------- */
+  function fmtInt(n){ return (n||0).toLocaleString("en-US"); }
+  function fmtNum(n){ if(n==null||isNaN(n)) return "–";
+    var abs=Math.abs(n);
+    if(abs>=1e9) return (n/1e9).toFixed(2).replace(/\.00$/,"")+"B";
+    if(abs>=1e6) return (n/1e6).toFixed(2).replace(/\.00$/,"")+"M";
+    if(abs>=1e4) return Math.round(n).toLocaleString("en-US");
+    if(Number.isInteger(n)) return n.toLocaleString("en-US");
+    return (Math.round(n*100)/100).toLocaleString("en-US",{maximumFractionDigits:2});
+  }
+  function fmtDate(t){ if(isNaN(t))return ""; var d=new Date(t); return d.toLocaleDateString("en-US",{year:"numeric",month:"short",day:"numeric",timeZone:"UTC"}); }
+  function escapeHtml(s){ return (s==null?"":(""+s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+  /* ---------- sample data ---------- */
+  function sampleCSV(){
+    function mulberry32(a){ return function(){ a|=0;a=a+0x6D2B79F5|0; var t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+    var rnd=mulberry32(20260619);
+    var regions=["East","West","Central","South"];
+    var segments=["Consumer","Corporate","Home Office"];
+    var cats=[["Furniture",["Bookcases","Chairs","Tables","Furnishings"]],["Office Supplies",["Binders","Paper","Storage","Art","Labels"]],["Technology",["Phones","Machines","Copiers","Accessories"]]];
+    var ships=["Standard Class","Second Class","First Class","Same Day"];
+    var rows=[["Order Date","Region","Segment","Category","Sub-Category","Ship Mode","Quantity","Sales","Profit"]];
+    var start=Date.UTC(2024,0,1), end=Date.UTC(2025,11,31);
+    for(var i=0;i<640;i++){
+      var t=start+Math.floor(rnd()*(end-start)); var d=new Date(t);
+      var dateStr=d.getUTCFullYear()+"-"+pad(d.getUTCMonth()+1)+"-"+pad(d.getUTCDate());
+      var reg=regions[Math.floor(rnd()*regions.length)];
+      var seg=segments[Math.floor(rnd()*segments.length)];
+      var cat=cats[Math.floor(rnd()*cats.length)]; var sub=cat[1][Math.floor(rnd()*cat[1].length)];
+      var ship=ships[Math.floor(rnd()*ships.length)];
+      var qty=1+Math.floor(rnd()*13);
+      var unit=8+Math.pow(rnd(),2)*480; var sales=Math.round(qty*unit*100)/100;
+      var margin=(rnd()-0.32)*0.5; var profit=Math.round(sales*margin*100)/100;
+      rows.push([dateStr,reg,seg,cat[0],sub,ship,qty,sales,profit]);
+    }
+    return rows.map(function(r){ return r.join(","); }).join("\n");
+  }
+  function pad(n){ return n<10?("0"+n):(""+n); }
+})();
+</script>
+<!-- AdSense / Polar.sh monetization slot — paste unit here when ready. -->
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
