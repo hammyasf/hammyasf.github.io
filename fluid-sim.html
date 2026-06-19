@@ -613,7 +613,8 @@ function makeBuffers(){
 
 function resize(){ computeSimSize(); makeBuffers(); }
 
-function bg(pipe, entries){ return device.createBindGroup({ layout: pipe.getBindGroupLayout(0), entries: entries }); }
+// entries are always supplied in binding order (0,1,2,...); assign the required binding index here.
+function bg(pipe, entries){ return device.createBindGroup({ layout: pipe.getBindGroupLayout(0), entries: entries.map(function(e,i){ return { binding:i, resource:e.resource }; }) }); }
 function B(buffer){ return { resource:{ buffer: buffer } }; }
 
 function writeParams(opt){
