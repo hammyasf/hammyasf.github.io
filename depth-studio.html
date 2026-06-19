@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Depth Studio — turn any photo into a 3D parallax animation in your browser</title>
+<meta name="description" content="Drop a photo and a real AI depth model turns it into a 3D parallax animation you can move with your mouse. Runs 100% in your browser with WebGL, nothing is uploaded. Export the depth map or a 3D video clip." />
+<meta name="keywords" content="photo to 3d, 2d to 3d photo, depth map generator, ai depth estimation, parallax photo, 3d photo effect, animated 3d photo, depth anything browser, monocular depth, no upload, leiapix alternative, immersity alternative" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Depth Studio — photo to 3D parallax, in your browser" />
+<meta property="og:description" content="A real AI depth model turns any photo into a 3D parallax animation. 100% in your browser, nothing uploaded. Export a depth map or 3D video clip." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/depth-studio.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Depth Studio — photo to 3D parallax, in your browser" />
+<meta name="twitter:description" content="A real AI depth model turns any photo into a 3D parallax animation, entirely on your device. No upload." />
+<link rel="canonical" href="https://hammyasf.github.io/depth-studio.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Depth Studio","url":"https://hammyasf.github.io/depth-studio.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebGL)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Turn any photo into a 3D parallax animation using an on-device AI depth model. Runs entirely in the browser, nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my photos uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI depth model and the 3D rendering both run locally in your browser. Your photo never leaves your device."}},{"@type":"Question","name":"How does a flat photo become 3D?","acceptedAnswer":{"@type":"Answer","text":"A monocular depth-estimation model (Depth Anything V2) predicts how far every pixel is from the camera. That depth map is loaded onto your GPU as a displacement map and the photo is rendered on a mesh that bulges toward you for near pixels and recedes for far ones, so moving the camera reveals real parallax."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up and no watermark. The AI model downloads once (about 50 MB) and is then cached for instant reuse."}},{"@type":"Question","name":"Can I export the result?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can download the raw depth map as a PNG and record the moving 3D parallax as a video clip you can share."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:46px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .drop .or{margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .stage{position:relative;margin:18px;border-radius:16px;overflow:hidden;background:#05080a;border:1px solid var(--line);display:none;}
+  .stage canvas{display:block;width:100%;height:auto;cursor:grab;touch-action:none;}
+  .stage canvas:active{cursor:grabbing;}
+  .stage .hint{position:absolute;left:12px;bottom:12px;font-family:var(--mono);font-size:11.5px;color:#cdd8d3;background:rgba(5,8,10,.6);padding:5px 10px;border-radius:8px;backdrop-filter:blur(6px);pointer-events:none;}
+  .loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(5,8,10,.86);backdrop-filter:blur(4px);text-align:center;padding:24px;}
+  .loader .lt{font-family:var(--display);font-weight:600;font-size:18px;}
+  .loader .ls{font-family:var(--mono);font-size:12px;color:var(--muted);max-width:340px;}
+  .pbar{width:min(320px,80%);height:8px;border-radius:8px;background:rgba(237,242,239,.12);overflow:hidden;}
+  .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .25s;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:4px 24px 18px;align-items:center;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl .row{display:flex;align-items:center;gap:10px;}
+  input[type=range]{accent-color:var(--accent);width:150px;}
+  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:30px;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 15px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 24px 22px;}
+  .summary{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .summary b{color:var(--accent);}
+  .err{display:none;margin:0 24px 22px;padding:14px 16px;border:1px solid rgba(255,120,90,.4);background:rgba(255,120,90,.08);border-radius:12px;color:#ffd2c4;font-size:14px;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0;}
+  .steps .s{border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(var(--surfaceRGB),.4);}
+  .steps .s .n{font-family:var(--mono);font-size:12px;color:var(--accent);}
+  .steps .s h3{font-family:var(--display);font-weight:600;font-size:17px;margin:8px 0 6px;}
+  .steps .s p{font-size:14.5px;color:var(--muted);margin:0;}
+  @media(max-width:620px){.steps{grid-template-columns:1fr;}}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · AI runs in your browser</div>
+    <h1>Depth Studio</h1>
+    <p class="sub">Drop a photo and a real AI depth model turns it into a 3D parallax animation you can move with your mouse. The model and the 3D rendering both run on your device.</p>
+    <span class="priv">&#128274; 100% private — your photo never leaves your browser</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add a photo">
+      <h2>Drop a photo here</h2>
+      <p>or click to choose a file · JPG, PNG, WebP</p>
+      <div class="or">
+        <button class="btn" id="demoBtn" type="button">&#9889; Try the demo photo</button>
+      </div>
+      <input type="file" id="file" accept="image/*" hidden />
+    </div>
+
+    <div class="stage" id="stage">
+      <canvas id="gl"></canvas>
+      <div class="hint">Drag to look around · move your mouse over it</div>
+      <div class="loader" id="loader" style="display:none">
+        <div class="lt" id="loaderTitle">Loading the AI depth model…</div>
+        <div class="pbar"><i id="pbar"></i></div>
+        <div class="ls" id="loaderSub">First time only — about 50&nbsp;MB, then it is cached for instant reuse. Nothing is uploaded.</div>
+      </div>
+    </div>
+
+    <div class="controls" id="controls" style="display:none">
+      <div class="ctl"><label>3D depth</label>
+        <div class="row"><input type="range" id="depthAmt" min="0" max="200" value="90" /><span class="qval" id="depthVal">0.9</span></div>
+      </div>
+      <div class="ctl"><label>Motion</label>
+        <div class="row"><input type="range" id="motionAmt" min="0" max="100" value="55" /><span class="qval" id="motionVal">.55</span></div>
+      </div>
+      <div class="ctl"><label>Auto-wiggle</label>
+        <div class="seg" id="autoSeg">
+          <button data-a="1" class="on">On</button>
+          <button data-a="0">Off</button>
+        </div>
+      </div>
+      <div class="ctl"><label>View</label>
+        <div class="seg" id="viewSeg">
+          <button data-v="3d" class="on">3D</button>
+          <button data-v="depth">Depth map</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bar" id="exportBar" style="display:none">
+      <button class="btn" id="recBtn">&#127909; Record 3D clip</button>
+      <button class="btn btn-out" id="depthBtn">Download depth map</button>
+      <button class="btn btn-out" id="newBtn">New photo</button>
+      <span class="summary" id="sum"></span>
+    </div>
+    <div class="err" id="err"></div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="s"><div class="n">01</div><h3>Predict depth</h3><p>A monocular depth model (Depth Anything V2) runs on your device and estimates how far every pixel sits from the camera.</p></div>
+      <div class="s"><div class="n">02</div><h3>Displace on the GPU</h3><p>That depth map becomes a displacement map. Your photo is drawn on a fine mesh that pushes near pixels toward you and far pixels back.</p></div>
+      <div class="s"><div class="n">03</div><h3>Move the camera</h3><p>As the camera drifts, near and far pixels shift by different amounts. That is parallax — the cue your eyes read as real 3D.</p></div>
+    </div>
+
+    <h2>How is this running in my browser?</h2>
+    <p>Two things that used to need a server now run on the open web. The depth model is a real neural network compiled to run with WebGPU (or WebAssembly as a fallback) through Transformers.js, so the prediction happens on your own GPU. The 3D scene is built with WebGL: the photo is a texture on a subdivided plane, and a vertex shader reads the depth map to move each point along the camera axis. Because both steps are local, your photo is never uploaded, there is no queue, and there is no per-image cost. The model file downloads once and the browser caches it, so every photo after the first is fast.</p>
+
+    <h2>What it is good for</h2>
+    <p>Turn a flat snapshot into a moving 3D photo for a post or a story, pull a clean depth map out of any image for design and compositing work, or just see how good on-device monocular depth has become. It works best on photos with a clear near subject and a more distant background, like portraits, streets, landscapes, and product shots. Very flat images, like a straight-on document scan, have little depth to find.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my photo uploaded anywhere?</summary><p>No. The AI model and the 3D rendering both run inside your browser. Your image never touches a server, which is why it is private and there are no limits.</p></details>
+    <details><summary>Why does the first photo take a moment?</summary><p>The depth model (about 50 MB) downloads once on first use, then the browser caches it. After that, depth estimation takes a second or two and every later photo is quick.</p></details>
+    <details><summary>Do I need a powerful computer?</summary><p>A recent laptop or desktop with WebGPU runs it fastest. Without WebGPU it falls back to WebAssembly, which still works but is slower. Phones can run it but the model load is heavier on mobile data.</p></details>
+    <details><summary>Why are there small stretched edges when I move a lot?</summary><p>A single photo has no information about what is hidden behind a near object, so when the camera moves far enough those hidden areas stretch. Keeping the motion modest gives the cleanest look. This is a property of single-image 3D, not a bug.</p></details>
+    <details><summary>Can I save the result?</summary><p>Yes. Record the moving 3D view as a video clip to share, or download the raw depth map as a PNG to use elsewhere.</p></details>
+    <details><summary>Does it work offline?</summary><p>After the model has been downloaded once, the depth estimation works with no network. The page itself needs to load first.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  // ---- match the portfolio's saved theme ----
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  // =========================================================================
+  // PURE HELPERS (unit-tested in Node; shader proven live). No DOM/GPU here.
+  // =========================================================================
+  function clamp(x,a,b){ return x<a?a:(x>b?b:x); }
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function easeInOutSine(t){ return -(Math.cos(Math.PI*t)-1)/2; }
+
+  // Min-max stretch a 1-channel depth buffer to [0,1]. data: array-like, stride: channels per px.
+  function normalizeDepthTo01(data, stride){
+    stride = stride||1;
+    var n = Math.floor(data.length/stride), i, v, mn=Infinity, mx=-Infinity;
+    for(i=0;i<n;i++){ v=data[i*stride]; if(v<mn)mn=v; if(v>mx)mx=v; }
+    var out=new Float32Array(n), span=mx-mn;
+    if(span<=1e-9){ return out; } // flat -> all zeros
+    for(i=0;i<n;i++){ out[i]=(data[i*stride]-mn)/span; }
+    return out;
+  }
+
+  // Separable box blur on a w*h float buffer, integer radius. Returns new Float32Array.
+  function boxBlur1(src,w,h,radius){
+    radius=radius|0; if(radius<=0) return src.slice ? src.slice(0) : Float32Array.from(src);
+    var tmp=new Float32Array(w*h), out=new Float32Array(w*h), x,y,k,acc,cnt;
+    for(y=0;y<h;y++){ for(x=0;x<w;x++){ acc=0;cnt=0;
+      for(k=-radius;k<=radius;k++){ var xx=x+k; if(xx<0||xx>=w)continue; acc+=src[y*w+xx]; cnt++; }
+      tmp[y*w+x]=acc/cnt; } }
+    for(y=0;y<h;y++){ for(x=0;x<w;x++){ acc=0;cnt=0;
+      for(k=-radius;k<=radius;k++){ var yy=y+k; if(yy<0||yy>=h)continue; acc+=tmp[yy*w+x]; cnt++; }
+      out[y*w+x]=acc/cnt; } }
+    return out;
+  }
+
+  // Bounded Lissajous wiggle offset. Returns {x,y} each within [-ax,ax]/[-ay,ay].
+  function wiggleOffset(t, ax, ay){
+    return { x: Math.sin(t*0.9)*ax, y: Math.cos(t*0.7)*ay };
+  }
+
+  // Fit an image of (iw,ih) into a plane of given base height, preserving aspect.
+  function aspectPlaneSize(iw, ih, baseH){
+    baseH = baseH||2; var aspect = iw/ih;
+    return { w: baseH*aspect, h: baseH, aspect: aspect };
+  }
+
+  // Build an RGBA Uint8 buffer (grayscale replicated) from a [0,1] depth array.
+  function depthToRGBA(d01, w, h){
+    var out=new Uint8ClampedArray(w*h*4), i, v;
+    for(i=0;i<w*h;i++){ v=Math.round(clamp(d01[i],0,1)*255); out[i*4]=v;out[i*4+1]=v;out[i*4+2]=v;out[i*4+3]=255; }
+    return out;
+  }
+
+  // ---- expose for tests ----
+  var api={ clamp:clamp, lerp:lerp, easeInOutSine:easeInOutSine, normalizeDepthTo01:normalizeDepthTo01,
+            boxBlur1:boxBlur1, wiggleOffset:wiggleOffset, aspectPlaneSize:aspectPlaneSize, depthToRGBA:depthToRGBA };
+  try{ window.__depth = api; }catch(e){}
+
+  // Stop here in a non-browser (Node test) context.
+  if(typeof window==="undefined" || typeof document==="undefined") return;
+
+  // =========================================================================
+  // APP
+  // =========================================================================
+  var DEMO_SRC = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAUEBAYFBQUGBgYHCQ4JCQgICRINDQoOFRIWFhUSFBQXGiEcFxgfGRQUHScdHyIjJSUlFhwpLCgkKyEkJST/2wBDAQYGBgkICREJCREkGBQYJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCT/wAARCAJYA4QDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDzKilxRivpTyRKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUYoASilxRigBKKXFGKAEopcUUALijFOxRikMbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKMU7FGKAG4oxTsUYoAbijFOxRigBuKKdiigB+KMU/FGKm47DMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFGKfijFFwsMxRin4oxRcLDMUYp+KMUXCwzFFPxRRcLD8UYp+BRgVNyrDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfto20XCwzFGKfto20XCwzFGKftoxRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUYp+BRgUXCwzFGKfgUYFFwsMxRin4FGBRcLDMUU/AoouFiTFGKfijFTcdhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKMU/FGKLhYZijFPxRii4WGYoxT8Uu2lcdiPFGKk20u2i4WIttG2pdtG2i4WIttLtqTbS7aLhYi20bal20bfai4WIttGKl2+1Gyi4WIttG2pdlGyi4WIsUbal2Ubfai4WIttG2pdvtRtouFiLbSbam20m2i4WIttG2pdtG2i4WIsUYqTbRtouFiPFGKk20mKLhYZijFPxRincVhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKMU/FGKLhYZijFPxRii4WGYoxT8UYouFhmKKfiii4WJNtG2pNtG2ouXYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baLhYj20bak20baVwsR7aXbUm2jbRcLEe2jbUu2l20XCxFto21LtpdlFwsRbKNtTbKNlFwsRbKNlTbKXZRcLEO2jZU2yjZRcLEOyjZU+yjZRcLEGyjZU+yjZRcLEGyjZU+yjZRcLEG2jbU2yjZRcLEGyjZU2yjZRcLEG2jbU2yk2UXCxDto21NspNtFwsQ7aNtS7aNtFwsQ7aNtS7aNtFwsRbaNtSbaNtFwsR7aNtSbaNtO4WI9tG2pNtG2i4WI9tG2pNtG2i4WI9tG2pNtG2i4WI9tG2pNtG2i4WI9tG2pNtG2i4WI9tG2pNtG2i4WI9tG2pNtG2i4WI9tFSbaKLhYfto21Lto21ncqxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFtpdtSbaXbRcLEWyl21LtpdtFwsRbKNlS7KXZRcLEWyl2VMEpQlFwsQ7KXZUwSlCUXCxDspdlTBKdsouFiDZS7Km2Uuyi4WIdlGyp/LpfLpXHYr7KXZVjy6PL9qLhYr7KNlWPLo8ui4WK+yk2VZ8uk8ui4WK+yk2VZ8uk8ui4WK+yk2VY2UmyncVivspClWNlJsouFiuUpNlWNlJsouFivspNlT7KQpRcLEG2k2VPspCtFwsQ7aQpU2yjbRcLEG2jbU22k20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFtoqXbRRcLEmKMVLto21FyrEWKMVLto20XCxFijFS7aNtFwsRYoxUu2jbRcLEWKMVLto20XCxFijFS7aNtFwsRYoxUu2jbRcLEWKMVLto20XCxFijFS7aNtFwsRYoxUu2jbRcLEWKMVLto20XCxFijFS7aNtFwsRYoxUu2jbRcLEWKMVLto20XCxFijFS7aNtFwsRYoxUu2jbRcLEWKMVLto20XCxFijFS7aNtFwsRYoxUu2jbRcLEWKMVLto20XCxFijFS7aNtFwsRYoxUu2jbRcLEWKMVLto20XCxFijFS7aNtFwsRYoxUu2jbRcLEWKMVLto20XCxFijFS7aNtFwsRYoxUu2jbRcLEWKMVLto20XCxFil21JtpdtFwsRbaXbUgWnbaLhYi20u2pQtKEouFiIJShKmCUoSi47EQSnBKlCU4JSuFiEJS7KmCU4R0XCxAEpwjqcR08R0XCxXEdKI6sCOnCOlcLFcR0eXVny6Xy6LhYreXS+XVnyqXyqLhYq+XR5dWvKo8qi4WKvl0hjq35VJ5VFwsVPLpPLq35dIY6LhYqGOmmOrZjpDHTuFimY6TZVsx00x0XCxV2UhSrBjppSi4WK5SmlKslKaUouFiuUpNlWClNKU7isQbKTbU+ym7aLhYh20m2pttJtouFiHFGKlK0baLhYixRipdtG2i4WIsUYqXbRtouFiLFGKl20baLhYixRipdtG2i4WIsUYqXbRtouFiLFGKl20baLhYixRUu2ii4WJNtG2pdpo2mouXYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mjaaLhYi20bal2mlC0XCxFtpQtSbaULRcLEYWlC1KFpQlK4WIwtKEqUJTwlFwsQhKcFqUJTxHRcLEISnBKnEdPEdK47EAjp4jqcR04RUXCxAI6cI6siKniL2pXCxVEVPEXtVoRe1OEXtRzBYqiL2pRF7VbENOEPtRcdin5VL5XtV0Q0vk+1LmCxR8r2o8r2q95NHk0cwWKPle1J5VX/J9qaYaLhYomL2ppiq+YaYYqdwsUTF7U0xVeMVNMXtRzCsUDHTTHV4xe1RmKi4WKZjphjq4Y6aY6dwsUilNKVcMdRmOncVisUppSrJSmlKLhYrFKaUqyUppSi4WK5Wm7asFKaVouFiDbQVqbbSbadwsQ7aNtS7aNpouFiLbRtqXaaNpouFiLbRtqXaaNpouFiLbRtqXaaNpouFiLbRtqXaaNpouFiLbRtqXaaNpouFiLbRUu00UXCxLto21Jto21ncqxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21Jto20XCxHto21JtpdtFwsRBaXbUu2gLRcLEeylCVKEpQlFwsRhKcEqQJTwlFx2IglPCVIEp6x0rhYiCU9Y6lWOpFjouFiIR08R1MsdSLFSuOxAsVSLFVhYqkWKlcLFcRe1PWKrKw1IsNHMFissNPENWlhqQQUuYdioIfanCGrghp4g9qXMFikIaXyParwgpRBRzBYoeRR5FaHkUeRRzBYzvIpDDWiYKaYKOYLGcYaaYfatEw+1MMNHMFjOMNMaGtFoKjaGnzBYzjFTDFWg0NRtFT5hWM9oqjaOr7RVG0VPmCxRMdRtHV1o6jaOi4rFMx0wpVxo6jaOncLFUpTClWilMKUXCxWKU0pVkpTSlO4WK5SkKVOUppSi4rEO2k21NtpCtFwsRbaNtSbaNtFwsR7aNtSbaNtFwsR7aNtSbaNtFwsR7aNtSbaNtFwsR7aNtSbaNtFwsR7aKk20UXCxLto21Lto21ncuxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFto21Lto20XCxFtpQtSbaXZRcLEe2lC1JspwSi4WIwlOCVIEpwSi4WIwlPCVIEp4SlcLEQSpFjqRY6lWOi47ESx1IsdSrHUqxe1K4WIliqVYqmWKpUi9qVx2IViqVYqnWL2qZIfalcLFdYalWGrKw+1TLB7UuYdiqsFSLB7VbWD2qVYPalzDsU1gp4g9qurB7VIIPajmCxQEFOEFXxb+1OFv7UuYLGf5FJ5FaX2f2o+z+1HMFjMMFIYK0zb+1MMHtRzBYzDB7UxoK1DB7VG0HtT5gsZbQe1RNDWo0HtUTQe1PmFYy2hqJoa02h9qiaH2ouF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TaTY7EyXtxG25Znz7nNW4damTiVQ49ehrOopXGb8Wr20hwSUP+0Kto6OAVYMD3BrlackjxkFGKkdwafMKx1VFYEWr3MQwSHH+0KvQ61C/EilD69RTuKxo0VAl7bOu4TJj3OKKYHNUUUVmUFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABSN90/SlpG+6fpQBxTfeP1rU8O/8AH4/+5/WstvvH61qeHf8Aj8f/AHP61yw+JG8tjoqKKK6jAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACpory4hQokrBT2qGigBWYsSWJJPUmkoooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigC3a6nPbYG7enoa2ba/guuEbDf3T1rm6VWKkFSQR0IppisdPNcRW65kcL/Osq51p2ysC7R/ePWs53aRtzsWPqTTaHILDndpG3OxYnuabRRSGFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABSN90/SlpG+6fpQBxTfeP1rU8O/wDH4/8Auf1rLb7x+tanh3/j8f8A3P61yw+JG8tjoqKKK6jAKKKKACiiigAooooAKKKTcPUUALRURuYFJBlQEe9RtqNqjbTKM+3NK6HZlmiqLaxbq2AHYeoFN/tqDP3HxS5kHKzQoqmmrWzDJYr7EVMt3bsARMnPvTugsyaik3A9xS0xBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUEgdTQAUU15Y4xlnVR7mo2vbdF3GZMexzRcLE1FU21W1Vchyx9AKjOtQ4OEcntU8yHys0KRvun6Vl/23/wBMf/HqiOszkH5U/KlzofKzDb7x+tanh3/j8f8A3P61lk5JNTWkjxyEoxU47GueLs7mzV0dfkDuKY88UZw0iKfc1zjSO53MzE+pNNJz1rb2hlyHQvf20eMyqc+nNRPq1smMFn+grDope0Y+RGw+tRAfJGxPvxUTa2xX5YgD6k1mUUudj5UXzrNwQQFQe+KhOpXRBHm9faq1FLmY7Il+1T/89n/Oo9x9TSUUrgFFFFAwooooAKKKKAFDspBDEEe9Sre3CNuEz59zmoaKLiLqatcpnJV/qKlTW3A+eIE+xxWbRT5mLlRsJrUJUbkcH25qddStWIHm9fUVgUVXtGLkR0q3ELnasqE+gNSAg9DXLdKek0kedkjLn0NP2guQ6aiueTULmMYEpP15qZdYuFXBCMfUiq9ohcjNuispNb6b4vqQanXWLdmwQ6j1Ip8yFysvUVXTULaQ4EoH14qZJY5BlXVh7GndBYdRR1opiCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAopNw9RUZuYFJBlQEe9AEtFVm1G1RtplGfbmom1i3VsAOw9QKXMh2ZeorMfW0B+SIke5xUb61IcbI1Hrk5pc6Hys16Kw31e5YYG1fcCon1C5kGDKR9OKXtEPkZ0PSkLqASWAA965triZxtaVyPQmo8n1NL2gch0n2uD/nsn51F/adr/wA9P0NYFFT7Rj5EbX9swf3X/KojrYycQ5HbmsqilzsfKjQbWpi3yogHoeajfVrljkMF9gKp0UuZjsid765kOTK34HFRvNJJjfIzY9TTKKV2AEk9SaKKKBhRRRQAUlLSUAUqlt/vn6VFUtv98/SoK6FmiiirJCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoBI6E0UUASLcTINqyuB6A1Mmp3SY/eZA9R1qrRTuxWNBdamDfMiEeg4qZNbQn54iB7HNZNFPnYuVG4mrWz5yWT6ip1vbd13CZMe5xXOUU/aMXIjqA6sAQwIPvS1y24juamS9uEYESvx6nNV7QXIdHRWEmrXKnJYN7EVMmtSDO+NT6YOKfOhcjNeis5dahK/Mjg+g5qZdUtSAfMxnsRT5kLlZboqIXUDEASoSfepAQehFUIWiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiik3D1FAC0VG88UZw0iKfc003luoJMyce9K4WJqKq/2na/89P0NRtrFurYAdh6gUcyHZl6is5tahC/Kjk+h4qP+2/+mP8A49S50PlZq0VjNrUxb5UQD0PNNbWLhlwAin1Apc6DkZt0Vgf2ndf89P0FRG8uGJJmfn3pe0Q+Q6QnHWk3D1Fc088sgw0jsPc0zcfU0e0DkOkNzApIMqAj3pr31tGMmVfwOa52il7Rj5Df/tS1/wCen6Gov7Zg/uv+VYtFL2jDkRs/2zB/dk/KisaijnY+VBuPqaKKKgoKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigBuxf7o/KlCqOgApaKQBRRRTAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApySyRnKuyn2NNooAnS/uY84lY59eamTV7lRg7W9yKpUU+ZisjUXWzgZh574NTLrNuSAVce+KxaKfOxcqOhTULaQ4EoH14qVJo5M7JFbHoa5mgEjoar2jFyHUg56UVzKTyxjCyOo9jUyajdIoAlJA9eaftELkOgorF/tmf+6n5Uf2zP8A3Y/yp86FyM2qKwW1W6Zshwo9AKY+oXMgwZSPpxS9oh8jOhpMj1Fc59rn/wCe0n/fVRl2JJLEk+9HtA5DpnljjGWdVHuaZ9rg/wCe0f8A31XNkk9SaKXtB8hvnUrUEjzentTH1a2TGCz/AEFYdFL2jDkRs/2zB/cf8qi/tv8A6Y/+PVl0Uudj5UaT61IcbI1Hrk5pn9sz/wB1PyqhRRzsOVFr+1Lr/np+gpj31zIcmVvwOKgopXY7IkNzOwIMrkH3qPcfU0UUgAnPWiiigYUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH//Z";
+  var $=function(id){return document.getElementById(id);};
+  var drop=$("drop"), file=$("file"), demoBtn=$("demoBtn"), stage=$("stage"), glCanvas=$("gl"),
+      loader=$("loader"), loaderTitle=$("loaderTitle"), loaderSub=$("loaderSub"), pbar=$("pbar"),
+      controls=$("controls"), exportBar=$("exportBar"), errBox=$("err"), sum=$("sum"),
+      depthAmt=$("depthAmt"), depthVal=$("depthVal"), motionAmt=$("motionAmt"), motionVal=$("motionVal"),
+      recBtn=$("recBtn"), depthBtn=$("depthBtn"), newBtn=$("newBtn");
+
+  var hasWebGL = (function(){ try{ var c=document.createElement("canvas"); return !!(window.WebGLRenderingContext && (c.getContext("webgl2")||c.getContext("webgl"))); }catch(e){ return false; } })();
+
+  var renderer, scene, camera, mesh, material, photoTex, depthTex, depthCanvas=null;
+  var imgW=0, imgH=0, planeAspect=1;
+  var depthScale=0.9, motion=0.55, autoWiggle=true, viewMode="3d";
+  var pointer={x:0,y:0,active:false}, smooth={x:0,y:0}, t0=performance.now(), rafId=0;
+  var estimator=null, estimatorBackend="";
+
+  function showErr(msg){ errBox.style.display="block"; errBox.innerHTML=msg; }
+  function clearErr(){ errBox.style.display="none"; errBox.innerHTML=""; }
+
+  // ---------- drag & drop / file input ----------
+  drop.addEventListener("click",function(e){ if(e.target===demoBtn)return; file.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();file.click();} });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop",function(e){ var f=e.dataTransfer.files; if(f&&f[0]) loadFromFile(f[0]); });
+  file.addEventListener("change",function(){ if(file.files&&file.files[0]) loadFromFile(file.files[0]); });
+  demoBtn.addEventListener("click",function(e){ e.stopPropagation(); start(DEMO_SRC); });
+  newBtn.addEventListener("click",function(){ teardownView(); drop.style.display="block"; stage.style.display="none"; controls.style.display="none"; exportBar.style.display="none"; clearErr(); });
+
+  function loadFromFile(f){ if(!f.type || f.type.indexOf("image/")!==0){ showErr("Please choose an image file (JPG, PNG or WebP)."); return; } var url=URL.createObjectURL(f); start(url); }
+
+  // ---------- main pipeline ----------
+  function start(src){
+    clearErr();
+    if(!hasWebGL){ showErr("Your browser does not support WebGL, which this 3D view needs. Try a recent version of Chrome, Edge, Firefox or Safari."); return; }
+    drop.style.display="none"; stage.style.display="block";
+    loader.style.display="flex"; controls.style.display="none"; exportBar.style.display="none";
+    loaderTitle.textContent = estimator ? "Estimating depth…" : "Loading the AI depth model…";
+    setProgress(estimator?0.6:0.02);
+
+    var img=new Image();
+    img.crossOrigin="anonymous";
+    img.onload=function(){
+      imgW=img.naturalWidth; imgH=img.naturalHeight;
+      runDepth(img).then(function(){
+        loader.style.display="none";
+        controls.style.display="flex"; exportBar.style.display="flex";
+        sum.innerHTML = "Depth estimated on your device · backend <b>"+estimatorBackend.toUpperCase()+"</b> · "+imgW+"×"+imgH;
+      }).catch(function(e){
+        console.error(e);
+        loader.style.display="none";
+        showErr("Could not run the depth model in this browser. "+(e&&e.message?("("+e.message+")"):"")+" You can still try a different browser or photo.");
+      });
+    };
+    img.onerror=function(){ loader.style.display="none"; showErr("That image could not be loaded."); };
+    img.src=src;
+  }
+
+  function setProgress(p){ pbar.style.width=Math.round(clamp(p,0,1)*100)+"%"; }
+
+  async function ensureEstimator(){
+    if(estimator) return estimator;
+    var mod = await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1");
+    var pipeline=mod.pipeline, env=mod.env;
+    try{ env.allowLocalModels=false; }catch(e){}
+    var useGPU = !!(navigator.gpu);
+    estimatorBackend = useGPU ? "webgpu" : "wasm";
+    var opts = { progress_callback:function(d){ if(d&&d.status==="progress"&&d.total){ setProgress(0.02+0.5*(d.loaded/d.total)); } } };
+    if(useGPU){ opts.device="webgpu"; opts.dtype="fp16"; }
+    try{
+      estimator = await pipeline("depth-estimation","onnx-community/depth-anything-v2-small",opts);
+    }catch(e){
+      // fall back to wasm if webgpu init failed
+      estimatorBackend="wasm";
+      estimator = await pipeline("depth-estimation","onnx-community/depth-anything-v2-small",{ device:"wasm", dtype:"q8", progress_callback:opts.progress_callback });
+    }
+    return estimator;
+  }
+
+  async function runDepth(img){
+    var est = await ensureEstimator();
+    loaderTitle.textContent="Estimating depth…"; setProgress(0.7);
+    // Downscale very large inputs for speed / memory.
+    var srcCanvas=document.createElement("canvas");
+    var maxIn=1024, sc=Math.min(1, maxIn/Math.max(imgW,imgH));
+    srcCanvas.width=Math.round(imgW*sc); srcCanvas.height=Math.round(imgH*sc);
+    srcCanvas.getContext("2d").drawImage(img,0,0,srcCanvas.width,srcCanvas.height);
+    var dataUrl=srcCanvas.toDataURL("image/png");
+
+    var out = await est(dataUrl);
+    var depth = out.depth || (out[0] && out[0].depth);
+    if(!depth || !depth.data) throw new Error("no depth output");
+    var dw=depth.width, dh=depth.height, ch=depth.channels||(depth.data.length/(dw*dh));
+    var d01 = normalizeDepthTo01(depth.data, ch);
+    d01 = boxBlur1(d01, dw, dh, Math.max(1, Math.round(Math.min(dw,dh)/220)));
+    // re-normalize after blur to keep full contrast
+    var mn=Infinity,mx=-Infinity,i; for(i=0;i<d01.length;i++){ if(d01[i]<mn)mn=d01[i]; if(d01[i]>mx)mx=d01[i]; }
+    var span=mx-mn; if(span>1e-6){ for(i=0;i<d01.length;i++) d01[i]=(d01[i]-mn)/span; }
+
+    // depth -> canvas texture
+    depthCanvas=document.createElement("canvas"); depthCanvas.width=dw; depthCanvas.height=dh;
+    var dctx=depthCanvas.getContext("2d");
+    dctx.putImageData(new ImageData(depthToRGBA(d01,dw,dh), dw, dh), 0, 0);
+
+    setProgress(0.92);
+    buildScene(img);
+    setProgress(1);
+  }
+
+  // ---------- WebGL parallax scene ----------
+  function buildScene(img){
+    teardownView();
+    var ps=aspectPlaneSize(imgW,imgH,2); planeAspect=ps.aspect;
+    renderer=new THREE.WebGLRenderer({canvas:glCanvas, antialias:true, preserveDrawingBuffer:true, alpha:false});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    scene=new THREE.Scene(); scene.background=new THREE.Color(0x05080a);
+    camera=new THREE.PerspectiveCamera(36, planeAspect, 0.1, 100);
+    camera.position.set(0,0,CAMZ);
+
+    photoTex=new THREE.Texture(img); photoTex.needsUpdate=true; photoTex.minFilter=THREE.LinearFilter; photoTex.magFilter=THREE.LinearFilter; photoTex.colorSpace=THREE.SRGBColorSpace||undefined;
+    depthTex=new THREE.CanvasTexture(depthCanvas); depthTex.minFilter=THREE.LinearFilter; depthTex.magFilter=THREE.LinearFilter;
+
+    var seg=220;
+    var geo=new THREE.PlaneGeometry(ps.w*1.12, ps.h*1.12, seg, Math.round(seg/planeAspect));
+    material=new THREE.ShaderMaterial({
+      uniforms:{ uTex:{value:photoTex}, uDepth:{value:depthTex}, uScale:{value:depthScale}, uShowDepth:{value:0} },
+      vertexShader:[
+        "uniform sampler2D uDepth; uniform float uScale; varying vec2 vUv;",
+        "void main(){ vUv=uv; float d=texture2D(uDepth,uv).r; vec3 p=position; p.z += (d-0.5)*uScale; gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0); }"
+      ].join("\n"),
+      fragmentShader:[
+        "uniform sampler2D uTex; uniform sampler2D uDepth; uniform float uShowDepth; varying vec2 vUv;",
+        "void main(){ vec3 c = texture2D(uTex,vUv).rgb; float d=texture2D(uDepth,vUv).r; vec3 col=mix(c, vec3(d), uShowDepth);",
+        " vec2 q=vUv-0.5; float vig=smoothstep(0.95,0.45,length(q)); col*=mix(0.86,1.0,vig); gl_FragColor=vec4(col,1.0); }"
+      ].join("\n")
+    });
+    mesh=new THREE.Mesh(geo,material); scene.add(mesh);
+    resize();
+    if(!rafId) loop();
+  }
+
+  var CAMZ=3.08; // 1/tan(fov/2) for fov=36deg so plane height 2 fits
+
+  function teardownView(){
+    if(rafId){ cancelAnimationFrame(rafId); rafId=0; }
+    if(mesh){ scene.remove(mesh); mesh.geometry.dispose(); }
+    if(material) material.dispose();
+    if(photoTex) photoTex.dispose();
+    if(depthTex) depthTex.dispose();
+    if(renderer){ renderer.dispose(); }
+    mesh=material=photoTex=depthTex=renderer=scene=camera=null;
+  }
+
+  function resize(){
+    if(!renderer) return;
+    var w=stage.clientWidth||glCanvas.clientWidth||640;
+    var h=Math.round(w/planeAspect);
+    renderer.setSize(w,h,false);
+    camera.aspect=planeAspect; camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize",resize);
+
+  function loop(){
+    rafId=requestAnimationFrame(loop);
+    if(!renderer) return;
+    var tt=(performance.now()-t0)/1000;
+    var amp=0.34*motion;
+    var wob=autoWiggle && !pointer.active ? wiggleOffset(tt,amp,amp*0.62) : {x:pointer.x*amp*1.3, y:pointer.y*amp*0.85};
+    smooth.x=lerp(smooth.x,wob.x,0.08); smooth.y=lerp(smooth.y,wob.y,0.08);
+    camera.position.x=smooth.x; camera.position.y=smooth.y; camera.position.z=CAMZ;
+    camera.lookAt(0,0,0);
+    material.uniforms.uScale.value=depthScale;
+    material.uniforms.uShowDepth.value=(viewMode==="depth")?1:0;
+    renderer.render(scene,camera);
+  }
+
+  // ---------- pointer look ----------
+  glCanvas.addEventListener("pointermove",function(e){ var r=glCanvas.getBoundingClientRect(); pointer.x=clamp((e.clientX-r.left)/r.width*2-1,-1,1); pointer.y=clamp(-((e.clientY-r.top)/r.height*2-1),-1,1); });
+  glCanvas.addEventListener("pointerdown",function(){ pointer.active=true; });
+  window.addEventListener("pointerup",function(){ pointer.active=false; });
+  glCanvas.addEventListener("pointerleave",function(){ if(!pointer.active){ pointer.x=0; pointer.y=0; } });
+
+  // ---------- controls ----------
+  depthAmt.addEventListener("input",function(){ depthScale=depthAmt.value/100; depthVal.textContent=depthScale.toFixed(2); });
+  motionAmt.addEventListener("input",function(){ motion=motionAmt.value/100; motionVal.textContent=motion.toFixed(2); });
+  document.querySelectorAll("#autoSeg button").forEach(function(b){ b.addEventListener("click",function(){ document.querySelectorAll("#autoSeg button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); autoWiggle=b.getAttribute("data-a")==="1"; }); });
+  document.querySelectorAll("#viewSeg button").forEach(function(b){ b.addEventListener("click",function(){ document.querySelectorAll("#viewSeg button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); viewMode=b.getAttribute("data-v"); }); });
+
+  // ---------- exports ----------
+  depthBtn.addEventListener("click",function(){ if(!depthCanvas)return; depthCanvas.toBlob(function(b){ dl(b,"depth-map.png"); },"image/png"); });
+
+  recBtn.addEventListener("click",function(){
+    if(!renderer){ return; }
+    if(typeof MediaRecorder==="undefined" || !glCanvas.captureStream){ showErr("Recording is not supported in this browser. Try Chrome or Edge."); return; }
+    var stream=glCanvas.captureStream(30);
+    var mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" : "video/webm";
+    var rec, chunks=[];
+    try{ rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:6000000}); }catch(e){ showErr("Recording failed to start."); return; }
+    rec.ondataavailable=function(e){ if(e.data&&e.data.size) chunks.push(e.data); };
+    rec.onstop=function(){ dl(new Blob(chunks,{type:"video/webm"}),"depth-3d-clip.webm"); recBtn.disabled=false; recBtn.innerHTML="&#127909; Record 3D clip"; };
+    var prevAuto=autoWiggle, prevActive=pointer.active; autoWiggle=true; pointer.active=false;
+    recBtn.disabled=true; recBtn.textContent="Recording… 4s";
+    rec.start();
+    setTimeout(function(){ try{rec.stop();}catch(e){} autoWiggle=prevAuto; pointer.active=prevActive; }, 4000);
+  });
+
+  function dl(blob,name){ var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },1000); }
+
+  // ---------- GL self-test (model-independent, synchronous; for live verification) ----------
+  api.selfTestGL = function(){
+    try{
+      var W=64,H=48, c=document.createElement("canvas"); c.width=W;c.height=H;
+      var rdr=new THREE.WebGLRenderer({canvas:c,antialias:false,preserveDrawingBuffer:true});
+      rdr.setSize(W,H,false);
+      var sc=new THREE.Scene(); var cam=new THREE.PerspectiveCamera(36,W/H,0.1,100);
+      // gradient depth tex: left=far(0) right=near(1)
+      var dc=document.createElement("canvas"); dc.width=16;dc.height=16; var dx=dc.getContext("2d");
+      var gd=dx.createLinearGradient(0,0,16,0); gd.addColorStop(0,"#000");gd.addColorStop(1,"#fff"); dx.fillStyle=gd; dx.fillRect(0,0,16,16);
+      var dt=new THREE.CanvasTexture(dc);
+      var tc=document.createElement("canvas"); tc.width=16;tc.height=16; var tx=tc.getContext("2d");
+      for(var yy=0;yy<16;yy++)for(var xx=0;xx<16;xx++){ tx.fillStyle=((xx+yy)&1)?"#39e":"#fb4"; tx.fillRect(xx,yy,1,1); }
+      var tt2=new THREE.CanvasTexture(tc);
+      var mat=new THREE.ShaderMaterial({uniforms:{uTex:{value:tt2},uDepth:{value:dt},uScale:{value:1.4}},
+        vertexShader:"uniform sampler2D uDepth;uniform float uScale;varying vec2 vUv;void main(){vUv=uv;float d=texture2D(uDepth,uv).r;vec3 p=position;p.z+=(d-0.5)*uScale;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);}",
+        fragmentShader:"uniform sampler2D uTex;varying vec2 vUv;void main(){gl_FragColor=texture2D(uTex,vUv);}"});
+      var m=new THREE.Mesh(new THREE.PlaneGeometry(2,1.5,40,30),mat); sc.add(m);
+      var gl=rdr.getContext();
+      function frame(camx){ cam.position.set(camx,0,3.08); cam.lookAt(0,0,0); rdr.render(sc,cam);
+        var px=new Uint8Array(W*H*4); gl.readPixels(0,0,W,H,gl.RGBA,gl.UNSIGNED_BYTE,px); return px; }
+      var A=frame(-0.5), B=frame(0.5);
+      var nonBlack=0, diff=0, i;
+      for(i=0;i<A.length;i+=4){ if(A[i]+A[i+1]+A[i+2]>24)nonBlack++; if(Math.abs(A[i]-B[i])+Math.abs(A[i+1]-B[i+1])+Math.abs(A[i+2]-B[i+2])>30)diff++; }
+      rdr.dispose();
+      return { ok:nonBlack>200 && diff>50, nonBlack:nonBlack, parallaxChangedPixels:diff, totalPx:W*H, glError:gl.getError() };
+    }catch(e){ return { ok:false, error:String(e) }; }
+  };
+
+  // capability note
+  if(!hasWebGL){ showErr("Heads up: your browser does not report WebGL support, so the 3D view may not run. The rest of the page still works."); }
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+<!-- AdSense slot (enable later): <ins class="adsbygoogle" ...></ins> -->
+<!-- Polar.sh / tip slot (enable later) -->
+</body>
+</html>
