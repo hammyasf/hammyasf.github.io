@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Postgres Playground — run real PostgreSQL in your browser (no install)</title>
+<meta name="description" content="A real PostgreSQL database running entirely in your browser via WebAssembly. Write SQL, create tables, run joins and window functions, and your data persists locally. Nothing is uploaded, no install, no sign-up. Share a query as a link." />
+<meta name="keywords" content="postgres in browser, online postgres playground, run postgres online, postgres sandbox, try postgres online, postgres wasm, browser postgres, learn sql, sql playground, db fiddle postgres, postgres repl, pglite" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Postgres Playground — real PostgreSQL in your browser" />
+<meta property="og:description" content="A real PostgreSQL 18 database running entirely in your browser via WebAssembly. Write SQL, persist data locally, share a query as a link. No install, no upload." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/postgres-playground.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Postgres Playground — real PostgreSQL in your browser" />
+<meta name="twitter:description" content="A real PostgreSQL database running in your browser via WebAssembly. Persistent, private, shareable. No install." />
+<link rel="canonical" href="https://hammyasf.github.io/postgres-playground.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Postgres Playground","url":"https://hammyasf.github.io/postgres-playground.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real PostgreSQL database compiled to WebAssembly that runs entirely in your browser. Write SQL, create tables, run queries, persist data locally, and share a query as a link.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this really PostgreSQL?","acceptedAnswer":{"@type":"Answer","text":"Yes. It runs the actual PostgreSQL engine compiled to WebAssembly (via PGlite). SELECT version() reports a genuine PostgreSQL 18 build. It is a single-connection embedded Postgres, not a hosted server."}},{"@type":"Question","name":"Is my data uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The database runs inside your browser tab. Your tables and rows are stored locally in your browser using IndexedDB and never leave your device."}},{"@type":"Question","name":"Does my data survive a page reload?","acceptedAnswer":{"@type":"Answer","text":"Yes. The database is persisted to your browser's IndexedDB, so your schema and data are still there when you come back. You can wipe it any time with Reset database."}},{"@type":"Question","name":"How big is the download?","acceptedAnswer":{"@type":"Answer","text":"The Postgres WebAssembly build is about 3 MB gzipped. It downloads once and is then cached by your browser, so later visits start fast."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, and no limits on how many queries you run."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);--bad:#ff6b6b;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1140px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .status{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);padding:6px 12px;border-radius:100px;}
+  .status .led{width:8px;height:8px;border-radius:50%;background:var(--faint);}
+  .status.ready .led{background:var(--accent);box-shadow:0 0 10px rgba(var(--accentRGB),.8);}
+  .status.busy .led{background:#ffd166;box-shadow:0 0 10px rgba(255,209,102,.8);animation:pulse 1s var(--ease) infinite;}
+  .status.err .led{background:var(--bad);}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .app{display:grid;grid-template-columns:248px 1fr;gap:18px;margin:24px 0;}
+  @media(max-width:840px){.app{grid-template-columns:1fr;}}
+  .side{border:1px solid var(--line);border-radius:18px;background:rgba(var(--surfaceRGB),.55);padding:16px;align-self:start;}
+  .side h3{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;}
+  .schema{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow:auto;}
+  .tbl{border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .tbl > summary{list-style:none;cursor:pointer;padding:9px 11px;font-family:var(--mono);font-size:13px;color:var(--ink);display:flex;align-items:center;gap:7px;background:rgba(var(--surfaceRGB),.5);}
+  .tbl > summary::-webkit-details-marker{display:none;}
+  .tbl > summary:hover{color:var(--accent);}
+  .tbl .cols{padding:4px 11px 9px 26px;}
+  .tbl .col{font-family:var(--mono);font-size:12px;color:var(--muted);padding:2px 0;display:flex;justify-content:space-between;gap:10px;}
+  .tbl .col .ty{color:var(--faint);}
+  .side .empty{font-size:13px;color:var(--faint);line-height:1.5;}
+  .side .btnrow{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+  .panel{border:1px solid var(--line);border-radius:18px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;display:flex;flex-direction:column;}
+  .edwrap{position:relative;}
+  textarea#sql{width:100%;min-height:188px;resize:vertical;background:#06100d;color:var(--ink);border:none;border-bottom:1px solid var(--line);padding:16px 18px;font-family:var(--mono);font-size:13.5px;line-height:1.6;outline:none;tab-size:2;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;font-size:13px;padding:9px 14px;}
+  .btn-out:hover{border-color:rgba(var(--accentRGB),.5);}
+  .kbd{font-family:var(--mono);font-size:11px;color:var(--faint);}
+  .spacer{flex:1;}
+  .resultwrap{overflow:auto;max-height:460px;}
+  table.res{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;}
+  table.res th{position:sticky;top:0;background:#0a1714;text-align:left;padding:9px 12px;border-bottom:1px solid var(--line-2);color:var(--accent);white-space:nowrap;}
+  table.res th .ty{display:block;color:var(--faint);font-weight:400;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;margin-top:2px;}
+  table.res td{padding:7px 12px;border-bottom:1px solid var(--line);color:#d7e2dd;white-space:pre;max-width:380px;overflow:hidden;text-overflow:ellipsis;vertical-align:top;}
+  table.res tr:hover td{background:rgba(var(--accentRGB),.04);}
+  table.res td.null{color:var(--faint);font-style:italic;}
+  .msgbar{padding:11px 16px;font-family:var(--mono);font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;}
+  .msgbar b{color:var(--accent);}
+  .msgbar.err{color:var(--bad);}
+  .msgbar .grow{flex:1;}
+  .hist{margin-top:14px;}
+  .hist .item{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding:7px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .hist .item:hover{border-color:rgba(var(--accentRGB),.5);color:var(--ink);}
+  .banner{margin:0 0 16px;padding:12px 16px;border:1px solid rgba(var(--accentRGB),.3);border-radius:12px;background:rgba(var(--accentRGB),.06);font-size:14px;color:#cdd8d3;display:none;}
+  .banner.show{display:block;}
+  section.copy{padding:24px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  section.copy ol{color:#cdd8d3;font-size:16.5px;margin:12px 0 12px 22px;}
+  section.copy ol li{margin:7px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Postgres Playground</h1>
+    <p class="sub">A real PostgreSQL database, compiled to WebAssembly, running entirely inside this tab. Create tables, run joins and window functions, and your data is saved locally between visits. Nothing is uploaded.</p>
+    <div class="pills">
+      <span class="priv">&#128274; Runs locally — your data never leaves your device</span>
+      <span class="status" id="engine"><span class="led"></span><span id="engineTxt">Booting Postgres…</span></span>
+    </div>
+  </header>
+
+  <div class="banner" id="banner"></div>
+
+  <div class="app">
+    <aside class="side">
+      <h3>Schema</h3>
+      <div class="schema" id="schema"><div class="empty">No tables yet. Run some SQL or load the sample dataset.</div></div>
+      <div class="btnrow">
+        <button class="btn-out" id="loadSample">Load sample dataset</button>
+        <button class="btn-out" id="reset">Reset database</button>
+      </div>
+      <div class="hist">
+        <h3 style="margin-top:16px;">History</h3>
+        <div id="hist"><div class="empty">Your recent queries appear here.</div></div>
+      </div>
+    </aside>
+
+    <div class="panel">
+      <div class="edwrap">
+        <textarea id="sql" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="run" disabled>Run <span class="kbd" style="color:#07100e;opacity:.7;">&#8984;&#8629;</span></button>
+        <button class="btn-out" id="share">Copy share link</button>
+        <button class="btn-out" id="csv" disabled>Export CSV</button>
+        <button class="btn-out" id="json" disabled>Export JSON</button>
+        <span class="spacer"></span>
+        <span class="kbd">Run with Ctrl/&#8984; + Enter</span>
+      </div>
+      <div class="resultwrap" id="resultwrap"></div>
+      <div class="msgbar" id="msg"><span class="grow">Booting a PostgreSQL instance in your browser. This downloads about 3 MB once, then it is cached.</span></div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>This page loads PostgreSQL itself, compiled to WebAssembly through the PGlite project, and starts it inside your browser tab. When you press Run, your SQL is handed to a genuine Postgres query planner and executor, not a re-implementation. That is why <code>SELECT version()</code> returns a real PostgreSQL 18 build, and why joins, CTEs, window functions, generated columns, JSON operators, and transactions all behave exactly like they do on a server.</p>
+    <p>Your tables and rows are written to your browser's IndexedDB, so the database is still there when you come back tomorrow. There is no server, no connection string, and no account. You can wipe everything instantly with Reset database.</p>
+    <h2>Why run Postgres in the browser?</h2>
+    <p>It is the fastest way to try an idea. There is nothing to install, no Docker, no <code>brew</code>, no waiting for a cloud instance to spin up. It is ideal for learning SQL, sketching a schema, testing a tricky query before you run it for real, or sharing a reproducible example: paste your setup SQL, copy the share link, and the person who opens it gets the exact same query loaded and ready to run on their own private database.</p>
+    <h2>Things to try</h2>
+    <ol>
+      <li>Click <strong>Load sample dataset</strong> for a small store schema, then run the join that is pre-loaded in the editor.</li>
+      <li>Write a window function: <code>SELECT name, price, rank() OVER (ORDER BY price DESC) FROM products;</code></li>
+      <li>Use a CTE and <code>generate_series</code> to build a numbers table.</li>
+      <li>Create your own tables, insert rows, reload the page, and watch your data still be there.</li>
+    </ol>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is this really PostgreSQL?</summary><p>Yes. It is the actual Postgres engine compiled to WebAssembly, not a clone. <code>SELECT version()</code> reports a genuine PostgreSQL 18 build. It runs as a single-connection embedded database, so it is perfect for development and learning rather than serving production traffic.</p></details>
+    <details><summary>Is my data uploaded anywhere?</summary><p>No. The whole database runs in your browser. Your schema and rows are stored locally in IndexedDB and never touch a server, which is why it works offline once the engine has loaded.</p></details>
+    <details><summary>Will my data still be here after I close the tab?</summary><p>Yes, it persists in your browser's IndexedDB. Use Reset database to start fresh. Clearing your browser site data will also remove it.</p></details>
+    <details><summary>How big is the download?</summary><p>About 3 MB gzipped for the Postgres WebAssembly build. It downloads once and is then cached, so repeat visits start quickly.</p></details>
+    <details><summary>What can it not do?</summary><p>It is a single embedded instance, so there are no multiple concurrent connections or replication. Some server-only features and extensions are unavailable, but core SQL, transactions, and most data types work just like a normal Postgres.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var PGLITE_URL = "https://cdn.jsdelivr.net/npm/@electric-sql/pglite@0.5.3/dist/index.js";
+  var DB_NAME = "idb://harman_pg_playground";
+
+  // ===PURE=== pure helpers (also unit-tested in Node — keep dependency-free)
+  var OID = {16:"bool",17:"bytea",18:"char",19:"name",20:"int8",21:"int2",23:"int4",25:"text",26:"oid",114:"json",142:"xml",700:"float4",701:"float8",790:"money",1042:"bpchar",1043:"varchar",1082:"date",1083:"time",1114:"timestamp",1184:"timestamptz",1186:"interval",1700:"numeric",2950:"uuid",3802:"jsonb"};
+  function oidTypeName(oid){ return OID[oid] || ("oid:"+oid); }
+  function fmtCell(v){
+    if(v===null||v===undefined) return {text:"NULL", isNull:true};
+    if(typeof v==="boolean") return {text:v?"true":"false", isNull:false};
+    if(v instanceof Uint8Array||(v&&v.buffer&&typeof v.byteLength==="number")) return {text:"\\x"+Array.prototype.map.call(v,function(b){return ("0"+b.toString(16)).slice(-2);}).join(""), isNull:false};
+    if(typeof v==="object") return {text:JSON.stringify(v), isNull:false};
+    return {text:String(v), isNull:false};
+  }
+  function csvField(s){
+    s = (s===null||s===undefined) ? "" : String(s);
+    if(/[",\n\r]/.test(s)) return '"'+s.replace(/"/g,'""')+'"';
+    return s;
+  }
+  function toCSV(fields, rows){
+    var head = fields.map(function(f){return csvField(f.name);}).join(",");
+    var body = rows.map(function(row){
+      return fields.map(function(f){
+        var v = row[f.name];
+        if(v===null||v===undefined) return "";
+        if(typeof v==="object") return csvField(JSON.stringify(v));
+        return csvField(v);
+      }).join(",");
+    });
+    return [head].concat(body).join("\r\n");
+  }
+  function toJSONText(rows){ return JSON.stringify(rows, function(k,v){
+    return (typeof v==="bigint") ? v.toString() : v;
+  }, 2); }
+  function b64urlEncode(str){
+    var utf8 = unescape(encodeURIComponent(str));
+    var b64 = btoa(utf8);
+    return b64.replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  }
+  function b64urlDecode(s){
+    s = s.replace(/-/g,"+").replace(/_/g,"/");
+    while(s.length%4) s += "=";
+    return decodeURIComponent(escape(atob(s)));
+  }
+  function encodeShare(sql){ return "#q=" + b64urlEncode(sql); }
+  function decodeShare(hash){
+    if(!hash) return null;
+    var m = /[#&]q=([^&]+)/.exec(hash);
+    if(!m) return null;
+    try{ return b64urlDecode(m[1]); }catch(e){ return null; }
+  }
+  function fmtDuration(ms){
+    if(ms<1) return "<1 ms";
+    if(ms<1000) return Math.round(ms)+" ms";
+    return (ms/1000).toFixed(2)+" s";
+  }
+  // ===END PURE===
+
+  // export for Node unit tests
+  if(typeof module!=="undefined" && module.exports){
+    module.exports={oidTypeName:oidTypeName,fmtCell:fmtCell,csvField:csvField,toCSV:toCSV,toJSONText:toJSONText,b64urlEncode:b64urlEncode,b64urlDecode:b64urlDecode,encodeShare:encodeShare,decodeShare:decodeShare,fmtDuration:fmtDuration};
+  }
+  if(typeof document==="undefined") return; // running under Node test harness
+
+  var SAMPLE_SQL =
+"-- Sample store schema (run once via 'Load sample dataset').\n"+
+"CREATE TABLE customers (\n"+
+"  id serial PRIMARY KEY,\n"+
+"  name text NOT NULL,\n"+
+"  city text,\n"+
+"  signup_date date\n"+
+");\n"+
+"CREATE TABLE products (\n"+
+"  id serial PRIMARY KEY,\n"+
+"  name text NOT NULL,\n"+
+"  category text,\n"+
+"  price numeric(10,2)\n"+
+");\n"+
+"CREATE TABLE orders (\n"+
+"  id serial PRIMARY KEY,\n"+
+"  customer_id int REFERENCES customers(id),\n"+
+"  product_id int REFERENCES products(id),\n"+
+"  qty int NOT NULL DEFAULT 1,\n"+
+"  ordered_at timestamptz DEFAULT now()\n"+
+");\n"+
+"INSERT INTO customers (name, city, signup_date) VALUES\n"+
+"  ('Ada Lovelace','London','2025-01-12'),\n"+
+"  ('Grace Hopper','New York','2025-02-03'),\n"+
+"  ('Alan Turing','Manchester','2025-02-20'),\n"+
+"  ('Katherine Johnson','Hampton','2025-03-15'),\n"+
+"  ('Linus Torvalds','Portland','2025-04-01');\n"+
+"INSERT INTO products (name, category, price) VALUES\n"+
+"  ('Mechanical Keyboard','Hardware',129.00),\n"+
+"  ('Noise-cancelling Headphones','Audio',199.99),\n"+
+"  ('USB-C Hub','Hardware',39.50),\n"+
+"  ('Standing Desk','Furniture',459.00),\n"+
+"  ('Webcam 4K','Hardware',89.00);\n"+
+"INSERT INTO orders (customer_id, product_id, qty) VALUES\n"+
+"  (1,1,1),(1,3,2),(2,2,1),(3,4,1),(3,1,1),(4,5,3),(5,2,1),(5,3,1),(2,5,1),(1,2,1);\n";
+
+  var DEMO_QUERY =
+"-- Real PostgreSQL 18, running entirely in your browser.\n"+
+"-- Join three tables and aggregate spend per customer:\n"+
+"SELECT c.name AS customer,\n"+
+"       count(o.id)              AS orders,\n"+
+"       sum(p.price * o.qty)::numeric(10,2) AS total_spent\n"+
+"FROM customers c\n"+
+"JOIN orders   o ON o.customer_id = c.id\n"+
+"JOIN products p ON p.id = o.product_id\n"+
+"GROUP BY c.name\n"+
+"ORDER BY total_spent DESC;\n";
+
+  var $ = function(id){ return document.getElementById(id); };
+  var sqlEl=$("sql"), runBtn=$("run"), csvBtn=$("csv"), jsonBtn=$("json"), shareBtn=$("share"),
+      resultwrap=$("resultwrap"), msg=$("msg"), schemaEl=$("schema"), histEl=$("hist"),
+      engine=$("engine"), engineTxt=$("engineTxt"), banner=$("banner"),
+      loadSampleBtn=$("loadSample"), resetBtn=$("reset");
+
+  var db=null, lastResult=null, history=[], MAX_RENDER=500;
+
+  function setEngine(state, text){ engine.className="status "+state; engineTxt.textContent=text; }
+  function setMsg(html, isErr){ msg.className="msgbar"+(isErr?" err":""); msg.innerHTML=html; }
+  function loadHistory(){ try{ history=JSON.parse(localStorage.getItem("pgpHist")||"[]"); }catch(e){ history=[]; } }
+  function saveHistory(){ try{ localStorage.setItem("pgpHist", JSON.stringify(history.slice(0,20))); }catch(e){} }
+  function pushHistory(sql){
+    sql=sql.trim(); if(!sql) return;
+    history=history.filter(function(h){return h!==sql;});
+    history.unshift(sql); history=history.slice(0,20); saveHistory(); renderHistory();
+  }
+  function renderHistory(){
+    if(!history.length){ histEl.innerHTML='<div class="empty">Your recent queries appear here.</div>'; return; }
+    histEl.innerHTML="";
+    history.forEach(function(h){
+      var d=document.createElement("div"); d.className="item";
+      d.textContent=h.replace(/\s+/g," ").slice(0,80);
+      d.title=h;
+      d.addEventListener("click",function(){ sqlEl.value=h; sqlEl.focus(); });
+      histEl.appendChild(d);
+    });
+  }
+
+  function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  function renderResult(res){
+    lastResult=res;
+    var fields=res.fields||[], rows=res.rows||[];
+    csvBtn.disabled = jsonBtn.disabled = !(fields.length);
+    if(!fields.length){ resultwrap.innerHTML='<div style="padding:18px;color:var(--muted);font-family:var(--mono);font-size:13px;">Statement executed. No rows returned.</div>'; return; }
+    var html='<table class="res"><thead><tr>';
+    fields.forEach(function(f){ html+='<th>'+escapeHtml(f.name)+'<span class="ty">'+escapeHtml(oidTypeName(f.dataTypeID))+'</span></th>'; });
+    html+='</tr></thead><tbody>';
+    var shown=Math.min(rows.length, MAX_RENDER);
+    for(var i=0;i<shown;i++){
+      html+='<tr>';
+      for(var j=0;j<fields.length;j++){
+        var cell=fmtCell(rows[i][fields[j].name]);
+        html+='<td'+(cell.isNull?' class="null"':'')+'>'+escapeHtml(cell.text)+'</td>';
+      }
+      html+='</tr>';
+    }
+    html+='</tbody></table>';
+    if(rows.length>shown) html+='<div style="padding:10px 14px;color:var(--faint);font-family:var(--mono);font-size:12px;">Showing first '+shown+' of '+rows.length+' rows. Export to get them all.</div>';
+    resultwrap.innerHTML=html;
+  }
+
+  async function refreshSchema(){
+    try{
+      var t=await db.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE' ORDER BY table_name");
+      var c=await db.query("SELECT table_name, column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema='public' ORDER BY table_name, ordinal_position");
+      var byTable={};
+      c.rows.forEach(function(r){ (byTable[r.table_name]=byTable[r.table_name]||[]).push(r); });
+      if(!t.rows.length){ schemaEl.innerHTML='<div class="empty">No tables yet. Run some SQL or load the sample dataset.</div>'; return; }
+      schemaEl.innerHTML="";
+      t.rows.forEach(function(tr){
+        var name=tr.table_name;
+        var det=document.createElement("details"); det.className="tbl";
+        var cols=(byTable[name]||[]).map(function(col){
+          return '<div class="col"><span>'+escapeHtml(col.column_name)+'</span><span class="ty">'+escapeHtml(col.data_type)+'</span></div>';
+        }).join("");
+        det.innerHTML='<summary>&#9656; '+escapeHtml(name)+'</summary><div class="cols">'+cols+'</div>';
+        det.querySelector("summary").addEventListener("click",function(e){
+          // double-click to insert a select; single toggles
+        });
+        det.addEventListener("dblclick",function(){ sqlEl.value="SELECT * FROM "+name+" LIMIT 100;"; runSQL(); });
+        schemaEl.appendChild(det);
+      });
+    }catch(e){ /* schema refresh is best-effort */ }
+  }
+
+  async function runSQL(){
+    if(!db){ return; }
+    var sql=sqlEl.value.trim();
+    if(!sql){ setMsg("Type a SQL statement, then press Run.", false); return; }
+    runBtn.disabled=true; setEngine("busy","Running…"); setMsg("Running…", false);
+    var t0=performance.now();
+    try{
+      var results=await db.exec(sql);  // array of per-statement results
+      var ms=performance.now()-t0;
+      // pick the last statement that returned columns; otherwise summarise DML
+      var display=null, totalAffected=0, stmtCount=results.length;
+      for(var i=0;i<results.length;i++){
+        var r=results[i];
+        if(r.fields && r.fields.length) display=r;
+        if(typeof r.affectedRows==="number") totalAffected+=r.affectedRows;
+      }
+      if(display){
+        renderResult(display);
+        setMsg('<b>'+display.rows.length+'</b> row'+(display.rows.length===1?"":"s")+' · '+stmtCount+' statement'+(stmtCount===1?"":"s")+' · <b>'+fmtDuration(ms)+'</b><span class="grow"></span>PostgreSQL 18 · in your browser', false);
+      }else{
+        renderResult({fields:[],rows:[]});
+        setMsg('<b>'+totalAffected+'</b> row'+(totalAffected===1?"":"s")+' affected · '+stmtCount+' statement'+(stmtCount===1?"":"s")+' · <b>'+fmtDuration(ms)+'</b>', false);
+      }
+      pushHistory(sql);
+      await refreshSchema();
+    }catch(e){
+      var emsg=(e&&e.message)?e.message:String(e);
+      setMsg("Error: "+escapeHtml(emsg), true);
+      resultwrap.innerHTML='<div style="padding:18px;color:var(--bad);font-family:var(--mono);font-size:13px;white-space:pre-wrap;">'+escapeHtml(emsg)+'</div>';
+      csvBtn.disabled=jsonBtn.disabled=true;
+    }finally{
+      runBtn.disabled=false; setEngine("ready","PostgreSQL 18 · ready");
+    }
+  }
+
+  function download(filename, text, type){
+    var blob=new Blob([text],{type:type||"text/plain"});
+    var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename; a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); },1500);
+  }
+
+  // wire up controls
+  runBtn.addEventListener("click", runSQL);
+  sqlEl.addEventListener("keydown",function(e){
+    if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){ e.preventDefault(); runSQL(); }
+    if(e.key==="Tab"){ e.preventDefault(); var s=this.selectionStart,en=this.selectionEnd; this.value=this.value.slice(0,s)+"  "+this.value.slice(en); this.selectionStart=this.selectionEnd=s+2; }
+  });
+  csvBtn.addEventListener("click",function(){ if(lastResult&&lastResult.fields.length) download("query-result.csv", toCSV(lastResult.fields,lastResult.rows), "text/csv"); });
+  jsonBtn.addEventListener("click",function(){ if(lastResult&&lastResult.fields.length) download("query-result.json", toJSONText(lastResult.rows), "application/json"); });
+  shareBtn.addEventListener("click",function(){
+    var link=location.origin+location.pathname+encodeShare(sqlEl.value);
+    navigator.clipboard.writeText(link).then(function(){
+      var old=shareBtn.textContent; shareBtn.textContent="Link copied!"; setTimeout(function(){ shareBtn.textContent=old; },1500);
+    },function(){ banner.className="banner show"; banner.textContent="Share link: "+link; });
+  });
+  loadSampleBtn.addEventListener("click",async function(){
+    if(!db) return; sqlEl.value=SAMPLE_SQL;
+    await runSQL();
+    sqlEl.value=DEMO_QUERY; await runSQL();
+  });
+  resetBtn.addEventListener("click",async function(){
+    if(!db) return;
+    if(!confirm("This permanently deletes every table and row in your in-browser database. Continue?")) return;
+    setEngine("busy","Resetting…");
+    try{
+      var rows=(await db.query("SELECT tablename FROM pg_tables WHERE schemaname='public'")).rows;
+      for(var i=0;i<rows.length;i++){ await db.exec('DROP TABLE IF EXISTS "'+rows[i].tablename+'" CASCADE'); }
+      await refreshSchema(); renderResult({fields:[],rows:[]});
+      setMsg("Database reset. All public tables dropped.", false);
+    }catch(e){ setMsg("Reset error: "+escapeHtml(e.message||e), true); }
+    setEngine("ready","PostgreSQL 18 · ready");
+  });
+
+  async function boot(){
+    loadHistory(); renderHistory();
+    // capability check
+    if(typeof WebAssembly==="undefined"){
+      setEngine("err","WebAssembly unavailable");
+      setMsg("Your browser does not support WebAssembly, which this tool needs. Try a current version of Chrome, Edge, Firefox, or Safari.", true);
+      return;
+    }
+    var persistent=true;
+    if(typeof indexedDB==="undefined"){ persistent=false; }
+    try{
+      setEngine("busy","Booting Postgres…");
+      var mod=await import(PGLITE_URL);
+      var PGlite=mod.PGlite;
+      if(PGlite.create){ db = await PGlite.create(persistent?DB_NAME:undefined); }
+      else { db = new PGlite(persistent?DB_NAME:undefined); if(db.waitReady) await db.waitReady; }
+      var ver=(await db.query("SELECT version() AS v")).rows[0].v;
+      var m=/PostgreSQL\s+([0-9.]+)/.exec(ver); var verNum=m?m[1]:"18";
+      setEngine("ready","PostgreSQL "+verNum+" · ready");
+      window.__pgp={db:db,version:ver};
+
+      // share link?
+      var shared=decodeShare(location.hash);
+      var hasTables=(await db.query("SELECT count(*)::int AS n FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'")).rows[0].n>0;
+
+      if(shared){
+        sqlEl.value=shared;
+        banner.className="banner show";
+        banner.innerHTML="A query was shared with you. Review it below and press <b>Run</b> — it runs only on your own private in-browser database.";
+        setMsg("Ready. Loaded a shared query — review it and press Run.", false);
+        if(!persistent) banner.innerHTML+=" (Your browser has IndexedDB disabled, so this session will not be saved.)";
+      } else if(hasTables){
+        sqlEl.value=DEMO_QUERY;
+        await refreshSchema();
+        setMsg("Welcome back. Your database was restored from this browser. Press Run or write new SQL.", false);
+      } else {
+        // fresh, empty db: seed the sample so the magic is visible in 5 seconds
+        sqlEl.value=SAMPLE_SQL;
+        await runSQL();
+        sqlEl.value=DEMO_QUERY;
+        await runSQL();
+        if(!persistent){
+          banner.className="banner show";
+          banner.textContent="Heads up: IndexedDB is disabled in this browser, so your data will reset when you reload. Everything else works.";
+        }
+      }
+      runBtn.disabled=false; sqlEl.focus();
+    }catch(e){
+      setEngine("err","Failed to start");
+      setMsg("Could not start the Postgres engine: "+escapeHtml((e&&e.message)||String(e))+". Check your connection and reload.", true);
+      window.__pgpError=String((e&&e.stack)||e);
+    }
+  }
+  boot();
+})();
+</script>
+<!-- Monetization slots (left intentionally empty for now):
+     AdSense: paste the <script> + <ins class="adsbygoogle"> unit here once approved.
+     Polar.sh: paste a "Support this tool" checkout button here. -->
+<!-- Analytics: Cloudflare Web Analytics beacon -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
