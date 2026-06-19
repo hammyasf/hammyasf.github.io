@@ -370,7 +370,7 @@
     if(!window.__MP){ throw new Error("nomp"); }
     badge.classList.remove("live"); badgeTxt.textContent="Loading AI model…";
     var FilesetResolver=window.__MP.FilesetResolver, PoseLandmarker=window.__MP.PoseLandmarker;
-    var fileset=await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm");
+    var fileset=await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
     var delegate="GPU";
     try{
       landmarker=await PoseLandmarker.createFromOptions(fileset,{ baseOptions:{ modelAssetPath:"https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task", delegate:delegate }, runningMode:"VIDEO", numPoses:1 });
@@ -479,7 +479,7 @@
 <!-- ===== MediaPipe loader (ES module) ===== -->
 <script type="module">
   try{
-    const m = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/vision_bundle.mjs");
+    const m = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs");
     window.__MP = { FilesetResolver:m.FilesetResolver, PoseLandmarker:m.PoseLandmarker, DrawingUtils:m.DrawingUtils };
     if(window.__onMP) window.__onMP();
   }catch(e){ console.warn("MediaPipe failed to load", e); }
