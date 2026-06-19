@@ -293,10 +293,12 @@ if(typeof module!=="undefined" && module.exports){ module.exports={escapeHtml:es
   try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
     var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
 
+  // jsdelivr's bundle is first: esm.sh's web-llm build breaks at engine-create
+  // time ("dirname is not a function"), so we prefer the jsdelivr +esm bundle.
   var CDN_CANDIDATES=[
-    "https://esm.sh/@mlc-ai/web-llm@0.2.84",
     "https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.84/+esm",
-    "https://esm.run/@mlc-ai/web-llm@0.2.84"
+    "https://esm.run/@mlc-ai/web-llm@0.2.84",
+    "https://esm.sh/@mlc-ai/web-llm@0.2.84"
   ];
   var PREFERRED=[
     "SmolLM2-360M-Instruct-q4f16_1-MLC",
@@ -395,15 +397,36 @@ if(typeof module!=="undefined" && module.exports){ module.exports={escapeHtml:es
   }
 
   // ---- model loading ----
+  var cdnIdx=-1;
+  async function importFrom(idx){
+    var mod=await import(CDN_CANDIDATES[idx]);
+    if(mod && (mod.CreateWebWorkerMLCEngine || mod.CreateMLCEngine)){ webllm=mod; cdnUrl=CDN_CANDIDATES[idx]; cdnIdx=idx; return mod; }
+    throw new Error("module loaded but has no engine factory");
+  }
   async function ensureWebLLM(){
     if(webllm) return webllm;
     var lastErr=null;
     for(var i=0;i<CDN_CANDIDATES.length;i++){
-      try{ setStatus("busy","Loading the WebLLM engine…"); var mod=await import(CDN_CANDIDATES[i]);
-        if(mod && (mod.CreateWebWorkerMLCEngine || mod.CreateMLCEngine)){ webllm=mod; cdnUrl=CDN_CANDIDATES[i]; return webllm; }
-      }catch(e){ lastErr=e; }
+      try{ setStatus("busy","Loading the WebLLM engine…"); return await importFrom(i); }
+      catch(e){ lastErr=e; }
     }
     throw lastErr||new Error("Could not load the WebLLM engine from any CDN.");
+  }
+  async function createEngineWith(id){
+    if(webllm.CreateWebWorkerMLCEngine) return await webllm.CreateWebWorkerMLCEngine(makeWorker(), id, {initProgressCallback:progressCb});
+    return await webllm.CreateMLCEngine(id, {initProgressCallback:progressCb});
+  }
+  // some CDN bundles import fine but break at engine-create time (e.g. esm.sh's
+  // web-llm "dirname is not a function"). If that happens, fall through to the next CDN.
+  async function createEngineResilient(id){
+    var lastErr=null;
+    while(true){
+      try{ return await createEngineWith(id); }
+      catch(e){ lastErr=e;
+        if(cdnIdx+1 < CDN_CANDIDATES.length){ engine=null; webllm=null; await importFrom(cdnIdx+1); setStatus("busy","Retrying with a different source…"); continue; }
+        throw lastErr;
+      }
+    }
   }
 
   function makeWorker(){
@@ -431,11 +454,7 @@ if(typeof module!=="undefined" && module.exports){ module.exports={escapeHtml:es
       await ensureWebLLM();
       setStatus("busy","Preparing "+prettyName(id)+"…");
       if(!engine){
-        if(webllm.CreateWebWorkerMLCEngine){
-          engine=await webllm.CreateWebWorkerMLCEngine(makeWorker(), id, {initProgressCallback:progressCb});
-        } else {
-          engine=await webllm.CreateMLCEngine(id, {initProgressCallback:progressCb});
-        }
+        engine=await createEngineResilient(id);
       } else {
         await engine.reload(id);
       }
