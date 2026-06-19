@@ -521,6 +521,7 @@
   }
   function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 
+  function drawIdle(){ var dim=setupCanvas(), w=dim.w, h=dim.h; gridAndKeys(w,h,pitchRange([])); }
   function drawReview(notes){
     var dim=setupCanvas(), w=dim.w, h=dim.h;
     if(!notes||!notes.length){ var rng0=pitchRange([]); gridAndKeys(w,h,rng0);
@@ -554,7 +555,7 @@
     });
   });
 
-  clearBtn.addEventListener("click",function(){ resetCapture(); frames=[]; drawReview(null); hint.style.display="flex"; });
+  clearBtn.addEventListener("click",function(){ resetCapture(); frames=[]; drawIdle(); hint.style.display="flex"; });
 
   /* ----- demo (no microphone): synthesize a melody into the SAME analyser ----- */
   // Mary Had a Little Lamb (first phrases), midi notes:
@@ -587,8 +588,8 @@
   demoBtn.addEventListener("click",function(){ startDemo(); });
 
   // initial idle paint
-  drawReview(null); hint.style.display="flex";
-  window.addEventListener("resize",function(){ if(result) drawReview(exportNotes()); else if(!running) { drawReview(null); } });
+  drawIdle(); hint.style.display="flex";
+  window.addEventListener("resize",function(){ if(result) drawReview(exportNotes()); else if(!running) { drawIdle(); } });
 })();
 </script>
 <!-- Analytics: Cloudflare Web Analytics beacon. -->
