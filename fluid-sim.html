@@ -576,6 +576,8 @@ async function boot(){
   overlay.hidden = true; panel.hidden = false; hud.hidden = false; hint.hidden = false;
   // expose for verification
   window.__fluid = { get device(){return device;}, get W(){return W;}, get H(){return H;}, dyeBuf:function(){return dye[dyeState];}, velBuf:function(){return vel[velState];}, probe:probe };
+  window.__fluidStep = solverStep;   // run one full solver+render frame (for verification despite throttled rAF)
+  window.__fluidSplat = doSplat;     // (x,y,vx,vy,r,[r,g,b])
   window.__fluidBoot = true;
 
   startDemo();
@@ -645,31 +647,9 @@ function doSplat(x, y, vx, vy, r, col){
   device.queue.submit([enc.finish()]);
 }
 
-let lastT = performance.now(), fpsAcc = 0, fpsN = 0;
-function loop(now){
-  requestAnimationFrame(loop);
-  if(paused){ lastT = now; return; }
-  frameNo++;
-
-  // --- inputs: pointer drag and/or demo splats (each self-submits) ---
-  if(pointer.active){
-    const dx = pointer.x - pointer.px, dy = pointer.y - pointer.py;
-    const fScale = P.forceUI/10;
-    pointer.hue = (pointer.hue + 0.004) % 1;
-    const col = window.__fluidPure.hsv2rgb(pointer.hue, 0.9, 1.0).map(function(c){ return c * 1.6; });
-    doSplat(pointer.x, pointer.y, dx*fScale*6, dy*fScale*6, P.brush, col);
-    pointer.px = pointer.x; pointer.py = pointer.y;
-  }
-  if(now < demoUntil){
-    demoT += 0.03;
-    const cx = W*(0.5 + 0.32*Math.cos(demoT*0.9));
-    const cy = H*(0.5 + 0.32*Math.sin(demoT*1.3));
-    const ang = demoT*2.1;
-    const col = window.__fluidPure.hsv2rgb((demoT*0.13)%1, 0.9, 1.0).map(function(c){ return c*1.7; });
-    doSplat(cx, cy, Math.cos(ang)*W*0.05, Math.sin(ang)*H*0.05, P.brush*1.1, col);
-  }
-
-  // --- solver: all passes share one uniform write, one submit ---
+// One full incompressible-fluid step + render. Shared by the rAF loop and the
+// verification hook (window.__fluidStep), so automated tests drive the exact shipped pipeline.
+function solverStep(){
   const enc = device.createCommandEncoder();
   // 1. advect velocity (ping-pong)
   writeParams({ dt: 1.0 });
@@ -703,10 +683,37 @@ function loop(now){
     p.draw(3); p.end();
   }
   device.queue.submit([enc.finish()]);
-
   if(captureWanted){ captureWanted = false;
     canvas.toBlob(function(b){ if(!b) return; const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="fluid-"+Date.now()+".png"; a.click(); });
   }
+}
+
+let lastT = performance.now(), fpsAcc = 0, fpsN = 0;
+function loop(now){
+  requestAnimationFrame(loop);
+  if(paused){ lastT = now; return; }
+  frameNo++;
+
+  // --- inputs: pointer drag and/or demo splats (each self-submits) ---
+  if(pointer.active){
+    const dx = pointer.x - pointer.px, dy = pointer.y - pointer.py;
+    const fScale = P.forceUI/10;
+    pointer.hue = (pointer.hue + 0.004) % 1;
+    const col = window.__fluidPure.hsv2rgb(pointer.hue, 0.9, 1.0).map(function(c){ return c * 1.6; });
+    doSplat(pointer.x, pointer.y, dx*fScale*6, dy*fScale*6, P.brush, col);
+    pointer.px = pointer.x; pointer.py = pointer.y;
+  }
+  if(now < demoUntil){
+    demoT += 0.03;
+    const cx = W*(0.5 + 0.32*Math.cos(demoT*0.9));
+    const cy = H*(0.5 + 0.32*Math.sin(demoT*1.3));
+    const ang = demoT*2.1;
+    const col = window.__fluidPure.hsv2rgb((demoT*0.13)%1, 0.9, 1.0).map(function(c){ return c*1.7; });
+    doSplat(cx, cy, Math.cos(ang)*W*0.05, Math.sin(ang)*H*0.05, P.brush*1.1, col);
+  }
+
+  // --- solver + render ---
+  solverStep();
 
   // fps + adaptive quality
   const ddt = now - lastT; lastT = now; fpsAcc += ddt; fpsN++;
