@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ethereum Live — Watch the Blockchain Build Itself in Real Time</title>
+<meta name="description" content="A live, animated view of the Ethereum mainnet, running entirely in your browser. Watch every new block land and see its transactions decoded into swaps, transfers, NFT trades and contract calls in real time. No wallet, no sign-up." />
+<meta name="keywords" content="ethereum live, watch ethereum transactions live, ethereum block explorer live, real time ethereum, ethereum transaction visualizer, live blockchain, ethereum network activity, eth gas tracker live, blockchain visualizer, mempool visualizer" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Ethereum Live — Watch the Blockchain in Real Time" />
+<meta property="og:description" content="A live, animated view of Ethereum mainnet that runs entirely in your browser. Watch new blocks land and transactions decode into swaps, transfers and NFT trades." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/ethereum-live.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Ethereum Live — Watch the Blockchain in Real Time" />
+<meta name="twitter:description" content="A live, animated view of Ethereum mainnet, 100% in your browser. New blocks and decoded transactions, in real time." />
+<link rel="canonical" href="https://hammyasf.github.io/ethereum-live.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Ethereum Live","url":"https://hammyasf.github.io/ethereum-live.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A live, animated view of the Ethereum mainnet that runs entirely in your browser. Watch new blocks land and transactions decode into swaps, transfers, NFT trades and contract calls in real time.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this real Ethereum data?","acceptedAnswer":{"@type":"Answer","text":"Yes. Your browser talks directly to public Ethereum JSON-RPC nodes and pulls each new block as it is mined, roughly every 12 seconds. Nothing is simulated when a node is reachable."}},{"@type":"Question","name":"How does it know what each transaction is doing?","acceptedAnswer":{"@type":"Answer","text":"It reads the first four bytes of each transaction's calldata, the function selector, and matches it against known signatures like an ERC-20 transfer, a Uniswap swap, an approval or an NFT trade. Contracts with no recipient are deploys, and value-only transactions with empty calldata are plain ETH transfers."}},{"@type":"Question","name":"Do I need a wallet or a sign-up?","acceptedAnswer":{"@type":"Answer","text":"No. There is no wallet connection, no account and no tracking of you. It only reads public chain data, the same data any block explorer shows."}},{"@type":"Question","name":"Why does it sometimes say demo mode?","acceptedAnswer":{"@type":"Answer","text":"Free public RPC nodes occasionally rate-limit or go down. If every node is unreachable, the page falls back to a built-in sample block so you can still see how it works, and it keeps retrying the live network in the background."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);
+    --c-eth:#36e0c8;--c-erc20:#4aa8ff;--c-swap:#b07cff;--c-nft:#ff5fa2;--c-approve:#ffb13d;--c-deploy:#7CFF6B;--c-call:#8aa0a8;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:30px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  .stage{margin:22px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .statusbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12.5px;}
+  .conn{display:inline-flex;align-items:center;gap:8px;color:var(--muted);}
+  .conn .led{width:9px;height:9px;border-radius:50%;background:var(--faint);box-shadow:0 0 0 0 rgba(var(--accentRGB),.5);}
+  .conn.live .led{background:var(--accent);animation:pulse 2s infinite;}
+  .conn.demo .led{background:var(--c-approve);}
+  .conn.err .led{background:#ff5f56;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(var(--accentRGB),.55);}70%{box-shadow:0 0 0 7px rgba(var(--accentRGB),0);}100%{box-shadow:0 0 0 0 rgba(var(--accentRGB),0);}}
+  .statusbar .spacer{flex:1;}
+  .sbtn{font-family:var(--mono);font-size:12.5px;color:var(--ink);background:transparent;border:1px solid var(--line-2);border-radius:8px;padding:7px 12px;cursor:pointer;transition:.15s;}
+  .sbtn:hover{border-color:var(--accent);color:var(--accent);}
+
+  .rail{display:flex;gap:10px;padding:14px 18px 4px;overflow-x:auto;scrollbar-width:thin;}
+  .blk{flex:0 0 auto;min-width:118px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(var(--surfaceRGB),.5);transition:border-color .25s,transform .25s var(--ease);}
+  .blk.new{animation:slideIn .45s var(--ease);}
+  @keyframes slideIn{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:none;}}
+  .blk .bn{font-family:var(--mono);font-size:13px;color:var(--accent);}
+  .blk .bm{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:5px;line-height:1.5;}
+  .blk .gbar{height:4px;border-radius:3px;background:rgba(237,242,239,.1);margin-top:7px;overflow:hidden;}
+  .blk .gbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(116px,1fr));gap:1px;background:var(--line);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:12px;}
+  .stat{background:var(--bg-2);padding:13px 16px;}
+  .stat .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:21px;margin-top:4px;letter-spacing:-.01em;}
+  .stat .v small{font-size:12px;color:var(--muted);font-family:var(--mono);font-weight:400;}
+
+  .canvas-wrap{position:relative;}
+  #c{display:block;width:100%;height:420px;}
+  @media(max-width:560px){#c{height:340px;}}
+  .legend{position:absolute;left:14px;top:12px;display:flex;flex-wrap:wrap;gap:7px 12px;max-width:72%;pointer-events:none;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--muted);}
+  .legend span i{width:9px;height:9px;border-radius:50%;}
+  .hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:11px;color:var(--faint);pointer-events:none;}
+  .card{position:absolute;right:14px;top:14px;width:min(330px,82%);background:rgba(7,16,14,.94);border:1px solid var(--line-2);border-radius:14px;padding:15px 16px;backdrop-filter:blur(8px);display:none;z-index:6;box-shadow:0 20px 50px rgba(0,0,0,.5);}
+  .card.on{display:block;}
+  .card .ct{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;}
+  .card .cv{font-family:var(--display);font-weight:600;font-size:22px;margin:5px 0 10px;}
+  .card .row{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:11.5px;padding:5px 0;border-top:1px solid var(--line);}
+  .card .row .k{color:var(--faint);}.card .row .val{color:var(--ink);text-align:right;word-break:break-all;}
+  .card a.es{display:inline-block;margin-top:11px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:7px 12px;border-radius:8px;}
+  .card .x{position:absolute;right:11px;top:9px;cursor:pointer;color:var(--faint);font-family:var(--mono);font-size:15px;}
+
+  .feed{max-height:230px;overflow:auto;border-top:1px solid var(--line);}
+  .feed .fh{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:12px 18px 6px;position:sticky;top:0;background:var(--bg-2);}
+  .frow{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:9px 18px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;cursor:pointer;transition:background .15s;}
+  .frow:hover{background:rgba(var(--accentRGB),.05);}
+  .frow .dot{width:9px;height:9px;border-radius:50%;}
+  .frow .desc{color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .frow .desc b{color:var(--muted);font-weight:400;}
+  .frow .amt{color:var(--accent);white-space:nowrap;}
+  .frow.flash{animation:flash .8s var(--ease);}
+  @keyframes flash{from{background:rgba(var(--accentRGB),.16);}to{background:transparent;}}
+
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · live on-chain · runs in your browser</div>
+    <h1>Ethereum, live.</h1>
+    <p class="sub">Watch the Ethereum mainnet build itself in real time. Every new block lands here within seconds of being mined, and each transaction is decoded straight from its calldata into a swap, a transfer, an NFT trade or a contract call. No wallet, no sign-up.</p>
+    <span class="priv">&#9889; Reads public chain data directly from your browser &mdash; nothing about you is sent anywhere</span>
+  </header>
+
+  <div class="stage">
+    <div class="statusbar">
+      <span class="conn" id="conn"><span class="led"></span><span id="connTxt">Connecting to Ethereum&hellip;</span></span>
+      <span class="spacer"></span>
+      <button class="sbtn" id="pause">Pause</button>
+      <a class="sbtn" id="esLink" href="https://etherscan.io" target="_blank" rel="noopener">Latest block on Etherscan &rarr;</a>
+    </div>
+
+    <div class="rail" id="rail" aria-label="Recent blocks"></div>
+
+    <div class="stats" id="stats">
+      <div class="stat"><div class="l">Latest block</div><div class="v" id="s-block">&mdash;</div></div>
+      <div class="stat"><div class="l">Transactions</div><div class="v" id="s-tx">&mdash;</div></div>
+      <div class="stat"><div class="l">ETH moved</div><div class="v" id="s-eth">&mdash;</div></div>
+      <div class="stat"><div class="l">Gas used</div><div class="v" id="s-gas">&mdash;</div></div>
+      <div class="stat"><div class="l">Base fee</div><div class="v" id="s-fee">&mdash;</div></div>
+      <div class="stat"><div class="l">New block in</div><div class="v" id="s-next">&mdash;</div></div>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="c"></canvas>
+      <div class="legend" id="legend"></div>
+      <div class="hint">each bubble is a transaction &middot; size = ETH moved &middot; click one</div>
+      <div class="card" id="card">
+        <span class="x" id="cardX">&times;</span>
+        <div class="ct" id="cardCat"></div>
+        <div class="cv" id="cardVal"></div>
+        <div class="row"><span class="k">Hash</span><span class="val" id="cardHash"></span></div>
+        <div class="row"><span class="k">From</span><span class="val" id="cardFrom"></span></div>
+        <div class="row"><span class="k">To</span><span class="val" id="cardTo"></span></div>
+        <div class="row"><span class="k">Gas limit</span><span class="val" id="cardGas"></span></div>
+        <a class="es" id="cardEs" href="#" target="_blank" rel="noopener">Open on Etherscan &rarr;</a>
+      </div>
+    </div>
+
+    <div class="feed" id="feed">
+      <div class="fh">Live transaction feed</div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Your browser opens a direct connection to public Ethereum JSON-RPC nodes and asks for the newest block, then keeps polling for the next one. A block arrives roughly every twelve seconds, carrying a few hundred transactions. The page pulls each block with its full transaction list, renders the transactions as rising bubbles sized by the amount of ETH they move, and streams the notable ones into the live feed. All of this happens on your machine. There is no backend, no database and no account, the same public data a block explorer shows, just animated as it happens.</p>
+    <h2>How a transaction is decoded</h2>
+    <p>Ethereum transactions do not come with a friendly label, so the type is inferred from the raw bytes. A transaction with no recipient is a contract deployment. A transaction with a value but empty calldata is a plain ETH transfer. Everything else is a contract call, and the first four bytes of the calldata are the function selector that says which function is being run. Matching that selector against well-known signatures reveals ERC-20 transfers and approvals, Uniswap and aggregator swaps, and NFT trades on marketplaces like Seaport. It is the same trick a block explorer uses, done live in a few lines of JavaScript.</p>
+    <h2>Why build it in the browser</h2>
+    <p>Most dashboards that look like this run a server that talks to a node and pushes data to you. This one cuts out the middle. Because the decoding and the rendering both run client-side, it costs nothing to host, it cannot leak anything about you, and it is a small proof that the modern web platform can do a lot more than people expect. If a free node rate-limits or drops, it rotates to another, and if every node is unreachable it shows a built-in sample block so the page is never blank.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is this real Ethereum data?</summary><p>Yes. Your browser talks straight to public Ethereum nodes and pulls each new block as it is mined, about every twelve seconds. Nothing is simulated while a node is reachable. If it ever shows demo mode, that means every free node was temporarily unreachable and it is replaying a sample block while it retries.</p></details>
+    <details><summary>How does it know what each transaction does?</summary><p>It reads the first four bytes of the transaction's calldata, the function selector, and matches it against known signatures such as an ERC-20 transfer, a Uniswap swap, an approval, or an NFT trade. Transactions with no recipient are contract deploys, and value-only transactions with empty data are plain ETH transfers.</p></details>
+    <details><summary>Do I need a wallet?</summary><p>No. There is no wallet connection and nothing to sign. It only reads public chain data, so there is no risk to any account of yours.</p></details>
+    <details><summary>Does it work on mobile?</summary><p>Yes. It is just fetch and canvas, so it runs on phones and in every modern browser. On a slow network the feed simply updates a little less often.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build things like this for a living.</h3>
+    <p>Senior full-stack and Web3 engineer, available for senior or contract work, fully remote. I have shipped on-chain frontends, indexers and DeFi tooling. See the rest of the <a href="lab.html">lab</a>, read about <a href="web3.html">my Web3 work</a>, or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // ---- match the portfolio's saved theme (instant, before enhance.js loads) ----
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  // ================= transaction decoding =================
+  // First 4 bytes of calldata = function selector. Map well-known ones to a category.
+  var SELECTORS={
+    "0xa9059cbb":"erc20",   // transfer(address,uint256)
+    "0x23b872dd":"erc20",   // transferFrom(address,address,uint256)
+    "0x095ea7b3":"approve", // approve(address,uint256)
+    "0xd505accf":"approve", // permit
+    // Uniswap V2 router swaps
+    "0x38ed1739":"swap","0x7ff36ab5":"swap","0x18cbafe5":"swap","0x8803dbee":"swap",
+    "0xfb3bdb41":"swap","0x5c11d795":"swap","0x791ac947":"swap","0xb6f9de95":"swap","0x4a25d94a":"swap",
+    // Uniswap V3 / Universal router / aggregators
+    "0x3593564c":"swap", // universal router execute
+    "0xac9650d8":"swap", // multicall (commonly V3 swaps)
+    "0x5ae401dc":"swap", // multicall(uint256,bytes[])
+    "0x04e45aaf":"swap","0x414bf389":"swap","0xc04b8d59":"swap","0xb858183f":"swap",
+    "0x12aa3caf":"swap","0x415565b0":"swap","0xe449022e":"swap","0x0502b1c5":"swap", // 1inch
+    "0x7c025200":"swap","0xd9627aa4":"swap", // 0x / paraswap-ish
+    // NFT transfers + marketplace fills
+    "0x42842e0e":"nft","0xb88d4fde":"nft","0xf242432a":"nft","0x2eb2c2d6":"nft",
+    "0xfb0f3ee1":"nft","0xb3a34c4c":"nft","0xe7acab24":"nft","0x00000000":"nft", // seaport variants
+    "0xa22cb465":"nft" // setApprovalForAll
+  };
+  var CATS={
+    eth:{label:"ETH transfer",color:"#36e0c8"},
+    erc20:{label:"Token transfer",color:"#4aa8ff"},
+    swap:{label:"DEX swap",color:"#b07cff"},
+    nft:{label:"NFT activity",color:"#ff5fa2"},
+    approve:{label:"Approval",color:"#ffb13d"},
+    deploy:{label:"Contract deploy",color:"#7CFF6B"},
+    call:{label:"Contract call",color:"#8aa0a8"}
+  };
+  function toBig(hex){ try{ return BigInt(hex||"0x0"); }catch(e){ return 0n; } }
+  function categorize(tx){
+    if(tx.to===null||tx.to===undefined||tx.to==="") return "deploy";
+    var input=tx.input||"0x";
+    if(input.length<=2){ return toBig(tx.value)>0n ? "eth" : "call"; }
+    var sel=input.slice(0,10).toLowerCase();
+    if(SELECTORS[sel]) return SELECTORS[sel];
+    return "call";
+  }
+  function ethValue(tx){ return Number(toBig(tx.value))/1e18; }
+  function fmtEth(v){
+    if(v===0) return "0";
+    if(v<0.0001) return v.toExponential(1);
+    if(v<1) return v.toFixed(4).replace(/0+$/,"").replace(/\.$/,"");
+    if(v<1000) return v.toFixed(3).replace(/0+$/,"").replace(/\.$/,"");
+    return Math.round(v).toLocaleString();
+  }
+  function shortHex(h,a,b){ if(!h) return "—"; a=a||6; b=b||4; return h.length>a+b+2 ? h.slice(0,a)+"…"+h.slice(-b) : h; }
+  function hexNum(h){ return Number(toBig(h)); }
+
+  // Expose pure helpers for unit testing in Node.
+  if(typeof module!=="undefined"&&module.exports){ module.exports={categorize:categorize,ethValue:ethValue,fmtEth:fmtEth,toBig:toBig,SELECTORS:SELECTORS,hexNum:hexNum}; return; }
+
+  // ================= RPC layer =================
+  // Public, CORS-enabled, no-key mainnet nodes (verified reachable from the browser).
+  var ENDPOINTS=[
+    "https://ethereum-rpc.publicnode.com",
+    "https://eth.drpc.org",
+    "https://1rpc.io/eth"
+  ];
+  var rpcUrl=null, rid=1;
+  function rpc(url,method,params,timeoutMs){
+    timeoutMs=timeoutMs||9000;
+    var ctrl=new AbortController(); var to=setTimeout(function(){ctrl.abort();},timeoutMs);
+    return fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({jsonrpc:"2.0",id:rid++,method:method,params:params||[]}),signal:ctrl.signal})
+      .then(function(r){ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+      .then(function(j){ if(j.error) throw new Error(j.error.message||"rpc error"); return j.result; })
+      .finally(function(){ clearTimeout(to); });
+  }
+  // Race all endpoints, keep the first that answers eth_blockNumber.
+  function pickEndpoint(){
+    return new Promise(function(resolve,reject){
+      var settled=false, fails=0;
+      ENDPOINTS.forEach(function(u){
+        rpc(u,"eth_blockNumber",[],7000).then(function(res){
+          if(settled) return; settled=true; rpcUrl=u; resolve({url:u,block:res});
+        }).catch(function(){ fails++; if(fails===ENDPOINTS.length && !settled){ settled=true; reject(new Error("all endpoints failed")); } });
+      });
+    });
+  }
+  function nextEndpoint(){ // rotate to another endpoint on failure
+    var i=ENDPOINTS.indexOf(rpcUrl); rpcUrl=ENDPOINTS[(i+1)%ENDPOINTS.length]; return rpcUrl;
+  }
+
+  // ================= DOM =================
+  var conn=document.getElementById("conn"),connTxt=document.getElementById("connTxt"),
+      rail=document.getElementById("rail"),feed=document.getElementById("feed"),
+      esLink=document.getElementById("esLink"),pauseBtn=document.getElementById("pause"),
+      sBlock=document.getElementById("s-block"),sTx=document.getElementById("s-tx"),sEth=document.getElementById("s-eth"),
+      sGas=document.getElementById("s-gas"),sFee=document.getElementById("s-fee"),sNext=document.getElementById("s-next"),
+      card=document.getElementById("card");
+  function setConn(state,txt){ conn.className="conn "+state; connTxt.innerHTML=txt; }
+
+  // legend
+  (function(){ var L=document.getElementById("legend"),h="";
+    Object.keys(CATS).forEach(function(k){ h+='<span><i style="background:'+CATS[k].color+'"></i>'+CATS[k].label+'</span>'; });
+    L.innerHTML=h; })();
+
+  // ================= canvas particles =================
+  var cv=document.getElementById("c"),ctx=cv.getContext("2d"),dpr=Math.min(window.devicePixelRatio||1,2);
+  var W=0,H=0,bubbles=[],paused=false,hovered=null,pinned=null;
+  function resize(){ var r=cv.getBoundingClientRect(); W=r.width; H=r.height; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0); }
+  window.addEventListener("resize",resize); resize();
+
+  function radiusFor(eth){ // log scale, min visible size
+    var r=5+9*Math.log10(1+eth*120); return Math.max(5,Math.min(46,r));
+  }
+  function spawnBlock(block){
+    var txs=block.transactions||[];
+    // cap rendered bubbles per block so a 300-tx block stays readable; keep the biggest-value ones + a sample
+    var prepared=txs.map(function(tx){ return {tx:tx,cat:categorize(tx),eth:ethValue(tx)}; });
+    prepared.sort(function(a,b){ return b.eth-a.eth; });
+    var top=prepared.slice(0,40); // always show the biggest movers
+    var rest=prepared.slice(40);
+    var sampleN=Math.min(rest.length,110);
+    for(var i=rest.length-1;i>0&&sampleN<rest.length;i--){ var j=Math.floor(Math.random()*(i+1)); var t=rest[i];rest[i]=rest[j];rest[j]=t; } // shuffle tail
+    var chosen=top.concat(rest.slice(0,sampleN));
+    chosen.forEach(function(p,idx){
+      var c=CATS[p.cat];
+      bubbles.push({
+        x:Math.random()*W,
+        y:H+10+Math.random()*40,
+        vx:(Math.random()-0.5)*8,
+        vy:-(16+Math.random()*22),
+        r:radiusFor(p.eth),
+        color:c.color, cat:p.cat, eth:p.eth, tx:p.tx,
+        born:performance.now()+idx*4, life:9000+Math.random()*4000, alpha:0
+      });
+    });
+    if(bubbles.length>620) bubbles.splice(0,bubbles.length-620);
+  }
+
+  var last=performance.now();
+  function frame(now){
+    var dt=Math.min(0.05,(now-last)/1000); last=now;
+    ctx.clearRect(0,0,W,H);
+    // faint baseline glow
+    var grd=ctx.createLinearGradient(0,H,0,H-60); grd.addColorStop(0,"rgba(255,255,255,0.04)"); grd.addColorStop(1,"rgba(255,255,255,0)");
+    ctx.fillStyle=grd; ctx.fillRect(0,H-60,W,60);
+    for(var i=bubbles.length-1;i>=0;i--){
+      var b=bubbles[i]; var age=now-b.born;
+      if(age<0){ continue; }
+      if(!paused){
+        b.x+=b.vx*dt; b.y+=b.vy*dt; b.vy+=6*dt; // slight gravity slows the rise
+        b.vx*=0.99;
+        if(b.x<b.r){b.x=b.r;b.vx=Math.abs(b.vx);} if(b.x>W-b.r){b.x=W-b.r;b.vx=-Math.abs(b.vx);}
+      }
+      b.alpha=Math.min(1,b.alpha+dt*3);
+      var fade=age>b.life-1400 ? Math.max(0,(b.life-age)/1400) : 1;
+      var a=b.alpha*fade;
+      if(age>b.life || b.y<-b.r-20){ bubbles.splice(i,1); continue; }
+      var isHi=(b===hovered||b===pinned);
+      ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+      ctx.globalAlpha=a*(isHi?1:0.82);
+      ctx.fillStyle=b.color; ctx.shadowColor=b.color; ctx.shadowBlur=isHi?22:10; ctx.fill();
+      ctx.shadowBlur=0;
+      if(isHi){ ctx.globalAlpha=a; ctx.lineWidth=2; ctx.strokeStyle="#fff"; ctx.stroke(); }
+      if(b.r>20 && b.eth>=0.05){ ctx.globalAlpha=a; ctx.fillStyle="#06110d"; ctx.font="600 11px "+ "ui-monospace,monospace"; ctx.textAlign="center"; ctx.fillText(fmtEth(b.eth),b.x,b.y+4); }
+    }
+    ctx.globalAlpha=1;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // hover / click
+  function hit(mx,my){ var best=null; for(var i=bubbles.length-1;i>=0;i--){ var b=bubbles[i]; var dx=mx-b.x,dy=my-b.y; if(dx*dx+dy*dy<=b.r*b.r){ best=b; break; } } return best; }
+  cv.addEventListener("mousemove",function(e){ var r=cv.getBoundingClientRect(); hovered=hit(e.clientX-r.left,e.clientY-r.top); cv.style.cursor=hovered?"pointer":"default"; });
+  cv.addEventListener("mouseleave",function(){ hovered=null; });
+  cv.addEventListener("click",function(e){ var r=cv.getBoundingClientRect(); var b=hit(e.clientX-r.left,e.clientY-r.top); if(b){ pinned=b; showCard(b); } });
+  document.getElementById("cardX").addEventListener("click",function(){ card.classList.remove("on"); pinned=null; });
+  function showCard(b){
+    var c=CATS[b.cat]; var h=b.tx.hash;
+    document.getElementById("cardCat").textContent=c.label; document.getElementById("cardCat").style.color=c.color;
+    document.getElementById("cardVal").textContent=(b.eth>0?fmtEth(b.eth)+" ETH":"no ETH moved");
+    document.getElementById("cardHash").textContent=shortHex(h,10,8);
+    document.getElementById("cardFrom").textContent=shortHex(b.tx.from,8,6);
+    document.getElementById("cardTo").textContent=b.tx.to?shortHex(b.tx.to,8,6):"(contract creation)";
+    document.getElementById("cardGas").textContent=hexNum(b.tx.gas).toLocaleString();
+    document.getElementById("cardEs").href="https://etherscan.io/tx/"+h;
+    card.classList.add("on");
+  }
+
+  // ================= feed + rail + stats =================
+  function pushFeed(items){
+    items.forEach(function(p){
+      var c=CATS[p.cat];
+      var who=p.cat==="deploy"?"deploys a contract":(p.tx.to?("&rarr; "+shortHex(p.tx.to,6,4)):"");
+      var row=document.createElement("div"); row.className="frow flash";
+      row.innerHTML='<span class="dot" style="background:'+c.color+'"></span><span class="desc"><b>'+c.label+'</b> '+who+'</span><span class="amt">'+(p.eth>0?fmtEth(p.eth)+" ETH":"")+'</span>';
+      row.addEventListener("click",function(){ window.open("https://etherscan.io/tx/"+p.tx.hash,"_blank","noopener"); });
+      var fh=feed.querySelector(".fh"); feed.insertBefore(row,fh.nextSibling);
+      while(feed.querySelectorAll(".frow").length>40){ feed.removeChild(feed.lastChild); }
+    });
+  }
+  var railBlocks=[];
+  function pushRail(block){
+    var n=hexNum(block.number), txn=(block.transactions||[]).length, gp=Math.round(hexNum(block.gasUsed)/Math.max(1,hexNum(block.gasLimit))*100);
+    var el=document.createElement("div"); el.className="blk new";
+    el.innerHTML='<div class="bn">#'+n.toLocaleString()+'</div><div class="bm">'+txn+' txns<br>'+gp+'% full</div><div class="gbar"><i style="width:'+gp+'%"></i></div>';
+    rail.insertBefore(el,rail.firstChild); railBlocks.push(el);
+    while(railBlocks.length>9){ var old=railBlocks.shift(); if(old&&old.parentNode) old.parentNode.removeChild(old); }
+  }
+  function updateStats(block){
+    var txs=block.transactions||[]; var moved=0; for(var i=0;i<txs.length;i++) moved+=ethValue(txs[i]);
+    sBlock.textContent="#"+hexNum(block.number).toLocaleString();
+    sTx.textContent=txs.length.toLocaleString();
+    sEth.innerHTML=fmtEth(moved)+' <small>ETH</small>';
+    sGas.innerHTML=Math.round(hexNum(block.gasUsed)/Math.max(1,hexNum(block.gasLimit))*100)+'<small>%</small>';
+    sFee.innerHTML=(hexNum(block.baseFeePerGas)/1e9).toFixed(2)+' <small>gwei</small>';
+    esLink.href="https://etherscan.io/block/"+hexNum(block.number);
+  }
+
+  function handleBlock(block,isDemo){
+    updateStats(block); pushRail(block); spawnBlock(block);
+    // feed: the most interesting txs (biggest ETH, plus a swap/nft if present)
+    var prepared=(block.transactions||[]).map(function(tx){ return {tx:tx,cat:categorize(tx),eth:ethValue(tx)}; });
+    var interesting=prepared.filter(function(p){ return p.eth>0||p.cat==="swap"||p.cat==="nft"||p.cat==="deploy"; });
+    interesting.sort(function(a,b){ return b.eth-a.eth; });
+    pushFeed(interesting.slice(0,6).reverse());
+    lastBlockNum=hexNum(block.number); lastBlockAt=performance.now();
+  }
+
+  // ================= main loop =================
+  var lastBlockNum=0,lastBlockAt=0,demoMode=false,demoTimer=null;
+  function pollOnce(){
+    if(paused) return Promise.resolve();
+    return rpc(rpcUrl,"eth_blockNumber",[],8000).then(function(bn){
+      var n=hexNum(bn);
+      if(n>lastBlockNum){
+        return rpc(rpcUrl,"eth_getBlockByNumber",[bn,true],10000).then(function(block){ if(block) handleBlock(block,false); setConn("live","Live &middot; "+rpcHost()); });
+      }
+    });
+  }
+  function rpcHost(){ try{ return new URL(rpcUrl).host.replace(/^www\./,""); }catch(e){ return "node"; } }
+
+  function loopLive(){
+    pollOnce().then(function(){ if(!demoMode) scheduleNext(2600); })
+      .catch(function(){ // try rotating once, then fall to demo if everything is dead
+        var prev=rpcUrl; nextEndpoint(); setConn("err","Reconnecting&hellip;");
+        rpc(rpcUrl,"eth_blockNumber",[],7000).then(function(){ scheduleNext(1500); })
+          .catch(function(){ startDemo(); });
+      });
+  }
+  var nextTimer=null;
+  function scheduleNext(ms){ clearTimeout(nextTimer); nextTimer=setTimeout(loopLive,ms); }
+
+  function start(){
+    setConn("","Connecting to Ethereum&hellip;");
+    pickEndpoint().then(function(){
+      setConn("live","Live &middot; "+rpcHost());
+      // immediately render the current latest block for an instant first paint
+      return rpc(rpcUrl,"eth_getBlockByNumber",["latest",true],10000).then(function(block){ if(block){ handleBlock(block,false); } scheduleNext(2600); });
+    }).catch(function(){ startDemo(); });
+  }
+
+  // ---- demo fallback: keeps the page alive if every public node is down ----
+  function randHex(len){ var s="0x",c="0123456789abcdef"; for(var i=0;i<len;i++) s+=c[Math.floor(Math.random()*16)]; return s; }
+  function demoTx(cat){
+    var sel={erc20:"0xa9059cbb",swap:"0x38ed1739",nft:"0x42842e0e",approve:"0x095ea7b3",call:"0x"+randHex(8).slice(2)}[cat]||"0x";
+    var val=cat==="eth"?Math.random()*Math.random()*30:(cat==="swap"?Math.random()*Math.random()*8:0);
+    var input=cat==="eth"?"0x":(cat==="deploy"?"0x60806040"+randHex(40).slice(2):sel+randHex(120).slice(2));
+    return {hash:randHex(64),from:randHex(40),to:cat==="deploy"?null:randHex(40),value:"0x"+Math.floor(val*1e18).toString(16),input:input,gas:"0x"+(21000+Math.floor(Math.random()*180000)).toString(16)};
+  }
+  function demoBlock(num){
+    var cats=["eth","eth","erc20","erc20","erc20","swap","swap","nft","approve","call","call","call","deploy"];
+    var txs=[]; var count=90+Math.floor(Math.random()*80);
+    for(var i=0;i<count;i++){ txs.push(demoTx(cats[Math.floor(Math.random()*cats.length)])); }
+    var gasUsed=Math.floor((0.4+Math.random()*0.55)*30000000);
+    return {number:"0x"+num.toString(16),transactions:txs,gasUsed:"0x"+gasUsed.toString(16),gasLimit:"0x"+(30000000).toString(16),baseFeePerGas:"0x"+Math.floor((2+Math.random()*40)*1e9).toString(16)};
+  }
+  function startDemo(){
+    if(demoMode) return; demoMode=true;
+    setConn("demo","Demo mode &middot; live nodes unreachable, showing sample blocks");
+    var base=22500000+Math.floor(Math.random()*100000);
+    function tick(){ base++; handleBlock(demoBlock(base),true); demoTimer=setTimeout(tick,12000); }
+    tick();
+    // keep trying to recover the real network in the background
+    var retry=setInterval(function(){ pickEndpoint().then(function(){ clearInterval(retry); if(demoTimer)clearTimeout(demoTimer); demoMode=false; setConn("live","Live &middot; "+rpcHost()); scheduleNext(800); }).catch(function(){}); },30000);
+  }
+
+  // countdown to next expected block
+  setInterval(function(){
+    if(!lastBlockAt){ return; }
+    var since=(performance.now()-lastBlockAt)/1000; var left=Math.max(0,12-since);
+    sNext.innerHTML=(left>0?left.toFixed(0):"0")+' <small>s</small>';
+  },250);
+
+  pauseBtn.addEventListener("click",function(){ paused=!paused; pauseBtn.textContent=paused?"Resume":"Pause"; if(!paused&&!demoMode) scheduleNext(200); });
+
+  start();
+})();
+</script>
+<script src="enhance.js" defer></script>
+</body>
+</html>
