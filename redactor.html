@@ -434,21 +434,37 @@
     nerJob++;
     worker.postMessage({type:"ner",job:nerJob,chunks:chunkText(text)});
   }
-  // group B-/I- token tags into entity spans using char offsets
+  // Group B-/I- WordPiece tokens into entities, reconstruct their surface text,
+  // then locate every occurrence in the input. transformers.js token-classification
+  // returns {entity, score, index, word} with no char offsets, so we rebuild the
+  // string from "##" subword pieces and match it (word-boundary safe).
   function groupEntities(raw){
     var map={PER:"name",ORG:"org",LOC:"location"};
-    var out=[], cur=null;
-    function flush(){ if(cur && map[cur.t]){ out.push({type:map[cur.t],start:cur.s,end:cur.e}); } cur=null; }
+    var groups=[], cur=null;
+    function flush(){ if(cur && map[cur.t] && cur.pieces.length){ groups.push({type:map[cur.t],pieces:cur.pieces.slice()}); } cur=null; }
     raw.forEach(function(o){
-      var ent=o.entity||""; var tag=ent.replace(/^[BI]-/,""); var isB=ent.charAt(0)==="B"; var isI=ent.charAt(0)==="I";
-      var s=(typeof o.start==="number"?o.start:null), e=(typeof o.end==="number"?o.end:null);
-      if(s===null||e===null){ return; } // need char offsets to redact safely
-      s+=o._off; e+=o._off;
-      if(isB || !cur || cur.t!==tag || s>cur.e+1){ flush(); cur={t:tag,s:s,e:e}; }
-      else { cur.e=e; }
+      var ent=o.entity||""; var tag=ent.replace(/^[BI]-/,""); var pre=ent.charAt(0); var w=o.word||"";
+      var sub=w.indexOf("##")===0;
+      if(pre==="I" && cur && cur.t===tag){
+        if(sub) cur.pieces[cur.pieces.length-1]+=w.slice(2); else cur.pieces.push(w);
+      } else {
+        flush(); cur={t:tag,pieces:[ sub? w.slice(2): w ]};
+      }
     });
     flush();
-    return out;
+    var text=input.value, spans=[], seen={};
+    groups.forEach(function(g){
+      var key=g.type+"|"+g.pieces.join(" ").toLowerCase();
+      if(seen[key]) return; seen[key]=true; // build regex once per distinct entity
+      var pat=g.pieces.map(function(p){ return p.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); }).join("\\s*");
+      if(!pat) return;
+      var re;
+      try{ re=new RegExp("(?<![A-Za-z0-9])"+pat+"(?![A-Za-z0-9])","g"); }
+      catch(e){ try{ re=new RegExp("\\b"+pat+"\\b","g"); }catch(e2){ return; } }
+      var m, guard=0;
+      while((m=re.exec(text))!==null && guard<5000){ guard++; if(m.index===re.lastIndex){ re.lastIndex++; continue; } spans.push({type:g.type,start:m.index,end:m.index+m[0].length}); }
+    });
+    return spans;
   }
 
   // ---------- wiring ----------
