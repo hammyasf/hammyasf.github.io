@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Face Avatar — control a live cartoon avatar with your face, in your browser</title>
+<meta name="description" content="Turn your webcam into a live cartoon avatar. A real face-tracking model runs entirely in your browser, so your camera never leaves your device. Blink, smile, talk, and the avatar mirrors you in real time. Record a clip, no sign-up, no upload." />
+<meta name="keywords" content="face avatar, webcam avatar, control avatar with your face, browser vtuber, live face puppet, face tracking avatar, animoji on pc, memoji on web, facerig free, face mocap browser, virtual avatar webcam, no download avatar" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Face Avatar — control a live cartoon avatar with your face" />
+<meta property="og:description" content="A real face-tracking model runs entirely in your browser. Blink, smile, talk, and your avatar mirrors you. Nothing uploaded, no sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/face-avatar.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Face Avatar — control a live cartoon avatar with your face" />
+<meta name="twitter:description" content="A real face-tracking model runs in your browser. Your avatar mirrors your every expression. Nothing uploaded." />
+<link rel="canonical" href="https://hammyasf.github.io/face-avatar.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Face Avatar","url":"https://hammyasf.github.io/face-avatar.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Control a live cartoon avatar with your face. A real face-tracking model runs entirely in your browser; nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my camera or video uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The face-tracking model runs entirely in your browser using MediaPipe and WebAssembly/WebGPU. Your camera feed never leaves your device, and nothing is recorded unless you press record yourself."}},{"@type":"Question","name":"How does a face-tracking model run in a web page?","acceptedAnswer":{"@type":"Answer","text":"It downloads a small (about 3.7 MB) MediaPipe Face Landmarker model once, then runs it on your own CPU or GPU. It finds 478 points on your face and 52 expression values every frame, which drive the cartoon avatar in real time."}},{"@type":"Question","name":"Do I need to install anything?","acceptedAnswer":{"@type":"Answer","text":"No. There is no app, plugin, or sign-up. Open the page, allow the camera, and it works. It also runs offline after the model has loaded once."}},{"@type":"Question","name":"Can I use the avatar on a video call or stream?","acceptedAnswer":{"@type":"Answer","text":"You can record a clip or save a snapshot here. To use it as a live camera in Zoom or OBS, screen-capture the avatar window or use OBS window capture, since browsers cannot register a system virtual camera on their own."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up and no limits."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:960px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .stage{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .stage-grid{display:grid;grid-template-columns:1fr 300px;gap:0;}
+  @media(max-width:760px){.stage-grid{grid-template-columns:1fr;}}
+  .avatarWrap{position:relative;aspect-ratio:1/1;background:#0c1c18;display:flex;align-items:center;justify-content:center;}
+  #avatar{width:100%;height:100%;display:block;}
+  .side{border-left:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:16px;}
+  @media(max-width:760px){.side{border-left:none;border-top:1px solid var(--line);}}
+  .camBox{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line-2);background:#06100d;aspect-ratio:4/3;}
+  #cam,#mesh{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);}
+  #cam{opacity:.0;}
+  .camHint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--mono);font-size:11.5px;color:var(--faint);padding:14px;}
+  .ctl{display:flex;flex-direction:column;gap:7px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .chip{background:transparent;color:var(--muted);border:1px solid var(--line-2);border-radius:9px;padding:8px 12px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
+  .chip.on{background:var(--accent);color:#07100e;font-weight:600;border-color:var(--accent);}
+  .swatches{display:flex;gap:8px;flex-wrap:wrap;}
+  .sw{width:26px;height:26px;border-radius:8px;border:2px solid transparent;cursor:pointer;}
+  .sw.on{border-color:var(--ink);}
+  input[type=range]{accent-color:var(--accent);width:100%;}
+  .row{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .toggle{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;}
+  .toggle input{accent-color:var(--accent);width:16px;height:16px;}
+  .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:16px 18px;border-top:1px solid var(--line);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .btn.rec{background:#ff5d5d;color:#1a0606;}
+  .status{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-left:auto;}
+  .status b{color:var(--accent);}
+  .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;background:rgba(7,16,14,.78);backdrop-filter:blur(3px);z-index:5;}
+  .overlay h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .overlay p{color:var(--muted);font-size:14px;max-width:360px;}
+  .prog{width:240px;max-width:70%;height:8px;border-radius:100px;background:rgba(var(--accentRGB),.16);overflow:hidden;display:none;}
+  .prog > i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s;}
+  .expr{display:flex;flex-direction:column;gap:5px;}
+  .expr .e{display:grid;grid-template-columns:78px 1fr;gap:8px;align-items:center;font-family:var(--mono);font-size:10.5px;color:var(--faint);}
+  .expr .e .meter{height:6px;border-radius:100px;background:rgba(var(--accentRGB),.14);overflow:hidden;}
+  .expr .e .meter > i{display:block;height:100%;width:0;background:var(--accent);}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Face Avatar</h1>
+    <p class="sub">Become a live cartoon. A real face-tracking model runs entirely on your device, reads 478 points and 52 expressions off your face, and a character mirrors your every blink, smile, and head turn in real time.</p>
+    <span class="priv">&#128274; 100% private — your camera never leaves your device</span>
+  </header>
+
+  <div class="stage">
+    <div class="stage-grid">
+      <div class="avatarWrap">
+        <canvas id="avatar" width="720" height="720" aria-label="Live avatar"></canvas>
+        <div class="overlay" id="overlay">
+          <h2 id="ovTitle">Meet your avatar</h2>
+          <p id="ovText">It is already mouthing along below. Press <b>Start camera</b> and it will copy your real face instead — all on your device, nothing uploaded.</p>
+          <div class="prog" id="prog"><i id="progBar"></i></div>
+          <button class="btn" id="startBtn">Start camera</button>
+        </div>
+      </div>
+      <div class="side">
+        <div class="camBox">
+          <video id="cam" playsinline muted></video>
+          <canvas id="mesh"></canvas>
+          <div class="camHint" id="camHint">Your camera preview and the 478-point face mesh show up here once you start.</div>
+        </div>
+        <div class="ctl">
+          <label>Character</label>
+          <div class="chips" id="chars"></div>
+        </div>
+        <div class="ctl">
+          <label>Backdrop</label>
+          <div class="swatches" id="bgs"></div>
+        </div>
+        <div class="ctl">
+          <label>Smoothing</label>
+          <input type="range" id="smooth" min="0" max="90" value="55" />
+        </div>
+        <label class="toggle"><input type="checkbox" id="meshTgl" checked /> Show face mesh</label>
+        <div class="ctl">
+          <label>Live expressions</label>
+          <div class="expr" id="expr"></div>
+        </div>
+      </div>
+    </div>
+    <div class="bar">
+      <button class="btn btn-out" id="recBtn" disabled>Record clip</button>
+      <button class="btn btn-out" id="snapBtn">Save snapshot</button>
+      <span class="status" id="status">Demo mode · press Start camera</span>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>When you press start, the page asks for your camera and downloads a small face-tracking model called MediaPipe Face Landmarker, about 3.7&nbsp;MB, one time. After that it runs on your own machine. Every frame it locates 478 landmark points on your face and estimates 52 expression values — how open your jaw is, how much each eye is closed, whether your brows are up or furrowed, which way you are looking. Those numbers are wired straight into a hand-drawn vector character, so the avatar smiles when you smile and blinks when you blink, with no perceptible lag.</p>
+    <h2>How is this running in my browser?</h2>
+    <p>There is no server doing the work. The model is compiled to WebAssembly and runs the heavy math on your GPU through WebGPU when it is available, falling back to your CPU otherwise. Because the camera frames are processed locally and thrown away immediately, nothing is uploaded and nothing is stored. The only thing that ever leaves your device is a clip you choose to download yourself. It even keeps working with your internet disconnected once the model is cached.</p>
+    <h2>Things to try</h2>
+    <p>Raise one eyebrow, then both. Wink — each eye is tracked separately. Open your mouth wide and watch the jaw drop, then purse your lips. Turn your head side to side and the whole character follows. Switch the character and the backdrop, drop the smoothing to zero for snappy puppet motion or raise it for a calmer look, and hit record to save a short clip of your avatar talking.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my camera uploaded anywhere?</summary><p>No. The face-tracking model runs entirely in your browser. Your camera feed is processed on your device and discarded each frame. Nothing is uploaded, and nothing is saved unless you press record.</p></details>
+    <details><summary>How does a real model run in a web page?</summary><p>It downloads MediaPipe Face Landmarker once (about 3.7&nbsp;MB) and runs it on your CPU or GPU through WebAssembly and WebGPU. It finds 478 face points and 52 expression values every frame, which drive the avatar.</p></details>
+    <details><summary>Do I need to install anything?</summary><p>No app, no plugin, no sign-up. Open the page, allow the camera, and it works. After the first load it runs offline.</p></details>
+    <details><summary>Can I use it on a Zoom call or stream?</summary><p>You can record a clip or save a snapshot here. For a live call, use OBS window capture or screen sharing of the avatar, since a web page cannot register a system virtual camera by itself.</p></details>
+    <details><summary>It says my browser is not supported.</summary><p>This needs camera access and a modern browser. Use a recent Chrome, Edge, Brave, or Safari on desktop or Android. iOS works in Safari. If the camera is blocked, check the site permissions in your address bar.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build something like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- Early theme sync (match the portfolio's saved theme, no flash) -->
+<script>
+(function(){ try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+  var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){} })();
+</script>
+
+<script>
+/* ============================================================
+   Face Avatar — MediaPipe Face Landmarker -> vector character
+   Single file. Model + tracking run 100% on-device.
+   ============================================================ */
+(function(){
+"use strict";
+
+/* ---------- PURE HELPERS (also exported for node tests) ---------- */
+function clamp(v,lo,hi){ return v<lo?lo:v>hi?hi:v; }
+function lerp(a,b,t){ return a+(b-a)*t; }
+/* per-frame smoothing factor from a 0..90 "smoothing" slider.
+   higher slider = slower follow. returns the lerp t in (0,1]. */
+function smoothT(slider){ var s=clamp(slider,0,90)/100; return clamp(1-s,0.06,1); }
+/* build {name:score} from MediaPipe faceBlendshapes[0].categories */
+function blendMap(categories){ var m={}; if(!categories) return m; for(var i=0;i<categories.length;i++){ var c=categories[i]; m[c.categoryName]=c.score; } return m; }
+/* head pose from normalized face landmarks (x,y in 0..1). robust heuristics. */
+function headPose(lm){
+  if(!lm||lm.length<264) return {yaw:0,pitch:0,roll:0,faceW:0};
+  var eL=lm[33], eR=lm[263], nose=lm[1], top=lm[10], chin=lm[152];
+  var dx=eR.x-eL.x, dy=eR.y-eL.y;
+  var roll=Math.atan2(dy,dx);
+  var faceW=Math.hypot(dx,dy)||1e-6;
+  var faceH=Math.hypot(chin.x-top.x, chin.y-top.y)||1e-6;
+  var eyeMidX=(eL.x+eR.x)/2, eyeMidY=(eL.y+eR.y)/2;
+  var yaw=(nose.x-eyeMidX)/faceW;             /* + when nose right of eye center */
+  var pitch=(nose.y-eyeMidY)/faceH-0.34;      /* baseline-subtracted; + looks down */
+  return {yaw:yaw, pitch:pitch, roll:roll, faceW:faceW};
+}
+/* combine MediaPipe eye-look blendshapes into a single gaze vector (-1..1) */
+function gazeVec(b){
+  var x=(b.eyeLookOutRight||0)+(b.eyeLookInLeft||0)-(b.eyeLookOutLeft||0)-(b.eyeLookInRight||0);
+  var y=(b.eyeLookUpLeft||0)+(b.eyeLookUpRight||0)-(b.eyeLookDownLeft||0)-(b.eyeLookDownRight||0);
+  return {x:clamp(x,-1,1), y:clamp(y,-1,1)};
+}
+/* derive the avatar rig parameters (0..1 / -1..1) from a blend map + landmarks.
+   `mirror` swaps left/right so a selfie-mirrored view feels natural. */
+function rigParams(b, lm, mirror){
+  var blinkL=b.eyeBlinkLeft||0, blinkR=b.eyeBlinkRight||0;
+  var wideL=b.eyeWideLeft||0, wideR=b.eyeWideRight||0;
+  var browDL=b.browDownLeft||0, browDR=b.browDownRight||0;
+  var browOL=b.browOuterUpLeft||0, browOR=b.browOuterUpRight||0;
+  var g=gazeVec(b), hp=headPose(lm);
+  var P={
+    jaw: clamp(b.jawOpen||0,0,1),
+    smile: clamp(((b.mouthSmileLeft||0)+(b.mouthSmileRight||0))/2,0,1),
+    frown: clamp(((b.mouthFrownLeft||0)+(b.mouthFrownRight||0))/2,0,1),
+    pucker: clamp(Math.max(b.mouthPucker||0,b.mouthFunnel||0),0,1),
+    blinkL: blinkL, blinkR: blinkR,
+    wideL: wideL, wideR: wideR,
+    browInner: clamp(b.browInnerUp||0,0,1),
+    browDL: browDL, browDR: browDR,
+    browOL: browOL, browOR: browOR,
+    cheek: clamp(b.cheekPuff||0,0,1),
+    gazeX: mirror? -g.x : g.x,
+    gazeY: g.y,
+    yaw: clamp((mirror?-hp.yaw:hp.yaw)*2.6,-1,1),
+    pitch: clamp(hp.pitch*3.0,-1,1),
+    roll: clamp((mirror?-hp.roll:hp.roll),-0.6,0.6)
+  };
+  if(mirror){ P.blinkL=blinkR; P.blinkR=blinkL; P.wideL=wideR; P.wideR=wideL; P.browDL=browDR; P.browDR=browDL; P.browOL=browOR; P.browOR=browOL; }
+  return P;
+}
+/* a neutral rig (everything resting) */
+function neutralRig(){ return {jaw:0,smile:0,frown:0,pucker:0,blinkL:0,blinkR:0,wideL:0,wideR:0,browInner:0,browDL:0,browDR:0,browOL:0,browOR:0,cheek:0,gazeX:0,gazeY:0,yaw:0,pitch:0,roll:0}; }
+/* scripted demo rig so the avatar is alive before the camera starts */
+function demoRig(t){
+  var P=neutralRig();
+  P.jaw=Math.max(0,Math.sin(t*5.0))*0.55*(0.6+0.4*Math.sin(t*0.7));
+  P.smile=0.18+0.18*Math.sin(t*0.5+1);
+  P.browInner=0.10+0.10*Math.sin(t*0.4);
+  P.yaw=0.28*Math.sin(t*0.45);
+  P.pitch=0.10*Math.sin(t*0.6+2);
+  P.roll=0.06*Math.sin(t*0.35);
+  P.gazeX=0.5*Math.sin(t*0.3);
+  var bl=(t%3.4); var blink=bl<0.16?(1-Math.abs(bl-0.08)/0.08):0;
+  P.blinkL=blink; P.blinkR=blink;
+  return P;
+}
+if(typeof module!=="undefined"&&module.exports){ module.exports={clamp:clamp,lerp:lerp,smoothT:smoothT,blendMap:blendMap,headPose:headPose,gazeVec:gazeVec,rigParams:rigParams,neutralRig:neutralRig,demoRig:demoRig}; }
+/* ---------- END PURE HELPERS ---------- */
+
+if(typeof document==="undefined") return; /* node test mode: stop here */
+
+var CHARACTERS=["Mochi","Fox","Robot","Alien"];
+var BACKDROPS=[
+  {name:"deep",  c:"#0c1c18"},
+  {name:"mint",  c:"#0f3b30"},
+  {name:"plum",  c:"#241433"},
+  {name:"slate", c:"#11161d"},
+  {name:"green", c:"#00b140"}, /* chroma key */
+  {name:"sky",   c:"#123a55"}
+];
+
+var els={
+  avatar:document.getElementById("avatar"), cam:document.getElementById("cam"), mesh:document.getElementById("mesh"),
+  overlay:document.getElementById("overlay"), ovTitle:document.getElementById("ovTitle"), ovText:document.getElementById("ovText"),
+  prog:document.getElementById("prog"), progBar:document.getElementById("progBar"), startBtn:document.getElementById("startBtn"),
+  chars:document.getElementById("chars"), bgs:document.getElementById("bgs"), smooth:document.getElementById("smooth"),
+  meshTgl:document.getElementById("meshTgl"), expr:document.getElementById("expr"), status:document.getElementById("status"),
+  recBtn:document.getElementById("recBtn"), snapBtn:document.getElementById("snapBtn"), camHint:document.getElementById("camHint")
+};
+
+var actx=els.avatar.getContext("2d");
+var state={
+  character:0, bg:BACKDROPS[0].c, live:false, mirror:true,
+  rig:neutralRig(), target:neutralRig(),
+  landmarker:null, drawUtils:null, mpMod:null,
+  rec:null, recChunks:[], recording:false, lastVideoTime:-1
+};
+
+/* ---- build character chips ---- */
+CHARACTERS.forEach(function(name,i){
+  var b=document.createElement("button"); b.className="chip"+(i===0?" on":""); b.textContent=name;
+  b.addEventListener("click",function(){ state.character=i; document.querySelectorAll("#chars .chip").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); });
+  els.chars.appendChild(b);
+});
+/* ---- build backdrop swatches ---- */
+BACKDROPS.forEach(function(bd,i){
+  var s=document.createElement("div"); s.className="sw"+(i===0?" on":""); s.style.background=bd.c; s.title=bd.name;
+  s.addEventListener("click",function(){ state.bg=bd.c; document.querySelectorAll("#bgs .sw").forEach(function(x){x.classList.remove("on");}); s.classList.add("on"); });
+  els.bgs.appendChild(s);
+});
+/* ---- expression meters ---- */
+var EXPR_ROWS=[["Jaw","jaw"],["Smile","smile"],["Brows","browInner"],["Blink","blinkL"],["Gaze","gazeX"]];
+var exprMeters={};
+EXPR_ROWS.forEach(function(r){
+  var d=document.createElement("div"); d.className="e";
+  d.innerHTML='<span>'+r[0]+'</span><div class="meter"><i></i></div>';
+  els.expr.appendChild(d); exprMeters[r[1]]=d.querySelector("i");
+});
+
+/* ============ AVATAR RENDERER ============ */
+function easeBlink(v){ return clamp(v,0,1); }
+function withHead(ctx,P,cx,cy,scale,fn){
+  ctx.save();
+  ctx.translate(cx + P.yaw*scale*0.12, cy + P.pitch*scale*0.10);
+  ctx.rotate(-P.roll);
+  ctx.scale(scale*(1-Math.abs(P.yaw)*0.10), scale);
+  fn(ctx);
+  ctx.restore();
+}
+/* eye drawing shared by characters. unit space ~ [-1,1]. */
+function drawEye(ctx,x,y,r,blink,wide,gx,gy,irisCol,whiteCol){
+  var open=1-easeBlink(blink); open=clamp(open*(1+wide*0.4),0.04,1.3);
+  ctx.save(); ctx.translate(x,y);
+  ctx.beginPath(); ctx.ellipse(0,0,r, r*open, 0,0,Math.PI*2);
+  ctx.fillStyle=whiteCol||"#fbfbf7"; ctx.fill();
+  ctx.save(); ctx.clip();
+  var ir=r*0.62;
+  ctx.beginPath(); ctx.arc(gx*r*0.45, -gy*r*0.45 + (1-open)*r*0.2, ir, 0, Math.PI*2);
+  ctx.fillStyle=irisCol; ctx.fill();
+  ctx.beginPath(); ctx.arc(gx*r*0.45, -gy*r*0.45 + (1-open)*r*0.2, ir*0.5, 0, Math.PI*2);
+  ctx.fillStyle="#0a0a0a"; ctx.fill();
+  ctx.beginPath(); ctx.arc(gx*r*0.45-ir*0.3, -gy*r*0.45-ir*0.3, ir*0.18, 0, Math.PI*2);
+  ctx.fillStyle="rgba(255,255,255,.9)"; ctx.fill();
+  ctx.restore();
+  /* lid line when nearly closed */
+  if(open<0.5){ ctx.beginPath(); ctx.moveTo(-r,0); ctx.lineTo(r,0); ctx.strokeStyle="rgba(0,0,0,.35)"; ctx.lineWidth=r*0.12; ctx.stroke(); }
+  ctx.restore();
+}
+function drawBrow(ctx,x,y,w,down,outer,inner,col){
+  var liftI=inner*0.5+0.0, lift=outer*0.5; var dn=down*0.6;
+  ctx.save(); ctx.translate(x,y); ctx.strokeStyle=col; ctx.lineWidth=w*0.22; ctx.lineCap="round";
+  ctx.beginPath();
+  ctx.moveTo(-w/2, (dn-liftI)* w*0.5);
+  ctx.quadraticCurveTo(0, (dn - lift - liftI)*w*0.6 - w*0.18, w/2, (dn-lift)*w*0.5);
+  ctx.stroke(); ctx.restore();
+}
+function drawMouth(ctx,x,y,w,P,col,inner){
+  var open=P.jaw, smile=P.smile-P.frown, pucker=P.pucker;
+  var hw=w*(0.5 - pucker*0.28);
+  var corner=smile*w*0.22;
+  var oh=open*w*0.5;
+  ctx.save(); ctx.translate(x,y);
+  ctx.beginPath();
+  ctx.moveTo(-hw, -corner);
+  ctx.quadraticCurveTo(0, smile*w*0.12 + w*0.04, hw, -corner);
+  if(oh>w*0.03){
+    ctx.quadraticCurveTo(hw*0.5, oh, 0, oh*1.05);
+    ctx.quadraticCurveTo(-hw*0.5, oh, -hw, -corner);
+    ctx.closePath();
+    ctx.fillStyle=inner||"#5a2230"; ctx.fill();
+  } else {
+    ctx.lineCap="round"; ctx.lineWidth=w*0.10; ctx.strokeStyle=col; ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function paintMochi(ctx,P){
+  ctx.save(); ctx.translate(360,360);
+  withHead(ctx,P,0,0,300,function(c){
+    /* body */
+    c.beginPath(); c.ellipse(0,0.05,1.0,1.05,0,0,Math.PI*2);
+    var g=c.createLinearGradient(0,-1,0,1); g.addColorStop(0,"#ffe6a0"); g.addColorStop(1,"#ffc04d");
+    c.fillStyle=g; c.fill();
+    c.lineWidth=0.03; c.strokeStyle="rgba(120,70,0,.25)"; c.stroke();
+    /* cheeks */
+    var cheek=0.5+P.cheek*0.5;
+    c.fillStyle="rgba(255,120,120,"+(0.35*cheek)+")";
+    c.beginPath(); c.arc(-0.5,0.22,0.16+P.cheek*0.06,0,Math.PI*2); c.fill();
+    c.beginPath(); c.arc(0.5,0.22,0.16+P.cheek*0.06,0,Math.PI*2); c.fill();
+    drawBrow(c,-0.42,-0.42,0.5,P.browDL,P.browOL,P.browInner,"#a8702a");
+    drawBrow(c, 0.42,-0.42,0.5,P.browDR,P.browOR,P.browInner,"#a8702a");
+    drawEye(c,-0.42,-0.18,0.24,P.blinkL,P.wideL,P.gazeX,P.gazeY,"#5b3a1a");
+    drawEye(c, 0.42,-0.18,0.24,P.blinkR,P.wideR,P.gazeX,P.gazeY,"#5b3a1a");
+    drawMouth(c,0,0.34,0.7,P,"#7a4a12","#7a2a38");
+  });
+  ctx.restore();
+}
+function paintFox(ctx,P){
+  ctx.save(); ctx.translate(360,360);
+  withHead(ctx,P,0,0,300,function(c){
+    /* ears */
+    c.fillStyle="#e8682a";
+    [[-0.7,-0.8],[0.7,-0.8]].forEach(function(e){ c.beginPath(); c.moveTo(e[0],e[1]); c.lineTo(e[0]*0.5,-0.35); c.lineTo(e[0]*1.15,-0.2); c.closePath(); c.fill(); });
+    /* head */
+    c.beginPath(); c.moveTo(0,1.0); c.quadraticCurveTo(-1.05,0.5,-0.9,-0.4); c.quadraticCurveTo(-0.6,-0.95,0,-0.85); c.quadraticCurveTo(0.6,-0.95,0.9,-0.4); c.quadraticCurveTo(1.05,0.5,0,1.0); c.closePath();
+    c.fillStyle="#f07b34"; c.fill();
+    /* white muzzle */
+    c.beginPath(); c.moveTo(0,1.02); c.quadraticCurveTo(-0.5,0.55,-0.34,0.0); c.quadraticCurveTo(0,0.16,0.34,0.0); c.quadraticCurveTo(0.5,0.55,0,1.02); c.closePath();
+    c.fillStyle="#fff6ee"; c.fill();
+    drawBrow(c,-0.42,-0.46,0.46,P.browDL,P.browOL,P.browInner,"#7a3a12");
+    drawBrow(c, 0.42,-0.46,0.46,P.browDR,P.browOR,P.browInner,"#7a3a12");
+    drawEye(c,-0.4,-0.2,0.2,P.blinkL,P.wideL,P.gazeX,P.gazeY,"#3a2410");
+    drawEye(c, 0.4,-0.2,0.2,P.blinkR,P.wideR,P.gazeX,P.gazeY,"#3a2410");
+    /* nose */
+    c.beginPath(); c.arc(0,0.18,0.1,0,Math.PI*2); c.fillStyle="#2a1208"; c.fill();
+    drawMouth(c,0,0.5,0.6,P,"#6a3010","#7a2a38");
+  });
+  ctx.restore();
+}
+function paintRobot(ctx,P){
+  ctx.save(); ctx.translate(360,360);
+  withHead(ctx,P,0,0,290,function(c){
+    /* antenna */
+    c.strokeStyle="#7fe9d0"; c.lineWidth=0.05; c.beginPath(); c.moveTo(0,-0.9); c.lineTo(0,-1.15); c.stroke();
+    c.beginPath(); c.arc(0,-1.2,0.08,0,Math.PI*2); c.fillStyle="#2be3b0"; c.fill();
+    /* head plate */
+    roundRect(c,-0.95,-0.9,1.9,1.9,0.28);
+    var g=c.createLinearGradient(0,-0.9,0,1); g.addColorStop(0,"#cdd8e0"); g.addColorStop(1,"#9aa8b4");
+    c.fillStyle=g; c.fill(); c.lineWidth=0.035; c.strokeStyle="rgba(0,0,0,.18)"; c.stroke();
+    /* screen */
+    roundRect(c,-0.78,-0.62,1.56,1.5,0.18); c.fillStyle="#0c1c18"; c.fill();
+    drawBrow(c,-0.36,-0.34,0.42,P.browDL,P.browOL,P.browInner,"#2be3b0");
+    drawBrow(c, 0.36,-0.34,0.42,P.browDR,P.browOR,P.browInner,"#2be3b0");
+    drawEye(c,-0.34,-0.1,0.2,P.blinkL,P.wideL,P.gazeX,P.gazeY,"#16d6c2","#04201c");
+    drawEye(c, 0.34,-0.1,0.2,P.blinkR,P.wideR,P.gazeX,P.gazeY,"#16d6c2","#04201c");
+    /* mouth as glowing bar / open */
+    var open=P.jaw;
+    c.save(); c.translate(0,0.5);
+    if(open>0.06){ roundRect(c,-0.34*(1-P.pucker*0.4),-open*0.4,0.68*(1-P.pucker*0.4),open*0.8,0.06); c.fillStyle="#0aa"; c.fill(); }
+    var seg=5; for(var i=0;i<seg;i++){ var hh=0.05+ (Math.sin((i+1)*1.3)+1)*0.04 + P.smile*0.04; roundRect(c,-0.34+i*0.14,-hh,0.1,hh*2,0.02); c.fillStyle="#2be3b0"; c.globalAlpha=0.5+0.5*P.smile; c.fill(); c.globalAlpha=1; }
+    c.restore();
+  });
+  ctx.restore();
+}
+function paintAlien(ctx,P){
+  ctx.save(); ctx.translate(360,360);
+  withHead(ctx,P,0,0,300,function(c){
+    c.beginPath(); c.moveTo(0,1.05); c.quadraticCurveTo(-1.0,0.7,-0.78,-0.3); c.quadraticCurveTo(-0.5,-1.0,0,-1.0); c.quadraticCurveTo(0.5,-1.0,0.78,-0.3); c.quadraticCurveTo(1.0,0.7,0,1.05); c.closePath();
+    var g=c.createLinearGradient(0,-1,0,1); g.addColorStop(0,"#9bf0b0"); g.addColorStop(1,"#37c47a");
+    c.fillStyle=g; c.fill();
+    var cheek=P.cheek; c.fillStyle="rgba(40,120,70,"+(0.3+cheek*0.4)+")";
+    c.beginPath(); c.arc(-0.45,0.25,0.14+cheek*0.08,0,Math.PI*2); c.fill();
+    c.beginPath(); c.arc(0.45,0.25,0.14+cheek*0.08,0,Math.PI*2); c.fill();
+    drawBrow(c,-0.4,-0.5,0.5,P.browDL,P.browOL,P.browInner,"#1c5a36");
+    drawBrow(c, 0.4,-0.5,0.5,P.browDR,P.browOR,P.browInner,"#1c5a36");
+    /* big almond eyes */
+    drawAlienEye(c,-0.4,-0.12,0.34,0.46,P.blinkL,P.wideL,P.gazeX,P.gazeY);
+    drawAlienEye(c, 0.4,-0.12,0.34,0.46,P.blinkR,P.wideR,P.gazeX,P.gazeY);
+    drawMouth(c,0,0.55,0.5,P,"#1c5a36","#0e3a22");
+  });
+  ctx.restore();
+}
+function drawAlienEye(c,x,y,rx,ry,blink,wide,gx,gy){
+  var open=clamp((1-clamp(blink,0,1))*(1+wide*0.3),0.05,1.2);
+  c.save(); c.translate(x,y); c.rotate(x<0?0.25:-0.25);
+  c.beginPath(); c.ellipse(0,0,rx,ry*open,0,0,Math.PI*2); c.fillStyle="#08120c"; c.fill();
+  c.save(); c.clip();
+  c.beginPath(); c.arc(gx*rx*0.4,-gy*ry*0.4,rx*0.34,0,Math.PI*2); c.fillStyle="rgba(180,255,210,.85)"; c.fill();
+  c.restore(); c.restore();
+}
+function roundRect(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+
+var PAINTERS=[paintMochi,paintFox,paintRobot,paintAlien];
+
+function renderAvatar(){
+  var w=els.avatar.width, h=els.avatar.height;
+  actx.save();
+  actx.fillStyle=state.bg; actx.fillRect(0,0,w,h);
+  /* subtle vignette */
+  var rg=actx.createRadialGradient(w/2,h*0.42,h*0.1,w/2,h/2,h*0.75);
+  rg.addColorStop(0,"rgba(255,255,255,.05)"); rg.addColorStop(1,"rgba(0,0,0,.28)");
+  actx.fillStyle=rg; actx.fillRect(0,0,w,h);
+  actx.restore();
+  PAINTERS[state.character](actx, state.rig);
+}
+
+/* ============ MAIN LOOP ============ */
+var demoStart=performance.now();
+function tick(){
+  var t=smoothT(parseInt(els.smooth.value,10));
+  /* choose target rig */
+  if(!state.live){ state.target=demoRig((performance.now()-demoStart)/1000); }
+  /* smooth toward target */
+  var r=state.rig, tg=state.target;
+  for(var k in tg){ if(tg.hasOwnProperty(k)){ r[k]=lerp(r[k]!==undefined?r[k]:0, tg[k], t); } }
+  renderAvatar();
+  /* update expression meters */
+  exprMeters.jaw.style.width=Math.round(clamp(r.jaw,0,1)*100)+"%";
+  exprMeters.smile.style.width=Math.round(clamp(r.smile,0,1)*100)+"%";
+  exprMeters.browInner.style.width=Math.round(clamp(Math.max(r.browInner,r.browOL,r.browOR),0,1)*100)+"%";
+  exprMeters.blinkL.style.width=Math.round(clamp((r.blinkL+r.blinkR)/2,0,1)*100)+"%";
+  exprMeters.gazeX.style.width=Math.round(clamp(Math.abs(r.gazeX),0,1)*100)+"%";
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+/* ============ MESH OVERLAY ============ */
+function drawMesh(result){
+  var mc=els.mesh, v=els.cam;
+  if(mc.width!==mc.clientWidth*1){ mc.width=mc.clientWidth; mc.height=mc.clientHeight; }
+  var ctx=mc.getContext("2d");
+  ctx.clearRect(0,0,mc.width,mc.height);
+  if(!els.meshTgl.checked) return;
+  if(!result || !result.faceLandmarks || !result.faceLandmarks.length) return;
+  if(!state.drawUtils){ state.drawUtils=new state.mpMod.DrawingUtils(ctx); }
+  var FL=state.mpMod.FaceLandmarker;
+  var lm=result.faceLandmarks[0];
+  state.drawUtils.drawConnectors(lm, FL.FACE_LANDMARKS_TESSELATION, {color:"rgba(43,227,176,0.28)", lineWidth:0.7});
+  state.drawUtils.drawConnectors(lm, FL.FACE_LANDMARKS_FACE_OVAL, {color:"rgba(43,227,176,0.9)", lineWidth:1.4});
+  state.drawUtils.drawConnectors(lm, FL.FACE_LANDMARKS_LIPS, {color:"rgba(255,255,255,0.8)", lineWidth:1.2});
+  state.drawUtils.drawConnectors(lm, FL.FACE_LANDMARKS_LEFT_EYE, {color:"rgba(255,255,255,0.8)", lineWidth:1.2});
+  state.drawUtils.drawConnectors(lm, FL.FACE_LANDMARKS_RIGHT_EYE, {color:"rgba(255,255,255,0.8)", lineWidth:1.2});
+}
+
+/* ============ CAMERA + MODEL ============ */
+function setStatus(msg,hot){ els.status.innerHTML = hot? "<b>"+msg+"</b>" : msg; }
+function fail(title,text){ els.ovTitle.textContent=title; els.ovText.innerHTML=text; els.prog.style.display="none"; els.startBtn.style.display="none"; els.overlay.style.display="flex"; }
+
+async function fetchModelWithProgress(url){
+  var resp=await fetch(url);
+  if(!resp.ok) throw new Error("model http "+resp.status);
+  var total=parseInt(resp.headers.get("content-length")||"0",10);
+  if(!resp.body || !total){ return new Uint8Array(await resp.arrayBuffer()); }
+  var reader=resp.body.getReader(), received=0, chunks=[];
+  els.prog.style.display="block";
+  for(;;){ var rd=await reader.read(); if(rd.done) break; chunks.push(rd.value); received+=rd.value.length;
+    els.progBar.style.width=Math.round(received/total*100)+"%"; }
+  var out=new Uint8Array(received), pos=0;
+  for(var i=0;i<chunks.length;i++){ out.set(chunks[i],pos); pos+=chunks[i].length; }
+  return out;
+}
+
+async function start(){
+  els.startBtn.disabled=true;
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ fail("Camera not available","This browser does not expose a camera API. Try a recent Chrome, Edge, Brave, or Safari."); return; }
+  setStatus("Loading model…");
+  els.ovTitle.textContent="Loading face model…"; els.ovText.textContent="About 3.7 MB, one time. It then runs entirely on your device.";
+  var stream;
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:640},height:{ideal:480},facingMode:"user"},audio:false});
+  }catch(e){ fail("Camera blocked","Allow camera access for this page (check the icon in your address bar), then press Start again. Your video never leaves your device."); els.startBtn.style.display="inline-flex"; els.startBtn.disabled=false; return; }
+  els.cam.srcObject=stream; els.camHint.style.display="none";
+  await els.cam.play().catch(function(){});
+
+  try{
+    var mod=await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs");
+    state.mpMod=mod;
+    var fileset=await mod.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
+    var buf=await fetchModelWithProgress("https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task");
+    var delegate = (navigator.gpu? "GPU":"CPU");
+    try{
+      state.landmarker=await mod.FaceLandmarker.createFromOptions(fileset,{ baseOptions:{ modelAssetBuffer:buf, delegate:delegate }, runningMode:"VIDEO", numFaces:1, outputFaceBlendshapes:true, outputFacialTransformationMatrixes:true });
+    }catch(gpuErr){
+      state.landmarker=await mod.FaceLandmarker.createFromOptions(fileset,{ baseOptions:{ modelAssetBuffer:buf, delegate:"CPU" }, runningMode:"VIDEO", numFaces:1, outputFaceBlendshapes:true });
+      delegate="CPU";
+    }
+    state.live=true;
+    els.overlay.style.display="none";
+    els.recBtn.disabled=false;
+    setStatus("Live · tracking on "+delegate, true);
+    window.__faReady=true;
+    loop();
+  }catch(e){
+    fail("Could not load the model","Something blocked the download. Check your connection and try again. ("+(e&&e.message||e)+")");
+  }
+}
+
+function loop(){
+  if(!state.live){ return; }
+  var v=els.cam;
+  if(v.readyState>=2 && v.currentTime!==state.lastVideoTime){
+    state.lastVideoTime=v.currentTime;
+    var res=state.landmarker.detectForVideo(v, performance.now());
+    if(res && res.faceLandmarks && res.faceLandmarks.length){
+      var b=blendMap(res.faceBlendshapes && res.faceBlendshapes[0] && res.faceBlendshapes[0].categories);
+      state.target=rigParams(b, res.faceLandmarks[0], state.mirror);
+    }
+    drawMesh(res);
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ============ RECORD + SNAPSHOT ============ */
+els.recBtn.addEventListener("click",function(){
+  if(state.recording){ state.rec.stop(); return; }
+  if(!els.avatar.captureStream){ setStatus("Recording not supported here"); return; }
+  var stream=els.avatar.captureStream(30);
+  var mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")?"video/webm;codecs=vp9": (MediaRecorder.isTypeSupported("video/webm;codecs=vp8")?"video/webm;codecs=vp8":"video/webm");
+  try{ state.rec=new MediaRecorder(stream,{mimeType:mime}); }catch(e){ setStatus("Recording not supported here"); return; }
+  state.recChunks=[];
+  state.rec.ondataavailable=function(e){ if(e.data && e.data.size) state.recChunks.push(e.data); };
+  state.rec.onstop=function(){ var blob=new Blob(state.recChunks,{type:"video/webm"}); var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="face-avatar.webm"; a.click(); state.recording=false; els.recBtn.textContent="Record clip"; els.recBtn.classList.remove("rec"); setStatus(state.live?"Live · tracking":"Demo mode", state.live); };
+  state.rec.start(); state.recording=true; els.recBtn.textContent="Stop & save"; els.recBtn.classList.add("rec"); setStatus("Recording…", true);
+});
+els.snapBtn.addEventListener("click",function(){
+  els.avatar.toBlob(function(blob){ var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="face-avatar.png"; a.click(); },"image/png");
+});
+
+els.startBtn.addEventListener("click",start);
+
+/* expose pure helpers for live verification */
+window.__faPure={clamp:clamp,lerp:lerp,smoothT:smoothT,blendMap:blendMap,headPose:headPose,gazeVec:gazeVec,rigParams:rigParams,neutralRig:neutralRig,demoRig:demoRig};
+window.__faBoot=true;
+})();
+</script>
+
+<!-- Ad slot (left intentionally empty; enable later)
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXObXXXX" data-ad-slot="XXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+-->
+<!-- Polar.sh / support slot (enable later) -->
+
+<!-- theme + command palette + Cloudflare Web Analytics beacon -->
+<script src="enhance.js" defer></script>
+</body>
+</html>
