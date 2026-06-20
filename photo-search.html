@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Semantic Photo Search — find your photos by description, 100% in your browser</title>
+<meta name="description" content="Search your own photos by typing what's in them — 'a dog on the beach', 'sunset', 'whiteboard' — powered by an AI (CLIP) model that runs entirely in your browser. No upload, no account, completely private." />
+<meta name="keywords" content="semantic photo search, search photos by description, clip image search, find photos by text, ai photo search, search images by meaning, photo search no upload, local photo search, clip in browser, search images offline" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Semantic Photo Search — find photos by description, in your browser" />
+<meta property="og:description" content="Type what's in a photo and find it instantly. A CLIP AI model runs entirely in your browser. Nothing is uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/photo-search.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Semantic Photo Search — runs 100% in your browser" />
+<meta name="twitter:description" content="Search your photos by meaning with on-device CLIP. Private, no upload, no account." />
+<link rel="canonical" href="https://hammyasf.github.io/photo-search.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Semantic Photo Search","url":"https://hammyasf.github.io/photo-search.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebAssembly)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Search your own photos by describing them, using a CLIP AI model that runs entirely in the browser. No upload, private.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my photos uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The CLIP AI model is downloaded once and runs entirely in your browser with WebAssembly. Your photos are read locally and never leave your device."}},{"@type":"Question","name":"How does it understand what is in a photo?","acceptedAnswer":{"@type":"Answer","text":"It uses OpenAI's CLIP model, which maps images and text into the same vector space. Your search text and each photo become vectors, and the closest vectors are the best matches — so you can search by meaning instead of file names."}},{"@type":"Question","name":"How big is the download?","acceptedAnswer":{"@type":"Answer","text":"The quantized CLIP model is roughly 60 MB. It downloads once, is cached by your browser, and then works offline."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is completely free, with no account and no limit on how many photos you index."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:980px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:40px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .drop .or{margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .searchbar{display:flex;gap:10px;padding:4px 18px 8px;flex-wrap:wrap;}
+  .searchbar input[type=text]{flex:1;min-width:200px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:12px;padding:13px 16px;font-family:var(--body);font-size:16px;}
+  .searchbar input[type=text]:focus{outline:none;border-color:var(--accent);}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;padding:2px 18px 14px;}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);padding:6px 11px;border-radius:100px;cursor:pointer;background:transparent;transition:.15s;}
+  .chip:hover{border-color:var(--accent);color:var(--accent);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .status{font-family:var(--mono);font-size:13px;color:var(--muted);padding:0 18px 6px;min-height:20px;}
+  .status b{color:var(--accent);}
+  .progress{height:6px;border-radius:6px;background:rgba(var(--surfaceRGB),.8);margin:2px 18px 14px;overflow:hidden;display:none;}
+  .progress.show{display:block;}
+  .progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s;}
+  .err{color:#ff8f7a;font-family:var(--mono);font-size:13px;padding:0 18px 12px;display:none;}
+  .err.show{display:block;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding:6px 18px 22px;}
+  .card{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(var(--surfaceRGB),.4);cursor:pointer;aspect-ratio:1/1;}
+  .card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s var(--ease);}
+  .card:hover img{transform:scale(1.04);}
+  .card .score{position:absolute;top:8px;left:8px;font-family:var(--mono);font-size:11px;font-weight:600;color:#07100e;background:var(--accent);padding:3px 7px;border-radius:100px;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+  .card .meter{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(0,0,0,.4);}
+  .card .meter > i{display:block;height:100%;background:var(--accent);}
+  .card .sim{position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:10px;color:var(--ink);background:rgba(0,0,0,.55);padding:3px 7px;border-radius:100px;opacity:0;transition:.15s;}
+  .card:hover .sim{opacity:1;}
+  .empty-note{color:var(--faint);font-family:var(--mono);font-size:12.5px;padding:0 18px 18px;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · on-device AI · runs in your browser</div>
+    <h1>Semantic Photo Search</h1>
+    <p class="sub">Stop scrolling through camera rolls. Drop in your photos and search them by what's actually <em>in</em> them — "a dog on the beach", "red car", "birthday cake" — using a real CLIP AI model running 100% in your browser.</p>
+    <span class="priv">&#128274; Nothing is uploaded — your photos and the AI both stay on your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add photos">
+      <h2>Drop your photos here</h2>
+      <p>or click to choose files · JPG, PNG, WebP, GIF · index dozens or hundreds at once</p>
+      <div class="or">
+        <button class="btn btn-out" id="sampleBtn" type="button">Try it with sample photos</button>
+      </div>
+      <input type="file" id="file" accept="image/*" multiple hidden />
+    </div>
+
+    <div class="searchbar">
+      <input type="text" id="query" placeholder="Describe a photo to find it…  e.g. sunset over water" disabled />
+      <button class="btn" id="searchBtn" disabled>Search</button>
+    </div>
+    <div class="chips" id="chips" aria-hidden="true"></div>
+
+    <div class="status" id="status">Drop some photos (or load the samples) to build a private, searchable index on your device.</div>
+    <div class="progress" id="progress"><i id="progressBar"></i></div>
+    <div class="err" id="err"></div>
+
+    <div class="grid" id="grid"></div>
+    <div class="empty-note" id="hint" style="display:none;">Tip: click any photo to find visually similar ones. Everything here is computed locally — no server involved.</div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>When you add photos, this tool runs each one through CLIP, an AI model from OpenAI that turns an image into a list of numbers (an "embedding") describing what it depicts. When you type a search, your words get turned into a number-list in the very same space. The photos whose numbers are closest to your words are the best matches. That's why you can search for "someone riding a bike" and find it even if the file is named IMG_4821.jpg.</p>
+    <h2>How does this run locally?</h2>
+    <p>The CLIP model is compiled to run with WebAssembly and ONNX Runtime, both built into modern browsers. The model file (about 60 MB, quantized) downloads once, gets cached, and from then on every image and every search is processed by your own CPU. There is no API key, no server round-trip, and no usage limit. You can even disconnect from the internet after the first load and it keeps working. Heavy work runs in a Web Worker, so the page stays smooth while it indexes.</p>
+    <h2>Why search by meaning beats folders and filenames</h2>
+    <p>Most of us have thousands of photos with names like DSC_0093 buried in nested folders. Keyword search only helps if someone tagged them. Semantic search reads the actual content, so "whiteboard with diagrams", "my passport", or "the receipt from dinner" all just work. It is the same idea behind the search in big cloud photo apps, except here your library never leaves your laptop.</p>
+    <h2>Good things to try</h2>
+    <p>Search broad scenes ("beach", "city at night", "mountains"), specific objects ("coffee cup", "license plate", "a cat"), colors and moods ("something orange", "a cozy room"), or document types ("screenshot of code", "handwritten note"). Then click any result to pivot to visually similar photos.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Are my photos uploaded anywhere?</summary><p>No. The model runs in your browser and your images are read from memory locally. Nothing is sent to a server, which is exactly why it stays private and works offline after the first load.</p></details>
+    <details><summary>How accurate is it?</summary><p>CLIP is genuinely strong at general scenes, objects, colors and concepts. It is not a face-recognition or OCR tool, so searching for a specific person's name or exact text inside an image won't be reliable, but describing what a photo looks like works remarkably well.</p></details>
+    <details><summary>How many photos can I index?</summary><p>There's no hard limit; it's bounded by your device's memory. A few hundred photos index comfortably on a laptop. Indexing happens once per photo and search after that is instant.</p></details>
+    <details><summary>Does it work on my phone?</summary><p>Yes on modern phones, though the one-time ~60 MB model download and indexing are slower than on a laptop. If your device is low on memory, index in smaller batches.</p></details>
+    <details><summary>Which model is this?</summary><p>OpenAI's CLIP (ViT-B/16), running via the Transformers.js library and ONNX Runtime Web. The model weights are quantized to keep the download small and inference fast.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- ===== AdSense / Polar.sh monetization slot (left intentionally empty for later) ===== -->
+<!-- <ins class="adsbygoogle" ...></ins> -->
+
+<script>
+(function(){
+  // ---- worker source: runs CLIP (image + text) entirely on-device ----
+  var WORKER_SRC = [
+'import { AutoTokenizer, CLIPTextModelWithProjection, AutoProcessor, CLIPVisionModelWithProjection, RawImage, env } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1";',
+'env.allowLocalModels = false;',
+'try { env.backends.onnx.wasm.proxy = false; } catch(e){}',
+'const MODEL = "Xenova/clip-vit-base-patch16";',
+'let tok, textModel, proc, visModel, ready = false, loading = null;',
+'function progress(p){ if(p && p.status === "progress" && p.file && /\\.onnx$/.test(p.file)){ self.postMessage({type:"progress", loaded:p.loaded||0, total:p.total||0}); } }',
+'async function load(){',
+'  if(ready) return;',
+'  if(loading) return loading;',
+'  loading = (async function(){',
+'    tok = await AutoTokenizer.from_pretrained(MODEL);',
+'    proc = await AutoProcessor.from_pretrained(MODEL);',
+'    try {',
+'      textModel = await CLIPTextModelWithProjection.from_pretrained(MODEL, { dtype:"q8", progress_callback: progress });',
+'      visModel  = await CLIPVisionModelWithProjection.from_pretrained(MODEL, { dtype:"q8", progress_callback: progress });',
+'    } catch(e){',
+'      textModel = await CLIPTextModelWithProjection.from_pretrained(MODEL, { progress_callback: progress });',
+'      visModel  = await CLIPVisionModelWithProjection.from_pretrained(MODEL, { progress_callback: progress });',
+'    }',
+'    ready = true;',
+'    self.postMessage({type:"ready"});',
+'  })();',
+'  return loading;',
+'}',
+'function norm(arr){ var s=0,i; for(i=0;i<arr.length;i++) s+=arr[i]*arr[i]; s=Math.sqrt(s)||1; var o=new Float32Array(arr.length); for(i=0;i<arr.length;i++) o[i]=arr[i]/s; return o; }',
+'self.onmessage = async function(e){',
+'  var m = e.data;',
+'  try{',
+'    if(m.type === "load"){ await load(); }',
+'    else if(m.type === "embedImage"){',
+'      await load();',
+'      var img = await RawImage.fromBlob(m.blob);',
+'      var inputs = await proc(img);',
+'      var out = await visModel(inputs);',
+'      var emb = norm(out.image_embeds.data);',
+'      self.postMessage({type:"imageEmbed", id:m.id, emb:emb}, [emb.buffer]);',
+'    }',
+'    else if(m.type === "embedText"){',
+'      await load();',
+'      var ti = tok([m.text], { padding:true, truncation:true });',
+'      var tout = await textModel(ti);',
+'      var temb = norm(tout.text_embeds.data);',
+'      self.postMessage({type:"textEmbed", emb:temb, qid:m.qid}, [temb.buffer]);',
+'    }',
+'  }catch(err){ self.postMessage({type:"error", error:String((err && err.message) || err)}); }',
+'};'
+].join("\n");
+
+  // ---- match the portfolio's saved theme (instant) ----
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var $ = function(id){ return document.getElementById(id); };
+  var drop=$("drop"), file=$("file"), grid=$("grid"), statusEl=$("status"), errEl=$("err"),
+      query=$("query"), searchBtn=$("searchBtn"), sampleBtn=$("sampleBtn"), chips=$("chips"),
+      prog=$("progress"), progBar=$("progressBar"), hint=$("hint");
+
+  var photos=[];           // {id,name,url,emb,el,scoreEl,meterEl,simEl}
+  var nextId=0;
+  var worker=null, workerStarted=false;
+  var embedQueue=[], embedding=false, pendingResolvers={};
+  var modelReady=false, lastQueryWasText=true;
+
+  function showErr(msg){ errEl.textContent=msg; errEl.classList.add("show"); }
+  function clearErr(){ errEl.textContent=""; errEl.classList.remove("show"); }
+  function setStatus(html){ statusEl.innerHTML=html; }
+
+  function ensureWorker(){
+    if(worker) return;
+    try{
+      var url=URL.createObjectURL(new Blob([WORKER_SRC],{type:"text/javascript"}));
+      worker=new Worker(url,{type:"module"});
+    }catch(e){ showErr("Your browser couldn't start the AI worker. Try a recent Chrome, Edge, Firefox or Safari."); return; }
+    worker.onmessage=function(e){
+      var m=e.data;
+      if(m.type==="progress"){
+        prog.classList.add("show");
+        if(m.total){ progBar.style.width=Math.min(100,Math.round(m.loaded/m.total*100))+"%"; }
+        setStatus("Downloading the CLIP model once (~60 MB) — then it's cached and works offline…");
+      } else if(m.type==="ready"){
+        modelReady=true; prog.classList.remove("show"); progBar.style.width="0%";
+      } else if(m.type==="imageEmbed"){
+        var ph=photoById(m.id); if(ph){ ph.emb=m.emb; }
+        embedding=false; pumpQueue();
+      } else if(m.type==="textEmbed"){
+        runTextRanking(m.emb);
+      } else if(m.type==="error"){
+        embedding=false; showErr("Model error: "+m.error+" — try reloading the page."); pumpQueue();
+      }
+    };
+  }
+
+  function photoById(id){ for(var i=0;i<photos.length;i++){ if(photos[i].id===id) return photos[i]; } return null; }
+
+  function pumpQueue(){
+    updateIndexStatus();
+    if(embedding) return;
+    if(!embedQueue.length){ if(allIndexed()){ enableSearch(); } return; }
+    var job=embedQueue.shift(); embedding=true;
+    ensureWorker();
+    worker.postMessage({type:"embedImage", id:job.id, blob:job.blob});
+  }
+
+  function allIndexed(){ for(var i=0;i<photos.length;i++){ if(!photos[i].emb) return false; } return photos.length>0; }
+  function indexedCount(){ var c=0; for(var i=0;i<photos.length;i++){ if(photos[i].emb) c++; } return c; }
+
+  function updateIndexStatus(){
+    if(!photos.length) return;
+    var c=indexedCount();
+    if(c<photos.length){ setStatus("Indexing on your device… <b>"+c+" / "+photos.length+"</b> photos ready. You can start searching as soon as the first ones finish."); }
+    else { setStatus("<b>"+photos.length+"</b> photos indexed and searchable — all on your device. Type a description above."); }
+  }
+
+  function enableSearch(){
+    query.disabled=false; searchBtn.disabled=false; chips.setAttribute("aria-hidden","false");
+    if(!chips.childNodes.length){
+      ["sunset over water","a dog","food on a plate","city at night","something red","mountains"].forEach(function(q){
+        var b=document.createElement("button"); b.className="chip"; b.type="button"; b.textContent=q;
+        b.addEventListener("click",function(){ query.value=q; doTextSearch(); });
+        chips.appendChild(b);
+      });
+    }
+    hint.style.display="block";
+  }
+
+  function addThumb(ph){
+    var card=document.createElement("div"); card.className="card";
+    var img=document.createElement("img"); img.src=ph.url; img.alt=ph.name; img.loading="lazy";
+    var meter=document.createElement("div"); meter.className="meter"; var mi=document.createElement("i"); meter.appendChild(mi);
+    var score=document.createElement("div"); score.className="score"; score.style.display="none";
+    var sim=document.createElement("div"); sim.className="sim"; sim.textContent="find similar";
+    card.appendChild(img); card.appendChild(meter); card.appendChild(score); card.appendChild(sim);
+    card.addEventListener("click",function(){ if(ph.emb){ findSimilar(ph); } });
+    grid.appendChild(card);
+    ph.el=card; ph.scoreEl=score; ph.meterEl=mi;
+  }
+
+  function addBlobs(items){ // items: [{blob,name}]
+    clearErr();
+    if(!items.length) return;
+    ensureWorker();
+    if(worker) worker.postMessage({type:"load"});
+    items.forEach(function(it){
+      var ph={id:nextId++, name:it.name, url:URL.createObjectURL(it.blob), emb:null};
+      photos.push(ph); addThumb(ph);
+      embedQueue.push({id:ph.id, blob:it.blob});
+    });
+    updateIndexStatus();
+    pumpQueue();
+  }
+
+  function addFiles(files){
+    var items=[];
+    for(var i=0;i<files.length;i++){ if(files[i].type && files[i].type.indexOf("image/")===0){ items.push({blob:files[i], name:files[i].name}); } }
+    if(!items.length){ showErr("Those didn't look like image files. Try JPG, PNG, WebP or GIF."); return; }
+    addBlobs(items);
+  }
+
+  // ---- ranking ----
+  function dot(a,b){ var s=0; for(var i=0;i<a.length;i++) s+=a[i]*b[i]; return s; }
+
+  function applyScores(scores){ // scores: array aligned to photos with emb; null for unindexed
+    var valid=[]; for(var i=0;i<photos.length;i++){ if(photos[i].emb && scores[i]!=null) valid.push(scores[i]); }
+    if(!valid.length) return;
+    var max=Math.max.apply(null,valid), min=Math.min.apply(null,valid);
+    var order=photos.slice().sort(function(a,b){ var sa=a._score==null?-2:a._score, sb=b._score==null?-2:b._score; return sb-sa; });
+    // reorder DOM by score
+    order.forEach(function(ph){
+      grid.appendChild(ph.el);
+      if(ph._score==null || !ph.emb){ ph.scoreEl.style.display="none"; ph.meterEl.style.width="0%"; return; }
+      var norm = max>min ? (ph._score-min)/(max-min) : 1;
+      ph.scoreEl.style.display="block";
+      ph.scoreEl.textContent="#"+(order.indexOf(ph)+1);
+      ph.meterEl.style.width=Math.round(norm*100)+"%";
+    });
+  }
+
+  function rankAgainst(vec){
+    var scores=new Array(photos.length);
+    for(var i=0;i<photos.length;i++){ if(photos[i].emb){ photos[i]._score=dot(photos[i].emb,vec); scores[i]=photos[i]._score; } else { photos[i]._score=null; scores[i]=null; } }
+    applyScores(scores);
+  }
+
+  function runTextRanking(vec){ rankAgainst(vec); setStatus("Ranked <b>"+indexedCount()+"</b> photos by how well they match your search — best matches first."); }
+
+  function findSimilar(ph){
+    lastQueryWasText=false;
+    rankAgainst(ph.emb);
+    query.value="";
+    setStatus("Showing photos most visually similar to the one you clicked.");
+  }
+
+  function doTextSearch(){
+    var q=(query.value||"").trim();
+    if(!q){ return; }
+    if(!indexedCount()){ showErr("Add some photos first so there's something to search."); return; }
+    clearErr(); lastQueryWasText=true;
+    setStatus("Thinking about “"+q+"” on your device…");
+    ensureWorker();
+    worker.postMessage({type:"embedText", text:q, qid:Date.now()});
+  }
+
+  // ---- sample photos (real photos via CORS-enabled CDN; still indexed locally) ----
+  var SAMPLE_IDS=[1025,237,1062,1015,1016,1080,431,225,326,164,335,452,366,400,433,490];
+  function loadSamples(){
+    sampleBtn.disabled=true; sampleBtn.textContent="Loading samples…"; clearErr();
+    var urls=SAMPLE_IDS.map(function(id){ return "https://picsum.photos/id/"+id+"/420/420"; });
+    var loaded=[], remaining=urls.length, failed=0;
+    urls.forEach(function(u,idx){
+      fetch(u,{mode:"cors"}).then(function(r){ if(!r.ok) throw new Error("http"); return r.blob(); })
+      .then(function(b){ loaded.push({blob:b, name:"sample-"+(idx+1)+".jpg"}); })
+      .catch(function(){ failed++; })
+      .finally(function(){ remaining--; if(remaining===0){ finishSamples(loaded,failed); } });
+    });
+  }
+  function finishSamples(loaded,failed){
+    sampleBtn.textContent="Try it with sample photos"; sampleBtn.disabled=false;
+    if(!loaded.length){ showErr("Couldn't fetch the sample photos (network blocked them). Drop in a few of your own instead — that's the real use case anyway."); return; }
+    if(failed){ setStatus("Loaded "+loaded.length+" sample photos (a few were blocked). Indexing now…"); }
+    addBlobs(loaded);
+  }
+
+  // ---- wiring ----
+  drop.addEventListener("click",function(e){ if(e.target===sampleBtn) return; file.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ if(document.activeElement===sampleBtn) return; e.preventDefault(); file.click(); } });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop",function(e){ if(e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files); });
+  file.addEventListener("change",function(){ addFiles(file.files); file.value=""; });
+  sampleBtn.addEventListener("click",function(e){ e.stopPropagation(); loadSamples(); });
+  searchBtn.addEventListener("click",doTextSearch);
+  query.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); doTextSearch(); } });
+})();
+</script>
+
+<!-- shared site enhancements + Cloudflare Web Analytics beacon (token in enhance.js) -->
+<script src="enhance.js" defer></script>
+</body>
+</html>
