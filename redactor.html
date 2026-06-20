@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Redact PII Online — Remove Names, Emails &amp; Personal Data, 100% in Your Browser</title>
+<meta name="description" content="Paste text or drop a file and instantly redact personal data — names, emails, phones, SSNs, cards, IPs, secrets. A real AI model finds names locally. Nothing is uploaded." />
+<meta name="keywords" content="redact pii, pii redactor, remove personal data from text, redact text online, anonymize text, scrub pii, redact before chatgpt, redact names emails, no upload pii, on-device pii detection" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Redact PII Online — 100% in Your Browser" />
+<meta property="og:description" content="Strip names, emails, phones, SSNs, cards, IPs and secrets from text. A real AI model runs locally — nothing is uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/redactor.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Redact PII Online — 100% in Your Browser" />
+<meta name="twitter:description" content="Strip names, emails, phones, SSNs, cards, IPs and secrets from text. A real AI model runs locally, nothing uploaded." />
+<link rel="canonical" href="https://hammyasf.github.io/redactor.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PII Redactor","url":"https://hammyasf.github.io/redactor.html","applicationCategory":"SecurityApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Detect and redact personal data (names, emails, phones, SSNs, credit cards, IPs, secrets) from text entirely in your browser. A real on-device AI model finds names, organizations and places. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. All detection runs in your browser. The pattern matching is local JavaScript, and the AI name detector is a real model that downloads once and runs on your own device. Your text never leaves your machine."}},{"@type":"Question","name":"What kinds of personal data does it find?","acceptedAnswer":{"@type":"Answer","text":"Emails, phone numbers, credit card numbers (Luhn-checked), US Social Security numbers, IP addresses and common API keys/secrets are matched instantly with patterns. With AI detection enabled, it also finds people's names, organizations and locations."}},{"@type":"Question","name":"How does the AI name detection run without uploading my text?","acceptedAnswer":{"@type":"Answer","text":"It uses a named-entity-recognition transformer model (BERT-NER) compiled to run in the browser via Transformers.js and WebAssembly. The model downloads once (about 50 MB), is cached, and then all inference happens locally on your device."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up and no limits."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:980px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:36px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5.2vw,50px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:22px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .panel-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid var(--line);}
+  .panel-h .ttl{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;}
+  .ed{position:relative;}
+  textarea{width:100%;min-height:200px;resize:vertical;background:transparent;border:none;color:var(--ink);font-family:var(--mono);font-size:13.5px;line-height:1.65;padding:18px;outline:none;}
+  .ed.over::after{content:"Drop a .txt, .md, .log, .csv or .json file";position:absolute;inset:8px;border:2px dashed var(--accent);border-radius:14px;background:rgba(var(--accentRGB),.07);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;color:var(--accent);pointer-events:none;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .controls{padding:16px 18px;display:flex;flex-direction:column;gap:16px;}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .row .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);width:100%;margin-bottom:-4px;}
+  .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-2);border-radius:100px;padding:7px 13px;font-family:var(--mono);font-size:12.5px;color:var(--ink);cursor:pointer;user-select:none;transition:.15s;background:transparent;}
+  .chip .sw{width:9px;height:9px;border-radius:50%;}
+  .chip .ct{color:var(--faint);font-size:11.5px;}
+  .chip.off{opacity:.42;}
+  .chip.ai{border-style:dashed;}
+  .chip.ai.locked{opacity:.5;cursor:not-allowed;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .ai-box{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border:1px solid var(--line);border-radius:14px;padding:13px 15px;background:rgba(var(--surfaceRGB),.4);}
+  .ai-box .txt{font-size:13.5px;color:#cdd8d3;flex:1;min-width:200px;}
+  .ai-box .txt b{color:var(--ink);}
+  .prog{height:6px;background:rgba(237,242,239,.1);border-radius:100px;overflow:hidden;margin-top:8px;display:none;}
+  .prog > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .25s;}
+  .status{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .status b{color:var(--accent);}
+  .tabs{display:flex;gap:4px;}
+  .tabs button{background:transparent;border:1px solid var(--line-2);color:var(--muted);padding:7px 14px;border-radius:100px;font-family:var(--mono);font-size:12.5px;cursor:pointer;}
+  .tabs button.on{background:rgba(var(--accentRGB),.14);border-color:rgba(var(--accentRGB),.4);color:var(--accent);}
+  .view{padding:18px;font-family:var(--mono);font-size:13.5px;line-height:1.75;white-space:pre-wrap;word-break:break-word;min-height:160px;}
+  .view.hl mark{border-radius:4px;padding:1px 3px;color:#07100e;font-weight:600;}
+  .out-ta{width:100%;min-height:200px;resize:vertical;background:rgba(var(--surfaceRGB),.4);border:none;color:var(--ink);font-family:var(--mono);font-size:13.5px;line-height:1.65;padding:18px;outline:none;border-top:1px solid var(--line);}
+  .empty{padding:40px 24px;text-align:center;color:var(--muted);font-size:14px;}
+  .empty b{color:var(--ink);font-family:var(--display);font-size:18px;display:block;margin-bottom:6px;}
+  .barfoot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-top:1px solid var(--line);}
+  /* entity colors */
+  .sw-email,mark.t-email{background:#2be3b0;}
+  .sw-phone,mark.t-phone{background:#5ad1ff;}
+  .sw-name,mark.t-name{background:#ffd166;}
+  .sw-org,mark.t-org{background:#f78c6b;}
+  .sw-location,mark.t-location{background:#c792ea;}
+  .sw-ssn,mark.t-ssn{background:#ff6b6b;}
+  .sw-creditcard,mark.t-creditcard{background:#ff8fab;}
+  .sw-ip,mark.t-ip{background:#82aaff;}
+  .sw-secret,mark.t-secret{background:#ff5370;}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){textarea,.out-ta{font-size:13px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>PII Redactor</h1>
+    <p class="sub">Paste text or drop a file and strip out personal data before you share it, paste it into an AI, or file a bug report. Emails, phones, cards, SSNs, IPs and secrets are caught instantly, and a real AI model finds names, companies and places — all on your own device.</p>
+    <span class="priv">&#128274; 100% private — your text never leaves your browser</span>
+  </header>
+
+  <div class="panel">
+    <div class="panel-h">
+      <span class="ttl">Input</span>
+      <div class="tools">
+        <button class="btn btn-out" id="sample">Load sample</button>
+        <button class="btn btn-out" id="upload">Upload file</button>
+        <button class="btn btn-out" id="clear">Clear</button>
+        <input type="file" id="file" accept=".txt,.md,.log,.csv,.json,.text,text/*" hidden />
+      </div>
+    </div>
+    <div class="ed" id="ed">
+      <textarea id="input" placeholder="Paste any text here — a log, an email thread, a transcript, a spreadsheet row dump. Or drop a file. Then watch the personal data get flagged."></textarea>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="controls">
+      <div class="ai-box">
+        <div class="txt"><b>AI name detection</b> finds people, organizations and places that patterns can't. Uses a real BERT-NER model that downloads once (~50 MB), is cached, and runs entirely on your device. Everything else works without it.</div>
+        <button class="btn" id="loadAi">Enable AI detection</button>
+        <div style="width:100%"><div class="prog" id="prog"><i></i></div><div class="status" id="aiStatus"></div></div>
+      </div>
+      <div class="row" id="chips">
+        <span class="lbl">Detect</span>
+      </div>
+      <div class="row">
+        <span class="lbl">Redaction style</span>
+        <div class="seg" id="mode">
+          <button data-m="tag" class="on">Tags · [EMAIL]</button>
+          <button data-m="consistent">Consistent · [EMAIL_1]</button>
+          <button data-m="block">Blackout · &#9608;&#9608;&#9608;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-h">
+      <span class="ttl">Output · <span id="count">0</span> items found</span>
+      <div class="tabs">
+        <button data-t="redacted" class="on" id="tabR">Redacted</button>
+        <button data-t="highlighted" id="tabH">Highlighted</button>
+      </div>
+    </div>
+    <div id="outRedacted">
+      <div class="empty" id="emptyR"><b>Nothing to redact yet</b>Paste text or load the sample to see it cleaned up here.</div>
+      <textarea class="out-ta" id="outTa" readonly style="display:none"></textarea>
+    </div>
+    <div class="view hl" id="outHl" style="display:none"></div>
+    <div class="barfoot">
+      <button class="btn" id="copy" disabled>Copy redacted text</button>
+      <button class="btn btn-out" id="download" disabled>Download .txt</button>
+      <span class="status" id="foot"></span>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Everything happens locally. The structured data — emails, phone numbers, credit card numbers, Social Security numbers, IP addresses and common API keys — is matched the instant you type, using carefully written patterns in plain JavaScript. Credit card candidates are confirmed with the Luhn checksum so random 16-digit numbers do not get flagged by mistake.</p>
+    <p>Names are the hard part, because there is no pattern for "this is a person." So when you turn on AI detection, the page loads a real named-entity-recognition transformer (a BERT model fine-tuned on the CoNLL-2003 task) compiled to run in your browser with Transformers.js and WebAssembly. It reads the text and labels people, organizations and locations. The model downloads once, is cached by your browser, and from then on it runs offline on your own machine. No text, and no file you drop in, is ever sent anywhere.</p>
+    <h2>Why redact in the browser</h2>
+    <p>The whole point of removing personal data is privacy, so uploading that data to someone else's server to clean it defeats the purpose. Doing it locally means you can scrub a customer email, a support log, or a database export before pasting it into ChatGPT or attaching it to a ticket, without that sensitive data touching the internet at all.</p>
+    <h2>Pick a redaction style</h2>
+    <p>Tags replace each match with a label like [EMAIL] or [NAME]. Consistent tags add a stable number so the same person stays "[NAME_1]" everywhere — useful when you want an AI to keep following who is who without learning their real identity. Blackout simply covers the text with blocks for a screenshot-ready result.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my text uploaded anywhere?</summary><p>No. Pattern matching is local JavaScript and the AI model runs in your browser via WebAssembly. Your text and any file you drop in never leave your device.</p></details>
+    <details><summary>What does it detect?</summary><p>Emails, phone numbers, credit cards (Luhn-verified), US SSNs, IP addresses and common secrets/API keys instantly. With AI detection on, also names, organizations and locations.</p></details>
+    <details><summary>Why does the AI model need to download?</summary><p>Running a real model locally means the weights have to live on your device. It is about 50 MB, downloads once, and your browser caches it so the next visit is instant and works offline.</p></details>
+    <details><summary>Is detection perfect?</summary><p>No automated redactor is. Patterns are high-precision but unusual formats can slip through, and the AI name model can miss or over-tag. Always review the redacted output before sharing anything sensitive.</p></details>
+    <details><summary>Does it work on my phone?</summary><p>Yes. The instant pattern detection works everywhere. The AI model also runs on mobile, just a little slower to load.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- ==== AdSense / Polar.sh monetization slot (left intentionally empty for later) ====
+<ins class="adsbygoogle" style="display:block" data-ad-client="" data-ad-slot="" data-ad-format="auto"></ins>
+-->
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var SAMPLE = "Hi, this is Maria Gonzalez from Northwind Logistics in Austin, Texas.\n"+
+    "You can reach me at maria.gonzalez@northwind-logistics.com or call (512) 555-0147.\n"+
+    "My colleague James O'Brien (james.obrien@northwind-logistics.com, +44 20 7946 0958)\n"+
+    "handles the London accounts for Contoso Ltd. For the refund, my card is\n"+
+    "4111 1111 1111 1111, exp 09/27. SSN on file: 123-45-6789.\n"+
+    "The staging server is at 192.168.4.27 and the AWS access key is\n"+
+    "AKIAIOSFODNN7EXAMPLE. Thanks, talk soon.";
+
+  // ---- entity types ----
+  var TYPES = [
+    {id:"name",     label:"Names",        ai:true},
+    {id:"org",      label:"Organizations",ai:true},
+    {id:"location", label:"Locations",    ai:true},
+    {id:"email",    label:"Emails"},
+    {id:"phone",    label:"Phone numbers"},
+    {id:"creditcard",label:"Credit cards"},
+    {id:"ssn",      label:"SSNs"},
+    {id:"ip",       label:"IP addresses"},
+    {id:"secret",   label:"Secrets / keys"}
+  ];
+  var TAG = {name:"NAME",org:"ORG",location:"LOCATION",email:"EMAIL",phone:"PHONE",creditcard:"CREDIT_CARD",ssn:"SSN",ip:"IP",secret:"SECRET"};
+  // detection priority (earlier wins on overlap)
+  var PRIORITY = ["email","ssn","creditcard","ip","secret","phone","name","org","location"];
+
+  var enabled = {}; TYPES.forEach(function(t){ enabled[t.id]=true; });
+  var mode = "tag";
+  var tab = "redacted";
+  var aiReady = false, aiBusy = false;
+  var nerSpans = [];        // cached AI spans for current text
+  var nerJob = 0;           // job id to ignore stale worker results
+  var nerTextKey = null;    // text the cached nerSpans belong to
+
+  var $ = function(id){ return document.getElementById(id); };
+  var input=$("input"), edWrap=$("ed"), chipsRow=$("chips"), foot=$("foot"), countEl=$("count"),
+      outTa=$("outTa"), emptyR=$("emptyR"), outHl=$("outHl"), outRedacted=$("outRedacted"),
+      copyBtn=$("copy"), dlBtn=$("download"), loadAiBtn=$("loadAi"), prog=$("prog"), progBar=prog.firstChild, aiStatus=$("aiStatus");
+
+  // ---------- regex detectors ----------
+  function luhn(num){
+    var s=0, alt=false;
+    for(var i=num.length-1;i>=0;i--){ var d=num.charCodeAt(i)-48; if(d<0||d>9) return false; if(alt){ d*=2; if(d>9) d-=9; } s+=d; alt=!alt; }
+    return s%10===0;
+  }
+  function regexSpans(text){
+    var spans=[];
+    function add(type,re,validate){
+      re.lastIndex=0; var m;
+      while((m=re.exec(text))!==null){
+        if(m.index===re.lastIndex) re.lastIndex++; // guard zero-width
+        var val=m[0];
+        if(validate && !validate(val)) continue;
+        spans.push({type:type,start:m.index,end:m.index+val.length,value:val});
+      }
+    }
+    add("email", /\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,24}\b/g);
+    add("ssn",   /(?<!\d)\d{3}-\d{2}-\d{4}(?!\d)/g);
+    add("ip",    /\b(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\b/g);
+    add("creditcard", /\b\d(?:[ \-]?\d){12,18}\b/g, function(v){ var d=v.replace(/[^\d]/g,""); return d.length>=13 && d.length<=19 && luhn(d); });
+    add("secret", /\b(?:AKIA[0-9A-Z]{16}|ASIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,}|sk_(?:live|test)_[A-Za-z0-9]{16,}|pk_(?:live|test)_[A-Za-z0-9]{16,}|AIza[0-9A-Za-z_\-]{35}|xox[baprs]-[A-Za-z0-9-]{10,}|eyJ[A-Za-z0-9_\-]{8,}\.[A-Za-z0-9_\-]{8,}\.[A-Za-z0-9_\-]{8,})\b/g);
+    add("phone", /(?<!\d)(?:\+\d{1,3}[ .\-]?)?(?:\(\d{2,4}\)|\d{2,4})(?:[ .\-]?\d{2,4}){2,3}(?!\d)/g, function(v){ var d=v.replace(/[^\d]/g,""); return d.length>=10 && d.length<=15; });
+    return spans;
+  }
+
+  // resolve overlaps by priority then position
+  function resolve(spans){
+    var pr={}; PRIORITY.forEach(function(t,i){ pr[t]=i; });
+    spans.sort(function(a,b){ if(pr[a.type]!==pr[b.type]) return pr[a.type]-pr[b.type]; return a.start-b.start; });
+    var accepted=[];
+    spans.forEach(function(s){
+      for(var i=0;i<accepted.length;i++){ var a=accepted[i]; if(s.start<a.end && s.end>a.start) return; }
+      accepted.push(s);
+    });
+    accepted.sort(function(a,b){ return a.start-b.start; });
+    return accepted;
+  }
+
+  function escapeHtml(s){ return s.replace(/[&<>]/g,function(c){ return c==="&"?"&amp;":c==="<"?"&lt;":"&gt;"; }); }
+
+  function buildReplacement(span, counters){
+    if(mode==="block") return "█".repeat(Math.min(Math.max(span.value.replace(/\s/g,"").length,4),14));
+    if(mode==="consistent"){
+      var key=TAG[span.type]+"::"+span.value.trim().toLowerCase().replace(/[\s\-().]/g,"");
+      if(!(key in counters.map)){ counters.n[span.type]=(counters.n[span.type]||0)+1; counters.map[key]="["+TAG[span.type]+"_"+counters.n[span.type]+"]"; }
+      return counters.map[key];
+    }
+    return "["+TAG[span.type]+"]";
+  }
+
+  function render(){
+    var text=input.value;
+    var spans=regexSpans(text).filter(function(s){ return enabled[s.type]; });
+    if(aiReady && nerTextKey===text){
+      nerSpans.forEach(function(s){ if(enabled[s.type]) spans.push({type:s.type,start:s.start,end:s.end,value:text.slice(s.start,s.end)}); });
+    }
+    var acc=resolve(spans);
+
+    // counts per type
+    var counts={}; acc.forEach(function(s){ counts[s.type]=(counts[s.type]||0)+1; });
+    updateChips(counts);
+    countEl.textContent=acc.length;
+
+    // redacted output
+    var counters={map:{},n:{}};
+    var outParts=[], cur=0;
+    acc.forEach(function(s){ outParts.push(text.slice(cur,s.start)); outParts.push(buildReplacement(s,counters)); cur=s.end; });
+    outParts.push(text.slice(cur));
+    var redacted=outParts.join("");
+
+    // highlighted output
+    var hlParts=[], c2=0;
+    acc.forEach(function(s){ hlParts.push(escapeHtml(text.slice(c2,s.start))); hlParts.push('<mark class="t-'+s.type+'" title="'+TAG[s.type]+'">'+escapeHtml(text.slice(s.start,s.end))+'</mark>'); c2=s.end; });
+    hlParts.push(escapeHtml(text.slice(c2)));
+
+    var has=text.trim().length>0;
+    var hasItems=acc.length>0;
+    emptyR.style.display = has ? "none":"block";
+    outTa.style.display = has ? "block":"none";
+    outTa.value=redacted;
+    outHl.innerHTML = has ? hlParts.join("") : "";
+
+    copyBtn.disabled=!has; dlBtn.disabled=!has;
+    foot.innerHTML = has ? (hasItems ? "Redacted <b>"+acc.length+"</b> item"+(acc.length>1?"s":"")+(aiReady?"":" · turn on AI detection to also catch names")
+                                     : "No personal data detected"+(aiReady?"":" · turn on AI detection to also catch names")) : "";
+    // tab visibility
+    outRedacted.style.display = tab==="redacted" ? "block":"none";
+    outHl.style.display = tab==="highlighted" ? "block":"none";
+  }
+
+  // ---------- chips ----------
+  var chipEls={};
+  function buildChips(){
+    TYPES.forEach(function(t){
+      var c=document.createElement("button");
+      c.className="chip"+(t.ai?" ai locked":"");
+      c.innerHTML='<span class="sw sw-'+t.id+'"></span>'+t.label+' <span class="ct" data-ct="'+t.id+'">0</span>';
+      c.addEventListener("click",function(){
+        if(t.ai && !aiReady) return;
+        enabled[t.id]=!enabled[t.id];
+        c.classList.toggle("off",!enabled[t.id]);
+        render();
+      });
+      chipsRow.appendChild(c); chipEls[t.id]=c;
+    });
+  }
+  function updateChips(counts){
+    TYPES.forEach(function(t){
+      var ct=chipEls[t.id].querySelector('[data-ct="'+t.id+'"]');
+      ct.textContent = counts[t.id]||0;
+    });
+  }
+
+  // ---------- AI worker ----------
+  var worker=null;
+  function startAi(){
+    if(aiBusy||aiReady) return; aiBusy=true;
+    loadAiBtn.disabled=true; loadAiBtn.textContent="Loading model…"; prog.style.display="block"; aiStatus.textContent="Downloading model (~50 MB, cached after first time)…";
+    var code = [
+      'import { pipeline, env } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1";',
+      'env.allowLocalModels=false;',
+      'let ner=null;',
+      'self.onmessage = async (e)=>{',
+      '  const d=e.data;',
+      '  if(d.type==="load"){',
+      '    try{',
+      '      ner = await pipeline("token-classification","Xenova/bert-base-NER",{ dtype:"q8", progress_callback:(p)=>{ if(p&&p.status==="progress") self.postMessage({type:"progress",loaded:p.loaded,total:p.total}); } });',
+      '      self.postMessage({type:"ready"});',
+      '    }catch(err){ self.postMessage({type:"error",error:String(err&&err.message||err)}); }',
+      '  } else if(d.type==="ner"){',
+      '    try{',
+      '      let all=[];',
+      '      for(const ch of d.chunks){',
+      '        const out= await ner(ch.text);',
+      '        for(const o of out){ o._off=ch.off; all.push(o); }',
+      '      }',
+      '      self.postMessage({type:"result",job:d.job,raw:all});',
+      '    }catch(err){ self.postMessage({type:"error",error:String(err&&err.message||err)}); }',
+      '  }',
+      '};'
+    ].join("\n");
+    try{
+      worker=new Worker(URL.createObjectURL(new Blob([code],{type:"text/javascript"})),{type:"module"});
+    }catch(err){ failAi("Your browser blocked the AI worker."); return; }
+    worker.onmessage=function(ev){
+      var m=ev.data;
+      if(m.type==="progress"){ if(m.total){ var pct=Math.round(m.loaded/m.total*100); progBar.style.width=pct+"%"; aiStatus.textContent="Downloading model… "+pct+"%"; } }
+      else if(m.type==="ready"){ aiReady=true; aiBusy=false; prog.style.display="none"; aiStatus.innerHTML='<b>AI detection on.</b> Names, organizations and locations are now flagged. Runs fully offline from here.'; loadAiBtn.style.display="none";
+        TYPES.forEach(function(t){ if(t.ai) chipEls[t.id].classList.remove("locked"); });
+        runNer(); }
+      else if(m.type==="result"){ if(m.job!==nerJob) return; nerSpans=groupEntities(m.raw); nerTextKey=input.value; render(); }
+      else if(m.type==="error"){ failAi("Model failed to load: "+m.error); }
+    };
+    worker.onerror=function(e){ failAi("Worker error: "+(e.message||"unknown")); };
+    worker.postMessage({type:"load"});
+  }
+  function failAi(msg){ aiBusy=false; prog.style.display="none"; aiStatus.textContent=msg+" Pattern detection still works."; loadAiBtn.disabled=false; loadAiBtn.textContent="Retry AI detection"; }
+
+  function chunkText(text){
+    var chunks=[], MAX=1600, i=0;
+    while(i<text.length){
+      var end=Math.min(i+MAX,text.length);
+      if(end<text.length){ var sp=text.lastIndexOf(" ",end); var nl=text.lastIndexOf("\n",end); var brk=Math.max(sp,nl); if(brk>i+200) end=brk; }
+      chunks.push({text:text.slice(i,end),off:i});
+      i=end;
+    }
+    return chunks;
+  }
+  function runNer(){
+    if(!aiReady||!worker) return;
+    var text=input.value;
+    if(!text.trim()){ nerSpans=[]; nerTextKey=text; render(); return; }
+    nerJob++;
+    worker.postMessage({type:"ner",job:nerJob,chunks:chunkText(text)});
+  }
+  // group B-/I- token tags into entity spans using char offsets
+  function groupEntities(raw){
+    var map={PER:"name",ORG:"org",LOC:"location"};
+    var out=[], cur=null;
+    function flush(){ if(cur && map[cur.t]){ out.push({type:map[cur.t],start:cur.s,end:cur.e}); } cur=null; }
+    raw.forEach(function(o){
+      var ent=o.entity||""; var tag=ent.replace(/^[BI]-/,""); var isB=ent.charAt(0)==="B"; var isI=ent.charAt(0)==="I";
+      var s=(typeof o.start==="number"?o.start:null), e=(typeof o.end==="number"?o.end:null);
+      if(s===null||e===null){ return; } // need char offsets to redact safely
+      s+=o._off; e+=o._off;
+      if(isB || !cur || cur.t!==tag || s>cur.e+1){ flush(); cur={t:tag,s:s,e:e}; }
+      else { cur.e=e; }
+    });
+    flush();
+    return out;
+  }
+
+  // ---------- wiring ----------
+  var deb;
+  function onInput(){ clearTimeout(deb); deb=setTimeout(function(){ render(); if(aiReady) runNer(); },180); }
+  input.addEventListener("input",onInput);
+
+  $("sample").addEventListener("click",function(){ input.value=SAMPLE; onInput(); input.focus(); });
+  $("clear").addEventListener("click",function(){ input.value=""; nerSpans=[]; nerTextKey=""; render(); input.focus(); });
+  $("upload").addEventListener("click",function(){ $("file").click(); });
+  $("file").addEventListener("change",function(){ var f=this.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(){ input.value=String(r.result||""); onInput(); }; r.readAsText(f); });
+
+  ["dragover","dragenter"].forEach(function(ev){ edWrap.addEventListener(ev,function(e){ e.preventDefault(); edWrap.classList.add("over"); }); });
+  ["dragleave","dragend"].forEach(function(ev){ edWrap.addEventListener(ev,function(e){ e.preventDefault(); edWrap.classList.remove("over"); }); });
+  edWrap.addEventListener("drop",function(e){ e.preventDefault(); edWrap.classList.remove("over"); var f=e.dataTransfer.files[0]; if(f){ var r=new FileReader(); r.onload=function(){ input.value=String(r.result||""); onInput(); }; r.readAsText(f); } });
+
+  document.querySelectorAll("#mode button").forEach(function(b){ b.addEventListener("click",function(){ document.querySelectorAll("#mode button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); mode=b.getAttribute("data-m"); render(); }); });
+  $("tabR").addEventListener("click",function(){ tab="redacted"; $("tabR").classList.add("on"); $("tabH").classList.remove("on"); render(); });
+  $("tabH").addEventListener("click",function(){ tab="highlighted"; $("tabH").classList.add("on"); $("tabR").classList.remove("on"); render(); });
+
+  copyBtn.addEventListener("click",function(){ outTa.select(); var ok=false; try{ ok=document.execCommand("copy"); }catch(e){}
+    if(navigator.clipboard){ navigator.clipboard.writeText(outTa.value).then(function(){ flash("Copied"); }); } else if(ok){ flash("Copied"); } });
+  function flash(t){ var o=copyBtn.textContent; copyBtn.textContent=t; setTimeout(function(){ copyBtn.textContent=o; },1200); }
+  dlBtn.addEventListener("click",function(){ var b=new Blob([outTa.value],{type:"text/plain"}); var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="redacted.txt"; a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); },2000); });
+
+  loadAiBtn.addEventListener("click",startAi);
+
+  buildChips();
+  render();
+})();
+</script>
+
+<!-- Analytics: Cloudflare Web Analytics beacon -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
