@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Particle Life — emergent life simulation in your browser (WebGPU)</title>
+<meta name="description" content="Watch lifelike creatures emerge from a few simple rules. A real particle-life simulation running entirely on your GPU with WebGPU. Edit the force matrix, randomize new lifeforms, share what you make. No upload, no sign-up." />
+<meta name="keywords" content="particle life, particle life simulation, webgpu, particle life browser, emergent behavior, artificial life, alife, particle simulation, gpu compute, attraction matrix, particle life online, clusters simulation, generative art" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Particle Life — emergent life in your browser (WebGPU)" />
+<meta property="og:description" content="Thousands of particles, a few simple rules, and lifelike creatures emerge. Runs entirely on your GPU. Edit the rules, make new lifeforms, share them." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/particle-life.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Particle Life — emergent life in your browser (WebGPU)" />
+<meta name="twitter:description" content="Thousands of particles, a few simple rules, lifelike creatures emerge. All on your GPU, nothing uploaded." />
+<link rel="canonical" href="https://hammyasf.github.io/particle-life.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Particle Life","url":"https://hammyasf.github.io/particle-life.html","applicationCategory":"GameApplication","operatingSystem":"Any (web browser with WebGPU)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"An emergent artificial-life simulation. Thousands of particles follow a small force matrix and self-organize into lifelike structures, computed entirely on the GPU with WebGPU.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does this run without a server?","acceptedAnswer":{"@type":"Answer","text":"Every particle and every force is computed on your own graphics card using WebGPU compute shaders. Nothing is uploaded and there is no backend. The page is a single HTML file."}},{"@type":"Question","name":"What is particle life?","acceptedAnswer":{"@type":"Answer","text":"It is an artificial-life model. Each particle has a color, and a small matrix says how strongly each color is attracted to or repelled by every other color. From those few numbers, lifelike cells, chasers, and ecosystems emerge."}},{"@type":"Question","name":"Why do I need WebGPU?","acceptedAnswer":{"@type":"Answer","text":"The simulation computes the force between every pair of particles each frame, which is millions of calculations. WebGPU runs that on the GPU in parallel so it stays smooth. It works in recent Chrome, Edge, and Brave on desktop, and in Safari 18+."}},{"@type":"Question","name":"Is it free and private?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is completely free, with no sign-up, and it runs entirely on your device."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1180px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:26px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,50px);margin:12px 0 0;}
+  .sub{margin-top:13px;font-size:17.5px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  .app{display:grid;grid-template-columns:1fr 320px;gap:18px;margin:22px 0 8px;}
+  @media(max-width:920px){.app{grid-template-columns:1fr;}}
+  .stage{position:relative;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#04080a;min-height:62vh;}
+  #cv{display:block;width:100%;height:100%;position:absolute;inset:0;touch-action:none;}
+  .hud{position:absolute;top:12px;left:14px;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(4,8,10,.5);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:9px;padding:6px 10px;pointer-events:none;z-index:3;}
+  .hud b{color:var(--accent);font-weight:500;}
+  .stage-tip{position:absolute;bottom:12px;left:14px;right:14px;font-family:var(--mono);font-size:11px;color:var(--faint);text-align:center;pointer-events:none;z-index:3;}
+  .overlay{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;background:rgba(4,8,10,.78);backdrop-filter:blur(4px);}
+  .overlay .box{max-width:440px;}
+  .overlay h2{font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:10px;}
+  .overlay p{color:var(--muted);font-size:14.5px;line-height:1.65;}
+  .overlay.hidden{display:none;}
+
+  .panel{border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);padding:16px 16px 18px;align-self:start;}
+  .row-btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 14px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s,opacity .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
+  .btn-sm{font-size:12px;padding:7px 11px;}
+  .grp{margin:14px 0 4px;}
+  .grp h3{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;}
+  .ctl{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+  .ctl .lab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .ctl .lab b{color:var(--accent);font-weight:500;}
+  input[type=range]{accent-color:var(--accent);width:100%;}
+  select{width:100%;background:rgba(var(--surfaceRGB),.7);border:1px solid var(--line-2);color:var(--ink);border-radius:9px;padding:8px 10px;font-family:var(--mono);font-size:12.5px;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{flex:1;background:transparent;color:var(--muted);border:none;padding:8px 6px;font-family:var(--mono);font-size:12px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+
+  .matrix-wrap{overflow:auto;}
+  table.matrix{border-collapse:collapse;margin:2px auto 0;}
+  table.matrix td,table.matrix th{width:34px;height:34px;text-align:center;}
+  table.matrix th{font-size:0;}
+  .sw{width:18px;height:18px;border-radius:50%;margin:auto;box-shadow:0 0 8px rgba(0,0,0,.4);}
+  .cell{width:32px;height:32px;border-radius:7px;border:1px solid var(--line);cursor:ns-resize;font-family:var(--mono);font-size:10.5px;color:#dfeae6;display:flex;align-items:center;justify-content:center;user-select:none;touch-action:none;}
+  .mhint{font-family:var(--mono);font-size:10.5px;color:var(--faint);text-align:center;margin-top:8px;line-height:1.5;}
+
+  section.copy{padding:18px 0 4px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:760px;}
+  .faq{border-top:1px solid var(--line);margin-top:14px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:28px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);z-index:300;opacity:0;pointer-events:none;background:var(--accent);color:#07100e;font-family:var(--mono);font-size:13px;font-weight:500;padding:11px 18px;border-radius:100px;transition:opacity .3s,transform .3s;}
+  .toast.on{opacity:1;transform:translate(-50%,0);}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">WebGPU · runs on your GPU</div>
+    <h1>Particle Life</h1>
+    <p class="sub">A few thousand particles, a small table of attraction rules, and life-like creatures appear on their own. Edit the rules, roll a new lifeform, and watch it self-organize. Every force is computed on your graphics card in real time.</p>
+    <span class="priv">&#9889; 100% on your device — nothing is uploaded</span>
+  </header>
+
+  <div class="app">
+    <div class="stage" id="stage">
+      <canvas id="cv"></canvas>
+      <div class="hud" id="hud">starting…</div>
+      <div class="stage-tip">Drag on the canvas to push or pull particles. Hit <b style="color:var(--accent)">Randomize</b> for a brand-new lifeform.</div>
+      <div class="overlay hidden" id="overlay"><div class="box">
+        <h2 id="ovTitle">WebGPU not available</h2>
+        <p id="ovMsg">This simulation runs on your GPU through WebGPU. Open it in a recent desktop Chrome, Edge, or Brave, or Safari 18+ on a Mac, and it will start automatically.</p>
+      </div></div>
+    </div>
+
+    <div class="panel">
+      <div class="row-btns">
+        <button class="btn" id="bRand">Randomize</button>
+        <button class="btn btn-out btn-sm" id="bRestart">Reseed</button>
+        <button class="btn btn-out btn-sm" id="bPause">Pause</button>
+      </div>
+      <div class="row-btns">
+        <button class="btn btn-out btn-sm" id="bShare">Share</button>
+        <button class="btn btn-out btn-sm" id="bPng">Save PNG</button>
+        <button class="btn btn-out btn-sm" id="bSym">Symmetric</button>
+      </div>
+
+      <div class="grp">
+        <h3>Preset</h3>
+        <select id="preset">
+          <option value="random">Random lifeform</option>
+          <option value="cells">Cells</option>
+          <option value="chase">Snakes &amp; chasers</option>
+          <option value="orbits">Orbiting clusters</option>
+          <option value="webs">Webs</option>
+          <option value="territorial">Territorial</option>
+        </select>
+      </div>
+
+      <div class="grp">
+        <h3>Force matrix &mdash; drag a cell</h3>
+        <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+        <div class="mhint">Row pulls toward / pushes from column.<br>Green = attract · Red = repel · drag up/down.</div>
+      </div>
+
+      <div class="grp">
+        <h3>Tuning</h3>
+        <div class="ctl"><div class="lab"><span>Types</span><b id="vTypes">6</b></div><input type="range" id="sTypes" min="2" max="6" step="1" value="6"></div>
+        <div class="ctl"><div class="lab"><span>Particles</span><b id="vCount">4000</b></div><input type="range" id="sCount" min="500" max="9000" step="500" value="4000"></div>
+        <div class="ctl"><div class="lab"><span>Interaction radius</span><b id="vR">0.10</b></div><input type="range" id="sR" min="0.04" max="0.25" step="0.005" value="0.10"></div>
+        <div class="ctl"><div class="lab"><span>Force</span><b id="vForce">10</b></div><input type="range" id="sForce" min="1" max="30" step="1" value="10"></div>
+        <div class="ctl"><div class="lab"><span>Friction</span><b id="vFric">0.71</b></div><input type="range" id="sFric" min="0.30" max="0.95" step="0.01" value="0.71"></div>
+        <div class="ctl"><div class="lab"><span>Repulsion zone</span><b id="vBeta">0.30</b></div><input type="range" id="sBeta" min="0.05" max="0.50" step="0.01" value="0.30"></div>
+      </div>
+
+      <div class="grp">
+        <h3>Look</h3>
+        <div class="ctl"><div class="lab"><span>Colors</span></div>
+          <select id="scheme">
+            <option value="spectrum">Spectrum</option>
+            <option value="neon">Neon</option>
+            <option value="sunset">Sunset</option>
+            <option value="ice">Ice</option>
+          </select>
+        </div>
+        <div class="ctl"><div class="lab"><span>Edges</span></div>
+          <div class="seg" id="wrapSeg"><button data-w="1" class="on">Wrap</button><button data-w="0">Walls</button></div>
+        </div>
+        <div class="ctl"><div class="lab"><span>Cursor</span></div>
+          <div class="seg" id="mouseSeg"><button data-m="1" class="on">Pull</button><button data-m="-1">Push</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>What you are looking at</h2>
+    <p>Each dot is a particle with a color. A small square table, the force matrix on the right, says how strongly every color is attracted to or repelled by every other color. That is the entire rulebook. There is no goal coded in, no behavior scripted. Yet from those few numbers you get cells that hold together, predators that chase prey, and slow churning ecosystems that never quite settle. This is the model people call particle life, and the surprise is how much life comes out of how little.</p>
+    <h2>How it runs in your browser</h2>
+    <p>The honest answer to "how is this smooth?" is the GPU. Every frame the simulation measures the force between particles, and with a few thousand particles that is millions of little calculations. A WebGPU compute shader does all of them in parallel on your graphics card, writes the new positions to a buffer, and a second pass draws that same buffer straight to the screen, so the data never leaves the GPU. Nothing is uploaded, there is no server, and the whole thing is one HTML file. That is also why it needs WebGPU: it is the browser feature that lets a web page run real compute on the GPU.</p>
+    <h2>Things to try</h2>
+    <p>Hit Randomize a few times until something catches your eye, then drag a single matrix cell up or down and watch the whole population change its mind. Turn the interaction radius up for sweeping galaxy-like motion or down for tight, twitchy cells. Drag on the canvas to stir it. When you find something you love, press Share to copy a link that rebuilds the exact same world for anyone you send it to.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>How does this work without a server?</summary><p>Everything is computed on your own GPU with WebGPU and drawn on the spot. There is no backend and nothing is uploaded. The page is a single static file.</p></details>
+    <details><summary>Why does it need WebGPU?</summary><p>The simulation compares every particle with every other particle each frame, which is millions of operations. WebGPU runs that in parallel on your graphics card so it stays at full frame rate. It works in recent Chrome, Edge, and Brave on desktop, and in Safari 18 and up.</p></details>
+    <details><summary>What is the force matrix?</summary><p>It is the rulebook. The value in row A, column B is how strongly color A is pulled toward or pushed from color B. Positive is attraction, negative is repulsion. Asymmetry, where A chases B but B flees A, is what creates the most life-like motion.</p></details>
+    <details><summary>Is it free?</summary><p>Yes, completely free, no sign-up, and it runs entirely on your device.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build something like this every day.</h3>
+    <p>Senior full-stack engineer, open to senior or contract roles, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<div class="toast" id="toast"></div>
+
+<!-- early theme match (same as the rest of the site) -->
+<script>
+(function(){ try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+  var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){} })();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var MAXT=6;
+  var SCHEMES={
+    spectrum:["#ff5566","#ff9f3d","#ffe14d","#4de08a","#36c5d6","#9a7bff"],
+    neon:["#ff2d95","#19f0d6","#7cf03d","#ffd23d","#3da5ff","#b07cff"],
+    sunset:["#ffd23d","#ff8a3d","#ff5566","#d6336c","#9a3dff","#5b3df0"],
+    ice:["#8fe9ff","#5ac8ff","#3da5ff","#7c8bff","#b07cff","#e0f4ff"]
+  };
+  // ---- state ----
+  var S={
+    types:6, count:4000, rMax:0.10, force:10, friction:0.71, beta:0.30,
+    wrap:1, mouseDir:1, scheme:"spectrum", paused:false,
+    mat: zeros()
+  };
+  function zeros(){ var m=[]; for(var i=0;i<MAXT;i++){ m[i]=[]; for(var j=0;j<MAXT;j++) m[i][j]=0; } return m; }
+  function rnd(a,b){ return a+Math.random()*(b-a); }
+
+  var hud=document.getElementById("hud"), overlay=document.getElementById("overlay"),
+      ovTitle=document.getElementById("ovTitle"), ovMsg=document.getElementById("ovMsg"),
+      cv=document.getElementById("cv"), stage=document.getElementById("stage"), toast=document.getElementById("toast");
+
+  function showToast(m){ toast.textContent=m; toast.classList.add("on"); clearTimeout(showToast._t); showToast._t=setTimeout(function(){toast.classList.remove("on");},2200); }
+  function fail(title,msg){ ovTitle.textContent=title; ovMsg.textContent=msg; overlay.classList.remove("hidden"); hud.style.display="none"; }
+
+  // ---- matrix presets ----
+  function randomMatrix(){ for(var i=0;i<MAXT;i++)for(var j=0;j<MAXT;j++) S.mat[i][j]=Math.round(rnd(-1,1)*100)/100; }
+  function buildPreset(name){
+    var n=S.types, i, j;
+    randomMatrix();
+    if(name==="cells"){ // self-attract, others mild repel
+      for(i=0;i<MAXT;i++)for(j=0;j<MAXT;j++) S.mat[i][j]= i===j?1.0:-0.2;
+    } else if(name==="chase"){ // ring: each chases the next
+      for(i=0;i<MAXT;i++)for(j=0;j<MAXT;j++) S.mat[i][j]=0;
+      for(i=0;i<n;i++){ S.mat[i][i]=0.6; S.mat[i][(i+1)%n]=1.0; S.mat[(i+1)%n][i]=-1.0; }
+    } else if(name==="orbits"){
+      for(i=0;i<MAXT;i++)for(j=0;j<MAXT;j++) S.mat[i][j]= i===j?0.9:(j===(i+1)%n?0.7:-0.5);
+    } else if(name==="webs"){
+      for(i=0;i<MAXT;i++)for(j=0;j<MAXT;j++) S.mat[i][j]= i===j?-0.4:0.5;
+    } else if(name==="territorial"){
+      for(i=0;i<MAXT;i++)for(j=0;j<MAXT;j++) S.mat[i][j]= i===j?1.0:-1.0;
+    }
+    // (random already set otherwise)
+  }
+
+  // ---- WebGPU ----
+  var device, ctx, format, computePipe, renderPipe, cLayout, rLayout;
+  var buf=[null,null], paramBuf, matBuf, ruBuf, colBuf, cBG=[null,null], rBG=[null,null], cur=0, nParticles=0;
+  var canvasW=1, canvasH=1, dpr=1, aspect=1;
+  var mouse={x:0,y:0,active:0};
+
+  var WGSL_COMPUTE = `
+struct Particle { pos: vec2<f32>, vel: vec2<f32>, ptype: f32, p0: f32, p1: f32, p2: f32 };
+struct Params {
+  world: vec2<f32>, mouse: vec2<f32>,
+  count: f32, types: f32, rMax: f32, friction: f32,
+  force: f32, beta: f32, dt: f32, mouseActive: f32,
+  mouseStrength: f32, mouseRadius: f32, wrap: f32, pad: f32,
+};
+@group(0) @binding(0) var<storage, read> inP: array<Particle>;
+@group(0) @binding(1) var<storage, read_write> outP: array<Particle>;
+@group(0) @binding(2) var<uniform> P: Params;
+@group(0) @binding(3) var<uniform> M: array<vec4<f32>, 9>;
+fn attr(a: u32, b: u32) -> f32 {
+  let idx = a*6u + b; let v = M[idx/4u]; let m = idx % 4u;
+  if (m==0u){return v.x;} if(m==1u){return v.y;} if(m==2u){return v.z;} return v.w;
+}
+@compute @workgroup_size(64)
+fn main(@builtin(global_invocation_id) gid: vec3<u32>) {
+  let i = gid.x; let n = u32(P.count);
+  if (i >= n) { return; }
+  var p = inP[i];
+  let ti = u32(p.ptype);
+  var acc = vec2<f32>(0.0, 0.0);
+  let rMax = P.rMax; let beta = P.beta;
+  for (var j: u32 = 0u; j < n; j = j + 1u) {
+    if (j == i) { continue; }
+    let q = inP[j];
+    var d = q.pos - p.pos;
+    if (P.wrap > 0.5) {
+      if (d.x > P.world.x*0.5) { d.x = d.x - P.world.x; } else if (d.x < -P.world.x*0.5) { d.x = d.x + P.world.x; }
+      if (d.y > P.world.y*0.5) { d.y = d.y - P.world.y; } else if (d.y < -P.world.y*0.5) { d.y = d.y + P.world.y; }
+    }
+    let r = length(d);
+    if (r > 0.0 && r < rMax) {
+      let rn = r / rMax;
+      var f = 0.0;
+      if (rn < beta) { f = rn / beta - 1.0; }
+      else { f = attr(ti, u32(q.ptype)) * (1.0 - abs(2.0*rn - 1.0 - beta) / (1.0 - beta)); }
+      acc = acc + (d / r) * f;
+    }
+  }
+  acc = acc * (rMax * P.force);
+  if (P.mouseActive > 0.5) {
+    var dm = P.mouse - p.pos; let rm = length(dm);
+    if (rm > 0.0 && rm < P.mouseRadius) { acc = acc + (dm / rm) * P.mouseStrength * (1.0 - rm/P.mouseRadius) * 40.0; }
+  }
+  var vel = p.vel * P.friction;
+  vel = vel + acc * P.dt;
+  var pos = p.pos + vel * P.dt;
+  if (P.wrap > 0.5) {
+    pos.x = pos.x - floor(pos.x / P.world.x) * P.world.x;
+    pos.y = pos.y - floor(pos.y / P.world.y) * P.world.y;
+  } else {
+    if (pos.x < 0.0) { pos.x = 0.0; vel.x = -vel.x*0.5; }
+    if (pos.x > P.world.x) { pos.x = P.world.x; vel.x = -vel.x*0.5; }
+    if (pos.y < 0.0) { pos.y = 0.0; vel.y = -vel.y*0.5; }
+    if (pos.y > P.world.y) { pos.y = P.world.y; vel.y = -vel.y*0.5; }
+  }
+  var o = p; o.pos = pos; o.vel = vel; outP[i] = o;
+}`;
+
+  var WGSL_RENDER = `
+struct Particle { pos: vec2<f32>, vel: vec2<f32>, ptype: f32, p0: f32, p1: f32, p2: f32 };
+struct RU { canvas: vec2<f32>, point: f32, pad: f32 };
+@group(0) @binding(0) var<storage, read> P: array<Particle>;
+@group(0) @binding(1) var<uniform> R: RU;
+@group(0) @binding(2) var<uniform> COL: array<vec4<f32>, 6>;
+struct VOut { @builtin(position) pos: vec4<f32>, @location(0) uv: vec2<f32>, @location(1) col: vec3<f32> };
+@vertex
+fn vs(@builtin(vertex_index) vi: u32, @builtin(instance_index) ii: u32) -> VOut {
+  var quad = array<vec2<f32>,6>( vec2<f32>(-1.0,-1.0), vec2<f32>(1.0,-1.0), vec2<f32>(-1.0,1.0), vec2<f32>(-1.0,1.0), vec2<f32>(1.0,-1.0), vec2<f32>(1.0,1.0) );
+  let q = quad[vi];
+  let part = P[ii];
+  let scale = R.canvas.x;
+  let cx = part.pos.x * scale + q.x * R.point;
+  let cy = part.pos.y * scale + q.y * R.point;
+  var out: VOut;
+  out.pos = vec4<f32>(cx / R.canvas.x * 2.0 - 1.0, 1.0 - cy / R.canvas.y * 2.0, 0.0, 1.0);
+  out.uv = q;
+  out.col = COL[u32(part.ptype)].rgb;
+  return out;
+}
+@fragment
+fn fs(in: VOut) -> @location(0) vec4<f32> {
+  let d = length(in.uv);
+  if (d > 1.0) { discard; }
+  let a = smoothstep(1.0, 0.0, d);
+  return vec4<f32>(in.col * a, a);
+}`;
+
+  function hexRGB(h){ h=h.replace("#",""); return [parseInt(h.substr(0,2),16)/255, parseInt(h.substr(2,2),16)/255, parseInt(h.substr(4,2),16)/255]; }
+
+  function writeColors(){
+    var arr=new Float32Array(24); var pal=SCHEMES[S.scheme]||SCHEMES.spectrum;
+    for(var i=0;i<6;i++){ var c=hexRGB(pal[i%pal.length]); arr[i*4]=c[0]; arr[i*4+1]=c[1]; arr[i*4+2]=c[2]; arr[i*4+3]=1; }
+    device.queue.writeBuffer(colBuf,0,arr);
+  }
+  function writeMatrix(){
+    var arr=new Float32Array(36);
+    for(var i=0;i<6;i++)for(var j=0;j<6;j++){ arr[i*6+j]= (i<S.types&&j<S.types)?S.mat[i][j]:0; }
+    device.queue.writeBuffer(matBuf,0,arr);
+  }
+  function writeParams(){
+    var a=new Float32Array(16);
+    a[0]=1.0; a[1]=aspect;          // world
+    a[2]=mouse.x; a[3]=mouse.y;     // mouse
+    a[4]=nParticles; a[5]=S.types; a[6]=S.rMax; a[7]=S.friction;
+    a[8]=S.force; a[9]=S.beta; a[10]=0.02; a[11]=mouse.active;
+    a[12]=S.mouseDir; a[13]=0.16; a[14]=S.wrap; a[15]=0;
+    device.queue.writeBuffer(paramBuf,0,a);
+  }
+  function writeRU(){
+    var a=new Float32Array(4); a[0]=canvasW; a[1]=canvasH; a[2]=Math.max(1.6, (canvasW/520))*1.7*dpr; a[3]=0;
+    device.queue.writeBuffer(ruBuf,0,a);
+  }
+
+  function makeParticleData(n){
+    var arr=new Float32Array(n*8);
+    for(var i=0;i<n;i++){
+      arr[i*8]=Math.random(); arr[i*8+1]=Math.random()*aspect;
+      arr[i*8+2]=0; arr[i*8+3]=0;
+      arr[i*8+4]=Math.floor(Math.random()*S.types);
+    }
+    return arr;
+  }
+
+  function buildSim(){
+    nParticles=S.count;
+    var bytes=nParticles*8*4;
+    if(buf[0]) buf[0].destroy(); if(buf[1]) buf[1].destroy();
+    buf[0]=device.createBuffer({size:bytes,usage:GPUBufferUsage.STORAGE|GPUBufferUsage.COPY_DST});
+    buf[1]=device.createBuffer({size:bytes,usage:GPUBufferUsage.STORAGE|GPUBufferUsage.COPY_DST});
+    var data=makeParticleData(nParticles);
+    device.queue.writeBuffer(buf[0],0,data);
+    device.queue.writeBuffer(buf[1],0,data);
+    cur=0;
+    cBG[0]=device.createBindGroup({layout:cLayout,entries:[{binding:0,resource:{buffer:buf[0]}},{binding:1,resource:{buffer:buf[1]}},{binding:2,resource:{buffer:paramBuf}},{binding:3,resource:{buffer:matBuf}}]});
+    cBG[1]=device.createBindGroup({layout:cLayout,entries:[{binding:0,resource:{buffer:buf[1]}},{binding:1,resource:{buffer:buf[0]}},{binding:2,resource:{buffer:paramBuf}},{binding:3,resource:{buffer:matBuf}}]});
+    rBG[0]=device.createBindGroup({layout:rLayout,entries:[{binding:0,resource:{buffer:buf[0]}},{binding:1,resource:{buffer:ruBuf}},{binding:2,resource:{buffer:colBuf}}]});
+    rBG[1]=device.createBindGroup({layout:rLayout,entries:[{binding:0,resource:{buffer:buf[1]}},{binding:1,resource:{buffer:ruBuf}},{binding:2,resource:{buffer:colBuf}}]});
+  }
+  function reseed(){ var data=makeParticleData(nParticles); device.queue.writeBuffer(buf[cur],0,data); }
+
+  function resize(){
+    var rect=stage.getBoundingClientRect();
+    dpr=Math.min(window.devicePixelRatio||1, 2);
+    canvasW=Math.max(2,Math.floor(rect.width*dpr));
+    canvasH=Math.max(2,Math.floor(rect.height*dpr));
+    cv.width=canvasW; cv.height=canvasH;
+    aspect=canvasH/canvasW;
+    if(device){ writeRU(); }
+  }
+
+  var fps=0, lastT=performance.now(), frames=0, fAcc=0;
+  function frame(){
+    if(!device){ return; }
+    if(!S.paused){
+      writeParams();
+      var enc=device.createCommandEncoder();
+      var cp=enc.beginComputePass();
+      cp.setPipeline(computePipe); cp.setBindGroup(0,cBG[cur]);
+      cp.dispatchWorkgroups(Math.ceil(nParticles/64));
+      cp.end();
+      var out=1-cur;
+      var rp=enc.beginRenderPass({colorAttachments:[{view:ctx.getCurrentTexture().createView(),clearValue:{r:0.016,g:0.031,b:0.039,a:1},loadOp:"clear",storeOp:"store"}]});
+      rp.setPipeline(renderPipe); rp.setBindGroup(0,rBG[out]);
+      rp.draw(6,nParticles,0,0);
+      rp.end();
+      device.queue.submit([enc.finish()]);
+      cur=out;
+    }
+    var now=performance.now(); fAcc+=now-lastT; lastT=now; frames++;
+    if(fAcc>=500){ fps=Math.round(frames*1000/fAcc); frames=0; fAcc=0; hud.innerHTML="<b>"+nParticles.toLocaleString()+"</b> particles · <b>"+S.types+"</b> types · <b>"+fps+"</b> fps"; }
+    requestAnimationFrame(frame);
+  }
+
+  async function init(){
+    if(!navigator.gpu){ fail("WebGPU not available","This simulation runs on your GPU through WebGPU. Open it in a recent desktop Chrome, Edge, or Brave, or Safari 18+ on a Mac, and it will start automatically. Phones and older browsers usually do not support it yet."); return; }
+    var adapter;
+    try{ adapter=await navigator.gpu.requestAdapter({powerPreference:"high-performance"}); }catch(e){}
+    if(!adapter){ fail("No GPU adapter","Your browser supports WebGPU but no graphics adapter was available. If you are on a laptop, check that hardware acceleration is enabled in your browser settings."); return; }
+    device=await adapter.requestDevice();
+    device.lost.then(function(info){ if(info && info.reason!=="destroyed") fail("GPU connection lost","The GPU context was lost. Reload the page to start again."); });
+    ctx=cv.getContext("webgpu");
+    format=navigator.gpu.getPreferredCanvasFormat();
+    ctx.configure({device:device,format:format,alphaMode:"opaque"});
+
+    paramBuf=device.createBuffer({size:64,usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST});
+    matBuf=device.createBuffer({size:144,usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST});
+    ruBuf=device.createBuffer({size:16,usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST});
+    colBuf=device.createBuffer({size:96,usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST});
+
+    cLayout=device.createBindGroupLayout({entries:[
+      {binding:0,visibility:GPUShaderStage.COMPUTE,buffer:{type:"read-only-storage"}},
+      {binding:1,visibility:GPUShaderStage.COMPUTE,buffer:{type:"storage"}},
+      {binding:2,visibility:GPUShaderStage.COMPUTE,buffer:{type:"uniform"}},
+      {binding:3,visibility:GPUShaderStage.COMPUTE,buffer:{type:"uniform"}}
+    ]});
+    rLayout=device.createBindGroupLayout({entries:[
+      {binding:0,visibility:GPUShaderStage.VERTEX,buffer:{type:"read-only-storage"}},
+      {binding:1,visibility:GPUShaderStage.VERTEX,buffer:{type:"uniform"}},
+      {binding:2,visibility:GPUShaderStage.VERTEX,buffer:{type:"uniform"}}
+    ]});
+
+    var cMod=device.createShaderModule({code:WGSL_COMPUTE});
+    var rMod=device.createShaderModule({code:WGSL_RENDER});
+    computePipe=device.createComputePipeline({layout:device.createPipelineLayout({bindGroupLayouts:[cLayout]}),compute:{module:cMod,entryPoint:"main"}});
+    renderPipe=device.createRenderPipeline({
+      layout:device.createPipelineLayout({bindGroupLayouts:[rLayout]}),
+      vertex:{module:rMod,entryPoint:"vs"},
+      fragment:{module:rMod,entryPoint:"fs",targets:[{format:format,blend:{
+        color:{srcFactor:"one",dstFactor:"one",operation:"add"},
+        alpha:{srcFactor:"one",dstFactor:"one",operation:"add"}
+      }}]},
+      primitive:{topology:"triangle-list"}
+    });
+
+    resize();
+    fromHashOrDefault();
+    writeColors(); writeMatrix(); writeRU(); writeParams();
+    buildSim();
+    buildMatrixUI();
+    window.__plReady=true;
+    requestAnimationFrame(frame);
+  }
+
+  // ---- matrix UI ----
+  function valColor(v){
+    var a=Math.min(1,Math.abs(v));
+    if(v>=0) return "rgba(70,210,140,"+(0.12+a*0.78)+")";
+    return "rgba(238,92,82,"+(0.12+a*0.78)+")";
+  }
+  function buildMatrixUI(){
+    var tbl=document.getElementById("matrix"); var pal=SCHEMES[S.scheme]||SCHEMES.spectrum; var n=S.types;
+    var html="<tr><th></th>"; for(var c=0;c<n;c++) html+='<th><div class="sw" style="background:'+pal[c%pal.length]+'"></div></th>'; html+="</tr>";
+    for(var i=0;i<n;i++){
+      html+='<tr><th><div class="sw" style="background:'+pal[i%pal.length]+'"></div></th>';
+      for(var j=0;j<n;j++){ var v=S.mat[i][j]; html+='<td><div class="cell" data-i="'+i+'" data-j="'+j+'" style="background:'+valColor(v)+'">'+v.toFixed(1)+'</div></td>'; }
+      html+="</tr>";
+    }
+    tbl.innerHTML=html;
+    tbl.querySelectorAll(".cell").forEach(function(el){
+      el.addEventListener("pointerdown",function(e){
+        e.preventDefault(); el.setPointerCapture(e.pointerId);
+        var i=+el.getAttribute("data-i"), j=+el.getAttribute("data-j"), sy=e.clientY, sv=S.mat[i][j];
+        function mv(ev){ var v=Math.max(-1,Math.min(1, sv+(sy-ev.clientY)/90)); v=Math.round(v*100)/100; S.mat[i][j]=v; el.textContent=v.toFixed(1); el.style.background=valColor(v); writeMatrix(); }
+        function up(ev){ el.releasePointerCapture(e.pointerId); el.removeEventListener("pointermove",mv); el.removeEventListener("pointerup",up); }
+        el.addEventListener("pointermove",mv); el.addEventListener("pointerup",up);
+      });
+    });
+  }
+  function refreshMatrixCells(){
+    document.querySelectorAll("#matrix .cell").forEach(function(el){ var i=+el.getAttribute("data-i"), j=+el.getAttribute("data-j"); var v=S.mat[i][j]; el.textContent=v.toFixed(1); el.style.background=valColor(v); });
+  }
+
+  // ---- share via URL hash ----
+  function toHash(){
+    var p=[S.types,S.count,Math.round(S.rMax*1000),S.force,Math.round(S.friction*100),Math.round(S.beta*100),S.wrap,({spectrum:0,neon:1,sunset:2,ice:3})[S.scheme]||0];
+    for(var i=0;i<S.types;i++)for(var j=0;j<S.types;j++) p.push(Math.round(S.mat[i][j]*100));
+    return p.join(",");
+  }
+  function fromHashOrDefault(){
+    var h=(location.hash||"").replace("#","");
+    if(h){ try{
+      var p=h.split(",").map(Number);
+      S.types=Math.max(2,Math.min(6,p[0]||6)); S.count=Math.max(500,Math.min(9000,p[1]||4000));
+      S.rMax=(p[2]||100)/1000; S.force=p[3]||10; S.friction=(p[4]||71)/100; S.beta=(p[5]||30)/100;
+      S.wrap=p[6]===0?0:1; S.scheme=["spectrum","neon","sunset","ice"][p[7]||0];
+      var k=8; for(var i=0;i<S.types;i++)for(var j=0;j<S.types;j++){ S.mat[i][j]=(p[k]||0)/100; k++; }
+      syncControls(); return;
+    }catch(e){} }
+    buildPreset("random"); syncControls();
+  }
+  function syncControls(){
+    document.getElementById("sTypes").value=S.types; document.getElementById("vTypes").textContent=S.types;
+    document.getElementById("sCount").value=S.count; document.getElementById("vCount").textContent=S.count;
+    document.getElementById("sR").value=S.rMax; document.getElementById("vR").textContent=S.rMax.toFixed(3);
+    document.getElementById("sForce").value=S.force; document.getElementById("vForce").textContent=S.force;
+    document.getElementById("sFric").value=S.friction; document.getElementById("vFric").textContent=S.friction.toFixed(2);
+    document.getElementById("sBeta").value=S.beta; document.getElementById("vBeta").textContent=S.beta.toFixed(2);
+    document.getElementById("scheme").value=S.scheme;
+    document.querySelectorAll("#wrapSeg button").forEach(function(b){ b.classList.toggle("on", +b.getAttribute("data-w")===S.wrap); });
+  }
+
+  // ---- controls wiring ----
+  function on(id,ev,fn){ var el=document.getElementById(id); if(el) el.addEventListener(ev,fn); }
+  on("bRand","click",function(){ document.getElementById("preset").value="random"; buildPreset("random"); refreshMatrixCells(); writeMatrix(); showToast("New lifeform"); });
+  on("bRestart","click",function(){ reseed(); });
+  on("bPause","click",function(){ S.paused=!S.paused; document.getElementById("bPause").textContent=S.paused?"Play":"Pause"; });
+  on("bSym","click",function(){ for(var i=0;i<S.types;i++)for(var j=0;j<i;j++){ S.mat[j][i]=S.mat[i][j]; } refreshMatrixCells(); writeMatrix(); showToast("Matrix made symmetric"); });
+  on("bShare","click",function(){ var url=location.origin+location.pathname+"#"+toHash(); try{ navigator.clipboard.writeText(url); showToast("Link copied"); }catch(e){ location.hash=toHash(); showToast("Link in address bar"); } });
+  on("bPng","click",function(){ try{ var a=document.createElement("a"); a.href=cv.toDataURL("image/png"); a.download="particle-life.png"; a.click(); }catch(e){ showToast("Could not export"); } });
+  on("preset","change",function(){ buildPreset(this.value); refreshMatrixCells(); writeMatrix(); });
+  on("scheme","change",function(){ S.scheme=this.value; writeColors(); buildMatrixUI(); });
+
+  on("sTypes","input",function(){ S.types=+this.value; document.getElementById("vTypes").textContent=S.types; buildPreset(document.getElementById("preset").value); writeMatrix(); buildMatrixUI(); reseed(); });
+  on("sCount","input",function(){ S.count=+this.value; document.getElementById("vCount").textContent=S.count; });
+  on("sCount","change",function(){ buildSim(); });
+  on("sR","input",function(){ S.rMax=+this.value; document.getElementById("vR").textContent=S.rMax.toFixed(3); });
+  on("sForce","input",function(){ S.force=+this.value; document.getElementById("vForce").textContent=S.force; });
+  on("sFric","input",function(){ S.friction=+this.value; document.getElementById("vFric").textContent=S.friction.toFixed(2); });
+  on("sBeta","input",function(){ S.beta=+this.value; document.getElementById("vBeta").textContent=S.beta.toFixed(2); });
+  document.querySelectorAll("#wrapSeg button").forEach(function(b){ b.addEventListener("click",function(){ document.querySelectorAll("#wrapSeg button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); S.wrap=+b.getAttribute("data-w"); }); });
+  document.querySelectorAll("#mouseSeg button").forEach(function(b){ b.addEventListener("click",function(){ document.querySelectorAll("#mouseSeg button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); S.mouseDir=+b.getAttribute("data-m"); }); });
+
+  // ---- pointer on canvas ----
+  function setMouse(e){ var r=cv.getBoundingClientRect(); mouse.x=(e.clientX-r.left)/r.width; mouse.y=((e.clientY-r.top)/r.height)*aspect; }
+  cv.addEventListener("pointerdown",function(e){ setMouse(e); mouse.active=1; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener("pointermove",function(e){ if(mouse.active){ setMouse(e); } });
+  window.addEventListener("pointerup",function(){ mouse.active=0; });
+
+  var rt; window.addEventListener("resize",function(){ clearTimeout(rt); rt=setTimeout(resize,150); });
+
+  // expose a tiny test surface for verification
+  window.__plState=S; window.__plHash=toHash;
+
+  init();
+})();
+</script>
+
+<!-- AdSense slot (placeholder — enable later)
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
+-->
+<!-- Polar.sh support/tip slot (placeholder — enable later) -->
+
+<!-- shared site enhancements + Cloudflare Web Analytics beacon (token in enhance.js) -->
+<script src="enhance.js" defer></script>
+</body>
+</html>
