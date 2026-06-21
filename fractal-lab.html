@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fractal Lab — Real-Time Mandelbrot &amp; Julia Set Explorer (WebGL deep zoom)</title>
+<meta name="description" content="Explore the Mandelbrot and Julia sets in real time on your GPU. Smooth deep zoom with emulated double precision, live Julia preview, color palettes, and 4K wallpaper export. Runs in your browser." />
+<meta name="keywords" content="mandelbrot explorer, mandelbrot set, julia set, fractal zoom, fractal explorer online, webgl mandelbrot, fractal generator, deep zoom fractal, mandelbrot viewer, gpu fractal, fractal wallpaper, julia set explorer, mandelbrot online" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Fractal Lab — Real-Time Mandelbrot &amp; Julia Explorer" />
+<meta property="og:description" content="Zoom infinitely into the Mandelbrot set on your GPU, watch live Julia sets, and export 4K wallpapers. All in your browser, nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/fractal-lab.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Fractal Lab — Real-Time Mandelbrot &amp; Julia Explorer" />
+<meta name="twitter:description" content="Real-time GPU fractal explorer with deep zoom, live Julia sets, and 4K export. Runs entirely in your browser." />
+<link rel="canonical" href="https://hammyasf.github.io/fractal-lab.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Fractal Lab","url":"https://hammyasf.github.io/fractal-lab.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebGL2)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Real-time Mandelbrot and Julia set explorer with GPU deep zoom, live Julia preview, color palettes, and 4K wallpaper export. Runs entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does this run a fractal renderer in the browser?","acceptedAnswer":{"@type":"Answer","text":"Every pixel is computed in parallel on your GPU with a WebGL2 fragment shader. There is no server. The escape-time iteration for the Mandelbrot and Julia sets runs thousands of times per pixel, all locally."}},{"@type":"Question","name":"How can it zoom so deep without turning blocky?","acceptedAnswer":{"@type":"Answer","text":"GPUs only do 32-bit single-precision math, which goes blocky after a moderate zoom. Fractal Lab emulates double precision in the shader using double-single arithmetic, so it stays sharp far deeper than a naive WebGL fractal."}},{"@type":"Question","name":"What is the difference between the Mandelbrot and Julia sets?","acceptedAnswer":{"@type":"Answer","text":"The Mandelbrot set is the map of which complex numbers c keep the iteration z = z^2 + c bounded. Each point of the Mandelbrot set corresponds to a whole Julia set. Fractal Lab shows the matching Julia set live as you move the cursor."}},{"@type":"Question","name":"Is anything uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. The whole tool is a single HTML page and all rendering happens on your device. Nothing is uploaded and there is no sign-up."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 10px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:22px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .stage{position:relative;width:100%;aspect-ratio:16/10;background:#000;overflow:hidden;touch-action:none;}
+  @media(max-width:720px){.stage{aspect-ratio:4/5;}}
+  #view{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;}
+  .hud{position:absolute;left:12px;bottom:12px;font-family:var(--mono);font-size:11.5px;color:#dfeae6;background:rgba(0,0,0,.46);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px 11px;line-height:1.5;pointer-events:none;max-width:62%;}
+  .hud b{color:var(--accent);font-weight:500;}
+  .rendering{position:absolute;right:12px;bottom:12px;font-family:var(--mono);font-size:11px;color:#07100e;background:var(--accent);border-radius:8px;padding:5px 10px;opacity:0;transition:opacity .15s;pointer-events:none;}
+  .rendering.on{opacity:.95;}
+  .jbox{position:absolute;right:12px;top:12px;width:172px;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:8px;}
+  @media(max-width:560px){.jbox{width:128px;}}
+  .jbox canvas{width:100%;aspect-ratio:1/1;display:block;border-radius:8px;background:#000;}
+  .jbox .jl{font-family:var(--mono);font-size:10px;color:var(--muted);margin:6px 2px 4px;letter-spacing:.04em;text-transform:uppercase;}
+  .jbox button{width:100%;font-family:var(--mono);font-size:11.5px;color:#07100e;background:var(--accent);border:none;border-radius:7px;padding:7px;cursor:pointer;font-weight:600;}
+  .jbox button:hover{filter:brightness(1.08);}
+  .toolbar{display:flex;flex-wrap:wrap;gap:14px 22px;padding:16px 20px;align-items:center;border-top:1px solid var(--line);}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 15px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  input[type=range]{accent-color:var(--accent);width:130px;}
+  select{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:13px;}
+  .row{display:flex;align-items:center;gap:10px;}
+  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:34px;}
+  .chk{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12px;color:var(--muted);cursor:pointer;}
+  .chk input{accent-color:var(--accent);width:15px;height:15px;}
+  .btnbar{display:flex;flex-wrap:wrap;gap:10px;padding:0 20px 18px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .tour{display:flex;flex-wrap:wrap;gap:8px;padding:2px 20px 18px;}
+  .tour .pill{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.4);padding:7px 13px;border-radius:100px;cursor:pointer;transition:.15s;}
+  .tour .pill:hover{border-color:var(--accent);color:var(--ink);}
+  .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#07100e;font-family:var(--mono);font-size:13px;font-weight:600;padding:10px 18px;border-radius:100px;opacity:0;transition:.25s;pointer-events:none;z-index:50;}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+  .nope{padding:40px 24px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:14px;display:none;}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:760px;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;max-width:760px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs on your GPU</div>
+    <h1>Fractal Lab</h1>
+    <p class="sub">Zoom into the Mandelbrot set in real time, watch the matching Julia set appear live as you move, and export a 4K wallpaper. Every pixel is computed on your GPU with emulated double precision for a deep, sharp zoom.</p>
+    <span class="priv">&#9889; 100% in your browser — nothing is uploaded</span>
+  </header>
+
+  <div class="panel">
+    <div class="stage" id="stage">
+      <canvas id="view"></canvas>
+      <div class="jbox" id="jbox">
+        <canvas id="jview" width="300" height="300"></canvas>
+        <div class="jl" id="jlabel">Julia preview</div>
+        <button id="openJulia">Explore this Julia &rarr;</button>
+      </div>
+      <div class="hud" id="hud">drag to pan · scroll to zoom</div>
+      <div class="rendering" id="busy">rendering…</div>
+    </div>
+
+    <div class="toolbar">
+      <div class="ctl"><label>View</label>
+        <div class="seg" id="mode">
+          <button data-m="0" class="on">Mandelbrot</button>
+          <button data-m="1">Julia</button>
+        </div>
+      </div>
+      <div class="ctl"><label>Palette</label>
+        <select id="pal">
+          <option value="0">Aurora</option>
+          <option value="1">Ember</option>
+          <option value="2">Ocean</option>
+          <option value="3">Magma</option>
+          <option value="4">Ultraviolet</option>
+          <option value="5">Mono</option>
+        </select>
+      </div>
+      <div class="ctl"><label>Color speed</label>
+        <div class="row"><input type="range" id="cspeed" min="20" max="320" value="100" /><span class="qval" id="cspeedv">1.0</span></div>
+      </div>
+      <div class="ctl"><label>Iterations</label>
+        <div class="row"><input type="range" id="iter" min="80" max="2000" step="20" value="320" /><span class="qval" id="iterv">320</span></div>
+      </div>
+      <div class="ctl"><label>&nbsp;</label>
+        <label class="chk"><input type="checkbox" id="autoiter" checked /> Auto iterations</label>
+      </div>
+    </div>
+
+    <div class="btnbar">
+      <button class="btn btn-out" id="reset">Reset view</button>
+      <button class="btn btn-out" id="rand">Random Julia</button>
+      <button class="btn btn-out" id="link">Copy share link</button>
+      <button class="btn" id="export">Export 4K wallpaper</button>
+    </div>
+
+    <div class="tour" id="tour"></div>
+    <div class="nope" id="nope">Your browser does not support WebGL2, which this tool needs to render fractals on the GPU. Try the latest Chrome, Edge, Firefox, or Safari on a desktop.</div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>The Mandelbrot set is the set of complex numbers c for which the simple rule z &rarr; z&sup2; + c, started at z = 0, never runs off to infinity. Color comes from how many steps a point takes to escape. That is a few thousand multiply-add operations for every single pixel, and Fractal Lab does all of them in parallel on your graphics card through a WebGL2 fragment shader. There is no server and no upload. The image you see was computed on your machine in the last few milliseconds.</p>
+    <h2>How does it zoom so deep without going blocky?</h2>
+    <p>GPUs natively do 32-bit single-precision floating point. That is fine for the first dozen zoom levels, but it falls apart once the screen spans a region smaller than about a millionth of the whole set, and you start to see chunky pixel blocks. Fractal Lab works around this by emulating double precision inside the shader using double-single arithmetic, where each coordinate is carried as a pair of floats that together hold roughly twice the bits. That is the trick that keeps the deep-zoom views sharp far past where a naive WebGL fractal breaks down.</p>
+    <h2>The Mandelbrot and Julia connection</h2>
+    <p>Every point inside the complex plane has its own Julia set, generated by the same z &rarr; z&sup2; + c rule but with c held fixed and z swept across the screen. Points near the boundary of the Mandelbrot set produce the most intricate, connected Julia sets. Move your cursor over the Mandelbrot view and the small preview shows that point's Julia set live, then click "Explore this Julia" to open it full screen and zoom in.</p>
+    <h2>Make a wallpaper</h2>
+    <p>Frame a view you like, pick a palette and color speed, and hit Export 4K wallpaper to download a 3840 by 2160 PNG rendered at full resolution. The share link button copies a URL that encodes the exact coordinates, zoom, palette, and mode, so you can bookmark a spot or send someone a deep-zoom location to land on instantly.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is anything uploaded to a server?</summary><p>No. The entire tool is one HTML file and all rendering happens on your device's GPU. Nothing leaves your browser and there is no sign-up.</p></details>
+    <details><summary>Why does my fan spin up on deep zooms?</summary><p>Deep zooms need more iterations per pixel and use the emulated double-precision path, which is heavier GPU work. Lower the iteration count or turn off auto iterations if you want it lighter.</p></details>
+    <details><summary>It looks blocky at extreme zoom. Why?</summary><p>Even emulated double precision eventually runs out of bits. To go arbitrarily deep you need arbitrary-precision arithmetic with perturbation theory, which is beyond what a single real-time shader does. Fractal Lab stays sharp far deeper than a standard WebGL fractal, but not infinitely.</p></details>
+    <details><summary>Does it work on phones?</summary><p>It runs on modern mobile browsers with WebGL2, though deep zooms are slower and the screen is small. A desktop with a discrete GPU gives the smoothest experience.</p></details>
+    <details><summary>How do I save an image?</summary><p>Use Export 4K wallpaper for a full-resolution PNG, or use the share link button to copy a URL that reopens the exact view.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var $=function(id){return document.getElementById(id);};
+  var toast=function(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("on");},1600);};
+
+  // ---------- shaders ----------
+  var VERT="#version 300 es\nin vec2 aPos;void main(){gl_Position=vec4(aPos,0.0,1.0);}";
+  var FRAG="#version 300 es\n"+
+  "precision highp float;\n"+
+  "out vec4 outColor;\n"+
+  "uniform vec2 uRes; uniform vec2 uCx; uniform vec2 uCy; uniform vec2 uScale;\n"+
+  "uniform int uMaxIter; uniform int uMode; uniform vec2 uJuliaC;\n"+
+  "uniform vec3 uA; uniform vec3 uB; uniform vec3 uC; uniform vec3 uD;\n"+
+  "uniform float uColScale; uniform vec3 uInside;\n"+
+  "const int CAP=2000; const float ESC=256.0;\n"+
+  "vec2 ds_set(float a){return vec2(a,0.0);}\n"+
+  "vec2 ds_add(vec2 a, vec2 b){float t1=a.x+b.x;float e=t1-a.x;float t2=((b.x-e)+(a.x-(t1-e)))+a.y+b.y;vec2 r;r.x=t1+t2;r.y=t2-(r.x-t1);return r;}\n"+
+  "vec2 ds_sub(vec2 a, vec2 b){return ds_add(a,vec2(-b.x,-b.y));}\n"+
+  "vec2 ds_mul(vec2 a, vec2 b){float SP=8193.0;float ca=a.x*SP;float cb=b.x*SP;float a1=ca-(ca-a.x);float b1=cb-(cb-b.x);float a2=a.x-a1;float b2=b.x-b1;float c11=a.x*b.x;float c21=a2*b2+(a2*b1+(a1*b2+(a1*b1-c11)));float c2=a.x*b.y+a.y*b.x;float t1=c11+c2;float e=t1-c11;float t2=((c2-e)+(c11-(t1-e)))+c21+a.y*b.y;vec2 r;r.x=t1+t2;r.y=t2-(r.x-t1);return r;}\n"+
+  "vec3 pal(float t){return uA+uB*cos(6.28318530718*(uC*t+uD));}\n"+
+  "void main(){\n"+
+  "  vec2 fx=ds_set(gl_FragCoord.x-0.5*uRes.x);\n"+
+  "  vec2 fy=ds_set(gl_FragCoord.y-0.5*uRes.y);\n"+
+  "  vec2 px=ds_add(uCx, ds_mul(uScale,fx));\n"+
+  "  vec2 py=ds_add(uCy, ds_mul(uScale,fy));\n"+
+  "  vec2 zx, zy, cx, cy;\n"+
+  "  if(uMode==0){ zx=ds_set(0.0); zy=ds_set(0.0); cx=px; cy=py; }\n"+
+  "  else { zx=px; zy=py; cx=ds_set(uJuliaC.x); cy=ds_set(uJuliaC.y); }\n"+
+  "  int it=0; float mag=0.0;\n"+
+  "  for(int i=0;i<CAP;i++){ if(i>=uMaxIter) break;\n"+
+  "    vec2 zx2=ds_mul(zx,zx); vec2 zy2=ds_mul(zy,zy);\n"+
+  "    mag=zx2.x+zy2.x; if(mag>ESC) break;\n"+
+  "    vec2 nx=ds_add(ds_sub(zx2,zy2), cx);\n"+
+  "    vec2 ny=ds_add(ds_mul(ds_mul(zx,zy),vec2(2.0,0.0)), cy);\n"+
+  "    zx=nx; zy=ny; it++;\n"+
+  "  }\n"+
+  "  if(it>=uMaxIter){ outColor=vec4(uInside,1.0); return; }\n"+
+  "  float ln=log(mag)*0.5;\n"+
+  "  float nu=log(ln/0.6931472)/0.6931472;\n"+
+  "  float sm=float(it)+1.0-nu;\n"+
+  "  float t=sm*uColScale;\n"+
+  "  outColor=vec4(pal(t),1.0);\n"+
+  "}";
+
+  function makeRenderer(canvas){
+    var gl=canvas.getContext("webgl2",{preserveDrawingBuffer:true,antialias:false,powerPreference:"high-performance"});
+    if(!gl) return null;
+    function sh(type,src){var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){console.error(gl.getShaderInfoLog(s));return null;}return s;}
+    var vs=sh(gl.VERTEX_SHADER,VERT), fs=sh(gl.FRAGMENT_SHADER,FRAG);
+    if(!vs||!fs) return null;
+    var p=gl.createProgram();gl.attachShader(p,vs);gl.attachShader(p,fs);gl.bindAttribLocation(p,0,"aPos");gl.linkProgram(p);
+    if(!gl.getProgramParameter(p,gl.LINK_STATUS)){console.error(gl.getProgramInfoLog(p));return null;}
+    gl.useProgram(p);
+    var buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+    var U={};["uRes","uCx","uCy","uScale","uMaxIter","uMode","uJuliaC","uA","uB","uC","uD","uColScale","uInside"].forEach(function(n){U[n]=gl.getUniformLocation(p,n);});
+    function split(v){var hi=Math.fround(v);return [hi, v-hi];}
+    function draw(o){
+      var W=canvas.width, H=canvas.height;
+      gl.viewport(0,0,W,H);
+      gl.uniform2f(U.uRes,W,H);
+      var cx=split(o.cx), cy=split(o.cy);
+      var scale=o.span/W; var sp=split(scale);
+      gl.uniform2f(U.uCx,cx[0],cx[1]);
+      gl.uniform2f(U.uCy,cy[0],cy[1]);
+      gl.uniform2f(U.uScale,sp[0],sp[1]);
+      gl.uniform1i(U.uMaxIter,o.maxIter|0);
+      gl.uniform1i(U.uMode,o.mode|0);
+      gl.uniform2f(U.uJuliaC,o.jc[0],o.jc[1]);
+      var P=o.pal;
+      gl.uniform3fv(U.uA,P[0]);gl.uniform3fv(U.uB,P[1]);gl.uniform3fv(U.uC,P[2]);gl.uniform3fv(U.uD,P[3]);
+      gl.uniform1f(U.uColScale,o.colScale);
+      gl.uniform3fv(U.uInside,P[4]);
+      gl.drawArrays(gl.TRIANGLES,0,3);
+    }
+    return {gl:gl,canvas:canvas,draw:draw};
+  }
+
+  // palettes: [a,b,c,d, inside]
+  var PALS=[
+    [[0.5,0.5,0.5],[0.5,0.5,0.5],[1.0,1.0,1.0],[0.30,0.45,0.55],[0.02,0.05,0.05]], // Aurora
+    [[0.5,0.45,0.4],[0.5,0.45,0.4],[1.0,1.0,1.0],[0.00,0.10,0.20],[0.05,0.02,0.01]], // Ember
+    [[0.2,0.45,0.55],[0.45,0.4,0.45],[1.0,1.0,1.0],[0.60,0.70,0.80],[0.01,0.03,0.06]], // Ocean
+    [[0.5,0.35,0.3],[0.5,0.45,0.4],[1.0,1.0,0.6],[0.05,0.25,0.55],[0.05,0.0,0.02]], // Magma
+    [[0.5,0.4,0.55],[0.45,0.35,0.5],[1.0,1.0,1.0],[0.70,0.55,0.30],[0.04,0.01,0.07]], // Ultraviolet
+    [[0.5,0.5,0.5],[0.5,0.5,0.5],[1.0,1.0,1.0],[0.0,0.0,0.0],[0.03,0.03,0.03]] // Mono
+  ];
+
+  var TOURS=[
+    {n:"Home",cx:-0.6,cy:0.0,span:3.4},
+    {n:"Seahorse Valley",cx:-0.745428,cy:0.113009,span:0.0009},
+    {n:"Elephant Valley",cx:0.2750100,cy:0.0070000,span:0.012},
+    {n:"Triple Spiral",cx:-0.088,cy:0.654,span:0.013},
+    {n:"Mini Mandelbrot",cx:-1.7687749,cy:0.0017389,span:0.0009},
+    {n:"Scepter Valley",cx:-1.108,cy:0.230,span:0.06},
+    {n:"Misiurewicz",cx:-0.77568377,cy:0.13646737,span:0.0006},
+    {n:"Dendrite",cx:-0.235125,cy:0.827215,span:0.0019}
+  ];
+
+  var stage=$("stage"), canvas=$("view"), jcanvas=$("jview");
+  var main=makeRenderer(canvas);
+  if(!main){ $("nope").style.display="block"; document.querySelector(".stage").style.display="none"; document.querySelector(".toolbar").style.display="none"; document.querySelector(".btnbar").style.display="none"; document.querySelector(".tour").style.display="none"; return; }
+  var jul=makeRenderer(jcanvas);
+
+  // ---------- state ----------
+  var st={ mode:0, cx:-0.6, cy:0.0, span:3.4, jc:[0.0,0.0], palIdx:0, colSpeed:1.0, iter:320, autoIter:true };
+  var INIT_SPAN=3.4;
+  var lastHoverC=[-0.4,0.6];
+
+  function effIter(){
+    if(!st.autoIter) return st.iter;
+    var z=Math.log2(INIT_SPAN/st.span);
+    var v=Math.round(220+95*Math.max(0,z));
+    return Math.max(120,Math.min(2000,v));
+  }
+  function colScale(){ return 0.02*st.colSpeed; }
+
+  function sizeCanvas(){
+    var dpr=Math.min(window.devicePixelRatio||1,1.6);
+    var r=stage.getBoundingClientRect();
+    var w=Math.round(r.width*dpr), h=Math.round(r.height*dpr);
+    // cap total pixels for perf
+    var maxPx=2600000;
+    if(w*h>maxPx){ var s=Math.sqrt(maxPx/(w*h)); w=Math.round(w*s); h=Math.round(h*s); }
+    if(canvas.width!==w||canvas.height!==h){ canvas.width=w; canvas.height=h; }
+  }
+
+  var dirty=true, busyT=null;
+  function requestRender(){ dirty=true; }
+  function renderLoop(){
+    if(dirty){ dirty=false; doRender(); }
+    requestAnimationFrame(renderLoop);
+  }
+  function doRender(){
+    sizeCanvas();
+    var it=effIter();
+    $("busy").classList.toggle("on", it>600);
+    main.draw({cx:st.cx,cy:st.cy,span:st.span,maxIter:it,mode:st.mode,jc:st.jc,pal:PALS[st.palIdx],colScale:colScale()});
+    if(it>600){ clearTimeout(busyT); busyT=setTimeout(function(){$("busy").classList.remove("on");},120); }
+    updateHud(it);
+  }
+
+  function fmtMag(){
+    var m=INIT_SPAN/st.span;
+    if(m<1000) return m.toFixed(1)+"×";
+    var e=Math.floor(Math.log10(m));
+    return (m/Math.pow(10,e)).toFixed(2)+"×10"+sup(e);
+  }
+  function sup(n){ var s={"-":"⁻","0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}; return String(n).split("").map(function(c){return s[c]||c;}).join(""); }
+  function updateHud(it){
+    var modeTxt=st.mode===0?"Mandelbrot":"Julia c = "+st.jc[0].toFixed(4)+(st.jc[1]<0?" ":" +")+st.jc[1].toFixed(4)+"i";
+    $("hud").innerHTML="<b>"+modeTxt+"</b><br>center "+st.cx.toFixed(8)+", "+st.cy.toFixed(8)+"<br>zoom <b>"+fmtMag()+"</b> · "+it+" iter";
+  }
+
+  // ---------- Julia preview ----------
+  var jpal=0;
+  function drawJulia(c){
+    if(!jul) return;
+    jul.draw({cx:0,cy:0,span:3.2,maxIter:260,mode:1,jc:c,pal:PALS[st.palIdx],colScale:0.03});
+    $("jlabel").textContent="Julia · "+c[0].toFixed(3)+", "+c[1].toFixed(3);
+  }
+
+  // ---------- pointer interaction ----------
+  function canvasPt(e){
+    var r=canvas.getBoundingClientRect();
+    var clientX=e.touches?e.touches[0].clientX:e.clientX;
+    var clientY=e.touches?e.touches[0].clientY:e.clientY;
+    var px=(clientX-r.left)/r.width*canvas.width;
+    var py=(clientY-r.top)/r.height*canvas.height;
+    return [px, canvas.height-py]; // flip y to gl coords
+  }
+  function complexAt(px,py){
+    var scale=st.span/canvas.width;
+    return [ st.cx+(px-0.5*canvas.width)*scale, st.cy+(py-0.5*canvas.height)*scale ];
+  }
+
+  var dragging=false, last=null, moved=false;
+  stage.addEventListener("pointerdown",function(e){
+    if(e.target.closest(".jbox")) return;
+    dragging=true; moved=false; last=canvasPt(e); stage.setPointerCapture(e.pointerId);
+  });
+  stage.addEventListener("pointermove",function(e){
+    var p=canvasPt(e);
+    if(dragging){
+      var scale=st.span/canvas.width;
+      var dx=(p[0]-last[0])*scale, dy=(p[1]-last[1])*scale;
+      st.cx-=dx; st.cy-=dy; last=p; moved=true; requestRender();
+    } else if(st.mode===0){
+      var c=complexAt(p[0],p[1]); lastHoverC=c; drawJulia(c);
+    }
+  });
+  function endDrag(e){ dragging=false; }
+  stage.addEventListener("pointerup",endDrag);
+  stage.addEventListener("pointercancel",endDrag);
+
+  stage.addEventListener("wheel",function(e){
+    e.preventDefault();
+    var p=canvasPt(e);
+    var before=complexAt(p[0],p[1]);
+    var factor=Math.pow(1.0015, e.deltaY);
+    st.span*=factor;
+    st.span=Math.max(st.span,1e-13);
+    st.span=Math.min(st.span,6.0);
+    var scale=st.span/canvas.width;
+    st.cx=before[0]-(p[0]-0.5*canvas.width)*scale;
+    st.cy=before[1]-(p[1]-0.5*canvas.height)*scale;
+    requestRender();
+  },{passive:false});
+
+  // double click to zoom in / shift-double to zoom out
+  stage.addEventListener("dblclick",function(e){
+    if(e.target.closest(".jbox")) return;
+    var p=canvasPt(e); var before=complexAt(p[0],p[1]);
+    st.span*= e.shiftKey?2.2:0.45; st.span=Math.max(1e-13,Math.min(6.0,st.span));
+    var scale=st.span/canvas.width;
+    st.cx=before[0]-(p[0]-0.5*canvas.width)*scale;
+    st.cy=before[1]-(p[1]-0.5*canvas.height)*scale;
+    requestRender();
+  });
+
+  // ---------- controls ----------
+  document.querySelectorAll("#mode button").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll("#mode button").forEach(function(x){x.classList.remove("on");});
+      b.classList.add("on"); st.mode=+b.getAttribute("data-m");
+      if(st.mode===1){ st.jc=lastHoverC.slice(); st.cx=0; st.cy=0; st.span=3.2; }
+      else { st.cx=-0.6; st.cy=0; st.span=3.4; }
+      $("jbox").style.display = st.mode===0?"block":"none";
+      requestRender();
+    });
+  });
+  $("pal").addEventListener("change",function(){ st.palIdx=+this.value; requestRender(); drawJulia(lastHoverC); });
+  $("cspeed").addEventListener("input",function(){ st.colSpeed=this.value/100; $("cspeedv").textContent=st.colSpeed.toFixed(1); requestRender(); });
+  $("iter").addEventListener("input",function(){ st.iter=+this.value; $("iterv").textContent=this.value; if(!st.autoIter) requestRender(); });
+  $("autoiter").addEventListener("change",function(){ st.autoIter=this.checked; requestRender(); });
+  $("reset").addEventListener("click",function(){
+    if(st.mode===0){ st.cx=-0.6; st.cy=0; st.span=3.4; } else { st.cx=0; st.cy=0; st.span=3.2; }
+    requestRender();
+  });
+  $("rand").addEventListener("click",function(){
+    // pick a c near the boundary for an interesting Julia
+    var c=randomBoundaryC();
+    st.mode=1; st.jc=c; st.cx=0; st.cy=0; st.span=3.2;
+    document.querySelectorAll("#mode button").forEach(function(x){x.classList.toggle("on", x.getAttribute("data-m")==="1");});
+    $("jbox").style.display="none"; requestRender(); toast("New Julia set");
+  });
+  $("openJulia").addEventListener("click",function(){
+    st.mode=1; st.jc=lastHoverC.slice(); st.cx=0; st.cy=0; st.span=3.2;
+    document.querySelectorAll("#mode button").forEach(function(x){x.classList.toggle("on", x.getAttribute("data-m")==="1");});
+    $("jbox").style.display="none"; requestRender(); toast("Exploring Julia set");
+  });
+  function randomBoundaryC(){
+    // sample points around the cardioid/boundary for visually rich Julia sets
+    var ang=Math.random()*6.28318;
+    var r=0.7885; // points on a circle radius ~0.7885 give classic Julia sets
+    return [r*Math.cos(ang), r*Math.sin(ang)];
+  }
+
+  // tour
+  var tourEl=$("tour");
+  TOURS.forEach(function(t){
+    var b=document.createElement("button"); b.className="pill"; b.textContent=t.n;
+    b.addEventListener("click",function(){ flyTo(t); });
+    tourEl.appendChild(b);
+  });
+  function flyTo(t){
+    if(st.mode!==0){ st.mode=0; $("jbox").style.display="block"; document.querySelectorAll("#mode button").forEach(function(x){x.classList.toggle("on", x.getAttribute("data-m")==="0");}); }
+    var s0={cx:st.cx,cy:st.cy,span:st.span}, t0=performance.now(), dur=1100;
+    var L0=Math.log(s0.span), L1=Math.log(t.span);
+    function step(now){
+      var k=Math.min(1,(now-t0)/dur); var e=k<0.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+      st.span=Math.exp(L0+(L1-L0)*e);
+      st.cx=s0.cx+(t.cx-s0.cx)*e; st.cy=s0.cy+(t.cy-s0.cy)*e;
+      requestRender();
+      if(k<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // share link
+  function encodeState(){
+    var o=[st.mode,st.cx,st.cy,st.span,st.palIdx,st.colSpeed,st.autoIter?1:0,st.iter,st.jc[0],st.jc[1]];
+    return o.join(",");
+  }
+  function applyState(s){
+    try{
+      var a=s.split(",").map(Number);
+      if(a.length<8||a.some(isNaN)) return false;
+      st.mode=a[0]|0; st.cx=a[1]; st.cy=a[2]; st.span=a[3]; st.palIdx=a[4]|0;
+      st.colSpeed=a[5]; st.autoIter=a[6]===1; st.iter=a[7]|0;
+      if(a.length>=10){ st.jc=[a[8],a[9]]; }
+      return true;
+    }catch(e){ return false; }
+  }
+  $("link").addEventListener("click",function(){
+    var url=location.origin+location.pathname+"#"+encodeURIComponent(encodeState());
+    var done=function(){ toast("Share link copied"); };
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done,function(){ prompt("Copy this link:",url); }); }
+    else { prompt("Copy this link:",url); }
+    history.replaceState(null,"","#"+encodeURIComponent(encodeState()));
+  });
+
+  // export 4K
+  $("export").addEventListener("click",function(){
+    var btn=this; btn.disabled=true; var old=btn.textContent; btn.textContent="Rendering…";
+    setTimeout(function(){
+      var EW=3840, EH=2160;
+      var ow=canvas.width, oh=canvas.height;
+      // keep current center; span maps across width => preserve horizontal span, vertical follows aspect
+      canvas.width=EW; canvas.height=EH;
+      var it=Math.max(effIter(), 600);
+      main.draw({cx:st.cx,cy:st.cy,span:st.span,maxIter:it,mode:st.mode,jc:st.jc,pal:PALS[st.palIdx],colScale:colScale()});
+      canvas.toBlob(function(blob){
+        var a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+        a.download="fractal-"+(st.mode===0?"mandelbrot":"julia")+"-4k.png"; a.click();
+        setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
+        canvas.width=ow; canvas.height=oh; requestRender();
+        btn.disabled=false; btn.textContent=old; toast("4K wallpaper saved");
+      },"image/png");
+    },30);
+  });
+
+  // resize
+  var rT=null;
+  window.addEventListener("resize",function(){ clearTimeout(rT); rT=setTimeout(requestRender,120); });
+
+  // ---------- init ----------
+  function syncControls(){
+    $("pal").value=String(st.palIdx);
+    $("cspeed").value=String(Math.round(st.colSpeed*100)); $("cspeedv").textContent=st.colSpeed.toFixed(1);
+    $("iter").value=String(st.iter); $("iterv").textContent=String(st.iter);
+    $("autoiter").checked=st.autoIter;
+    document.querySelectorAll("#mode button").forEach(function(x){x.classList.toggle("on", x.getAttribute("data-m")===String(st.mode));});
+    $("jbox").style.display=st.mode===0?"block":"none";
+  }
+  if(location.hash.length>1){ applyState(decodeURIComponent(location.hash.slice(1))); }
+  syncControls();
+  drawJulia(lastHoverC);
+  requestRender();
+  renderLoop();
+})();
+</script>
+<!-- AdSense / Polar.sh monetization slot (left intentionally empty for later) -->
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
