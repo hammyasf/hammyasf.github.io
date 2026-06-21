@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Free Text to Speech — natural AI voices in your browser | VoiceBox</title>
+<meta name="description" content="Turn text into natural speech with a real neural TTS model that runs 100% in your browser. 28 voices, instant WAV download, nothing uploaded, no sign-up, no API key." />
+<meta name="keywords" content="text to speech, free tts, ai voice generator, natural text to speech, browser tts, kokoro tts, voice generator, tts no upload, text to speech online free, realistic ai voice, on-device tts, private text to speech" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="VoiceBox — natural text-to-speech, 100% in your browser" />
+<meta property="og:description" content="A real neural TTS model runs locally in your browser. 28 voices, download the WAV, nothing uploaded. Free, no sign-up, no API key." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/voicebox.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="VoiceBox — natural text-to-speech in your browser" />
+<meta name="twitter:description" content="A real neural TTS model runs locally. 28 voices, download WAV, nothing uploaded. Free." />
+<link rel="canonical" href="https://hammyasf.github.io/voicebox.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://huggingface.co" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"VoiceBox — Text to Speech","url":"https://hammyasf.github.io/voicebox.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Natural text-to-speech with a neural model that runs entirely in the browser. 28 voices, WAV download, nothing uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does my text get sent to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The TTS model is downloaded once and runs entirely in your browser with WebAssembly or WebGPU. Your text never leaves your device, and there is no API key or account."}},{"@type":"Question","name":"How can a text-to-speech model run in a browser?","acceptedAnswer":{"@type":"Answer","text":"VoiceBox uses Kokoro, an 82-million-parameter open-weight TTS model compiled to ONNX and run through Transformers.js. The model file (about 86 MB) downloads once, is cached by your browser, and every subsequent generation is offline."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is completely free with no sign-up, no watermark, and no limit on how much text you convert. You can download the audio as a WAV file."}},{"@type":"Question","name":"What voices are available?","acceptedAnswer":{"@type":"Answer","text":"28 voices across American and British English, male and female, including warm, neutral, and soft styles. You can preview any of them before generating."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .pad{padding:22px;}
+  textarea{width:100%;min-height:148px;resize:vertical;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:14px;padding:16px;font-family:var(--body);font-size:16px;line-height:1.55;}
+  textarea:focus{outline:none;border-color:rgba(var(--accentRGB),.55);}
+  .meta-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-family:var(--mono);font-size:12px;color:var(--faint);}
+  .meta-row .ex{color:var(--accent);cursor:pointer;border:none;background:none;font-family:var(--mono);font-size:12px;}
+  .controls{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-end;margin-top:18px;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  select{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:10px 12px;font-family:var(--body);font-size:14px;min-width:210px;}
+  select:focus{outline:none;border-color:rgba(var(--accentRGB),.55);}
+  input[type=range]{accent-color:var(--accent);width:150px;}
+  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:34px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:20px;}
+  .engine{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:inline-flex;align-items:center;gap:7px;}
+  .engine .gpu{color:var(--accent);}
+  .adv{margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;}
+  .adv input{accent-color:var(--accent);}
+  .status{display:none;margin:0 22px 22px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:rgba(var(--surfaceRGB),.5);}
+  .status.show{display:block;}
+  .status .txt{font-size:14px;color:#cdd8d3;}
+  .status .txt b{color:var(--accent);}
+  .progwrap{margin-top:12px;height:7px;border-radius:6px;background:rgba(237,242,239,.10);overflow:hidden;display:none;}
+  .progwrap.show{display:block;}
+  .progbar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .25s var(--ease);}
+  .progwrap.indet .progbar{width:38% !important;animation:slide 1.15s var(--ease) infinite;}
+  @keyframes slide{0%{margin-left:-40%;}100%{margin-left:100%;}}
+  .player{display:none;margin:0 22px 22px;padding:18px;border:1px solid rgba(var(--accentRGB),.28);border-radius:16px;background:linear-gradient(150deg,rgba(var(--accentRGB),.10),rgba(var(--accentRGB),.02));}
+  .player.show{display:block;}
+  .wave{width:100%;height:84px;display:block;border-radius:10px;background:rgba(0,0,0,.18);}
+  .pbar{display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap;}
+  .play{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#07100e;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .play svg{width:20px;height:20px;}
+  .pinfo{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .pinfo b{color:var(--accent);}
+  .spacer{flex:1;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;opacity:0;pointer-events:none;transition:.25s;z-index:99;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  @media(max-width:560px){select{min-width:160px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · neural TTS runs in your browser</div>
+    <h1>Text to Speech</h1>
+    <p class="sub">Type anything and hear it spoken by a real neural voice model that runs entirely on your device. 28 voices, instant WAV download, nothing uploaded.</p>
+    <span class="priv">&#128274; 100% private — your text never leaves your browser</span>
+  </header>
+
+  <div class="panel">
+    <div class="pad">
+      <textarea id="text" spellcheck="true" placeholder="Type or paste text here…">In a quiet workshop on the edge of town, a small machine learned to speak. It had no connection to the outside world, yet every word it read aloud sounded warm and human. Try it yourself: type anything, pick a voice, and press generate.</textarea>
+      <div class="meta-row">
+        <span id="count">0 characters</span>
+        <button class="ex" id="sample" type="button">Load a longer sample</button>
+      </div>
+
+      <div class="controls">
+        <div class="ctl">
+          <label for="voice">Voice</label>
+          <select id="voice" aria-label="Voice">
+            <optgroup label="American · Female">
+              <option value="af_heart" selected>Heart — warm (grade A)</option>
+              <option value="af_bella">Bella — expressive (A-)</option>
+              <option value="af_nicole">Nicole — soft / ASMR</option>
+              <option value="af_aoede">Aoede — bright</option>
+              <option value="af_kore">Kore — neutral</option>
+              <option value="af_sarah">Sarah — clear</option>
+              <option value="af_sky">Sky — light</option>
+            </optgroup>
+            <optgroup label="American · Male">
+              <option value="am_michael">Michael — steady</option>
+              <option value="am_puck">Puck — lively</option>
+              <option value="am_fenrir">Fenrir — deep</option>
+              <option value="am_echo">Echo — calm</option>
+              <option value="am_onyx">Onyx — narration</option>
+            </optgroup>
+            <optgroup label="British · Female">
+              <option value="bf_emma">Emma — refined</option>
+              <option value="bf_isabella">Isabella — crisp</option>
+              <option value="bf_alice">Alice — gentle</option>
+            </optgroup>
+            <optgroup label="British · Male">
+              <option value="bm_george">George — classic</option>
+              <option value="bm_fable">Fable — storyteller</option>
+              <option value="bm_lewis">Lewis — grounded</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="ctl">
+          <label for="speed">Speed</label>
+          <div style="display:flex;align-items:center;gap:10px;"><input type="range" id="speed" min="0.6" max="1.5" step="0.05" value="1" /><span class="qval" id="speedv">1.0&times;</span></div>
+        </div>
+      </div>
+
+      <div class="bar">
+        <button class="btn" id="go">&#9654;&nbsp; Generate speech</button>
+        <span class="engine" id="engine">Detecting engine…</span>
+      </div>
+      <div class="adv">
+        <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;"><input type="checkbox" id="turbo" /> WebGPU turbo <span id="turboNote" style="color:var(--faint)">(higher quality, ~310&nbsp;MB one-time download)</span></label>
+      </div>
+    </div>
+
+    <div class="status" id="status">
+      <div class="txt" id="statusTxt"></div>
+      <div class="progwrap" id="progwrap"><div class="progbar" id="progbar"></div></div>
+    </div>
+
+    <div class="player" id="player">
+      <canvas class="wave" id="wave" width="880" height="84"></canvas>
+      <div class="pbar">
+        <button class="play" id="playBtn" aria-label="Play"><svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+        <div class="pinfo" id="pinfo"></div>
+        <span class="spacer"></span>
+        <button class="btn btn-out" id="dl">&#8681;&nbsp; Download WAV</button>
+      </div>
+      <audio id="audio" hidden></audio>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>A real speech model, running on your machine</h2>
+    <p>VoiceBox runs Kokoro, an open-weight neural text-to-speech model with 82 million parameters. Most "free" TTS sites stream your text to a server and read it back. This one does the opposite: the model downloads to your browser once, then every word you type is turned into audio locally, with no upload and no API key. That is why it keeps working even with your network disconnected after the first load.</p>
+    <h2>How does this run in a browser?</h2>
+    <p>The model is compiled to ONNX and executed through Transformers.js. By default it runs on WebAssembly, which works on essentially any modern browser. If your browser supports WebGPU you can flip on Turbo mode to run the larger, higher-fidelity weights on your graphics card for faster, cleaner output. The first generation does the one-time model download (about 86 MB in the default mode); after that it is cached and instant.</p>
+    <h2>What it is good for</h2>
+    <p>Drafting voiceovers and narration, proofreading by ear, making audio versions of articles and notes, accessibility, learning pronunciation, or just turning a script into a downloadable WAV without signing up for anything. Longer passages are split into sentences and stitched together automatically, so you can paste a whole paragraph and get one continuous clip.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Does my text get sent anywhere?</summary><p>No. The model runs inside your browser tab. Your text and the generated audio stay on your device. There is no account and no server call after the model file is fetched.</p></details>
+    <details><summary>Why is the first run slow?</summary><p>The first time, your browser downloads the model (about 86 MB in default mode, or roughly 310 MB in WebGPU Turbo). It is cached afterward, so later runs start instantly and work offline.</p></details>
+    <details><summary>Can I download the audio?</summary><p>Yes. Every result can be saved as a standard WAV file you can use anywhere, royalty-free.</p></details>
+    <details><summary>Which browsers work best?</summary><p>Default mode works in Chrome, Edge, Firefox, and Safari. Turbo mode needs WebGPU, which is available in recent Chrome and Edge, and increasingly elsewhere.</p></details>
+    <details><summary>Is the voice licensed for my use?</summary><p>Kokoro is released under the Apache 2.0 license, so the generated audio is free to use, including commercially.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var $ = function(id){ return document.getElementById(id); };
+  var text=$("text"), voice=$("voice"), speed=$("speed"), speedv=$("speedv"), go=$("go"),
+      engine=$("engine"), turbo=$("turbo"), turboNote=$("turboNote"), count=$("count"),
+      statusBox=$("status"), statusTxt=$("statusTxt"), progwrap=$("progwrap"), progbar=$("progbar"),
+      player=$("player"), wave=$("wave"), playBtn=$("playBtn"), playIcon=$("playIcon"),
+      pinfo=$("pinfo"), dl=$("dl"), audioEl=$("audio"), sampleBtn=$("sample"), toast=$("toast");
+
+  var hasWebGPU = !!(navigator.gpu);
+  function refreshEngine(){
+    if(turbo.checked && hasWebGPU){ engine.innerHTML='Engine: <span class="gpu">WebGPU Turbo</span> · high quality'; }
+    else { engine.innerHTML='Engine: <span class="gpu">'+(hasWebGPU?'WebGPU':'WebAssembly')+'</span> · ~86 MB model'; }
+  }
+  if(!hasWebGPU){ turbo.disabled=true; turbo.parentElement.style.opacity=".5"; turboNote.textContent="(needs WebGPU — not available in this browser)"; }
+  refreshEngine();
+  turbo.addEventListener("change",function(){ if(workerReady){ /* engine change needs reload */ resetEngine(); } refreshEngine(); });
+
+  function updateCount(){ var n=text.value.length; count.textContent=n.toLocaleString()+" character"+(n===1?"":"s"); }
+  text.addEventListener("input",updateCount); updateCount();
+  speed.addEventListener("input",function(){ speedv.innerHTML=(parseFloat(speed.value)).toFixed(2).replace(/0$/,"")+"&times;"; });
+
+  function showToast(m){ toast.textContent=m; toast.classList.add("show"); setTimeout(function(){toast.classList.remove("show");},1500); }
+  function setStatus(html, mode){ statusBox.classList.add("show"); statusTxt.innerHTML=html;
+    if(mode===false){ progwrap.classList.remove("show","indet"); }
+    else if(mode==="indet"){ progwrap.classList.add("show","indet"); progbar.style.width=""; }
+    else { progwrap.classList.add("show"); progwrap.classList.remove("indet"); }
+  }
+
+  // ---------- Worker (built from a Blob so the whole app is a single file) ----------
+  var WORKER_SRC = [
+    'import { KokoroTTS } from "https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js";',
+    'let tts=null, curKey="";',
+    'async function load(useGPU){',
+    '  const dtype = useGPU ? "fp32" : "q8";',
+    '  const device = useGPU ? "webgpu" : "wasm";',
+    '  const key = device+":"+dtype;',
+    '  if(tts && curKey===key) return;',
+    '  tts=null;',
+    '  tts = await KokoroTTS.from_pretrained("onnx-community/Kokoro-82M-v1.0-ONNX", {',
+    '    dtype, device, progress_callback:(p)=>self.postMessage({type:"progress",p})',
+    '  });',
+    '  curKey = key;',
+    '}',
+    'function splitText(t){',
+    '  t = (t||"").replace(/\\s+/g," ").trim();',
+    '  if(!t) return [];',
+    '  const parts = t.match(/[^.!?\\n]+[.!?]*\\s*/g) || [t];',
+    '  const out=[]; let cur="";',
+    '  for(const s of parts){ if((cur+s).length>260 && cur){ out.push(cur.trim()); cur=s; } else { cur+=s; } }',
+    '  if(cur.trim()) out.push(cur.trim());',
+    '  return out;',
+    '}',
+    'function encodeWAV(samples, sampleRate){',
+    '  const buf=new ArrayBuffer(44+samples.length*2); const v=new DataView(buf);',
+    '  const wr=(o,s)=>{ for(let i=0;i<s.length;i++) v.setUint8(o+i, s.charCodeAt(i)); };',
+    '  wr(0,"RIFF"); v.setUint32(4,36+samples.length*2,true); wr(8,"WAVE"); wr(12,"fmt ");',
+    '  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);',
+    '  v.setUint32(24,sampleRate,true); v.setUint32(28,sampleRate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);',
+    '  wr(36,"data"); v.setUint32(40,samples.length*2,true);',
+    '  let o=44; for(let i=0;i<samples.length;i++){ let x=Math.max(-1,Math.min(1,samples[i])); v.setInt16(o, x<0?x*0x8000:x*0x7FFF, true); o+=2; }',
+    '  return buf;',
+    '}',
+    'self.onmessage = async (e)=>{',
+    '  const d=e.data;',
+    '  try{',
+    '    if(d.type==="load"){ await load(d.useGPU); self.postMessage({type:"ready"}); return; }',
+    '    if(d.type==="run"){',
+    '      await load(d.useGPU);',
+    '      const chunks = splitText(d.text);',
+    '      if(!chunks.length){ self.postMessage({type:"error",error:"Please enter some text."}); return; }',
+    '      self.postMessage({type:"phase", total:chunks.length});',
+    '      let sr=24000; const pieces=[]; let totalLen=0;',
+    '      for(let i=0;i<chunks.length;i++){',
+    '        self.postMessage({type:"chunk", i:i+1, n:chunks.length});',
+    '        const audio = await tts.generate(chunks[i], { voice:d.voice, speed:d.speed });',
+    '        sr = audio.sampling_rate || 24000;',
+    '        const data = audio.audio; pieces.push(data); totalLen += data.length;',
+    '        if(i<chunks.length-1){ const gap=Math.floor(sr*0.18); pieces.push(new Float32Array(gap)); totalLen+=gap; }',
+    '      }',
+    '      const full=new Float32Array(totalLen); let off=0;',
+    '      for(const p of pieces){ full.set(p,off); off+=p.length; }',
+    '      const N=Math.min(720, full.length); const peaks=new Float32Array(N); const block=Math.max(1,Math.floor(full.length/N));',
+    '      for(let i=0;i<N;i++){ let mx=0; const s=i*block; for(let j=0;j<block && s+j<full.length;j++){ const a=Math.abs(full[s+j]); if(a>mx)mx=a; } peaks[i]=mx; }',
+    '      const wav = encodeWAV(full, sr); const dur = full.length / sr;',
+    '      self.postMessage({type:"result", wav, peaks, dur, sr}, [wav, peaks.buffer]);',
+    '    }',
+    '  }catch(err){ self.postMessage({type:"error", error:String(err&&err.message||err)}); }',
+    '};'
+  ].join("\n");
+
+  var worker=null, workerReady=false, modelLoading=false, busy=false, files={};
+
+  function resetEngine(){ try{ if(worker) worker.terminate(); }catch(e){} worker=null; workerReady=false; modelLoading=false; files={}; }
+
+  function ensureWorker(){
+    if(worker) return worker;
+    var blob=new Blob([WORKER_SRC],{type:"text/javascript"});
+    worker=new Worker(URL.createObjectURL(blob),{type:"module"});
+    worker.onmessage=function(e){
+      var m=e.data;
+      if(m.type==="progress"){
+        var p=m.p;
+        if(p&&p.status==="progress"&&p.file){ files[p.file]=(p.loaded||0)/(p.total||1); var v=Object.keys(files).map(function(k){return files[k];}); var avg=v.reduce(function(a,b){return a+b;},0)/v.length; progbar.style.width=Math.round(avg*100)+"%"; }
+      } else if(m.type==="ready"){
+        workerReady=true; modelLoading=false;
+      } else if(m.type==="phase"){
+        setStatus("Model ready on <b>"+(turbo.checked&&hasWebGPU?"WebGPU":(hasWebGPU?"WebGPU":"WebAssembly"))+"</b>. Generating speech locally…","indet");
+      } else if(m.type==="chunk"){
+        if(m.n>1) setStatus("Generating speech locally… <b>part "+m.i+" of "+m.n+"</b>","indet");
+      } else if(m.type==="result"){
+        workerReady=true; busy=false; onResult(m.wav, m.peaks, m.dur);
+      } else if(m.type==="error"){
+        busy=false; modelLoading=false; enable();
+        setStatus("Something went wrong: "+m.error+". Try shorter text, or switch off Turbo and use a desktop browser (Chrome or Edge work best).",false);
+      }
+    };
+    return worker;
+  }
+
+  // ---------- result ----------
+  var lastURL=null, peaksArr=null, audioDur=0;
+  function onResult(wavBuf, peaks, dur){
+    peaksArr=peaks; audioDur=dur;
+    if(lastURL){ URL.revokeObjectURL(lastURL); }
+    var blob=new Blob([wavBuf],{type:"audio/wav"});
+    lastURL=URL.createObjectURL(blob);
+    audioEl.src=lastURL;
+    drawWave(0);
+    pinfo.innerHTML="<b>"+fmtTime(dur)+"</b> · "+(wavBuf.byteLength/1048576).toFixed(2)+" MB WAV";
+    player.classList.add("show");
+    setStatus("Done. Everything ran on your device &mdash; <b>nothing was uploaded</b>.",false);
+    setTimeout(function(){ statusBox.classList.remove("show"); },2600);
+    enable();
+    audioEl.play().catch(function(){});
+  }
+  function fmtTime(s){ s=Math.max(0,s||0); var m=Math.floor(s/60), x=Math.floor(s%60); return m+":"+String(x).padStart(2,"0"); }
+
+  function drawWave(prog){
+    var dpr=Math.min(2,window.devicePixelRatio||1);
+    var cssW=wave.clientWidth||880, cssH=84;
+    if(wave.width!==Math.floor(cssW*dpr)){ wave.width=Math.floor(cssW*dpr); wave.height=Math.floor(cssH*dpr); }
+    var ctx=wave.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,cssW,cssH);
+    if(!peaksArr) return;
+    var n=peaksArr.length, mid=cssH/2, bw=cssW/n;
+    var acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#2be3b0";
+    for(var i=0;i<n;i++){
+      var h=Math.max(2, peaksArr[i]*(cssH*0.92));
+      var played=(i/n)<=prog;
+      ctx.fillStyle = played ? acc : "rgba(147,168,161,.45)";
+      var x=i*bw;
+      ctx.fillRect(x, mid-h/2, Math.max(1,bw*0.62), h);
+    }
+  }
+
+  // ---------- playback ----------
+  function setPlayIcon(playing){ playIcon.innerHTML = playing ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>' : '<path d="M8 5v14l11-7z"/>'; }
+  playBtn.addEventListener("click",function(){ if(!audioEl.src) return; if(audioEl.paused){ audioEl.play(); } else { audioEl.pause(); } });
+  audioEl.addEventListener("play",function(){ setPlayIcon(true); });
+  audioEl.addEventListener("pause",function(){ setPlayIcon(false); });
+  audioEl.addEventListener("ended",function(){ setPlayIcon(false); drawWave(0); });
+  audioEl.addEventListener("timeupdate",function(){ if(audioDur>0) drawWave(audioEl.currentTime/audioDur); });
+  window.addEventListener("resize",function(){ if(peaksArr) drawWave(audioDur>0?(audioEl.currentTime/audioDur):0); });
+
+  dl.addEventListener("click",function(){ if(!lastURL) return; var a=document.createElement("a"); a.href=lastURL; var vn=voice.value; a.download="voicebox-"+vn+".wav"; a.click(); showToast("Downloading WAV"); });
+
+  // ---------- run ----------
+  function disable(){ busy=true; go.disabled=true; }
+  function enable(){ busy=false; go.disabled=false; }
+
+  go.addEventListener("click",function(){
+    if(busy) return;
+    var t=text.value.trim();
+    if(!t){ setStatus("Type some text first, then press generate.",false); text.focus(); return; }
+    disable(); player.classList.remove("show");
+    ensureWorker();
+    var useGPU = turbo.checked && hasWebGPU;
+    if(!workerReady && !modelLoading){
+      modelLoading=true;
+      var size = useGPU ? "~310 MB" : "~86 MB";
+      setStatus("Loading the voice model for the first time. This downloads once ("+size+"), is cached by your browser, then works offline.","det");
+    } else {
+      setStatus("Generating speech locally…","indet");
+    }
+    worker.postMessage({ type:"run", text:t, voice:voice.value, speed:parseFloat(speed.value), useGPU:useGPU });
+  });
+
+  // ---------- sample ----------
+  sampleBtn.addEventListener("click",function(){
+    text.value="Welcome to VoiceBox. Everything you are hearing was generated right here in your browser, with no servers involved. The model reads your text, predicts how each sound should be pronounced, and synthesizes the waveform on the fly. You can change the voice, adjust the speed, and download the result as an audio file. It is fast, private, and completely free to use.";
+    updateCount(); text.focus();
+  });
+
+  // warm the model in the background so the first real run is faster
+  window.addEventListener("load",function(){ setTimeout(function(){ try{ ensureWorker(); if(!workerReady&&!modelLoading){ modelLoading=true; worker.postMessage({type:"load",useGPU:(turbo.checked&&hasWebGPU)}); } }catch(e){} },1400); });
+})();
+</script>
+<!-- Polar.sh / AdSense slot (left intentionally empty for later) -->
+<!-- Analytics: Cloudflare Web Analytics beacon (public client token). -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
