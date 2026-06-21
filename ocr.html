@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Free OCR &amp; Handwriting to Text — runs in your browser, no upload | Scribe</title>
+<meta name="description" content="Turn a photo of printed text or handwriting into editable text, right in your browser. A real OCR transformer runs on your own device — nothing is uploaded, works offline after first load." />
+<meta name="keywords" content="ocr online, image to text, handwriting to text, handwriting recognition, picture to text, extract text from image, ocr no upload, ocr in browser, transcribe handwriting, photo to text, free ocr, private ocr, on-device ocr" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Scribe — OCR &amp; Handwriting to Text in your browser" />
+<meta property="og:description" content="Drop a photo of notes, a receipt, or a screenshot and get editable text. A real OCR AI runs entirely on your device. No upload, no sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/ocr.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Scribe — OCR &amp; Handwriting to Text in your browser" />
+<meta name="twitter:description" content="A real OCR transformer that reads printed text and handwriting, entirely on your device. Private, no upload." />
+<link rel="canonical" href="https://hammyasf.github.io/ocr.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap" media="print" onload="this.media='all'" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Scribe — OCR & Handwriting to Text","url":"https://hammyasf.github.io/ocr.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser with WebAssembly)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"On-device OCR that reads printed text and handwriting from images and returns editable text. Runs entirely in the browser, nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my images uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The OCR model downloads to your browser once and then runs entirely on your own device using WebAssembly. Your images never leave your computer, and it keeps working with your internet switched off."}},{"@type":"Question","name":"How can a real AI model run in a browser?","acceptedAnswer":{"@type":"Answer","text":"Scribe loads a quantized TrOCR vision-encoder/text-decoder model with Transformers.js and runs it through the ONNX runtime compiled to WebAssembly. The whole thing executes in a background Web Worker so the page stays responsive."}},{"@type":"Question","name":"Can it read handwriting?","acceptedAnswer":{"@type":"Answer","text":"Yes. The default model is trained on real handwriting, so it reads cursive and print and keeps the original capitalisation. There is also a Printed mode tuned for typed documents and receipts."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up and no limits. Everything runs locally on your machine."}},{"@type":"Question","name":"What languages does it support?","acceptedAnswer":{"@type":"Answer","text":"The bundled models read English (Latin script). Accuracy is best on reasonably clear, roughly horizontal lines of text."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:40px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .samples{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+  .controls{display:flex;flex-wrap:wrap;gap:18px 28px;padding:2px 24px 18px;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 15px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .btn-sm{font-size:12.5px;padding:8px 14px;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 24px 18px;}
+  .stage{display:none;grid-template-columns:1fr 1fr;gap:16px;padding:0 24px 22px;}
+  .stage.show{display:grid;}
+  @media(max-width:720px){.stage{grid-template-columns:1fr;}}
+  .col{display:flex;flex-direction:column;gap:8px;min-width:0;}
+  .col h3{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .imgbox{border:1px solid var(--line);border-radius:14px;background:#0a0a0a;overflow:auto;max-height:420px;display:flex;align-items:flex-start;justify-content:center;}
+  .imgbox canvas{max-width:100%;height:auto;display:block;}
+  textarea#text{width:100%;min-height:340px;max-height:420px;resize:vertical;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:14px;padding:14px 16px;font-family:var(--mono);font-size:13.5px;line-height:1.6;}
+  .meta{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .meta b{color:var(--accent);}
+  .progress{height:6px;border-radius:100px;background:rgba(237,242,239,.1);overflow:hidden;margin:0 24px 18px;display:none;}
+  .progress.show{display:block;}
+  .progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s;}
+  .note{padding:0 24px 18px;font-family:var(--mono);font-size:12px;color:var(--faint);}
+  .note.warn{color:#ffce7a;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · on-device AI · runs in your browser</div>
+    <h1>Read printed text &amp; handwriting</h1>
+    <p class="sub">Drop a photo of your notes, a receipt, a screenshot, or a whiteboard and get clean, editable text. A real OCR transformer runs entirely on your own device.</p>
+    <span class="priv">&#128274; 100% private — your image is never uploaded</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add an image">
+      <h2>Drop an image here</h2>
+      <p>or click to choose · paste with Ctrl/Cmd+V · PNG, JPG, WebP</p>
+      <input type="file" id="file" accept="image/*" hidden />
+      <div class="samples">
+        <button class="btn btn-out btn-sm" id="sampleHand" type="button">Try a handwritten note</button>
+        <button class="btn btn-out btn-sm" id="samplePrint" type="button">Try a printed receipt</button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="ctl"><label>Text type</label>
+        <div class="seg" id="mode">
+          <button data-m="handwritten" class="on">Handwriting</button>
+          <button data-m="printed">Printed</button>
+        </div>
+      </div>
+      <div class="ctl"><label>Model</label>
+        <div class="seg" id="size">
+          <button data-s="small" class="on">Fast · ~64&nbsp;MB</button>
+          <button data-s="base">Best · ~320&nbsp;MB</button>
+        </div>
+      </div>
+      <button class="btn" id="go" disabled>Read text</button>
+    </div>
+
+    <div class="progress" id="prog"><i id="progbar"></i></div>
+    <div class="note" id="status">The model downloads once (then it is cached and works offline). Everything runs locally.</div>
+
+    <div class="stage" id="stage">
+      <div class="col">
+        <h3>Image · detected lines</h3>
+        <div class="imgbox"><canvas id="view"></canvas></div>
+      </div>
+      <div class="col">
+        <h3>Extracted text</h3>
+        <textarea id="text" spellcheck="false" placeholder="Recognised text will appear here, line by line…"></textarea>
+        <div class="bar" style="padding:0;">
+          <button class="btn btn-out btn-sm" id="copy" disabled>Copy</button>
+          <button class="btn btn-out btn-sm" id="dl" disabled>Download .txt</button>
+          <span class="meta" id="count"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Scribe runs a real optical-character-recognition model — TrOCR, a vision-transformer encoder paired with a text-decoder — directly inside your browser. When you drop an image, the page first finds the individual lines of text by analysing where the ink sits, crops each one, and feeds them to the model one at a time. The model reads each line and the page stitches the results back together. The model files download from a CDN the first time you use it, then your browser caches them, so after that it works with no network at all.</p>
+    <h2>How is a model like this running locally?</h2>
+    <p>The model is converted to ONNX and quantised so it is small enough to ship to a browser, and Transformers.js runs it through a WebAssembly runtime. All of the inference happens in a background Web Worker, which keeps the interface smooth while the text decoder generates words. Because the computation happens on your own machine, your documents never get uploaded and there is no per-page cost or rate limit. The Fast model is about 64&nbsp;MB and is plenty for clear notes and screenshots; the Best model is larger and more accurate on messy or dense text.</p>
+    <h2>Handwriting vs printed</h2>
+    <p>The Handwriting model is trained on real handwriting, so it reads cursive and print and keeps the original capitalisation — it is the best default for notes, journals, and whiteboards. The Printed model is tuned for typed documents and receipts; it is excellent on dense printed lines but tends to normalise the casing of receipt-style text. If one mode misreads your image, try the other, or switch to the Best model.</p>
+    <h2>Tips for the best results</h2>
+    <p>Crop to just the text, hold the camera square so the lines are roughly horizontal, and give it good contrast and lighting. Photos of a single column work better than two-column layouts. Very small or very faint text is the hardest case, and that is where switching to the Best model helps most.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my image uploaded anywhere?</summary><p>No. The model runs locally in your browser through WebAssembly. Your image never touches a server, which is why it stays private and keeps working offline once the model is cached.</p></details>
+    <details><summary>Can it really read handwriting?</summary><p>Yes. The default model is trained on real handwriting, so it handles cursive and print and preserves capitalisation. Clear, roughly horizontal lines work best.</p></details>
+    <details><summary>Why does the first run take a moment?</summary><p>The model file downloads once (about 64&nbsp;MB for Fast). After that your browser caches it and every later run starts instantly, even with no internet.</p></details>
+    <details><summary>What about multi-line documents?</summary><p>Scribe detects each line of text in the image, reads them in order, and rebuilds the paragraph with line breaks. You can edit the result directly in the box and copy or download it.</p></details>
+    <details><summary>Does it work on my phone?</summary><p>It can, but the models and the on-device compute are heavy, so a laptop or desktop is smoother. On a phone, prefer the Fast model.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- AdSense slot (commented until approved):
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXdivXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
+-->
+<!-- Polar.sh "support this tool" slot (commented):
+<a class="polar-cta" href="https://polar.sh/hammyasf">Support the Lab</a>
+-->
+
+<script>
+/* ===== Scribe — on-device OCR. Single classic script; window.__ocrBoot set last so a parse error anywhere halts boot. ===== */
+(function(){
+  // ----- match the portfolio's saved theme -----
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var CDN='https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1/dist/transformers.min.js';
+
+  /* =================== PURE HELPERS (unit-tested in Node) =================== */
+  function otsuThreshold(hist){
+    var total=0,i; for(i=0;i<256;i++) total+=hist[i];
+    if(!total) return 128;
+    var sum=0; for(i=0;i<256;i++) sum+=i*hist[i];
+    var sumB=0,wB=0,maxVar=-1,thr=127;
+    for(var th=0;th<256;th++){
+      wB+=hist[th]; if(!wB) continue;
+      var wF=total-wB; if(!wF) break;
+      sumB+=th*hist[th];
+      var mB=sumB/wB, mF=(sum-sumB)/wF, v=wB*wF*(mB-mF)*(mB-mF);
+      if(v>maxVar){maxVar=v;thr=th;}
+    }
+    return thr;
+  }
+  // profile: ink count per row (length H). returns merged, de-noised line bands [{top,bottom}].
+  function segmentBands(profile,H,opt){
+    opt=opt||{};
+    var inkMin=opt.inkMin!=null?opt.inkMin:1;
+    var bands=[],cur=null,r;
+    for(r=0;r<H;r++){
+      if(profile[r]>=inkMin){ if(!cur) cur={top:r,bottom:r}; else cur.bottom=r; }
+      else if(cur){ bands.push(cur); cur=null; }
+    }
+    if(cur) bands.push(cur);
+    if(!bands.length) return [];
+    var hs=bands.map(function(b){return b.bottom-b.top+1;}).sort(function(a,b){return a-b;});
+    var medH=hs[Math.floor(hs.length/2)];
+    var mergeGap=opt.mergeGap!=null?opt.mergeGap:Math.max(2,Math.round(medH*0.4));
+    var merged=[{top:bands[0].top,bottom:bands[0].bottom}];
+    for(var i=1;i<bands.length;i++){
+      var prev=merged[merged.length-1];
+      if(bands[i].top-prev.bottom<=mergeGap) prev.bottom=bands[i].bottom;
+      else merged.push({top:bands[i].top,bottom:bands[i].bottom});
+    }
+    var minH=opt.minH!=null?opt.minH:Math.max(4,Math.round(medH*0.35));
+    return merged.filter(function(b){return (b.bottom-b.top+1)>=minH;});
+  }
+  // colProfile: ink per column within a band. returns trimmed {left,right} (inclusive), or null if empty.
+  function trimRange(colProfile,W,inkMin){
+    inkMin=inkMin||1; var l=-1,rr=-1;
+    for(var c=0;c<W;c++){ if(colProfile[c]>=inkMin){ if(l<0)l=c; rr=c; } }
+    if(l<0) return null; return {left:l,right:rr};
+  }
+  function fmtBytes(b){ return b<1024?b+" B":b<1048576?(b/1024).toFixed(0)+" KB":(b/1048576).toFixed(1)+" MB"; }
+  function modelId(mode,size){ return "Xenova/trocr-"+(size==="base"?"base":"small")+"-"+(mode==="printed"?"printed":"handwritten"); }
+  function countWords(s){ var t=s.trim(); return t?t.split(/\s+/).length:0; }
+  // expose pure fns for testing
+  window.__ocrPure={otsuThreshold:otsuThreshold,segmentBands:segmentBands,trimRange:trimRange,modelId:modelId,fmtBytes:fmtBytes,countWords:countWords};
+
+  /* =================== DOM =================== */
+  var $=function(id){return document.getElementById(id);};
+  var drop=$("drop"),file=$("file"),go=$("go"),stage=$("stage"),view=$("view"),text=$("text"),
+      copyBtn=$("copy"),dlBtn=$("dl"),count=$("count"),prog=$("prog"),progbar=$("progbar"),statusEl=$("status");
+  var mode="handwritten",size="small",srcCanvas=null;
+
+  document.querySelectorAll("#mode button").forEach(function(b){ b.addEventListener("click",function(){ document.querySelectorAll("#mode button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); mode=b.getAttribute("data-m"); }); });
+  document.querySelectorAll("#size button").forEach(function(b){ b.addEventListener("click",function(){ document.querySelectorAll("#size button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); size=b.getAttribute("data-s"); }); });
+
+  function setMode(m){ mode=m; document.querySelectorAll("#mode button").forEach(function(x){ x.classList.toggle("on",x.getAttribute("data-m")===m); }); }
+  function setStatus(msg,warn){ statusEl.textContent=msg; statusEl.classList.toggle("warn",!!warn); }
+  function showProg(p){ prog.classList.add("show"); progbar.style.width=Math.max(0,Math.min(100,p))+"%"; }
+  function hideProg(){ prog.classList.remove("show"); progbar.style.width="0%"; }
+
+  // ----- input handling -----
+  drop.addEventListener("click",function(e){ if(e.target.tagName!=="BUTTON") file.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();file.click();} });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop",function(e){ if(e.dataTransfer.files&&e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
+  file.addEventListener("change",function(){ if(file.files&&file.files[0]) loadFile(file.files[0]); });
+  window.addEventListener("paste",function(e){ var it=e.clipboardData&&e.clipboardData.items; if(!it)return; for(var i=0;i<it.length;i++){ if(it[i].type.indexOf("image/")===0){ loadFile(it[i].getAsFile()); break; } } });
+
+  function loadFile(f){ if(!f||f.type.indexOf("image/")!==0){ setStatus("That file is not an image.",true); return; }
+    var img=new Image(), url=URL.createObjectURL(f);
+    img.onload=function(){ URL.revokeObjectURL(url); setSource(img); };
+    img.onerror=function(){ URL.revokeObjectURL(url); setStatus("Could not read that image.",true); };
+    img.src=url;
+  }
+  // draw an image (or canvas) into srcCanvas at a working resolution
+  function setSource(img){
+    var iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
+    var maxW=1500, scale=iw>maxW?maxW/iw:1;
+    var w=Math.max(1,Math.round(iw*scale)), h=Math.max(1,Math.round(ih*scale));
+    srcCanvas=document.createElement("canvas"); srcCanvas.width=w; srcCanvas.height=h;
+    var cx=srcCanvas.getContext("2d"); cx.fillStyle="#fff"; cx.fillRect(0,0,w,h); cx.drawImage(img,0,0,w,h);
+    view.width=w; view.height=h; view.getContext("2d").drawImage(srcCanvas,0,0);
+    stage.classList.add("show"); text.value=""; count.textContent=""; copyBtn.disabled=dlBtn.disabled=true;
+    go.disabled=false; setStatus("Ready. Click “Read text” to run the model on your device."); hideProg();
+  }
+
+  // ----- segmentation (uses pure helpers) -----
+  function analyse(){
+    var w=srcCanvas.width,h=srcCanvas.height,cx=srcCanvas.getContext("2d");
+    var d=cx.getImageData(0,0,w,h).data;
+    var gray=new Uint8Array(w*h), hist=new Float64Array(256), i,p;
+    for(i=0;i<w*h;i++){ p=i*4; var g=(d[p]*0.299+d[p+1]*0.587+d[p+2]*0.114)|0; gray[i]=g; hist[g]++; }
+    var thr=otsuThreshold(hist);
+    // decide polarity: ink should be the minority
+    var dark=0; for(i=0;i<w*h;i++) if(gray[i]<thr) dark++;
+    var inkIsDark = dark <= (w*h*0.5);
+    var rowProf=new Float64Array(h);
+    for(var y=0;y<h;y++){ var c=0, row=y*w; for(var x=0;x<w;x++){ var v=gray[row+x]; var ink=inkIsDark?(v<thr):(v>=thr); if(ink)c++; } rowProf[y]=c; }
+    var noise=Math.max(1,Math.round(w*0.004));
+    var bands=segmentBands(rowProf,h,{inkMin:noise});
+    if(bands.length<=1) return {bands:[{top:0,bottom:h-1,left:0,right:w-1}],gray:gray,thr:thr,inkIsDark:inkIsDark};
+    // horizontal trim per band + vertical padding
+    var out=[];
+    for(var b=0;b<bands.length;b++){
+      var bd=bands[b], colProf=new Float64Array(w);
+      for(var yy=bd.top;yy<=bd.bottom;yy++){ var r2=yy*w; for(var xx=0;xx<w;xx++){ var vv=gray[r2+xx]; if(inkIsDark?(vv<thr):(vv>=thr)) colProf[xx]++; } }
+      var tr=trimRange(colProf,w,1); if(!tr) continue;
+      var bandH=bd.bottom-bd.top+1, padY=Math.max(3,Math.round(bandH*0.25)), padX=Math.max(4,Math.round(bandH*0.3));
+      out.push({ top:Math.max(0,bd.top-padY), bottom:Math.min(h-1,bd.bottom+padY), left:Math.max(0,tr.left-padX), right:Math.min(w-1,tr.right+padX) });
+    }
+    return {bands:out,gray:gray,thr:thr,inkIsDark:inkIsDark};
+  }
+  // draw overlay boxes on the view canvas
+  function drawOverlay(bands){
+    var ctx=view.getContext("2d"); ctx.drawImage(srcCanvas,0,0);
+    var acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#2be3b0";
+    ctx.lineWidth=Math.max(1.5,view.width/600); ctx.strokeStyle=acc;
+    bands.forEach(function(b){ ctx.strokeRect(b.left+0.5,b.top+0.5,(b.right-b.left),(b.bottom-b.top)); });
+  }
+  // crop a band to a fresh white-padded canvas, return PNG dataURL
+  function cropLine(b){
+    var w=b.right-b.left+1, h=b.bottom-b.top+1;
+    var c=document.createElement("canvas"); c.width=w; c.height=h;
+    var cx=c.getContext("2d"); cx.fillStyle="#fff"; cx.fillRect(0,0,w,h);
+    cx.drawImage(srcCanvas,b.left,b.top,w,h,0,0,w,h);
+    return c.toDataURL("image/png");
+  }
+
+  // ----- worker -----
+  var worker=null, loadedModel=null;
+  function workerSrc(){
+    return "import { pipeline, env } from '"+CDN+"';\n"+
+    "env.allowLocalModels=false; env.useBrowserCache=true;\n"+
+    "let cache={};\n"+
+    "self.onmessage=async (e)=>{\n"+
+    "  const m=e.data;\n"+
+    "  try{\n"+
+    "    if(m.type==='load'){\n"+
+    "      if(!cache[m.model]){\n"+
+    "        cache[m.model]=await pipeline('image-to-text',m.model,{dtype:'q8',progress_callback:(p)=>{ if(p&&p.status==='progress'&&p.file){ self.postMessage({type:'progress',file:p.file.split('/').pop(),pct:p.progress||0,loaded:p.loaded||0,total:p.total||0}); } }});\n"+
+    "      }\n"+
+    "      self.postMessage({type:'ready',model:m.model});\n"+
+    "    } else if(m.type==='ocr'){\n"+
+    "      const pipe=cache[m.model];\n"+
+    "      for(let i=0;i<m.lines.length;i++){\n"+
+    "        const out=await pipe(m.lines[i]);\n"+
+    "        const txt=(out&&out[0]&&out[0].generated_text!=null)?out[0].generated_text:'';\n"+
+    "        self.postMessage({type:'line',index:i,total:m.lines.length,text:txt});\n"+
+    "      }\n"+
+    "      self.postMessage({type:'done'});\n"+
+    "    }\n"+
+    "  }catch(err){ self.postMessage({type:'error',error:String(err&&err.message||err)}); }\n"+
+    "};\n";
+  }
+  function ensureWorker(){
+    if(worker) return worker;
+    var blob=new Blob([workerSrc()],{type:"text/javascript"});
+    worker=new Worker(URL.createObjectURL(blob),{type:"module"});
+    return worker;
+  }
+
+  var lineResults=[], expected=0;
+  function run(){
+    if(!srcCanvas) return;
+    var wantModel=modelId(mode,size);
+    go.disabled=true; copyBtn.disabled=dlBtn.disabled=true; text.value=""; count.textContent="";
+    setStatus("Finding text lines…"); showProg(2);
+    var info=analyse();
+    drawOverlay(info.bands);
+    var lines=info.bands.map(cropLine);
+    expected=lines.length; lineResults=new Array(expected);
+    var w=ensureWorker();
+    w.onmessage=function(ev){
+      var m=ev.data;
+      if(m.type==="progress"){ showProg(Math.round(m.pct)); setStatus("Downloading model · "+m.file+" · "+(m.total?fmtBytes(m.loaded)+" / "+fmtBytes(m.total):Math.round(m.pct)+"%")+" (cached after first run)"); }
+      else if(m.type==="ready"){ loadedModel=m.model; showProg(100); setTimeout(hideProg,300); setStatus("Reading "+expected+" line"+(expected>1?"s":"")+" on your device…"); w.postMessage({type:"ocr",model:wantModel,lines:lines}); }
+      else if(m.type==="line"){ lineResults[m.index]=m.text; text.value=lineResults.slice(0,m.index+1).join("\n"); setStatus("Reading line "+(m.index+1)+" of "+m.total+"…"); text.scrollTop=text.scrollHeight; }
+      else if(m.type==="done"){ finish(); }
+      else if(m.type==="error"){ setStatus("Something went wrong: "+m.error,true); go.disabled=false; hideProg(); }
+    };
+    if(loadedModel===wantModel){ setStatus("Reading "+expected+" line"+(expected>1?"s":"")+" on your device…"); hideProg(); w.postMessage({type:"ocr",model:wantModel,lines:lines}); }
+    else { setStatus("Loading the "+(size==="base"?"Best":"Fast")+" "+mode+" model… (downloads once, then cached)"); w.postMessage({type:"load",model:wantModel}); }
+  }
+  function finish(){
+    var full=lineResults.join("\n").replace(/\n{3,}/g,"\n\n").trim();
+    text.value=full;
+    var nchars=full.length, nwords=countWords(full);
+    count.innerHTML="<b>"+nwords+"</b> words · "+nchars+" chars · "+expected+" line"+(expected>1?"s":"");
+    copyBtn.disabled=dlBtn.disabled=full.length===0; go.disabled=false;
+    setStatus(full.length?"Done. Edit the text if you like, then copy or download it.":"No text was detected. Try the other mode, the Best model, or a clearer image.",full.length===0);
+  }
+
+  go.addEventListener("click",run);
+  copyBtn.addEventListener("click",function(){ if(!text.value)return; navigator.clipboard.writeText(text.value).then(function(){ copyBtn.textContent="Copied"; setTimeout(function(){copyBtn.textContent="Copy";},1200); }); });
+  dlBtn.addEventListener("click",function(){ if(!text.value)return; var blob=new Blob([text.value],{type:"text/plain"}); var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="scribe-text.txt"; a.click(); });
+
+  // ----- samples (rendered on canvas; handwriting model reads handwriting-style fonts and keeps case) -----
+  function renderLines(linesArr,opt){
+    opt=opt||{}; var pad=opt.pad||28, lh=opt.lh||62, fontPx=opt.fontPx||34, font=opt.font||"Georgia, serif";
+    var tmp=document.createElement("canvas").getContext("2d"); tmp.font=fontPx+"px "+font;
+    var maxw=0; linesArr.forEach(function(s){ maxw=Math.max(maxw,tmp.measureText(s).width); });
+    var w=Math.ceil(maxw)+pad*2, h=lh*linesArr.length+pad*2;
+    var c=document.createElement("canvas"); c.width=w; c.height=h;
+    var cx=c.getContext("2d"); cx.fillStyle="#fbfaf7"; cx.fillRect(0,0,w,h);
+    cx.fillStyle="#1a1a1a"; cx.font=fontPx+"px "+font; cx.textBaseline="alphabetic";
+    linesArr.forEach(function(s,i){ cx.fillText(s,pad,pad+lh*(i+1)-Math.round(lh*0.32)); });
+    return c;
+  }
+  function useSample(canvas,modeName){ setMode(modeName); var img=new Image(); img.onload=function(){ setSource(img); setTimeout(run,60); }; img.src=canvas.toDataURL("image/png"); }
+  $("sampleHand").addEventListener("click",function(e){ e.stopPropagation();
+    var lines=["Dear future me,","remember that the best ideas","arrive when you stop forcing them.","Ship something small today.","- Harman"];
+    var go2=function(){ useSample(renderLines(lines,{font:'"Caveat", "Segoe Print", cursive',fontPx:48,lh:72}),"handwritten"); };
+    if(document.fonts&&document.fonts.load){ document.fonts.load('48px "Caveat"').then(go2).catch(go2); } else go2();
+  });
+  $("samplePrint").addEventListener("click",function(e){ e.stopPropagation();
+    var lines=["CORNER MARKET","123 Birch Street","Coffee beans  12.00","Oat milk  4.50","Total  16.50","Thank you!"];
+    useSample(renderLines(lines,{font:'"JetBrains Mono", monospace',fontPx:30,lh:50}),"printed");
+  });
+
+  // ----- capability note -----
+  (function(){
+    var isMobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+    if(typeof WebAssembly==="undefined"){ setStatus("Your browser does not support WebAssembly, which this tool needs. Try a recent Chrome, Edge, Firefox or Safari.",true); go.disabled=true; }
+    else if(isMobile){ setStatus("Tip: this runs a real AI model on your device. It works on phones, but a laptop is smoother — use the Fast model on mobile."); }
+  })();
+
+  window.__ocrBoot=true;
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
