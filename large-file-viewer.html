@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Loupe — Large File Viewer &amp; Log Search (open multi-GB files in your browser)</title>
+<meta name="description" content="Open and search files too big for your text editor — multi-gigabyte logs, CSVs, and JSONL — right in your browser. Regex search, instant virtual scroll, gzip support, match timeline. Nothing is uploaded." />
+<meta name="keywords" content="large file viewer, open large file online, view large log file, large text file viewer, grep online, search large file, open big csv, view huge file browser, log viewer online, gigabyte file viewer, open file too big for editor" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Loupe — Large File Viewer &amp; Log Search" />
+<meta property="og:description" content="Open and search multi-gigabyte logs, CSVs and JSONL in your browser. Regex, instant scroll, gzip, match timeline. Nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/large-file-viewer.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Loupe — Large File Viewer &amp; Log Search" />
+<meta name="twitter:description" content="Open and search multi-gigabyte files in your browser. Regex, gzip, match timeline. Private, no upload." />
+<link rel="canonical" href="https://hammyasf.github.io/large-file-viewer.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Loupe — Large File Viewer","url":"https://hammyasf.github.io/large-file-viewer.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Open and search multi-gigabyte log, CSV and JSONL files entirely in the browser with regex search, virtual scrolling, gzip support and a match timeline. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does it open files too big for my editor?","acceptedAnswer":{"@type":"Answer","text":"Loupe never loads the whole file into memory. It streams the file in chunks to build a sparse line index, then reads only the few kilobytes you are currently looking at. Memory stays bounded no matter how big the file is, so it can open files larger than your available RAM."}},{"@type":"Question","name":"Is my file uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs locally in your browser using the File and Streams APIs and a Web Worker. Your file never leaves your device, which is why it works on private logs and is instant."}},{"@type":"Question","name":"Can it open gzipped (.gz) files?","acceptedAnswer":{"@type":"Answer","text":"Yes. Loupe decompresses .gz files on the fly using the browser's built-in DecompressionStream, so you can drop a compressed log straight in without unzipping it first."}},{"@type":"Question","name":"What file types work?","acceptedAnswer":{"@type":"Answer","text":"Any line-based text file: server and application logs, CSV and TSV, JSONL/NDJSON, plain text dumps, and their gzipped versions. It is built for line-oriented data."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1180px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:54px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:23px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .drop .or{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  /* toolbar */
+  .toolbar{display:none;flex-wrap:wrap;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);}
+  .fileinfo{display:flex;flex-direction:column;gap:2px;min-width:0;margin-right:auto;}
+  .fileinfo .fn{font-family:var(--mono);font-size:13.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw;}
+  .fileinfo .fm{font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+  .fileinfo .fm b{color:var(--accent);}
+  .search{display:flex;align-items:center;gap:8px;flex:1 1 320px;min-width:240px;border:1px solid var(--line-2);border-radius:12px;padding:6px 10px;background:rgba(var(--surfaceRGB),.6);}
+  .search input{flex:1;background:transparent;border:none;outline:none;color:var(--ink);font-family:var(--mono);font-size:13.5px;}
+  .search input::placeholder{color:var(--faint);}
+  .toggle{font-family:var(--mono);font-size:12px;color:var(--faint);border:1px solid var(--line-2);border-radius:7px;padding:5px 8px;cursor:pointer;user-select:none;transition:.15s;}
+  .toggle.on{background:rgba(var(--accentRGB),.15);color:var(--accent);border-color:rgba(var(--accentRGB),.5);}
+  .navbtns{display:flex;align-items:center;gap:6px;}
+  .navbtns button{font-family:var(--mono);font-size:13px;color:var(--ink);background:transparent;border:1px solid var(--line-2);border-radius:8px;width:32px;height:32px;cursor:pointer;}
+  .navbtns button:hover{border-color:var(--accent);}
+  .matchcount{font-family:var(--mono);font-size:12.5px;color:var(--muted);white-space:nowrap;}
+  .matchcount b{color:var(--accent);}
+  /* viewer */
+  .viewerwrap{display:none;}
+  .viewer-row{display:flex;align-items:stretch;}
+  .viewer{position:relative;flex:1;height:68vh;min-height:360px;overflow:auto;background:rgba(0,0,0,.22);font-family:var(--mono);font-size:13px;line-height:20px;}
+  .spacer{position:relative;width:100%;}
+  .lines{position:absolute;left:0;top:0;right:0;will-change:transform;}
+  .ln{display:flex;white-space:pre;height:20px;}
+  .ln .num{flex:0 0 auto;width:88px;text-align:right;padding-right:14px;color:var(--faint);user-select:none;border-right:1px solid var(--line);position:sticky;left:0;background:rgba(7,16,14,.85);}
+  .ln .tx{padding-left:14px;color:#d7e2dd;overflow:hidden;}
+  .ln.hit{background:rgba(var(--accentRGB),.07);}
+  .ln .tx mark{background:var(--accent);color:#06100d;border-radius:2px;padding:0 1px;}
+  .ln .tx mark.cur{background:#fff;box-shadow:0 0 0 2px var(--accent);}
+  .minimap{flex:0 0 16px;height:68vh;min-height:360px;background:rgba(0,0,0,.3);border-left:1px solid var(--line);position:relative;cursor:pointer;}
+  .minimap canvas{display:block;width:16px;height:100%;}
+  .mm-view{position:absolute;left:0;right:0;border:1px solid rgba(var(--accentRGB),.6);background:rgba(var(--accentRGB),.08);pointer-events:none;}
+  /* progress */
+  .progress{display:none;padding:14px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .progress .track{height:6px;border-radius:4px;background:rgba(237,242,239,.1);margin-top:8px;overflow:hidden;}
+  .progress .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .12s linear;}
+  .note{font-family:var(--mono);font-size:12px;color:var(--faint);padding:0 18px 14px;}
+  .note.warn{color:#ffd27a;}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:780px;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;max-width:780px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:680px){.fileinfo .fn{max-width:60vw;}.search{flex-basis:100%;order:3;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free dev tool · runs in your browser</div>
+    <h1>Loupe — Large File Viewer</h1>
+    <p class="sub">Open and search files too big for your editor — multi-gigabyte logs, CSVs, and JSONL. Regex search, instant scrolling, gzip support, and a timeline that shows where your matches are. Nothing is uploaded.</p>
+    <span class="priv">&#128274; 100% private — your file is never uploaded, it stays on your device</span>
+  </header>
+
+  <div class="panel">
+    <!-- empty state -->
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Open a file">
+      <h2>Drop a file here</h2>
+      <p>Logs · CSV · TSV · JSONL · plain text · or their <b>.gz</b> versions · any size</p>
+      <div class="or">
+        <button class="btn" id="pick">Open a file</button>
+        <button class="btn btn-out" id="sample">Try a sample log</button>
+      </div>
+      <input type="file" id="file" hidden />
+    </div>
+
+    <!-- progress -->
+    <div class="progress" id="prog">
+      <span id="progLabel">Indexing…</span>
+      <div class="track"><div class="fill" id="progFill"></div></div>
+    </div>
+
+    <!-- toolbar -->
+    <div class="toolbar" id="toolbar">
+      <div class="fileinfo">
+        <span class="fn" id="fn">file.log</span>
+        <span class="fm" id="fm"></span>
+      </div>
+      <div class="search">
+        <span style="color:var(--faint)">&#128269;</span>
+        <input id="q" type="text" placeholder="Search… (plain text or /regex/)" spellcheck="false" autocomplete="off" />
+        <span class="toggle" id="tRe" title="Treat the query as a regular expression">.*</span>
+        <span class="toggle" id="tCase" title="Case sensitive">Aa</span>
+      </div>
+      <div class="navbtns">
+        <button id="prev" title="Previous match">&#8593;</button>
+        <button id="next" title="Next match">&#8595;</button>
+      </div>
+      <span class="matchcount" id="mc"></span>
+      <button class="btn btn-out" id="close" style="padding:8px 14px">Close</button>
+    </div>
+
+    <div class="note warn" id="warn" style="display:none"></div>
+
+    <!-- viewer -->
+    <div class="viewerwrap" id="viewerwrap">
+      <div class="viewer-row">
+        <div class="viewer" id="viewer">
+          <div class="spacer" id="spacer"><div class="lines" id="linesEl"></div></div>
+        </div>
+        <div class="minimap" id="minimap" title="Match density — click to jump">
+          <canvas id="mmCanvas"></canvas>
+          <div class="mm-view" id="mmView"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>Open files that crash your text editor</h2>
+    <p>VS Code, Sublime, and Notepad all try to read the whole file into memory, so a multi-gigabyte log brings them to their knees or refuses to open at all. Loupe takes the opposite approach. It streams the file in chunks to build a tiny line index, then reads only the few kilobytes you are actually looking at. Memory stays flat whether the file is 10 megabytes or 30 gigabytes, so you can open the file that was too big to open.</p>
+    <h2>How it works</h2>
+    <p>When you open a file, a background Web Worker scans it once to count the lines and record a sparse map of byte offsets. Scrolling then seeks straight to the right spot and decodes just the visible window, so jumping to line 40 million is as fast as jumping to line 40. Search runs as a second streaming pass in the worker, collecting every match and the position of each one, then drawing a vertical timeline so you can see at a glance where the errors cluster. Gzipped files are decompressed on the fly with the browser's built-in DecompressionStream — drop a <code>.gz</code> straight in.</p>
+    <h2>Why it is private and fast</h2>
+    <p>There is no server in the loop. The file is read with the browser's File and Streams APIs and processed in a worker on your own machine, so it never leaves your device. That is what makes it safe for production logs with customer data in them, and it is also why it is instant: there is no upload to wait on and no queue to sit in.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>How can it open a file bigger than my RAM?</summary><p>It never holds the whole file in memory. It streams through the file once to build a sparse index of line offsets (a few megabytes even for a huge file), then reads only the small slice you are currently viewing. Memory usage stays bounded regardless of file size.</p></details>
+    <details><summary>Is my file uploaded anywhere?</summary><p>No. Everything happens locally in your browser. Your file is never sent to a server, which is why it works on private and production logs.</p></details>
+    <details><summary>Does it support gzipped logs?</summary><p>Yes, in browsers that support DecompressionStream (Chrome, Edge, and recent Safari and Firefox). Drop a <code>.gz</code> file and it is decompressed on the fly. If your browser lacks it, plain files still work.</p></details>
+    <details><summary>What about regular expressions?</summary><p>Toggle the <b>.*</b> button to treat your query as a JavaScript regular expression, with an optional case-sensitive toggle. Otherwise it is a fast plain-text search. Matches are highlighted inline and mapped on the timeline.</p></details>
+    <details><summary>What file types does it handle?</summary><p>Any line-based text: server and app logs, CSV, TSV, JSONL/NDJSON, and plain text dumps, plus their gzipped versions.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build a tool like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+
+/* ---------------- Worker (indexer + searcher), inlined via Blob URL ---------------- */
+var WORKER_SRC = `
+const STRIDE = 256;          // store a byte offset every 256 lines
+const CHUNK = 16*1024*1024;  // 16 MB scan window
+const NL = 10;               // '\\n'
+const MAX_MATCHES = 200000;
+
+function escapeRe(s){ return s.replace(/[.*+?^\${}()|[\\]\\\\]/g,'\\\\$&'); }
+
+async function indexFile(file){
+  const size = file.size;
+  let offsets = [0];           // byte offset of line 0,256,512...
+  let lineNo = 0;              // 0-based count of newlines seen
+  let pos = 0;
+  let lastByte = NL;
+  while(pos < size){
+    const end = Math.min(pos+CHUNK, size);
+    const buf = new Uint8Array(await file.slice(pos,end).arrayBuffer());
+    for(let i=0;i<buf.length;i++){
+      if(buf[i]===NL){
+        lineNo++;
+        if(lineNo % STRIDE === 0) offsets.push(pos + i + 1);
+      }
+    }
+    if(buf.length) lastByte = buf[buf.length-1];
+    pos = end;
+    self.postMessage({type:'progress', pct: size? pos/size : 1});
+  }
+  // total lines: newline count if the file ends with a newline (matches wc -l), else +1 for the final unterminated line
+  let totalLines = (size>0 && lastByte===NL) ? lineNo : lineNo + 1;
+  if(size===0) totalLines = 0;
+  const arr = new Float64Array(offsets);
+  self.postMessage({type:'indexed', totalLines, size, offsets: arr}, [arr.buffer]);
+}
+
+async function searchFile(file, pattern, isRegex, caseSensitive, token){
+  const size = file.size;
+  const dec = new TextDecoder('utf-8', {fatal:false});
+  let matcher;
+  if(isRegex){
+    let flags = caseSensitive ? '' : 'i';
+    try{ matcher = new RegExp(pattern, flags); }
+    catch(e){ self.postMessage({type:'searchError', message:e.message, token}); return; }
+  } else {
+    const needle = caseSensitive ? pattern : pattern.toLowerCase();
+    matcher = { test:(s)=> (caseSensitive?s:s.toLowerCase()).indexOf(needle) !== -1 };
+  }
+  const BUCKETS = 1000;
+  const hist = new Int32Array(BUCKETS);
+  let matchLines = [];   // line numbers
+  let lineNo = 0;
+  let lineStart = 0;     // byte offset of current line start
+  let pos = 0;
+  let leftover = new Uint8Array(0);
+  let capped = false;
+  let count = 0;
+
+  function handleLine(text, startByte, ln){
+    if(matcher.test(text)){
+      count++;
+      const b = Math.min(BUCKETS-1, Math.floor((startByte/Math.max(1,size))*BUCKETS));
+      hist[b]++;
+      if(matchLines.length < MAX_MATCHES) matchLines.push(ln);
+      else capped = true;
+    }
+  }
+
+  while(pos < size){
+    const end = Math.min(pos+CHUNK, size);
+    const chunk = new Uint8Array(await file.slice(pos,end).arrayBuffer());
+    // join leftover + chunk
+    let buf;
+    if(leftover.length){ buf = new Uint8Array(leftover.length+chunk.length); buf.set(leftover,0); buf.set(chunk,leftover.length); }
+    else buf = chunk;
+    let segStart = 0;            // index in buf where current line starts
+    const baseByte = pos - leftover.length;
+    for(let i=0;i<buf.length;i++){
+      if(buf[i]===NL){
+        const text = dec.decode(buf.subarray(segStart,i));
+        handleLine(text, baseByte+segStart, lineNo);
+        lineNo++;
+        segStart = i+1;
+      }
+    }
+    leftover = buf.subarray(segStart);   // partial last line
+    pos = end;
+    self.postMessage({type:'searchProgress', pct: size? pos/size : 1, token});
+  }
+  // final line without trailing newline
+  if(leftover.length){
+    const text = dec.decode(leftover);
+    handleLine(text, size-leftover.length, lineNo);
+  }
+  const lines = new Int32Array(matchLines);
+  self.postMessage({type:'searchDone', lines, count, capped, hist, token}, [lines.buffer, hist.buffer]);
+}
+
+self.onmessage = async (e)=>{
+  const m = e.data;
+  try{
+    if(m.type==='index') await indexFile(m.file);
+    else if(m.type==='search') await searchFile(m.file, m.pattern, m.isRegex, m.caseSensitive, m.token);
+  }catch(err){ self.postMessage({type:'fatal', message:String(err&&err.message||err)}); }
+};
+`;
+
+/* ---------------- Main thread ---------------- */
+(function(){
+  var STRIDE = 256, LH = 20, READ_WINDOW = 1<<20; // 1MB viewport read
+
+  var drop=el('drop'), fileInput=el('file'), pick=el('pick'), sample=el('sample'),
+      prog=el('prog'), progFill=el('progFill'), progLabel=el('progLabel'),
+      toolbar=el('toolbar'), fn=el('fn'), fm=el('fm'),
+      q=el('q'), tRe=el('tRe'), tCase=el('tCase'), prevB=el('prev'), nextB=el('next'), mc=el('mc'), closeB=el('close'),
+      warn=el('warn'), viewerwrap=el('viewerwrap'), viewer=el('viewer'), spacer=el('spacer'), linesEl=el('linesEl'),
+      minimap=el('minimap'), mmCanvas=el('mmCanvas'), mmView=el('mmView');
+  function el(id){ return document.getElementById(id); }
+
+  var worker=null;
+  var src=null;          // File we read from (plain or decompressed)
+  var totalLines=0, totalBytes=0, offsets=null; // Float64Array sparse offsets
+  var lineCache=new Map(); // baseChunk -> array of line strings
+  var curMatches=null, curCount=0, curCapped=false, curHist=null, matchIdx=-1;
+  var curPattern='', curIsRegex=false, curCase=false;
+  var searchToken=0, scrollRAF=0;
+
+  function fmtBytes(b){ if(b<1024)return b+' B'; if(b<1048576)return (b/1024).toFixed(1)+' KB'; if(b<1073741824)return (b/1048576).toFixed(1)+' MB'; return (b/1073741824).toFixed(2)+' GB'; }
+  function commas(n){ return n.toLocaleString('en-US'); }
+
+  // capability note
+  if(typeof DecompressionStream==='undefined'){
+    // gzip unsupported; still fine for plain files
+  }
+
+  // ---- drag & drop / pick ----
+  ['dragover','dragenter'].forEach(function(ev){ drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('over');});});
+  ['dragleave','drop'].forEach(function(ev){ drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('over');});});
+  drop.addEventListener('drop',function(e){ if(e.dataTransfer.files&&e.dataTransfer.files[0]) openFile(e.dataTransfer.files[0]); });
+  drop.addEventListener('click',function(e){ if(e.target===pick||e.target===sample) return; fileInput.click(); });
+  drop.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();fileInput.click();} });
+  pick.addEventListener('click',function(e){ e.stopPropagation(); fileInput.click(); });
+  fileInput.addEventListener('change',function(){ if(fileInput.files&&fileInput.files[0]) openFile(fileInput.files[0]); });
+  sample.addEventListener('click',function(e){ e.stopPropagation(); openSample(); });
+  closeB.addEventListener('click', reset);
+
+  function showWarn(msg){ warn.textContent=msg; warn.style.display='block'; }
+  function hideWarn(){ warn.style.display='none'; }
+
+  function setProgress(label, pct){ prog.style.display='block'; progLabel.textContent=label; progFill.style.width=Math.round(pct*100)+'%'; }
+  function hideProgress(){ prog.style.display='none'; }
+
+  async function openFile(file){
+    hideWarn();
+    var isGz = /\.gz$/i.test(file.name) || file.type==='application/gzip' || file.type==='application/x-gzip';
+    if(isGz){
+      if(typeof DecompressionStream==='undefined'){ showWarn('This browser cannot decompress .gz files. Please unzip the file first, or use a current version of Chrome, Edge, Firefox or Safari.'); return; }
+      setProgress('Decompressing '+file.name+' …', 0.04);
+      try{ file = await decompressGz(file); }
+      catch(err){ hideProgress(); showWarn('Could not decompress this .gz file: '+(err&&err.message||err)); return; }
+    }
+    src = file;
+    startIndex(file);
+  }
+
+  // Decompress a .gz file. Prefer OPFS (memory-safe for huge files); fall back to in-memory Blob.
+  async function decompressGz(file){
+    var ds = new DecompressionStream('gzip');
+    var stream = file.stream().pipeThrough(ds);
+    // try OPFS
+    try{
+      if(navigator.storage && navigator.storage.getDirectory){
+        var root = await navigator.storage.getDirectory();
+        var name = 'loupe-'+Date.now()+'.tmp';
+        var handle = await root.getFileHandle(name, {create:true});
+        var writable = await handle.createWritable();
+        var reader = stream.getReader(); var written=0;
+        while(true){ var r = await reader.read(); if(r.done) break; await writable.write(r.value); written+=r.value.length; setProgress('Decompressing '+file.name+' … '+fmtBytes(written), Math.min(0.95, 0.05+written/(file.size*8))); }
+        await writable.close();
+        var f = await handle.getFile();
+        f._opfs = {root:root, name:name};
+        return f;
+      }
+    }catch(e){ /* fall through to memory */ }
+    // memory fallback
+    var res = new Response(stream);
+    var blob = await res.blob();
+    return new File([blob], file.name.replace(/\.gz$/i,''), {type:'text/plain'});
+  }
+
+  function startIndex(file){
+    fn.textContent = file.name || 'file';
+    spawnWorker();
+    setProgress('Indexing '+(file.name||'file')+' …', 0.01);
+    worker.postMessage({type:'index', file:file});
+  }
+
+  function spawnWorker(){
+    if(worker) worker.terminate();
+    var url = URL.createObjectURL(new Blob([WORKER_SRC], {type:'text/javascript'}));
+    worker = new Worker(url);
+    URL.revokeObjectURL(url);
+    worker.onmessage = onWorkerMsg;
+    worker.onerror = function(e){ hideProgress(); showWarn('Worker error: '+e.message); };
+  }
+
+  function onWorkerMsg(e){
+    var m = e.data;
+    if(m.type==='progress'){ setProgress('Indexing… ', m.pct); }
+    else if(m.type==='indexed'){ onIndexed(m); }
+    else if(m.type==='searchProgress'){ if(m.token===searchToken) mc.innerHTML='Searching… '+Math.round(m.pct*100)+'%'; }
+    else if(m.type==='searchDone'){ if(m.token===searchToken) onSearchDone(m); }
+    else if(m.type==='searchError'){ if(m.token===searchToken){ mc.innerHTML='<span style="color:#ff8d6e">bad regex</span>'; clearMatches(); } }
+    else if(m.type==='fatal'){ hideProgress(); showWarn('Something went wrong: '+m.message); }
+  }
+
+  function onIndexed(m){
+    totalLines = m.totalLines; totalBytes = m.size; offsets = m.offsets; lineCache.clear();
+    hideProgress();
+    drop.style.display='none';
+    toolbar.style.display='flex';
+    viewerwrap.style.display='block';
+    fm.innerHTML = '<b>'+commas(totalLines)+'</b> lines · '+fmtBytes(totalBytes);
+    clearMatches();
+    setupViewer();
+    q.value=''; q.focus();
+    sizeMinimap();
+  }
+
+  // ---- virtual scroll ----
+  function setupViewer(){
+    spacer.style.height = Math.max(totalLines*LH, viewer.clientHeight)+'px';
+    viewer.scrollTop=0;
+    renderViewport();
+  }
+  viewer.addEventListener('scroll', function(){ if(scrollRAF) return; scrollRAF=requestAnimationFrame(function(){ scrollRAF=0; renderViewport(); updateMinimapView(); }); });
+  window.addEventListener('resize', function(){ if(!offsets) return; spacer.style.height=Math.max(totalLines*LH,viewer.clientHeight)+'px'; sizeMinimap(); renderViewport(); });
+
+  async function renderViewport(){
+    if(!offsets || totalLines===0){ linesEl.innerHTML=''; return; }
+    var scrollTop = viewer.scrollTop;
+    var first = Math.max(0, Math.floor(scrollTop/LH) - 6);
+    var visible = Math.ceil(viewer.clientHeight/LH) + 12;
+    var last = Math.min(totalLines, first+visible);
+    var myReq = ++renderReq;
+    var lines = await getLines(first, last-first);
+    if(myReq!==renderReq) return; // a newer render superseded us
+    var html='';
+    for(var i=0;i<lines.length;i++){
+      var ln = first+i;
+      var isHit = matchSet && matchSet.has(ln);
+      var txt = lines[i]==null ? '' : lines[i];
+      var rendered = curPattern ? highlight(txt, ln) : escapeHtml(txt);
+      html += '<div class="ln'+(isHit?' hit':'')+'"><span class="num">'+(ln+1)+'</span><span class="tx">'+rendered+'</span></div>';
+    }
+    linesEl.style.transform='translateY('+(first*LH)+'px)';
+    linesEl.innerHTML = html;
+  }
+  var renderReq=0;
+
+  function escapeHtml(s){ return s.replace(/[&<>]/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':'&gt;';}); }
+
+  function buildHighlightRe(){
+    if(!curPattern) return null;
+    try{
+      if(curIsRegex) return new RegExp('('+curPattern+')','g'+(curCase?'':'i'));
+      return new RegExp('('+curPattern.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','g'+(curCase?'':'i'));
+    }catch(e){ return null; }
+  }
+  var hlRe=null;
+  function highlight(text, ln){
+    if(!hlRe) return escapeHtml(text);
+    hlRe.lastIndex=0;
+    var out='', last=0, m, guard=0;
+    var isCur = (matchIdx>=0 && curMatches && curMatches[matchIdx]===ln);
+    while((m=hlRe.exec(text))!==null){
+      if(m.index===hlRe.lastIndex) hlRe.lastIndex++; // avoid zero-length loop
+      if(m[0]===''){ continue; }
+      out += escapeHtml(text.slice(last,m.index));
+      out += '<mark'+(isCur?' class="cur"':'')+'>'+escapeHtml(m[0])+'</mark>';
+      last = m.index+m[0].length;
+      if(++guard>5000) break;
+    }
+    out += escapeHtml(text.slice(last));
+    return out;
+  }
+
+  // fetch decoded line strings [start, start+count)
+  async function getLines(start, count){
+    var base = Math.floor(start/STRIDE);          // which sparse anchor
+    var baseLine = base*STRIDE;
+    var need = (start-baseLine) + count + 2;
+    var cached = lineCache.get(base);
+    if(cached && cached.length >= (start-baseLine)+count){
+      return cached.slice(start-baseLine, start-baseLine+count);
+    }
+    var startByte = offsets[base];
+    var win = READ_WINDOW;
+    var arr=null;
+    for(var attempt=0; attempt<5; attempt++){
+      var endByte = Math.min(totalBytes, startByte+win);
+      var buf = new Uint8Array(await src.slice(startByte, endByte).arrayBuffer());
+      var atEof = endByte>=totalBytes;
+      var text = new TextDecoder('utf-8',{fatal:false}).decode(buf);
+      arr = text.split('\n');
+      if(!atEof) arr.pop(); // drop partial last line
+      else if(arr.length && arr[arr.length-1]==='') arr.pop(); // drop trailing-newline artifact
+      if(arr.length >= need || atEof) break;
+      win *= 4;
+    }
+    if(lineCache.size>24) lineCache.clear();
+    lineCache.set(base, arr);
+    return arr.slice(start-baseLine, start-baseLine+count);
+  }
+
+  // ---- search ----
+  var debounce=null, matchSet=null;
+  q.addEventListener('input', function(){ if(debounce) clearTimeout(debounce); debounce=setTimeout(runSearch, 220); });
+  q.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); e.shiftKey?gotoMatch(-1):gotoMatch(1); } });
+  tRe.addEventListener('click', function(){ tRe.classList.toggle('on'); runSearch(); });
+  tCase.addEventListener('click', function(){ tCase.classList.toggle('on'); runSearch(); });
+  prevB.addEventListener('click', function(){ gotoMatch(-1); });
+  nextB.addEventListener('click', function(){ gotoMatch(1); });
+
+  function clearMatches(){ curMatches=null; curCount=0; curCapped=false; matchSet=null; matchIdx=-1; hlRe=null; mc.innerHTML=''; drawMinimap(); }
+
+  function runSearch(){
+    if(!src){ return; }
+    var pattern = q.value;
+    curIsRegex = tRe.classList.contains('on');
+    curCase = tCase.classList.contains('on');
+    curPattern = pattern;
+    if(pattern===''){ clearMatches(); renderViewport(); return; }
+    hlRe = buildHighlightRe();
+    var token = ++searchToken;
+    mc.innerHTML='Searching… 0%';
+    worker.postMessage({type:'search', file:src, pattern:pattern, isRegex:curIsRegex, caseSensitive:curCase, token:token});
+  }
+
+  function onSearchDone(m){
+    curMatches = m.lines; curCount = m.count; curCapped = m.capped; curHist = m.hist;
+    matchSet = new Set(); for(var i=0;i<curMatches.length;i++) matchSet.add(curMatches[i]);
+    matchIdx = curMatches.length? 0 : -1;
+    if(curCount===0) mc.innerHTML='<b>0</b> matches';
+    else mc.innerHTML='<b>'+commas(curCount)+'</b> match'+(curCount>1?'es':'')+(curCapped?' (first '+commas(curMatches.length)+' shown)':'');
+    drawMinimap();
+    renderViewport();
+    if(matchIdx>=0) scrollToLine(curMatches[0], true);
+  }
+
+  function gotoMatch(dir){
+    if(!curMatches || !curMatches.length) return;
+    matchIdx = (matchIdx + dir + curMatches.length) % curMatches.length;
+    scrollToLine(curMatches[matchIdx], true);
+    mc.innerHTML='<b>'+commas(matchIdx+1)+'</b> / '+commas(curMatches.length)+(curCapped?'+':'')+' matches';
+  }
+
+  function scrollToLine(ln, center){
+    var y = ln*LH;
+    if(center) y -= viewer.clientHeight/2 - LH;
+    viewer.scrollTop = Math.max(0, y);
+    renderViewport(); updateMinimapView();
+  }
+
+  // ---- minimap / timeline ----
+  function sizeMinimap(){
+    var h = viewer.clientHeight||360;
+    mmCanvas.height = Math.max(1, Math.floor(h*(window.devicePixelRatio||1)));
+    mmCanvas.width = Math.floor(16*(window.devicePixelRatio||1));
+    mmCanvas.style.height = h+'px';
+    drawMinimap(); updateMinimapView();
+  }
+  function drawMinimap(){
+    var ctx = mmCanvas.getContext('2d'); if(!ctx) return;
+    var W=mmCanvas.width, H=mmCanvas.height;
+    ctx.clearRect(0,0,W,H);
+    if(!curHist){ return; }
+    var max=1; for(var i=0;i<curHist.length;i++) if(curHist[i]>max) max=curHist[i];
+    var acc = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#2be3b0';
+    for(var b=0;b<curHist.length;b++){
+      var v=curHist[b]; if(!v) continue;
+      var y = Math.floor(b/curHist.length*H);
+      var hh = Math.max(1, Math.ceil(H/curHist.length));
+      var a = 0.25 + 0.75*(v/max);
+      ctx.fillStyle = hexA(acc, a);
+      ctx.fillRect(0, y, W, hh);
+    }
+  }
+  function hexA(hex, a){
+    hex=hex.replace('#',''); if(hex.length===3) hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    var r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16);
+    return 'rgba('+r+','+g+','+b+','+a.toFixed(3)+')';
+  }
+  function updateMinimapView(){
+    if(!totalLines){ mmView.style.display='none'; return; }
+    var h = viewer.clientHeight||360;
+    var contentH = totalLines*LH;
+    var top = (viewer.scrollTop/Math.max(1,contentH))*h;
+    var vh = Math.max(6, (h/Math.max(1,contentH))*h);
+    mmView.style.display='block';
+    mmView.style.top = Math.min(h-vh, top)+'px';
+    mmView.style.height = vh+'px';
+  }
+  minimap.addEventListener('click', function(e){
+    var rect = minimap.getBoundingClientRect();
+    var frac = (e.clientY-rect.top)/rect.height;
+    var ln = Math.floor(frac*totalLines);
+    scrollToLine(ln, true);
+  });
+
+  // ---- sample ----
+  function openSample(){
+    hideWarn();
+    setProgress('Generating a sample log…', 0.3);
+    setTimeout(function(){
+      var levels=['INFO','INFO','INFO','INFO','DEBUG','WARN','ERROR'];
+      var paths=['/v1/users','/v1/orders','/v1/cart','/healthz','/v1/search','/v1/checkout','/v1/login','/v1/payments'];
+      var svcs=['api','worker','auth','billing','gateway','cache'];
+      var parts=[]; var N=300000; var t=Date.parse('2026-06-21T00:00:00Z');
+      for(var i=0;i<N;i++){
+        t += Math.floor(Math.random()*40);
+        var lvl = levels[(Math.random()*levels.length)|0];
+        // cluster errors so the timeline shows something interesting
+        if(i>120000 && i<128000 && Math.random()<0.4) lvl='ERROR';
+        var status = lvl==='ERROR' ? (Math.random()<0.5?500:503) : (Math.random()<0.93?200:404);
+        var line = new Date(t).toISOString()+' ['+lvl+'] service='+svcs[(Math.random()*svcs.length)|0]+
+          ' request_id='+Math.random().toString(36).slice(2,10)+' path='+paths[(Math.random()*paths.length)|0]+
+          ' status='+status+' latency='+((Math.random()*900)|0)+'ms';
+        if(lvl==='ERROR') line += ' error="upstream connection reset"';
+        parts.push(line);
+      }
+      var blob = new Blob([parts.join('\n')+'\n'], {type:'text/plain'});
+      var f = new File([blob], 'sample-app-300k-lines.log', {type:'text/plain'});
+      src=f; startIndex(f);
+    }, 30);
+  }
+
+  function reset(){
+    if(worker){ worker.terminate(); worker=null; }
+    // best-effort cleanup of OPFS temp
+    try{ if(src && src._opfs){ src._opfs.root.removeEntry(src._opfs.name).catch(function(){}); } }catch(e){}
+    src=null; offsets=null; totalLines=0; totalBytes=0; lineCache.clear(); clearMatches();
+    toolbar.style.display='none'; viewerwrap.style.display='none'; hideProgress(); hideWarn();
+    linesEl.innerHTML=''; fileInput.value='';
+    drop.style.display='block';
+  }
+})();
+</script>
+<!-- AdSense / Polar.sh monetization slot — intentionally left empty for now -->
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
