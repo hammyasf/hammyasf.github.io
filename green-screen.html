@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Green Screen Studio — virtual background &amp; webcam background remover in your browser</title>
+<meta name="description" content="Blur or replace your webcam background in real time with on-device AI. A real segmentation model runs in your browser, so your camera never leaves your device. No green screen, no download, no upload. Record a clip or grab a still." />
+<meta name="keywords" content="virtual background, webcam background remover, blur webcam background online, green screen online, virtual green screen, remove webcam background, video call background, change webcam background, free virtual background, background blur webcam" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Green Screen Studio — virtual backgrounds in your browser" />
+<meta property="og:description" content="Blur or replace your webcam background in real time with on-device AI. No green screen, no download, nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/green-screen.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Green Screen Studio — virtual backgrounds in your browser" />
+<meta name="twitter:description" content="Blur or replace your webcam background in real time with on-device AI. Nothing uploaded." />
+<link rel="canonical" href="https://hammyasf.github.io/green-screen.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://storage.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Green Screen Studio","url":"https://hammyasf.github.io/green-screen.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebGL)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Blur or replace your webcam background in real time using an on-device AI segmentation model. Runs entirely in the browser, nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my webcam feed uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI segmentation model and all the compositing run entirely in your browser using WebAssembly and your GPU. Your camera frames never leave your device and nothing is uploaded."}},{"@type":"Question","name":"Do I need a physical green screen?","acceptedAnswer":{"@type":"Answer","text":"No. A neural network separates you from your background in real time, so you can blur or replace the background against any wall. A real green screen still gives the cleanest edges, but it is not required."}},{"@type":"Question","name":"Can I use this as a virtual background for Zoom or Google Meet?","acceptedAnswer":{"@type":"Answer","text":"This runs as a web page, so it cannot feed a virtual camera into other apps by itself. You can record a clip with your new background and download it, or use it for browser-based recording. Meet and Zoom have their own built-in background features."}},{"@type":"Question","name":"It is free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, no watermark. The model downloads once and is then cached for instant, offline use."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .stage{position:relative;width:100%;aspect-ratio:16/9;background:#05100d;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .stage canvas{width:100%;height:100%;object-fit:contain;display:none;}
+  .stage.live canvas{display:block;}
+  .first{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:14px;}
+  .first h2{font-family:var(--display);font-weight:600;font-size:clamp(20px,3vw,26px);}
+  .first p{color:var(--muted);font-size:14px;max-width:420px;}
+  .first .or{font-family:var(--mono);font-size:12px;color:var(--faint);}
+  .fps{position:absolute;top:10px;left:12px;font-family:var(--mono);font-size:11px;color:var(--accent);background:rgba(5,16,13,.6);border:1px solid var(--line);padding:3px 8px;border-radius:6px;display:none;}
+  .stage.live .fps{display:block;}
+  .loading{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(5,16,13,.82);text-align:center;padding:24px;}
+  .loading.show{display:flex;}
+  .spinner{width:40px;height:40px;border:3px solid rgba(var(--accentRGB),.25);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading p{font-family:var(--mono);font-size:13px;color:var(--ink);}
+  .loading small{font-family:var(--mono);font-size:11px;color:var(--faint);max-width:340px;}
+  .controls{padding:18px 22px 6px;display:none;flex-direction:column;gap:16px;}
+  .controls.show{display:flex;}
+  .row{display:flex;flex-wrap:wrap;gap:16px 26px;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:7px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .seg{display:flex;flex-wrap:wrap;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;border-right:1px solid var(--line);}
+  .seg button:last-child{border-right:none;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  input[type=range]{accent-color:var(--accent);width:150px;}
+  .swatches{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .sw{width:26px;height:26px;border-radius:7px;border:1px solid var(--line-2);cursor:pointer;padding:0;}
+  .sw.on{outline:2px solid var(--accent);outline-offset:2px;}
+  input[type=color]{width:34px;height:30px;border:1px solid var(--line-2);border-radius:7px;background:transparent;cursor:pointer;padding:2px;}
+  .toggle{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;}
+  .toggle input{accent-color:var(--accent);width:16px;height:16px;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:8px 22px 20px;border-top:1px solid var(--line);margin-top:4px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .btn-rec.recording{background:#ff5a5a;color:#fff;}
+  .note{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .err{margin:0 22px 18px;padding:12px 14px;border:1px solid rgba(255,120,120,.4);background:rgba(255,90,90,.08);border-radius:12px;color:#ffb4b4;font-size:14px;display:none;}
+  .err.show{display:block;}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:18px 0;}
+  .step{border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(var(--surfaceRGB),.4);}
+  .step b{font-family:var(--display);color:var(--accent);font-size:15px;}
+  .step p{font-size:14.5px;color:var(--muted);margin-top:6px;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.row{gap:14px 18px;}input[type=range]{width:120px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · on-device AI · live camera</div>
+    <h1>Green Screen Studio</h1>
+    <p class="sub">Blur or replace your webcam background in real time. A neural network separates you from whatever is behind you, right in your browser. No green screen, no install, nothing uploaded.</p>
+    <span class="priv">&#128274; 100% private — your camera never leaves your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="stage" id="stage">
+      <canvas id="out"></canvas>
+      <div class="fps" id="fps">— fps</div>
+      <div class="first" id="first">
+        <h2>Replace your background with AI</h2>
+        <p>A segmentation model runs locally to cut you out of your background in real time. Allow your camera to begin, or drop in a video file to try it without a webcam.</p>
+        <button class="btn" id="startCam">Start camera</button>
+        <div class="or">— or —</div>
+        <button class="btn btn-out" id="pickVid">Drop / choose a video file</button>
+        <input type="file" id="vidFile" accept="video/*" hidden />
+      </div>
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p id="loadMsg">Loading the AI model…</p>
+        <small>The segmentation model (a few MB) downloads once, then is cached for instant, offline use. Everything runs on your device.</small>
+      </div>
+    </div>
+
+    <div class="err" id="err"></div>
+
+    <div class="controls" id="controls">
+      <div class="row">
+        <div class="ctl">
+          <label>Background</label>
+          <div class="seg" id="mode">
+            <button data-m="blur" class="on">Blur</button>
+            <button data-m="green">Green</button>
+            <button data-m="color">Color</button>
+            <button data-m="gradient">Scene</button>
+            <button data-m="image">Image</button>
+            <button data-m="none">None</button>
+          </div>
+        </div>
+        <div class="ctl" id="blurCtl">
+          <label>Blur strength</label>
+          <input type="range" id="blur" min="2" max="30" value="14" />
+        </div>
+        <div class="ctl" id="colorCtl" style="display:none;">
+          <label>Pick a color</label>
+          <input type="color" id="color" value="#1b6cff" />
+        </div>
+        <div class="ctl" id="gradCtl" style="display:none;">
+          <label>Scene</label>
+          <div class="swatches" id="grads"></div>
+        </div>
+        <div class="ctl" id="imgCtl" style="display:none;">
+          <label>Background image</label>
+          <button class="btn btn-out" id="pickImg" style="padding:9px 16px;font-size:13px;">Choose image</button>
+          <input type="file" id="imgFile" accept="image/*" hidden />
+        </div>
+      </div>
+      <div class="row">
+        <div class="ctl">
+          <label>Edge smoothing</label>
+          <input type="range" id="feather" min="0" max="8" step="0.5" value="2.5" />
+        </div>
+        <label class="toggle"><input type="checkbox" id="mirror" checked /> Mirror</label>
+      </div>
+    </div>
+
+    <div class="bar" id="bar" style="display:none;">
+      <button class="btn" id="snap">Save photo</button>
+      <button class="btn btn-out btn-rec" id="rec">Record clip</button>
+      <button class="btn btn-out" id="stop">Stop camera</button>
+      <span class="note" id="note"></span>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Every frame from your camera is handed to a neural segmentation model that predicts, for each pixel, how likely it is to be you versus the background. That gives a soft mask. The page then keeps your pixels, feathers the edge so it does not look cut out with scissors, and paints your chosen background behind you — a blur of your real room, a solid color, a generated scene, or an image you upload. All of this happens dozens of times a second, entirely on your machine.</p>
+    <p>The model is Google's MediaPipe Selfie Segmenter running through WebAssembly and your GPU. Because it runs locally, there is no upload, no round-trip to a server, and no privacy trade-off. It also keeps working with your internet switched off once the model has been cached.</p>
+    <div class="steps">
+      <div class="step"><b>1 · Start</b><p>Allow your camera, or drop in a video file to try it with no webcam.</p></div>
+      <div class="step"><b>2 · Pick a background</b><p>Blur the room, drop to a green screen, pick a color, choose a scene, or load an image.</p></div>
+      <div class="step"><b>3 · Tune the edge</b><p>Nudge edge smoothing so your outline looks natural against the new background.</p></div>
+      <div class="step"><b>4 · Capture</b><p>Save a still as PNG or record a clip as WebM, all generated on your device.</p></div>
+    </div>
+    <h2>Why run it in the browser?</h2>
+    <p>Background tools usually mean installing software or piping your webcam to a cloud service. Neither is great when the thing being sent is a live video of your face and your room. Doing the segmentation on-device means the footage simply never leaves your computer. It is also instant, since there is no upload to wait on, and it is free to run because there is no server bill behind it.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my webcam feed uploaded anywhere?</summary><p>No. The AI model and the compositing run locally in your browser through WebAssembly and your GPU. Your camera frames never touch a server, which is why it is instant and private.</p></details>
+    <details><summary>Do I need a real green screen?</summary><p>No. The neural network separates you from your background against any wall. A physical green screen still gives the crispest edge, but it is not required.</p></details>
+    <details><summary>Can I use this as a virtual camera in Zoom or Meet?</summary><p>Not directly — a web page cannot feed a virtual camera into other apps on its own. You can record a clip here and download it, or use it for browser-based recording. Zoom and Meet also have their own built-in background features.</p></details>
+    <details><summary>Why does the edge look rough sometimes?</summary><p>Even lighting and a bit of contrast between you and the wall help a lot. The edge smoothing slider softens the outline, and a blurred background hides imperfections far better than a hard-edged image.</p></details>
+    <details><summary>Does it work on my phone?</summary><p>It runs on modern mobile browsers, but the model is heavier on a phone, so the frame rate will be lower than on a laptop. A desktop browser gives the smoothest result.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- theme: match the portfolio's saved accent -->
+<script>
+(function(){
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<script type="module">
+import { ImageSegmenter, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/vision_bundle.mjs";
+
+const $ = id => document.getElementById(id);
+const stage=$("stage"), out=$("out"), first=$("first"), loading=$("loading"), loadMsg=$("loadMsg"),
+      controls=$("controls"), bar=$("bar"), errBox=$("err"), fpsEl=$("fps"), note=$("note");
+
+const dctx = out.getContext("2d");
+// offscreen canvases
+const comp=document.createElement("canvas"), bg=document.createElement("canvas"), maskCv=document.createElement("canvas");
+const cctx=comp.getContext("2d",{willReadFrequently:false});
+const bctx=bg.getContext("2d");
+const mctx=maskCv.getContext("2d",{willReadFrequently:true});
+
+const video=document.createElement("video");
+video.muted=true; video.playsInline=true; video.autoplay=true;
+
+let segmenter=null, stream=null, running=false, usingFile=false;
+let lastTime=-1, invert=null, maskImg=null;
+let mode="blur", blurAmt=14, colorVal="#1b6cff", gradIndex=0, feather=2.5, mirror=true;
+let bgImg=null;
+let rec=null, chunks=[];
+let frames=0, fpsLast=performance.now();
+
+// ---- gradients / scenes (generated, no external assets) ----
+const SCENES=[
+  ["#0f2027","#203a43","#2c5364"],
+  ["#1a2a6c","#b21f1f","#fdbb2d"],
+  ["#42275a","#734b6d"],
+  ["#136a8a","#267871"],
+  ["#0b486b","#f56217"],
+  ["#232526","#414345"]
+];
+function buildSwatches(){
+  const wrap=$("grads");
+  SCENES.forEach((c,i)=>{
+    const b=document.createElement("button");
+    b.className="sw"+(i===0?" on":"");
+    b.style.background="linear-gradient(135deg,"+c.join(",")+")";
+    b.title="Scene "+(i+1);
+    b.addEventListener("click",()=>{ gradIndex=i; document.querySelectorAll("#grads .sw").forEach(s=>s.classList.remove("on")); b.classList.add("on"); });
+    wrap.appendChild(b);
+  });
+}
+function paintScene(ctx,W,H,idx){
+  const c=SCENES[idx]||SCENES[0];
+  const g=ctx.createLinearGradient(0,0,W,H);
+  c.forEach((col,i)=>g.addColorStop(c.length>1?i/(c.length-1):0,col));
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  // soft bokeh dots for depth
+  ctx.save(); ctx.globalAlpha=.10; ctx.fillStyle="#ffffff";
+  for(let i=0;i<14;i++){ const x=((i*97)%100)/100*W, y=((i*53)%100)/100*H, r=(20+(i*13)%60); ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill(); }
+  ctx.restore();
+}
+function drawCover(ctx,img,W,H){
+  const iw=img.naturalWidth||img.videoWidth||img.width, ih=img.naturalHeight||img.videoHeight||img.height;
+  if(!iw||!ih){ ctx.fillStyle="#111"; ctx.fillRect(0,0,W,H); return; }
+  const s=Math.max(W/iw,H/ih), w=iw*s, h=ih*s;
+  ctx.drawImage(img,(W-w)/2,(H-h)/2,w,h);
+}
+
+// ---- UI wiring ----
+buildSwatches();
+function showCtl(){
+  $("blurCtl").style.display = mode==="blur"?"":"none";
+  $("colorCtl").style.display = mode==="color"?"":"none";
+  $("gradCtl").style.display = mode==="gradient"?"":"none";
+  $("imgCtl").style.display = mode==="image"?"":"none";
+}
+document.querySelectorAll("#mode button").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll("#mode button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on"); mode=b.dataset.m; showCtl();
+    if(mode==="image" && !bgImg) $("imgFile").click();
+  });
+});
+$("blur").addEventListener("input",e=>blurAmt=+e.target.value);
+$("color").addEventListener("input",e=>colorVal=e.target.value);
+$("feather").addEventListener("input",e=>feather=+e.target.value);
+$("mirror").addEventListener("change",e=>mirror=e.target.checked);
+$("imgFile").addEventListener("change",e=>{ const f=e.target.files[0]; if(!f)return; const im=new Image(); im.onload=()=>{bgImg=im;}; im.src=URL.createObjectURL(f); });
+$("pickImg").addEventListener("click",()=>$("imgFile").click());
+
+$("startCam").addEventListener("click",startCamera);
+$("pickVid").addEventListener("click",()=>$("vidFile").click());
+$("vidFile").addEventListener("change",e=>{ const f=e.target.files[0]; if(f) startFile(f); });
+// drag-drop a video onto the stage
+["dragover","dragenter"].forEach(ev=>stage.addEventListener(ev,e=>{e.preventDefault();}));
+stage.addEventListener("drop",e=>{ e.preventDefault(); const f=e.dataTransfer.files[0]; if(f && f.type.indexOf("video/")===0) startFile(f); });
+
+$("snap").addEventListener("click",()=>{
+  const a=document.createElement("a"); a.href=out.toDataURL("image/png"); a.download="green-screen.png"; a.click();
+});
+$("rec").addEventListener("click",toggleRec);
+$("stop").addEventListener("click",stopAll);
+
+function showErr(msg){ errBox.textContent=msg; errBox.classList.add("show"); }
+function clearErr(){ errBox.classList.remove("show"); }
+
+// ---- model load ----
+async function ensureSegmenter(){
+  if(segmenter) return;
+  loading.classList.add("show"); loadMsg.textContent="Loading the AI model…";
+  const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/wasm");
+  try{
+    segmenter = await ImageSegmenter.createFromOptions(vision,{
+      baseOptions:{ modelAssetPath:"https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite", delegate:"GPU" },
+      runningMode:"VIDEO", outputConfidenceMasks:true, outputCategoryMask:false
+    });
+  }catch(gpuErr){
+    // fall back to CPU if GPU delegate is unavailable
+    loadMsg.textContent="Loading the AI model (CPU mode)…";
+    segmenter = await ImageSegmenter.createFromOptions(vision,{
+      baseOptions:{ modelAssetPath:"https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite", delegate:"CPU" },
+      runningMode:"VIDEO", outputConfidenceMasks:true, outputCategoryMask:false
+    });
+  }
+}
+
+async function startCamera(){
+  clearErr();
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ showErr("Your browser does not support camera access. Try the latest Chrome, Edge, or Safari, or drop in a video file instead."); return; }
+  try{
+    first.style.display="none"; loading.classList.add("show"); loadMsg.textContent="Requesting camera…";
+    stream = await navigator.mediaDevices.getUserMedia({ video:{ width:{ideal:1280}, height:{ideal:720}, facingMode:"user" }, audio:false });
+    usingFile=false;
+    await ensureSegmenter();
+    video.srcObject=stream; video.loop=false;
+    await begin();
+  }catch(e){
+    loading.classList.remove("show"); first.style.display="flex";
+    showErr(camMsg(e));
+  }
+}
+
+async function startFile(file){
+  clearErr();
+  try{
+    first.style.display="none"; loading.classList.add("show"); loadMsg.textContent="Loading the AI model…";
+    await ensureSegmenter();
+    usingFile=true;
+    if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+    video.srcObject=null; video.loop=true; video.src=URL.createObjectURL(file);
+    await begin();
+  }catch(e){
+    loading.classList.remove("show"); first.style.display="flex";
+    showErr("Could not start: "+(e.message||e));
+  }
+}
+
+function camMsg(e){
+  const n=e&&e.name;
+  if(n==="NotAllowedError"||n==="SecurityError") return "Camera permission was blocked. Allow camera access in your browser and try again, or drop in a video file instead.";
+  if(n==="NotFoundError"||n==="DevicesNotFoundError") return "No camera was found. Plug one in, or drop in a video file to try the tool.";
+  if(n==="NotReadableError") return "Your camera is in use by another app. Close it (Zoom, Meet, etc.) and try again.";
+  return "Could not start the camera: "+(e.message||e)+". You can drop in a video file instead.";
+}
+
+async function begin(){
+  await video.play().catch(()=>{});
+  // size the canvases
+  const vw=video.videoWidth||1280, vh=video.videoHeight||720;
+  const W=Math.min(vw,1280), s=W/vw, H=Math.round(vh*s);
+  [out,comp,bg].forEach(c=>{ c.width=W; c.height=H; });
+  stage.style.aspectRatio = (W/H).toFixed(4);
+  invert=null; maskImg=null; lastTime=-1; running=true;
+  loading.classList.remove("show");
+  stage.classList.add("live");
+  controls.classList.add("show"); bar.style.display="flex"; showCtl();
+  note.textContent = usingFile ? "Playing a video file on your device." : "Live from your camera, on your device.";
+  loop();
+}
+
+function loop(){
+  if(!running) return;
+  if(video.readyState>=2 && video.currentTime!==lastTime){
+    lastTime=video.currentTime;
+    try{ segmenter.segmentForVideo(video, performance.now(), onResult); }catch(e){ /* skip frame */ }
+  }
+  requestAnimationFrame(loop);
+}
+
+function detectInvert(data,mw,mh){
+  let cs=0,cc=0,es=0,ec=0;
+  const cx0=mw*0.35|0,cx1=mw*0.65|0,cy0=mh*0.45|0,cy1=mh*0.95|0;
+  for(let y=cy0;y<cy1;y++)for(let x=cx0;x<cx1;x++){cs+=data[y*mw+x];cc++;}
+  const ey=Math.max(1,mh*0.12|0);
+  for(let y=0;y<ey;y++)for(let x=0;x<mw;x++){es+=data[y*mw+x];ec++;}
+  const center=cs/Math.max(1,cc), edge=es/Math.max(1,ec);
+  return center<edge; // center should be the person; if not, mask is inverted
+}
+
+function onResult(result){
+  const masks=result.confidenceMasks;
+  if(masks && masks[0]){
+    const m=masks[0], mw=m.width, mh=m.height, data=m.getAsFloat32Array();
+    if(invert===null) invert=detectInvert(data,mw,mh);
+    if(!maskImg || maskCv.width!==mw || maskCv.height!==mh){ maskCv.width=mw; maskCv.height=mh; maskImg=mctx.createImageData(mw,mh); }
+    const px=maskImg.data;
+    for(let i=0,j=0;i<data.length;i++,j+=4){ let v=data[i]; if(invert) v=1-v; px[j]=255; px[j+1]=255; px[j+2]=255; px[j+3]=v*255; }
+    mctx.putImageData(maskImg,0,0);
+    composite();
+  }
+  if(masks) masks.forEach(m=>m.close());
+  if(result.categoryMask) result.categoryMask.close();
+  // fps
+  frames++; const now=performance.now();
+  if(now-fpsLast>=500){ fpsEl.textContent=Math.round(frames*1000/(now-fpsLast))+" fps"; frames=0; fpsLast=now; }
+}
+
+function composite(){
+  const W=out.width, H=out.height;
+  // background layer
+  if(mode==="blur"){ bctx.filter="blur("+blurAmt+"px)"; bctx.drawImage(video,-24,-24,W+48,H+48); bctx.filter="none"; }
+  else if(mode==="green"){ bctx.fillStyle="#00b140"; bctx.fillRect(0,0,W,H); }
+  else if(mode==="color"){ bctx.fillStyle=colorVal; bctx.fillRect(0,0,W,H); }
+  else if(mode==="gradient"){ paintScene(bctx,W,H,gradIndex); }
+  else if(mode==="image"){ if(bgImg) drawCover(bctx,bgImg,W,H); else { bctx.fillStyle="#111"; bctx.fillRect(0,0,W,H); } }
+  else { bctx.drawImage(video,0,0,W,H); } // none
+
+  // person = mask(alpha) ∩ video, then background behind
+  cctx.globalCompositeOperation="copy";
+  cctx.filter = feather>0 ? "blur("+feather+"px)" : "none";
+  cctx.drawImage(maskCv,0,0,W,H);
+  cctx.filter="none";
+  cctx.globalCompositeOperation="source-in";
+  cctx.drawImage(video,0,0,W,H);
+  cctx.globalCompositeOperation="destination-over";
+  cctx.drawImage(bg,0,0,W,H);
+  cctx.globalCompositeOperation="source-over";
+
+  // present (optionally mirrored)
+  dctx.setTransform(1,0,0,1,0,0);
+  if(mirror){ dctx.setTransform(-1,0,0,1,W,0); }
+  dctx.clearRect(0,0,W,H);
+  dctx.drawImage(comp,0,0,W,H);
+  dctx.setTransform(1,0,0,1,0,0);
+}
+
+function toggleRec(){
+  const btn=$("rec");
+  if(rec && rec.state==="recording"){ rec.stop(); return; }
+  if(!out.captureStream){ showErr("Recording is not supported in this browser. Try the latest Chrome or Edge."); return; }
+  const s=out.captureStream(30);
+  let mime="video/webm;codecs=vp9";
+  if(!(window.MediaRecorder && MediaRecorder.isTypeSupported(mime))) mime="video/webm;codecs=vp8";
+  if(!(window.MediaRecorder && MediaRecorder.isTypeSupported(mime))) mime="video/webm";
+  try{ rec=new MediaRecorder(s,{mimeType:mime,videoBitsPerSecond:8_000_000}); }
+  catch(e){ showErr("Recording is not supported in this browser."); return; }
+  chunks=[];
+  rec.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); };
+  rec.onstop=()=>{ const b=new Blob(chunks,{type:"video/webm"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="green-screen.webm"; a.click(); btn.classList.remove("recording"); btn.textContent="Record clip"; note.textContent="Saved your clip."; };
+  rec.start(); btn.classList.add("recording"); btn.textContent="Stop recording"; note.textContent="Recording… (video only)";
+}
+
+function stopAll(){
+  running=false;
+  if(rec && rec.state==="recording") rec.stop();
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  try{ video.pause(); }catch(e){}
+  video.srcObject=null; video.removeAttribute("src"); video.load&&video.load();
+  stage.classList.remove("live"); controls.classList.remove("show"); bar.style.display="none";
+  first.style.display="flex";
+}
+
+// capability hint
+if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+  showErr("Camera access is not available in this browser. You can still try the tool by dropping in a video file.");
+}
+</script>
+
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+
+<!-- AdSense / Polar.sh monetization slot (left intentionally empty for later) -->
+<!-- <ins class="adsbygoogle" ...></ins> -->
+</body>
+</html>
