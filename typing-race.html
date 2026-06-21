@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Typebolt — free multiplayer typing race &amp; typing speed test, no sign-up</title>
+<meta name="description" content="Race your friends in a live typing game, or test your typing speed solo. Share a link and everyone types the same passage at once with live progress. No sign-up, no install, nothing stored." />
+<meta name="keywords" content="typing race, multiplayer typing game, typing speed test, typeracer alternative, typing test, words per minute test, wpm test, type racing online, typing game with friends, online typing test, typing competition, real time typing game, no sign up typing test" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Typebolt — multiplayer typing race &amp; speed test" />
+<meta property="og:description" content="Share a link and race your friends typing the same passage live. Or test your WPM solo. No sign-up, nothing stored." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/typing-race.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Typebolt — multiplayer typing race &amp; speed test" />
+<meta name="twitter:description" content="Share a link, race friends typing live, see everyone's WPM. No sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/typing-race.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500,600&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500,600&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Typebolt","url":"https://hammyasf.github.io/typing-race.html","applicationCategory":"GameApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free real-time multiplayer typing race and typing speed test. Share a link and race friends typing the same passage live, or test your WPM solo. No sign-up.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an account to play?","acceptedAnswer":{"@type":"Answer","text":"No. There is no sign-up and no install. Open the page, share the link, and anyone who opens it joins your race instantly and types the same passage at the same time."}},{"@type":"Question","name":"How is the race live without a server?","acceptedAnswer":{"@type":"Answer","text":"Each player's progress is relayed through a realtime message channel as a tiny stream of numbers. Your browser broadcasts how far along you are and your current speed, and everyone else's browser draws your car moving. Nothing is written to a database."}},{"@type":"Question","name":"How is typing speed measured?","acceptedAnswer":{"@type":"Answer","text":"Words per minute is the standard measure: the number of correct characters you type divided by five, divided by the minutes elapsed. Accuracy is the share of keystrokes you got right on the first try."}},{"@type":"Question","name":"Can I use it to practice alone?","acceptedAnswer":{"@type":"Answer","text":"Yes. If no one else is in the room it works as a solo typing speed test. Start a race and type the passage to get your WPM and accuracy, then share the link to race friends."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);--good:#3ddc84;--bad:#ff6a5d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:30px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  .app{margin:22px 0 8px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .bar{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(var(--surfaceRGB),.6);}
+  .spacer{flex:1 1 auto;}
+  .who{display:flex;align-items:center;gap:8px;}
+  .avs{display:flex;}
+  .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:#07100e;margin-left:-8px;border:2px solid var(--bg-2);}
+  .av:first-child{margin-left:0;}
+  .cnt{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .namewrap{display:flex;align-items:center;gap:6px;}
+  .nameinput{width:130px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:7px 10px;font-family:var(--mono);font-size:12.5px;}
+  .nameinput:focus{outline:none;border-color:var(--accent);}
+  .seg{display:inline-flex;border:1px solid var(--line-2);border-radius:9px;overflow:hidden;}
+  .seg button{background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:12px;padding:7px 12px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:700;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s,opacity .14s;white-space:nowrap;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
+
+  /* lanes */
+  .lanes{padding:14px 16px 4px;display:flex;flex-direction:column;gap:9px;}
+  .lane{display:grid;grid-template-columns:140px 1fr 66px;align-items:center;gap:12px;}
+  .lane .pl{display:flex;align-items:center;gap:8px;min-width:0;}
+  .lane .pdot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;}
+  .lane .pname{font-family:var(--mono);font-size:12.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lane .pname.me{color:var(--accent);}
+  .track{position:relative;height:14px;border-radius:100px;background:rgba(237,242,239,.06);border:1px solid var(--line);overflow:hidden;}
+  .fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:100px;opacity:.28;transition:width .12s linear;}
+  .marker{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 1px 6px rgba(0,0,0,.5);transition:left .12s linear;display:flex;align-items:center;justify-content:center;}
+  .marker::after{content:"";width:7px;height:7px;border-radius:50%;background:rgba(7,16,14,.85);}
+  .lane .wpm{font-family:var(--mono);font-size:12.5px;color:var(--muted);text-align:right;}
+  .lane.finished .wpm{color:var(--good);font-weight:600;}
+
+  /* type area */
+  .typezone{position:relative;margin:8px 16px 16px;}
+  .typebox{position:relative;border:1px solid var(--line);border-radius:14px;background:rgba(7,16,14,.5);padding:22px 24px;font-family:var(--mono);font-size:20px;line-height:1.9;letter-spacing:.2px;min-height:120px;cursor:text;user-select:none;}
+  .typebox .ch{color:var(--faint);transition:color .05s;}
+  .typebox .ch.ok{color:var(--ink);}
+  .typebox .ch.bad{color:var(--bad);background:rgba(255,106,93,.16);border-radius:3px;}
+  .typebox .ch.cur{position:relative;}
+  .typebox .ch.cur::before{content:"";position:absolute;left:-1px;top:6%;bottom:6%;width:2px;background:var(--accent);border-radius:2px;animation:blink 1s steps(2,start) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  #feed{position:absolute;inset:0;opacity:0;border:0;resize:none;cursor:text;}
+  .hintline{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:10px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+
+  /* stats */
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin:0 16px 8px;}
+  .stat{flex:1 1 0;min-width:120px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(var(--surfaceRGB),.45);}
+  .stat .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:26px;margin-top:2px;}
+  .stat .v small{font-size:13px;color:var(--muted);font-weight:500;}
+
+  .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:4px 16px 18px;}
+
+  /* overlays */
+  .overlay{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:rgba(7,16,14,.82);backdrop-filter:blur(4px);text-align:center;padding:24px;}
+  .count{font-family:var(--display);font-weight:700;font-size:96px;color:var(--accent);line-height:1;text-shadow:0 0 40px rgba(var(--accentRGB),.5);}
+  .countlbl{font-family:var(--mono);font-size:13px;color:#cdd8d3;margin-top:8px;letter-spacing:.1em;text-transform:uppercase;}
+
+  /* results */
+  .results{margin:4px 16px 18px;border:1px solid rgba(var(--accentRGB),.3);border-radius:16px;background:linear-gradient(150deg,rgba(var(--accentRGB),.1),rgba(var(--accentRGB),.02));padding:18px 18px 8px;display:none;}
+  .results.show{display:block;}
+  .results h3{font-family:var(--display);font-weight:600;font-size:20px;margin-bottom:10px;}
+  .rtable{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;}
+  .rtable th{text-align:left;color:var(--faint);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:1px solid var(--line);}
+  .rtable td{padding:8px;border-bottom:1px solid var(--line);}
+  .rtable tr.me td{color:var(--accent);}
+  .rtable .pos{width:34px;color:var(--muted);}
+  .rtable .rdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);z-index:60;background:var(--ink);color:#07100e;font-family:var(--mono);font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:100px;opacity:0;transition:.25s;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 16px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .conn{display:inline-flex;align-items:center;gap:7px;}
+  .led{width:8px;height:8px;border-radius:50%;background:var(--faint);box-shadow:0 0 8px currentColor;}
+  .led.live{background:#2be3b0;color:#2be3b0;}
+  .led.off{background:#ff6a5d;color:#ff6a5d;}
+
+  section.copy{padding:24px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:640px){.nameinput{width:96px;}.lane{grid-template-columns:96px 1fr 54px;}.typebox{font-size:17px;}.stat .v{font-size:22px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · real-time, no sign-up</div>
+    <h1>Typebolt</h1>
+    <p class="sub">A typing race you play with other people. Share the link, everyone types the same passage at the same moment, and you watch each other's progress live. Alone? It's a clean typing speed test. No account, nothing stored.</p>
+    <span class="priv">&#9889; Live multiplayer — share the link, race together instantly</span>
+  </header>
+
+  <div class="app">
+    <div class="bar">
+      <div class="seg" id="lenseg" title="Passage length (used when you start a race)">
+        <button data-len="short">Short</button>
+        <button data-len="medium" class="on">Medium</button>
+        <button data-len="long">Long</button>
+      </div>
+      <div class="spacer"></div>
+      <div class="namewrap"><input class="nameinput" id="name" maxlength="18" aria-label="Your name" /></div>
+      <div class="who"><div class="avs" id="avs"></div><span class="cnt" id="cnt">1 here</span></div>
+      <button class="btn btn-out" id="share">Copy invite link</button>
+    </div>
+
+    <div style="position:relative">
+      <div class="lanes" id="lanes"></div>
+
+      <div class="stats">
+        <div class="stat"><div class="l">Speed</div><div class="v"><span id="sWpm">0</span> <small>wpm</small></div></div>
+        <div class="stat"><div class="l">Accuracy</div><div class="v"><span id="sAcc">100</span><small>%</small></div></div>
+        <div class="stat"><div class="l">Progress</div><div class="v"><span id="sProg">0</span><small>%</small></div></div>
+        <div class="stat"><div class="l">Time</div><div class="v"><span id="sTime">0.0</span><small>s</small></div></div>
+      </div>
+
+      <div class="typezone">
+        <div class="typebox" id="typebox"></div>
+        <textarea id="feed" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Type here"></textarea>
+        <div class="hintline">
+          <span id="hint">Press Start a race, then type the passage as fast and accurately as you can.</span>
+          <span id="room"></span>
+        </div>
+      </div>
+
+      <div class="results" id="results">
+        <h3 id="resTitle">Results</h3>
+        <table class="rtable"><thead><tr><th class="pos">#</th><th>Racer</th><th>WPM</th><th>Accuracy</th><th>Time</th></tr></thead><tbody id="resBody"></tbody></table>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="start">Start a race</button>
+        <button class="btn btn-out" id="again" style="display:none">Race again</button>
+        <span class="cnt" id="ctrlHint">Race solo now, or share the link first and race together.</span>
+      </div>
+
+      <div class="overlay" id="countOv" style="display:none">
+        <div><div class="count" id="countNum">3</div><div class="countlbl">Get ready</div></div>
+      </div>
+    </div>
+
+    <div class="statusbar">
+      <span class="conn"><span class="led" id="led"></span><span id="connlbl">Connecting…</span></span>
+      <span id="poshint"></span>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Every race is a private room with its own link. Open the page and you land in a fresh room with a code in the URL. Send that link to anyone and the moment they open it they are in your race, ready to type the exact same passage. When any player hits Start, a short countdown runs on everyone's screen at the same instant, then the passage unlocks and the typing begins. Each player's car slides along its lane as they type, so you can feel yourself pulling ahead or falling behind in real time.</p>
+    <h2>How is it live without a server I have to run?</h2>
+    <p>There is no game server. While you type, your browser broadcasts two small numbers on a realtime channel: how far through the passage you are and your current words-per-minute. Every other browser in the room receives those numbers and animates your lane. The passage itself rides along when the race starts, so everyone is racing identical text. Because nothing is written to a database, a room exists only while people are in it, which is exactly what you want for a quick race with friends. Your keystrokes never leave your machine as text; only your progress percentage and speed are shared.</p>
+    <h2>How speed and accuracy are scored</h2>
+    <p>Words per minute uses the long-standing convention of five characters per word: your correct characters divided by five, divided by the minutes elapsed since the countdown ended. Accuracy is the share of keystrokes you got right the first time, so fixing a typo still costs you on accuracy even after you correct it. The clock is the same for everyone because it starts the instant the countdown hits zero, not when you press your first key.</p>
+    <h2>Good ways to use it</h2>
+    <p>Drop the link in a group chat and run a best-of-three. Use it as a warm-up before a coding session, settle who buys coffee, or run a friendly bracket at a meetup. On your own it is a distraction-free typing speed test you can repeat as often as you like to push your WPM up. It works on a laptop or desktop keyboard best; on a phone it will bring up the on-screen keyboard so you can still join in.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Do I need to sign up?</summary><p>No. There is no account and no install. Open the page, copy the link, and share it. Anyone who opens the link joins your race instantly.</p></details>
+    <details><summary>Is anything saved or uploaded?</summary><p>No. Your progress and speed are relayed live between the browsers in the room and never written to a database. When everyone closes the tab, the room is gone.</p></details>
+    <details><summary>How many people can race at once?</summary><p>It is built for small groups, a handful of friends or teammates racing together comfortably in real time. It is not meant for hundreds of simultaneous racers.</p></details>
+    <details><summary>Can I practice by myself?</summary><p>Yes. With no one else in the room it works as a solo typing speed test. Start a race, type the passage, and you get your WPM and accuracy. Share the link whenever you want to race someone.</p></details>
+    <details><summary>Does it work on mobile?</summary><p>You can join from a phone and the on-screen keyboard will appear, but a physical keyboard is much faster and more comfortable for a real race.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build a tool like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Real-time in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- Ad slot (commented for later):
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XX" data-ad-slot="XX" data-ad-format="auto"></ins>
+-->
+<!-- Monetization (Polar.sh) slot for a future Pro: private leagues, custom passages, saved stats. -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  "use strict";
+  // ---- match the portfolio's saved theme ----
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var tt=T[localStorage.getItem("siteTheme")]; if(tt){var r=document.documentElement.style; r.setProperty("--accent",tt[0]);r.setProperty("--accent-2",tt[1]);r.setProperty("--accentRGB",tt[2]);r.setProperty("--surfaceRGB",tt[3]);r.setProperty("--bg",tt[4]);r.setProperty("--bg-2",tt[5]);} }catch(e){}
+
+  // ---- Supabase config (anon/publishable key is public and safe; broadcast+presence only, no tables) ----
+  var SUPA_URL="https://cunynpmbjogrexkrxbwf.supabase.co";
+  var SUPA_KEY="sb_publishable_cOG9I9Rh6NJNEUxM4MDT4A_KceeVBsQ";
+
+  // ===================== PASSAGES =====================
+  var PASSAGES=[
+    // short
+    "The fox slipped through the tall grass without making a single sound.",
+    "She fixed the bug in two minutes, then spent an hour wondering why it worked.",
+    "Rain fell all night, and by morning the street smelled like clean wet stone.",
+    "He packed light, caught the early train, and watched the city wake up behind him.",
+    "A warm cup of coffee and a quiet room can repair almost any kind of morning.",
+    "The puzzle had no picture on the box, so they sorted the pieces by color first.",
+    // medium
+    "The quiet engineer kept her notes in a small black book, and every page was a tidy map of a problem she had once thought was impossible to solve.",
+    "When the power went out across the city, people opened their windows and found, almost by accident, that the night sky had been there the whole time.",
+    "She learned to type by writing letters to a friend who had moved away, and by the time the letters stopped her hands had grown quick and sure on the keys.",
+    "Out past the harbor the fog rolled in like a slow gray tide, and the lighthouse answered it the only way it knew, with one steady beam that swept the dark.",
+    "The old map showed a road that no longer existed and a town that had changed its name twice, yet somehow it still pointed every traveler the way back home.",
+    "Code is read far more often than it is written, so she left clear notes for the stranger who would open this file someday, a stranger who turned out to be her.",
+    // long
+    "The best advice he ever got fit on the back of a paper receipt: do the hard part first while you still have the energy for it, keep every promise small enough that you can actually keep it, and never start an argument with someone who is clearly far too tired to finish it.",
+    "On the last day of summer the kids raced their bikes down the long hill one final time, knowing perfectly well that the season was already ending, and racing it anyway, just for the feeling of warm wind on their faces and the sense that nothing in particular had to happen next.",
+    "Rivers never seem to be in any hurry, and yet they always reach the sea in the end, carving wide green valleys straight out of solid rock by patiently doing the very same small thing over and over again for thousands and thousands of otherwise unremarkable years.",
+    "A library at closing time is a strange and quietly lovely place, full of half finished thoughts and warm lamps switching off one by one, where the last few readers gather their coats in the soft hush of leaving and the long rows of books settle in to wait for the morning."
+  ];
+  // bucket passages by length for the Short/Medium/Long selector
+  function bucketOf(s){ var n=s.length; return n<120?"short":(n<210?"medium":"long"); }
+
+  // ===================== PURE HELPERS (unit-tested) =====================
+  function clamp(v,lo,hi){ return v<lo?lo:v>hi?hi:v; }
+  function roomFromHash(h){ var m=/[#&]r=([A-Za-z0-9_-]{4,24})/.exec(h||""); return m?m[1]:""; }
+  function makeRoom(rnd){ var s="",a="abcdefghijkmnpqrstuvwxyz23456789"; for(var i=0;i<8;i++){ s+=a[Math.floor((rnd?rnd():Math.random())*a.length)]; } return s; }
+  function hashStr(s){ var h=2166136261; for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=(h*16777619)>>>0; } return h>>>0; }
+  function colorFor(id){ var hues=[8,28,48,140,168,190,210,260,300,330]; var h=hues[hashStr(id)%hues.length]; return "hsl("+h+",70%,60%)"; }
+  function initials(name){ name=(name||"").trim(); if(!name) return "?"; var p=name.split(/\s+/); return (p.length>1?(p[0][0]+p[1][0]):name.slice(0,2)).toUpperCase(); }
+  var ANIMALS=["Fox","Owl","Wolf","Bear","Hawk","Lynx","Otter","Crane","Puma","Heron","Mole","Wren","Seal","Koi","Ibex","Stag"];
+  function randomName(rnd){ var f=function(){return (rnd?rnd():Math.random());}; return ANIMALS[Math.floor(f()*ANIMALS.length)]+"-"+(10+Math.floor(f()*90)); }
+  function shortId(){ try{ return (crypto.randomUUID().replace(/-/g,"")).slice(0,12); }catch(e){ return (Date.now().toString(36)+Math.random().toString(36).slice(2,8)); } }
+  function sanitize(name){ return String(name||"Guest").replace(/[<>&]/g,"").slice(0,18)||"Guest"; }
+  // analyze typed-so-far against the passage
+  function analyze(passage, typed){
+    var len=passage.length, n=Math.min(typed.length,len), correct=0;
+    for(var i=0;i<n;i++){ if(typed[i]===passage[i]) correct++; }
+    return { pos:n, correct:correct, done:n>=len, pct: len?clamp(n/len,0,1):0 };
+  }
+  function wpm(correctChars, ms){ if(ms<=0) return 0; var min=ms/60000; var w=(correctChars/5)/min; return Math.max(0,Math.round(w)); }
+  function accuracy(keystrokes, errors){ if(keystrokes<=0) return 100; return clamp(Math.round((keystrokes-errors)/keystrokes*100),0,100); }
+  // rank racers: finished first (by finish time), then by progress desc
+  function rankPlayers(arr){
+    return arr.slice().sort(function(a,b){
+      if(a.done&&b.done) return (a.finishMs||0)-(b.finishMs||0);
+      if(a.done!==b.done) return a.done?-1:1;
+      return (b.pct||0)-(a.pct||0);
+    });
+  }
+  window.__tr={clamp:clamp,roomFromHash:roomFromHash,makeRoom:makeRoom,hashStr:hashStr,colorFor:colorFor,initials:initials,randomName:randomName,sanitize:sanitize,analyze:analyze,wpm:wpm,accuracy:accuracy,rankPlayers:rankPlayers,bucketOf:bucketOf};
+  // ===================== END PURE HELPERS =====================
+
+  // ---- state ----
+  var selfId=shortId();
+  var myName=""; try{ myName=localStorage.getItem("tr_name")||""; }catch(e){}
+  if(!myName) myName=randomName();
+  var myColor=colorFor(selfId);
+  var lenPref="medium"; try{ var lp=localStorage.getItem("tr_len"); if(lp) lenPref=lp; }catch(e){}
+
+  var phase="lobby";          // lobby | countdown | racing | done
+  var passage="";             // current race passage
+  var raceId="";              // current race identifier
+  var startAt=0;              // ms timestamp the typing begins
+  var prevVal="";             // last textarea value
+  var keystrokes=0, errors=0; // for accuracy
+  var myFinishMs=0;           // ms it took me
+  var players={};             // id -> {name,color,pct,wpm,done,finishMs}
+  var channel=null, live=false, client=null;
+
+  // ---- elements ----
+  var lanesEl=document.getElementById("lanes"), feed=document.getElementById("feed"), typebox=document.getElementById("typebox");
+  var sWpm=document.getElementById("sWpm"), sAcc=document.getElementById("sAcc"), sProg=document.getElementById("sProg"), sTime=document.getElementById("sTime");
+  var startBtn=document.getElementById("start"), againBtn=document.getElementById("again"), ctrlHint=document.getElementById("ctrlHint");
+  var avsEl=document.getElementById("avs"), cntEl=document.getElementById("cnt"), roomEl=document.getElementById("room");
+  var ledEl=document.getElementById("led"), connlbl=document.getElementById("connlbl"), nameInput=document.getElementById("name");
+  var countOv=document.getElementById("countOv"), countNum=document.getElementById("countNum");
+  var resultsEl=document.getElementById("results"), resBody=document.getElementById("resBody"), resTitle=document.getElementById("resTitle");
+  var hintEl=document.getElementById("hint"), poshint=document.getElementById("poshint");
+  nameInput.value=myName;
+
+  // ---- length selector ----
+  document.querySelectorAll("#lenseg button").forEach(function(b){
+    if(b.getAttribute("data-len")===lenPref){ document.querySelectorAll("#lenseg button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); }
+    b.addEventListener("click",function(){ lenPref=b.getAttribute("data-len"); document.querySelectorAll("#lenseg button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); try{localStorage.setItem("tr_len",lenPref);}catch(e){} });
+  });
+  function pickPassage(){
+    var pool=PASSAGES.filter(function(s){return bucketOf(s)===lenPref;});
+    if(!pool.length) pool=PASSAGES;
+    return pool[Math.floor(Math.random()*pool.length)];
+  }
+
+  // ---- room ----
+  var room=roomFromHash(location.hash);
+  if(!room){ room=makeRoom(); history.replaceState(null,"","#r="+room); }
+  roomEl.textContent="Room "+room;
+
+  // ---- render passage ----
+  function renderPassage(){
+    if(!passage){ typebox.innerHTML='<span class="ch" style="color:var(--faint)">A passage will appear here when the race starts. Press Start a race below.</span>'; return; }
+    var typed=prevVal, html="", pos=Math.min(typed.length,passage.length);
+    for(var i=0;i<passage.length;i++){
+      var c=passage[i], cls="ch";
+      if(i<pos){ cls+= (typed[i]===c)?" ok":" bad"; }
+      else if(i===pos && phase==="racing"){ cls+=" cur"; }
+      var disp = c===" " ? "&nbsp;" : (c==="<"?"&lt;":c===">"?"&gt;":c==="&"?"&amp;":c);
+      html+='<span class="'+cls+'">'+disp+'</span>';
+    }
+    typebox.innerHTML=html;
+  }
+
+  // ---- lanes ----
+  function mergedPlayers(){
+    var out={}; for(var id in players){ if(players.hasOwnProperty(id)) out[id]=players[id]; }
+    // ensure presence members appear even before they send progress
+    if(channel){ var st={}; try{ st=channel.presenceState(); }catch(e){} for(var k in st){ if(st.hasOwnProperty(k)&&!out[k]){ var m=(st[k]&&st[k][0])||{}; out[k]={name:m.name||"Guest",color:m.color||colorFor(k),pct:0,wpm:0,done:false,finishMs:0}; } } }
+    // always include self
+    out[selfId]={name:myName,color:myColor,pct:myPct(),wpm:myWpm(),done:phase==="done"||(players[selfId]&&players[selfId].done),finishMs:myFinishMs};
+    return out;
+  }
+  function myPct(){ if(!passage) return 0; return clamp(prevVal.length/passage.length,0,1); }
+  function myCorrect(){ return analyze(passage,prevVal).correct; }
+  function myWpm(){ if(!startAt) return 0; var end=myFinishMs?startAt+myFinishMs:Date.now(); return wpm(myCorrect(), end-startAt); }
+
+  function renderLanes(){
+    var mp=mergedPlayers(), ids=Object.keys(mp);
+    // stable order: self first, then by name
+    ids.sort(function(a,b){ if(a===selfId)return -1; if(b===selfId)return 1; return (mp[a].name||"").localeCompare(mp[b].name||""); });
+    var html="";
+    for(var i=0;i<ids.length;i++){
+      var id=ids[i], p=mp[id], pct=Math.round((p.pct||0)*100);
+      var me=id===selfId;
+      html+='<div class="lane'+(p.done?" finished":"")+'">'+
+        '<div class="pl"><span class="pdot" style="background:'+p.color+'"></span><span class="pname'+(me?" me":"")+'">'+sanitize(p.name)+(me?" (you)":"")+'</span></div>'+
+        '<div class="track"><div class="fill" style="width:'+pct+'%;background:'+p.color+'"></div><div class="marker" style="left:'+pct+'%;background:'+p.color+'"></div></div>'+
+        '<div class="wpm">'+(p.done?("&#10003; "+(p.wpm||0)):(pct>0?(p.wpm||0):"&middot;"))+'</div>'+
+      '</div>';
+    }
+    lanesEl.innerHTML=html;
+  }
+
+  // ---- stats ----
+  function updateStats(){
+    var a=analyze(passage,prevVal);
+    sWpm.textContent=myWpm();
+    sAcc.textContent=accuracy(keystrokes,errors);
+    sProg.textContent=Math.round(a.pct*100);
+    var t = startAt ? ((myFinishMs?myFinishMs:(Date.now()-startAt))/1000) : 0;
+    sTime.textContent=(t<0?0:t).toFixed(1);
+  }
+
+  // ---- broadcast ----
+  function bcast(event,payload){ if(channel&&live){ try{ channel.send({type:"broadcast",event:event,payload:payload}); }catch(e){} } }
+  var lastProg=0;
+  function sendProgress(force){
+    var now=Date.now();
+    if(!force && now-lastProg<120) return;
+    lastProg=now;
+    var a=analyze(passage,prevVal);
+    bcast("prog",{id:selfId,name:myName,color:myColor,pct:a.pct,wpm:myWpm(),done:phase==="done",finishMs:myFinishMs,raceId:raceId});
+  }
+
+  // ---- typing input ----
+  feed.addEventListener("input",function(){
+    if(phase!=="racing"){ feed.value=prevVal; return; }
+    var val=feed.value.replace(/\n/g,"");
+    if(val.length>passage.length) val=val.slice(0,passage.length);
+    if(val.length>prevVal.length){
+      for(var i=prevVal.length;i<val.length;i++){ keystrokes++; if(val[i]!==passage[i]) errors++; }
+    }
+    feed.value=val; prevVal=val;
+    renderPassage(); updateStats();
+    var a=analyze(passage,prevVal);
+    sendProgress(false);
+    if(a.done){ finishRace(); }
+  });
+  typebox.addEventListener("mousedown",function(e){ if(phase==="racing"){ e.preventDefault(); feed.focus(); } });
+  // keep quick-find / scroll from hijacking during a race
+  window.addEventListener("keydown",function(e){
+    if(phase!=="racing") return;
+    if(e.target===nameInput) return;
+    if(e.key===" "||e.key==="'"||e.key==="/"){ if(e.target!==feed){ feed.focus(); } }
+    if(e.key==="Tab"){ e.preventDefault(); feed.focus(); }
+  });
+
+  // ---- race lifecycle ----
+  function resetTyping(){ prevVal=""; feed.value=""; keystrokes=0; errors=0; myFinishMs=0; }
+  function beginCountdown(p){
+    // p: {raceId, text, startAt}
+    if(phase==="countdown"||phase==="racing") return; // ignore mid-race starts
+    raceId=p.raceId; passage=p.text; startAt=p.startAt;
+    delete players[selfId];
+    phase="countdown"; resetTyping();
+    resultsEl.classList.remove("show"); resBody.innerHTML="";
+    startBtn.style.display="none"; againBtn.style.display="none";
+    countOv.style.display="flex";
+    renderPassage(); updateStats(); renderLanes();
+    hintEl.textContent="Get ready…";
+  }
+  function intoRacing(){
+    phase="racing"; countOv.style.display="none";
+    feed.removeAttribute("readonly"); feed.value=""; prevVal="";
+    feed.focus();
+    renderPassage(); updateStats();
+    hintEl.textContent="Go! Type the passage above.";
+    sendProgress(true);
+  }
+  function finishRace(){
+    if(phase!=="racing") return;
+    myFinishMs=Date.now()-startAt;
+    phase="done";
+    players[selfId]={name:myName,color:myColor,pct:1,wpm:myWpm(),done:true,finishMs:myFinishMs};
+    sendProgress(true);
+    hintEl.textContent="Done! Nice run.";
+    againBtn.style.display="inline-block"; startBtn.style.display="none";
+    renderResults();
+    updateStats();
+  }
+  function backToLobby(){
+    phase="lobby"; passage=""; raceId=""; startAt=0; resetTyping();
+    delete players[selfId];
+    resultsEl.classList.remove("show");
+    startBtn.style.display="inline-block"; againBtn.style.display="none";
+    countOv.style.display="none";
+    renderPassage(); updateStats(); renderLanes();
+    hintEl.textContent="Press Start a race, then type the passage as fast and accurately as you can.";
+  }
+
+  function startRace(){
+    if(phase==="countdown"||phase==="racing") return;
+    var text=pickPassage();
+    var sAt=Date.now()+3600;
+    var rid=sAt+"-"+selfId;
+    var payload={raceId:rid,text:text,startAt:sAt,by:selfId};
+    bcast("race",payload);
+    beginCountdown(payload); // start our own countdown too (broadcast self:false)
+  }
+  startBtn.addEventListener("click",startRace);
+  againBtn.addEventListener("click",startRace);
+
+  // ---- results ----
+  function renderResults(){
+    var mp=mergedPlayers(), arr=[];
+    for(var id in mp){ if(mp.hasOwnProperty(id)){ var p=mp[id]; arr.push({id:id,name:p.name,color:p.color,pct:p.pct,wpm:p.wpm,done:p.done,finishMs:p.finishMs,me:id===selfId}); } }
+    var ranked=rankPlayers(arr), html="";
+    for(var i=0;i<ranked.length;i++){
+      var r=ranked[i];
+      var acc = r.me ? (accuracy(keystrokes,errors)+"%") : "—";
+      var tm = r.done ? ((r.finishMs/1000).toFixed(1)+"s") : (Math.round((r.pct||0)*100)+"%");
+      html+='<tr class="'+(r.me?"me":"")+'"><td class="pos">'+(r.done?(i+1):"–")+'</td>'+
+        '<td><span class="rdot" style="background:'+r.color+'"></span>'+sanitize(r.name)+(r.me?" (you)":"")+'</td>'+
+        '<td>'+(r.wpm||0)+'</td><td>'+acc+'</td><td>'+tm+'</td></tr>';
+    }
+    resBody.innerHTML=html;
+    var single=ranked.length<=1;
+    resTitle.textContent = single ? ("Your run · "+myWpm()+" WPM") : "Results";
+    poshint.textContent="";
+    if(!single){
+      var mine=-1; for(var j=0;j<ranked.length;j++){ if(ranked[j].me&&ranked[j].done){ mine=j+1; break; } }
+      if(mine>0) poshint.textContent="You placed "+mine+" of "+ranked.length;
+    }
+    resultsEl.classList.add("show");
+  }
+
+  // ---- remote progress ----
+  function onProg(p){
+    if(!p||p.id===selfId) return;
+    players[p.id]={name:p.name,color:p.color,pct:p.pct||0,wpm:p.wpm||0,done:!!p.done,finishMs:p.finishMs||0};
+    if(phase==="done") renderResults();
+  }
+
+  // ===================== REALTIME =====================
+  function setLed(state){ ledEl.className="led"+(state==="live"?" live":state==="off"?" off":""); connlbl.textContent=(state==="live"?"Live · connected":state==="off"?"Offline — solo mode":"Connecting…"); }
+  function updatePresence(){
+    var st={}; try{ st=channel.presenceState(); }catch(e){ st={}; }
+    var ids=Object.keys(st); if(ids.indexOf(selfId)<0) ids.push(selfId);
+    avsEl.innerHTML=""; var seen={}, shown=0;
+    ids.forEach(function(id){
+      if(seen[id]||shown>=6) return; seen[id]=1; shown++;
+      var meta=(st[id]&&st[id][0])||{}; var nm=id===selfId?myName:(meta.name||"Guest"); var cl=id===selfId?myColor:(meta.color||colorFor(id));
+      var a=document.createElement("div"); a.className="av"; a.style.background=cl; a.textContent=initials(nm); a.title=nm; avsEl.appendChild(a);
+    });
+    var n=ids.length; cntEl.textContent=n+" here";
+    ctrlHint.textContent = n>1 ? (n+" racers in the room — start when ready.") : "Race solo now, or share the link first and race together.";
+    // drop players who left from the lanes (unless mid-race results)
+    if(phase!=="done"){ for(var pid in players){ if(players.hasOwnProperty(pid)&&pid!==selfId&&ids.indexOf(pid)<0) delete players[pid]; } }
+    renderLanes();
+  }
+
+  function connect(){
+    if(!window.supabase||!window.supabase.createClient){ setLed("off"); window.__trLive=false; return; }
+    try{ client=window.supabase.createClient(SUPA_URL,SUPA_KEY,{realtime:{params:{eventsPerSecond:30}}}); }
+    catch(e){ setLed("off"); window.__trLive=false; return; }
+    channel=client.channel("typerace:"+room,{config:{presence:{key:selfId},broadcast:{self:false}}});
+    channel.on("broadcast",{event:"race"},function(m){ beginCountdown(m.payload); });
+    channel.on("broadcast",{event:"prog"},function(m){ onProg(m.payload); });
+    channel.on("presence",{event:"sync"},updatePresence);
+    channel.on("presence",{event:"join"},updatePresence);
+    channel.on("presence",{event:"leave"},updatePresence);
+    channel.subscribe(function(status){
+      if(status==="SUBSCRIBED"){
+        live=true; window.__trLive=true; setLed("live");
+        try{ channel.track({name:myName,color:myColor}); }catch(e){}
+        updatePresence();
+      } else if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"||status==="CLOSED"){
+        live=false; window.__trLive=false; setLed("off");
+      }
+    });
+    window.addEventListener("beforeunload",function(){ try{ channel.untrack(); client.removeChannel(channel); }catch(e){} });
+  }
+
+  // ---- name + share ----
+  nameInput.addEventListener("change",function(){ myName=sanitize((nameInput.value||"").trim())||randomName(); nameInput.value=myName; try{localStorage.setItem("tr_name",myName);}catch(e){} if(channel&&live){ try{channel.track({name:myName,color:myColor});}catch(e){} } updatePresence(); });
+  function showToast(msg){ var t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); requestAnimationFrame(function(){ t.classList.add("show"); }); setTimeout(function(){ t.classList.remove("show"); setTimeout(function(){ if(t.parentNode)t.parentNode.removeChild(t); },300); },1600); }
+  function copyLink(){ var url=location.origin+location.pathname+"#r="+room; var done=function(){ showToast("Invite link copied"); }; if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done,function(){ prompt("Copy this link:",url); }); } else { prompt("Copy this link:",url); } }
+  document.getElementById("share").addEventListener("click",copyLink);
+
+  // ---- main loop: countdown + live broadcast ----
+  function loop(){
+    if(phase==="countdown"){
+      var rem=startAt-Date.now();
+      if(rem<=0){ intoRacing(); }
+      else { countNum.textContent=String(Math.ceil(rem/1000)); }
+    }
+    if(phase==="racing"){
+      updateStats(); sendProgress(false);
+    }
+    renderLanes();
+    requestAnimationFrame(loop);
+  }
+
+  // ---- boot ----
+  renderPassage(); updateStats(); renderLanes();
+  setLed("connecting"); connect();
+  requestAnimationFrame(loop);
+
+  // expose state for live verification
+  window.__trState=function(){ return {room:room,selfId:selfId,live:!!live,phase:phase,passageLen:passage.length,pos:prevVal.length,wpm:myWpm(),acc:accuracy(keystrokes,errors),players:Object.keys(mergedPlayers()).length,name:myName}; };
+  window.__trBoot=true;
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
