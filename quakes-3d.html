@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quakes 3D — Live Earthquake Map on a 3D Globe (USGS, real-time)</title>
+<meta name="description" content="Watch every earthquake on Earth from the last 24 hours, week, or month on a real-time 3D globe. Live USGS data, time-lapse playback, magnitude filters. Runs entirely in your browser, no sign-up." />
+<meta name="keywords" content="earthquakes today, recent earthquakes, live earthquake map, earthquake tracker, 3d earthquake globe, earthquake map 3d, usgs earthquake map, real time earthquakes, latest earthquakes, earthquake visualization, seismic activity map, ring of fire map" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Quakes 3D — Live Earthquake Map on a 3D Globe" />
+<meta property="og:description" content="Every earthquake on Earth, plotted live on a 3D globe with time-lapse playback. Real-time USGS data, in your browser." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/quakes-3d.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Quakes 3D — Live Earthquake Map on a 3D Globe" />
+<meta name="twitter:description" content="Every earthquake on Earth, live on a 3D globe with time-lapse. Real-time USGS data, in your browser." />
+<link rel="canonical" href="https://hammyasf.github.io/quakes-3d.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://earthquake.usgs.gov" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Quakes 3D — Live Earthquake Map","url":"https://hammyasf.github.io/quakes-3d.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time 3D globe that plots every earthquake on Earth from live USGS data, with time-lapse playback and magnitude filters. Runs entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Where does the earthquake data come from?","acceptedAnswer":{"@type":"Answer","text":"Live from the U.S. Geological Survey (USGS) public earthquake feeds. The map auto-refreshes, so new quakes appear within minutes of being reported."}},{"@type":"Question","name":"Is this real-time?","acceptedAnswer":{"@type":"Answer","text":"Yes. It pulls the USGS real-time GeoJSON feed and refreshes automatically. You can view the last 24 hours, 7 days, or 30 days, and replay them as a time-lapse."}},{"@type":"Question","name":"Does it run on my device?","acceptedAnswer":{"@type":"Answer","text":"Yes. The 3D globe is rendered in your browser with WebGL. The only thing it fetches is the public USGS earthquake feed. Nothing about you is uploaded and there is no sign-up."}},{"@type":"Question","name":"What do the colors and sizes mean?","acceptedAnswer":{"@type":"Answer","text":"Each dot is one earthquake. Bigger and warmer (orange to red) means a larger magnitude; smaller and cooler (green to blue) means a smaller one. Depth and exact magnitude show when you click a quake."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  .app{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .stage{position:relative;width:100%;height:min(70vh,640px);min-height:420px;background:radial-gradient(120% 120% at 50% 30%,#0a1a18,#060d0c 70%);}
+  #globe{position:absolute;inset:0;display:block;width:100%;height:100%;cursor:grab;touch-action:none;}
+  #globe:active{cursor:grabbing;}
+  .overlay{position:absolute;inset:0;pointer-events:none;}
+  .hud{position:absolute;pointer-events:auto;}
+  .stats{top:14px;left:14px;display:flex;flex-direction:column;gap:8px;}
+  .stat{background:rgba(7,16,14,.72);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:9px 13px;min-width:120px;}
+  .stat .l{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:21px;margin-top:2px;line-height:1.1;}
+  .stat .v small{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;}
+  .legend{bottom:14px;left:14px;background:rgba(7,16,14,.72);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:10px 13px;}
+  .legend .lt{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:7px;}
+  .legbar{height:9px;width:200px;border-radius:6px;background:linear-gradient(90deg,#4db3e6,#33d9a6,#8ce64d,#fad13f,#ff8c2e,#ff4d33,#ffd9f2);}
+  .legsc{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;width:200px;}
+  .loadwrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:rgba(6,13,12,.6);backdrop-filter:blur(3px);}
+  .spin{width:42px;height:42px;border-radius:50%;border:3px solid rgba(var(--accentRGB),.25);border-top-color:var(--accent);animation:sp 1s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  .loadwrap p{font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .err{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:24px;background:rgba(6,13,12,.78);}
+  .err h3{font-family:var(--display);font-weight:600;font-size:20px;}
+  .err p{font-size:14px;color:var(--muted);max-width:420px;}
+
+  .tip{position:absolute;pointer-events:none;z-index:6;max-width:240px;background:rgba(7,16,14,.94);border:1px solid var(--line-2);border-radius:12px;padding:11px 13px;opacity:0;transform:translateY(4px);transition:opacity .12s;}
+  .tip.on{opacity:1;}
+  .tip .m{font-family:var(--display);font-weight:600;font-size:18px;}
+  .tip .m b{color:var(--accent);}
+  .tip .pl{font-size:13px;color:#cdd8d3;margin:3px 0 6px;line-height:1.35;}
+  .tip .meta{font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:2px;}
+  .tip .badge{display:inline-block;font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:5px;margin-top:6px;}
+  .badge.tsu{background:rgba(61,165,255,.18);color:#7cc0ff;}
+  .badge.alert{background:rgba(255,106,61,.18);color:#ff9a6a;}
+
+  .controls{display:flex;flex-wrap:wrap;gap:16px 24px;padding:16px 22px;align-items:center;border-top:1px solid var(--line);}
+  .ctl{display:flex;flex-direction:column;gap:7px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  input[type=range]{accent-color:var(--accent);width:150px;vertical-align:middle;}
+  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:30px;display:inline-block;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
+  .scrub{flex:1;min-width:220px;display:flex;flex-direction:column;gap:7px;}
+  .scrub .row{display:flex;align-items:center;gap:12px;}
+  #seek{flex:1;accent-color:var(--accent);}
+  #playLabel{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:148px;text-align:right;}
+
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:620px){.stat{min-width:96px;padding:7px 10px;}.stat .v{font-size:17px;}.legbar,.legsc{width:150px;}.stats{gap:6px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Live data · runs in your browser</div>
+    <h1>Quakes 3D — Live Earthquake Globe</h1>
+    <p class="sub">Every earthquake on Earth, plotted live on a 3D globe straight from the USGS feed. Spin it, filter by magnitude, and hit play to watch a whole month of quakes ripple across the planet.</p>
+    <span class="priv">&#9889; Live USGS data · auto-refreshes · no sign-up</span>
+  </header>
+
+  <div class="app">
+    <div class="stage">
+      <canvas id="globe"></canvas>
+      <div class="overlay">
+        <div class="hud stats" id="stats">
+          <div class="stat"><div class="l">Quakes shown</div><div class="v" id="stTotal">—</div></div>
+          <div class="stat"><div class="l">Largest</div><div class="v" id="stMax">—</div></div>
+          <div class="stat"><div class="l">Most recent</div><div class="v" id="stRecent">—</div></div>
+        </div>
+        <div class="hud legend">
+          <div class="lt">Magnitude</div>
+          <div class="legbar"></div>
+          <div class="legsc"><span>&lt;2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7+</span></div>
+        </div>
+      </div>
+      <div class="tip" id="tip"></div>
+      <div class="loadwrap" id="load"><div class="spin"></div><p id="loadMsg">Loading the globe…</p></div>
+      <div class="err" id="err"><h3>Couldn't reach the USGS feed</h3><p id="errMsg">The live earthquake feed didn't respond. It may be a temporary network hiccup.</p><button class="btn" id="retry">Try again</button></div>
+    </div>
+
+    <div class="controls">
+      <div class="ctl"><label>Time window</label>
+        <div class="seg" id="win">
+          <button data-w="day">24 hours</button>
+          <button data-w="week" class="on">7 days</button>
+          <button data-w="month">30 days</button>
+        </div>
+      </div>
+      <div class="ctl"><label>Min magnitude · <span class="qval" id="magv">2.5</span></label>
+        <input type="range" id="mag" min="0" max="7" step="0.5" value="2.5" />
+      </div>
+      <div class="scrub">
+        <label>Time-lapse</label>
+        <div class="row">
+          <button class="btn" id="play">&#9654; Play</button>
+          <input type="range" id="seek" min="0" max="1000" value="1000" />
+          <span id="playLabel">showing all</span>
+        </div>
+      </div>
+      <div class="ctl"><label>&nbsp;</label>
+        <button class="btn btn-out" id="spinBtn">Auto-spin: on</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>A live window into the planet's seismic pulse</h2>
+    <p>Somewhere on Earth, the ground is moving right now. The USGS records tens of thousands of earthquakes every month, the vast majority far too small to feel. This map pulls that live feed and paints each one onto a 3D globe so you can actually see the shape of it: the Pacific Ring of Fire glowing along the plate boundaries, aftershock clusters lighting up around a big event, and the steady background hum of micro-quakes everywhere else.</p>
+    <h2>How it works</h2>
+    <p>When the page loads it fetches the U.S. Geological Survey's public real-time GeoJSON feed for the window you pick, then renders the planet with WebGL. Each earthquake becomes a glowing point placed at its real latitude, longitude, and time, sized and coloured by magnitude. Hit play and a time-lapse sweeps through the window, so a month of activity plays back in a few seconds and you watch the map fill in event by event. The globe rotates and zooms with your mouse or finger, and clicking any quake shows its magnitude, depth, location, and a link to the full USGS report. The map refreshes itself on a timer, so it stays current while it's open.</p>
+    <h2>Reading the map</h2>
+    <p>Colour and size both track magnitude. Small quakes are little and cool-coloured, blue through green; as magnitude climbs they grow and warm up through yellow and orange to red, and the rare great quakes flare almost white. Depth isn't drawn directly to keep the globe readable, but it's there in the details when you click. The brightest pulsing marker is the single most recent event in the current window.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is the data real and current?</summary><p>Yes. It comes straight from the USGS real-time earthquake feeds and the map refreshes on a timer, so new events appear within minutes of being reported. USGS is the authoritative source for global earthquake data.</p></details>
+    <details><summary>Does anything get uploaded from my device?</summary><p>No. The only network request is to the public USGS feed to download the earthquake list. Everything else — the 3D globe, the time-lapse, the filtering — happens locally in your browser. There's no sign-up and no tracking of you.</p></details>
+    <details><summary>Why don't I see tiny quakes in the 30-day view?</summary><p>The 30-day window uses the magnitude 2.5-and-above feed so it stays fast and the planet doesn't disappear under a million dots. The 24-hour and 7-day views include the smaller ones. The magnitude slider filters further on top of that.</p></details>
+    <details><summary>What do I need to run it?</summary><p>Any modern browser with WebGL, which is essentially all of them. It works on phones too, though a big 30-day view is smoother on a laptop.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build a tool like this every day.</h3>
+    <p>Senior full-stack engineer, open to senior or contract roles, fully remote. Browse the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Data: USGS · Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  // ---- match the portfolio's saved theme ----
+  var accentHex = "#2be3b0";
+  try{
+    var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")];
+    if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]); accentHex=t[0];}
+  }catch(e){}
+
+  if(!window.THREE){ showError("This map needs WebGL and the 3D library, which didn't load.","Couldn't start the globe"); return; }
+
+  // ---- DOM ----
+  var canvas=document.getElementById("globe"), stage=canvas.parentElement;
+  var elTotal=document.getElementById("stTotal"), elMax=document.getElementById("stMax"), elRecent=document.getElementById("stRecent");
+  var loadEl=document.getElementById("load"), loadMsg=document.getElementById("loadMsg");
+  var errEl=document.getElementById("err"), errMsg=document.getElementById("errMsg"), retryBtn=document.getElementById("retry");
+  var tip=document.getElementById("tip");
+  var magSlider=document.getElementById("mag"), magv=document.getElementById("magv");
+  var seek=document.getElementById("seek"), playBtn=document.getElementById("play"), playLabel=document.getElementById("playLabel");
+  var spinBtn=document.getElementById("spinBtn");
+
+  // ---- config ----
+  var FEEDS={
+    day:  "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
+    week: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson",
+    month:"https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_month.geojson"
+  };
+  var R=1.0;                  // globe radius
+  var state={ window:"week", minMag:2.5, autoSpin:true, playing:false, cursor:1.0 };
+  var raw=[];                 // all quakes from current feed
+  var shown=[];               // filtered list currently plotted
+  var tmin=0, tmax=1;
+  var refreshTimer=null;
+
+  function showError(msg, head){ loadEl.style.display="none"; errEl.style.display="flex"; if(msg) errMsg.textContent=msg; if(head) errEl.querySelector("h3").textContent=head; }
+  function hideError(){ errEl.style.display="none"; }
+
+  // ---- THREE setup ----
+  var renderer=new THREE.WebGLRenderer({canvas:canvas, antialias:true, alpha:true});
+  renderer.setClearColor(0x000000,0);
+  var scene=new THREE.Scene();
+  var camera=new THREE.PerspectiveCamera(42, 2, 0.01, 100);
+  var camDist=3.0, camMinDist=1.35, camMaxDist=6.5;
+  var rot={x:0.35, y:-1.2};   // pitch, yaw
+  var rotTarget={x:0.35, y:-1.2};
+
+  function accentToVec(){ var c=new THREE.Color(accentHex); return new THREE.Vector3(c.r,c.g,c.b); }
+
+  // sun direction (subsolar point) for subtle day/night
+  function sunDir(){
+    var d=new Date(), rad=Math.PI/180;
+    var start=Date.UTC(d.getUTCFullYear(),0,0), dayMs=86400000;
+    var n=(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())-start)/dayMs;
+    var decl=-23.44*Math.cos(rad*(360/365)*(n+10));
+    var utcH=d.getUTCHours()+d.getUTCMinutes()/60;
+    var lng=-(utcH-12)*15;
+    return llToVec3(decl,lng,1).normalize();
+  }
+  function llToVec3(lat,lng,r){
+    var phi=(90-lat)*Math.PI/180, theta=(lng+180)*Math.PI/180;
+    return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(theta), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(theta));
+  }
+
+  // ocean sphere with day/night gradient
+  var globeMat=new THREE.ShaderMaterial({
+    uniforms:{ uSun:{value:sunDir()} },
+    vertexShader:[
+      "varying vec3 vN;",
+      "void main(){ vN=normalize(mat3(modelMatrix)*normal); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }"
+    ].join("\n"),
+    fragmentShader:[
+      "varying vec3 vN; uniform vec3 uSun;",
+      "void main(){",
+      "  float dl=dot(normalize(vN),normalize(uSun));",
+      "  float day=smoothstep(-0.25,0.5,dl);",
+      "  vec3 night=vec3(0.016,0.045,0.06);",
+      "  vec3 lit=vec3(0.05,0.135,0.175);",
+      "  vec3 col=mix(night,lit,day);",
+      "  gl_FragColor=vec4(col,1.0);",
+      "}"
+    ].join("\n")
+  });
+  var globe=new THREE.Mesh(new THREE.SphereGeometry(R,64,48), globeMat);
+  scene.add(globe);
+
+  // atmosphere glow (back side fresnel)
+  var atmoMat=new THREE.ShaderMaterial({
+    uniforms:{ uColor:{value:accentToVec()} },
+    side:THREE.BackSide, blending:THREE.AdditiveBlending, transparent:true, depthWrite:false,
+    vertexShader:[
+      "varying vec3 vN; varying vec3 vP;",
+      "void main(){ vN=normalize(mat3(modelMatrix)*normal); vec4 wp=modelMatrix*vec4(position,1.0); vP=wp.xyz; gl_Position=projectionMatrix*viewMatrix*wp; }"
+    ].join("\n"),
+    fragmentShader:[
+      "varying vec3 vN; varying vec3 vP; uniform vec3 uColor;",
+      "void main(){ vec3 vd=normalize(cameraPosition-vP); float f=pow(1.0-abs(dot(vN,vd)),3.2); gl_FragColor=vec4(uColor, f*0.9); }"
+    ].join("\n")
+  });
+  var atmo=new THREE.Mesh(new THREE.SphereGeometry(R*1.18,64,48), atmoMat);
+  scene.add(atmo);
+
+  // graticule (lat/long grid)
+  (function(){
+    var pts=[], step=4, col;
+    for(var lat=-60;lat<=60;lat+=30){ for(var lng=-180;lng<180;lng+=step){ pts.push(llToVec3(lat,lng,R*1.002), llToVec3(lat,lng+step,R*1.002)); } }
+    for(var lg=-180;lg<180;lg+=30){ for(var la=-90;la<90;la+=step){ pts.push(llToVec3(la,lg,R*1.002), llToVec3(la+step,lg,R*1.002)); } }
+    var g=new THREE.BufferGeometry().setFromPoints(pts);
+    var m=new THREE.LineBasicMaterial({color:0xffffff, transparent:true, opacity:0.06});
+    scene.add(new THREE.LineSegments(g,m));
+  })();
+
+  // coastlines (best-effort, from jsdelivr world-atlas)
+  function loadCoastlines(){
+    function add(topo, tj){
+      try{
+        var mesh=tj.mesh(topo, topo.objects.land);
+        var pts=[];
+        mesh.coordinates.forEach(function(line){
+          for(var i=0;i<line.length-1;i++){
+            pts.push(llToVec3(line[i][1],line[i][0],R*1.004), llToVec3(line[i+1][1],line[i+1][0],R*1.004));
+          }
+        });
+        var g=new THREE.BufferGeometry().setFromPoints(pts);
+        var m=new THREE.LineBasicMaterial({color:0x8fb8ad, transparent:true, opacity:0.34});
+        scene.add(new THREE.LineSegments(g,m));
+      }catch(e){}
+    }
+    function go(){
+      if(!window.topojson) return;
+      fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json")
+        .then(function(r){return r.json();})
+        .then(function(topo){ add(topo, window.topojson); })
+        .catch(function(){});
+    }
+    if(window.topojson){ go(); }
+    else{
+      var s=document.createElement("script");
+      s.src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js";
+      s.onload=go; s.onerror=function(){}; document.head.appendChild(s);
+    }
+  }
+  loadCoastlines();
+
+  // ---- earthquake points (custom shader, time-lapse driven) ----
+  var quakeGeo=new THREE.BufferGeometry();
+  var quakeMat=new THREE.ShaderMaterial({
+    uniforms:{ uCursor:{value:1.0}, uScale:{value:1.0}, uPix:{value:Math.min(window.devicePixelRatio||1,2)} },
+    transparent:true, depthTest:true, depthWrite:false, blending:THREE.AdditiveBlending,
+    vertexShader:[
+      "attribute float aMag; attribute float aTime; attribute vec3 aColor;",
+      "uniform float uCursor; uniform float uScale; uniform float uPix;",
+      "varying vec3 vColor; varying float vGlow;",
+      "void main(){",
+      "  vColor=aColor;",
+      "  float age=uCursor-aTime;",
+      "  if(age<0.0){ gl_Position=vec4(2.0,2.0,2.0,1.0); gl_PointSize=0.0; return; }",
+      "  float pop=1.0+2.4*exp(-age*45.0);",
+      "  vGlow=exp(-age*28.0);",
+      "  vec4 mv=modelViewMatrix*vec4(position,1.0);",
+      "  float m=max(aMag,0.0);",
+      "  float size=(2.6+m*m*1.05)*uScale*pop;",
+      "  gl_PointSize=size*uPix*(300.0/-mv.z);",
+      "  gl_Position=projectionMatrix*mv;",
+      "}"
+    ].join("\n"),
+    fragmentShader:[
+      "varying vec3 vColor; varying float vGlow;",
+      "void main(){",
+      "  vec2 uv=gl_PointCoord-0.5; float d=length(uv);",
+      "  if(d>0.5) discard;",
+      "  float core=smoothstep(0.5,0.0,d);",
+      "  float glow=smoothstep(0.5,0.12,d);",
+      "  vec3 col=vColor*(0.55+0.9*core)+vColor*vGlow*1.6;",
+      "  float a=glow*0.8+core*0.7;",
+      "  gl_FragColor=vec4(col,a);",
+      "}"
+    ].join("\n")
+  });
+  var quakePoints=new THREE.Points(quakeGeo, quakeMat);
+  quakePoints.frustumCulled=false;
+  scene.add(quakePoints);
+
+  // pulsing marker for the most recent quake
+  var pulseMat=new THREE.ShaderMaterial({
+    uniforms:{ uTime:{value:0}, uColor:{value:new THREE.Vector3(1,1,1)} },
+    transparent:true, depthTest:true, depthWrite:false, blending:THREE.AdditiveBlending, side:THREE.DoubleSide,
+    vertexShader:"varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }",
+    fragmentShader:[
+      "varying vec2 vUv; uniform float uTime; uniform vec3 uColor;",
+      "void main(){",
+      "  float d=length(vUv-0.5)*2.0;",
+      "  float t=fract(uTime*0.6);",
+      "  float ring=smoothstep(0.04,0.0,abs(d-t));",
+      "  float a=ring*(1.0-t);",
+      "  if(a<0.01) discard;",
+      "  gl_FragColor=vec4(uColor,a);",
+      "}"
+    ].join("\n")
+  });
+  var pulse=new THREE.Mesh(new THREE.PlaneGeometry(0.34,0.34), pulseMat);
+  pulse.visible=false; scene.add(pulse);
+
+  // ---- color ramp by magnitude ----
+  function magColor(m){
+    if(m<2) return [0.30,0.70,0.90];
+    if(m<3) return [0.20,0.85,0.65];
+    if(m<4) return [0.55,0.90,0.30];
+    if(m<5) return [0.98,0.82,0.25];
+    if(m<6) return [1.00,0.55,0.18];
+    if(m<7) return [1.00,0.30,0.20];
+    return [1.00,0.85,0.95];
+  }
+
+  // ---- build geometry from filtered list ----
+  function rebuild(){
+    shown=raw.filter(function(q){ return q.mag>=state.minMag; });
+    shown.sort(function(a,b){ return a.time-b.time; });
+    var n=shown.length;
+    var pos=new Float32Array(n*3), mag=new Float32Array(n), tm=new Float32Array(n), col=new Float32Array(n*3);
+    if(n){ tmin=shown[0].time; tmax=shown[n-1].time; }
+    var span=Math.max(tmax-tmin,1);
+    for(var i=0;i<n;i++){
+      var q=shown[i], v=llToVec3(q.lat,q.lng,R*1.012);
+      pos[i*3]=v.x; pos[i*3+1]=v.y; pos[i*3+2]=v.z;
+      mag[i]=q.mag; tm[i]=(q.time-tmin)/span;
+      var c=magColor(q.mag); col[i*3]=c[0]; col[i*3+1]=c[1]; col[i*3+2]=c[2];
+    }
+    quakeGeo.setAttribute("position", new THREE.BufferAttribute(pos,3));
+    quakeGeo.setAttribute("aMag", new THREE.BufferAttribute(mag,1));
+    quakeGeo.setAttribute("aTime", new THREE.BufferAttribute(tm,1));
+    quakeGeo.setAttribute("aColor", new THREE.BufferAttribute(col,3));
+    quakeGeo.attributes.position.needsUpdate=true;
+    quakeGeo.computeBoundingSphere();
+
+    // most-recent pulse
+    if(n){
+      var last=shown[n-1], lv=llToVec3(last.lat,last.lng,R*1.012);
+      pulse.position.copy(lv);
+      pulse.lookAt(lv.clone().multiplyScalar(2));
+      var pc=magColor(last.mag); pulseMat.uniforms.uColor.value.set(pc[0],pc[1],pc[2]);
+      pulse.visible=true;
+    } else { pulse.visible=false; }
+
+    updateStats();
+  }
+
+  function timeAgo(ms){
+    var s=Math.max(0,(Date.now()-ms)/1000);
+    if(s<90) return Math.round(s)+"s ago";
+    if(s<5400) return Math.round(s/60)+"m ago";
+    if(s<172800) return Math.round(s/3600)+"h ago";
+    return Math.round(s/86400)+"d ago";
+  }
+  function updateStats(){
+    elTotal.textContent=shown.length.toLocaleString();
+    if(!shown.length){ elMax.innerHTML="—"; elRecent.innerHTML="—"; return; }
+    var mx=shown[0]; for(var i=1;i<shown.length;i++){ if(shown[i].mag>mx.mag) mx=shown[i]; }
+    var rc=shown[shown.length-1];
+    elMax.innerHTML="M "+mx.mag.toFixed(1)+" <small>"+shortPlace(mx.place)+"</small>";
+    elRecent.innerHTML="M "+rc.mag.toFixed(1)+" <small>"+timeAgo(rc.time)+"</small>";
+  }
+  function shortPlace(p){ if(!p) return ""; p=String(p).replace(/^\d+\s*km\s+[NSEW]+\s+of\s+/i,""); return p.length>22?p.slice(0,21)+"…":p; }
+
+  // ---- fetch USGS feed ----
+  function load(initial){
+    if(initial){ loadEl.style.display="flex"; loadMsg.textContent="Loading earthquakes…"; }
+    hideError();
+    fetch(FEEDS[state.window], {cache:"no-store"})
+      .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+      .then(function(j){
+        var feats=(j&&j.features)||[];
+        raw=[];
+        for(var i=0;i<feats.length;i++){
+          var f=feats[i]; if(!f||!f.geometry||!f.properties) continue;
+          var c=f.geometry.coordinates; if(!c||c.length<2) continue;
+          var lng=+c[0], lat=+c[1]; if(!isFinite(lat)||!isFinite(lng)) continue;
+          var m=f.properties.mag; m=(m==null||isNaN(m))?0:+m;
+          raw.push({ lat:lat, lng:lng, depth:(c[2]==null?null:+c[2]), mag:m, time:+f.properties.time||Date.now(),
+            place:f.properties.place||f.properties.title||"Unknown location", url:f.properties.url||null,
+            tsunami:f.properties.tsunami?1:0, alert:f.properties.alert||null });
+        }
+        loadEl.style.display="none";
+        rebuild();
+      })
+      .catch(function(e){
+        if(raw.length){ /* keep showing old data on a failed refresh */ }
+        else showError("The live earthquake feed didn't respond ("+(e.message||"network")+"). It may be a temporary hiccup, or USGS may be busy.");
+      });
+  }
+
+  // ---- interaction: custom orbit + pick ----
+  var dragging=false, lastX=0, lastY=0, moved=false;
+  function onDown(x,y){ dragging=true; moved=false; lastX=x; lastY=y; state.autoSpin=false; spinBtn.textContent="Auto-spin: off"; }
+  function onMove(x,y){
+    if(dragging){
+      var dx=x-lastX, dy=y-lastY; lastX=x; lastY=y;
+      if(Math.abs(dx)+Math.abs(dy)>3) moved=true;
+      rotTarget.y+=dx*0.005; rotTarget.x+=dy*0.005;
+      rotTarget.x=Math.max(-1.35,Math.min(1.35,rotTarget.x));
+    }
+    pick(x,y);
+  }
+  function onUp(){ dragging=false; }
+  canvas.addEventListener("mousedown",function(e){ onDown(e.clientX,e.clientY); });
+  window.addEventListener("mousemove",function(e){ onMove(e.clientX,e.clientY); });
+  window.addEventListener("mouseup",onUp);
+  canvas.addEventListener("mouseleave",function(){ hideTip(); });
+  canvas.addEventListener("touchstart",function(e){ var t=e.touches[0]; onDown(t.clientX,t.clientY); },{passive:true});
+  canvas.addEventListener("touchmove",function(e){ var t=e.touches[0]; onMove(t.clientX,t.clientY); },{passive:true});
+  canvas.addEventListener("touchend",onUp);
+  canvas.addEventListener("wheel",function(e){ e.preventDefault(); camDist*=(1+(e.deltaY>0?0.1:-0.1)); camDist=Math.max(camMinDist,Math.min(camMaxDist,camDist)); },{passive:false});
+
+  var raycaster=new THREE.Raycaster(); raycaster.params.Points.threshold=0.025;
+  var mouse=new THREE.Vector2(); var hoverIdx=-1;
+  function pick(clientX,clientY){
+    if(!shown.length){ hideTip(); return; }
+    var rect=canvas.getBoundingClientRect();
+    mouse.x=((clientX-rect.left)/rect.width)*2-1;
+    mouse.y=-((clientY-rect.top)/rect.height)*2+1;
+    raycaster.setFromCamera(mouse, camera);
+    var hits=raycaster.intersectObject(quakePoints);
+    // only accept points on the near hemisphere (not occluded by globe)
+    var found=-1;
+    for(var i=0;i<hits.length;i++){
+      var idx=hits[i].index;
+      // hide quakes not yet revealed in timelapse
+      var ti=quakeGeo.attributes.aTime.array[idx];
+      if(ti>state.cursor+0.0001) continue;
+      var p=new THREE.Vector3().fromBufferAttribute(quakeGeo.attributes.position, idx);
+      var pw=p.clone().applyMatrix4(globe.matrixWorld);
+      var toCam=camera.position.clone().sub(pw).normalize();
+      if(pw.clone().normalize().dot(toCam)>-0.15){ found=idx; break; }
+    }
+    if(found<0){ hideTip(); return; }
+    hoverIdx=found; showTip(shown[found], clientX, clientY, rect);
+  }
+  function showTip(q,cx,cy,rect){
+    var depth=(q.depth==null)?"—":q.depth.toFixed(0)+" km";
+    var when=new Date(q.time).toLocaleString();
+    var badges="";
+    if(q.tsunami) badges+='<span class="badge tsu">tsunami flag</span> ';
+    if(q.alert) badges+='<span class="badge alert">'+q.alert+' alert</span>';
+    tip.innerHTML='<div class="m">M <b>'+q.mag.toFixed(1)+'</b></div><div class="pl">'+esc(q.place)+'</div>'+
+      '<div class="meta"><span>Depth: '+depth+'</span><span>'+when+'</span><span>'+timeAgo(q.time)+'</span></div>'+badges;
+    var x=cx-rect.left+14, y=cy-rect.top+14;
+    if(x>rect.width-250) x=cx-rect.left-250;
+    if(y>rect.height-150) y=cy-rect.top-150;
+    tip.style.left=Math.max(6,x)+"px"; tip.style.top=Math.max(6,y)+"px";
+    tip.classList.add("on");
+  }
+  function hideTip(){ tip.classList.remove("on"); hoverIdx=-1; }
+  function esc(s){ return String(s).replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];}); }
+  // click a quake -> open USGS page (verified usgs.gov host only)
+  canvas.addEventListener("click",function(){
+    if(moved) return;
+    if(hoverIdx>=0 && shown[hoverIdx] && shown[hoverIdx].url){
+      try{ var u=new URL(shown[hoverIdx].url); if(/(^|\.)usgs\.gov$/.test(u.hostname)) window.open(u.href,"_blank","noopener"); }catch(e){}
+    }
+  });
+
+  // ---- controls ----
+  document.querySelectorAll("#win button").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll("#win button").forEach(function(x){x.classList.remove("on");});
+      b.classList.add("on"); state.window=b.getAttribute("data-w");
+      // month feed starts at 2.5; lift slider floor so it makes sense
+      if(state.window==="month" && state.minMag<2.5){ state.minMag=2.5; magSlider.value="2.5"; magv.textContent="2.5"; }
+      stopPlay(); load(true);
+    });
+  });
+  magSlider.addEventListener("input",function(){ state.minMag=+magSlider.value; magv.textContent=(+magSlider.value).toFixed(1); rebuild(); });
+  spinBtn.addEventListener("click",function(){ state.autoSpin=!state.autoSpin; spinBtn.textContent="Auto-spin: "+(state.autoSpin?"on":"off"); });
+  retryBtn.addEventListener("click",function(){ load(true); });
+
+  var playStart=0, playDur=11000;
+  function startPlay(){
+    if(!shown.length) return;
+    state.playing=true; playBtn.innerHTML="&#10073;&#10073; Pause"; playStart=performance.now();
+  }
+  function stopPlay(){ state.playing=false; playBtn.innerHTML="&#9654; Play"; state.cursor=1.0; seek.value=1000; playLabel.textContent="showing all"; }
+  playBtn.addEventListener("click",function(){ if(state.playing) stopPlay(); else startPlay(); });
+  seek.addEventListener("input",function(){
+    state.playing=false; playBtn.innerHTML="&#9654; Play";
+    state.cursor=+seek.value/1000; updateScrubLabel();
+  });
+  function updateScrubLabel(){
+    if(!shown.length){ playLabel.textContent=""; return; }
+    if(state.cursor>=0.999){ playLabel.textContent="showing all"; return; }
+    var t=tmin+(tmax-tmin)*state.cursor;
+    playLabel.textContent=new Date(t).toLocaleDateString(undefined,{month:"short",day:"numeric",hour:"2-digit"});
+  }
+
+  // ---- resize ----
+  function resize(){
+    var w=stage.clientWidth, h=stage.clientHeight;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    renderer.setSize(w,h,false);
+    camera.aspect=w/h; camera.updateProjectionMatrix();
+    quakeMat.uniforms.uPix.value=Math.min(window.devicePixelRatio||1,2);
+  }
+  window.addEventListener("resize",resize); resize();
+
+  // ---- render loop ----
+  var clock=new THREE.Clock();
+  function frame(){
+    requestAnimationFrame(frame);
+    var dt=clock.getDelta(), el=clock.getElapsedTime();
+    if(state.autoSpin && !dragging) rotTarget.y+=dt*0.08;
+    rot.x+=(rotTarget.x-rot.x)*0.12; rot.y+=(rotTarget.y-rot.y)*0.12;
+    var cx=Math.cos(rot.x), sx=Math.sin(rot.x);
+    camera.position.set(camDist*cx*Math.sin(rot.y), camDist*sx, camDist*cx*Math.cos(rot.y));
+    camera.lookAt(0,0,0);
+
+    if(state.playing){
+      var p=(performance.now()-playStart)/playDur;
+      if(p>=1){ p=1; stopPlay(); }
+      else { state.cursor=p; seek.value=Math.round(p*1000); updateScrubLabel(); }
+    }
+    quakeMat.uniforms.uCursor.value=state.cursor;
+    pulseMat.uniforms.uTime.value=el;
+    if(pulse.visible){ pulse.visible = state.cursor>=0.999; var s=1+Math.sin(el*3)*0.04; pulse.scale.set(s,s,s); }
+
+    renderer.render(scene,camera);
+  }
+  frame();
+
+  // ---- boot ----
+  load(true);
+  refreshTimer=setInterval(function(){ if(!state.playing) load(false); }, 90000);
+  updateScrubLabel();
+})();
+</script>
+<!-- Monetization slot: AdSense / Polar.sh can be added here later. -->
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
