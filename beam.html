@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Beam — Peer-to-Peer File Transfer (no upload, browser to browser)</title>
+<meta name="description" content="Send files straight from one browser to another over an encrypted peer-to-peer connection. Your files never touch a server. Free, no sign-up, share by link or QR code." />
+<meta name="keywords" content="peer to peer file transfer, send files without uploading, browser to browser file transfer, p2p file sharing, webrtc file transfer, share files by qr, send large files no upload, private file transfer, airdrop for the web, send file by link" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Beam — Peer-to-Peer File Transfer" />
+<meta property="og:description" content="Send files directly browser to browser. Nothing is uploaded — your file goes straight to the other person over an encrypted P2P connection. Share by link or QR." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/beam.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Beam — Peer-to-Peer File Transfer" />
+<meta name="twitter:description" content="Send files directly browser to browser, encrypted and never uploaded. Share by link or QR." />
+<link rel="canonical" href="https://hammyasf.github.io/beam.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Beam — Peer-to-Peer File Transfer","url":"https://hammyasf.github.io/beam.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Send files directly from one browser to another over an encrypted WebRTC peer-to-peer connection. The file bytes never touch a server. Share by link or QR code.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my file uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The file is sent directly from your browser to the other person's browser over a WebRTC data channel. Only a tiny connection handshake passes through a relay to introduce the two browsers. The file bytes themselves never touch any server."}},{"@type":"Question","name":"Is the transfer encrypted?","acceptedAnswer":{"@type":"Answer","text":"Yes. WebRTC data channels are encrypted in transit with DTLS by default, so the file is encrypted on the wire between the two browsers."}},{"@type":"Question","name":"Is there a file size limit?","acceptedAnswer":{"@type":"Answer","text":"There is no fixed limit. Because the transfer is peer-to-peer and streamed in chunks, the practical limit is the patience of both people and the speed of the connection between them, not a server quota."}},{"@type":"Question","name":"Do both people need an account?","acceptedAnswer":{"@type":"Answer","text":"No accounts, no sign-up. One person picks a file and shares the link or QR code, the other opens it, and the transfer starts."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:46px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .drop .or{margin-top:14px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  .drop .or a{cursor:pointer;border-bottom:1px dashed rgba(var(--accentRGB),.5);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .share{display:grid;grid-template-columns:1fr auto;gap:22px;padding:24px;align-items:center;}
+  @media(max-width:560px){.share{grid-template-columns:1fr;}}
+  .share .lab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
+  .linkrow{display:flex;gap:8px;align-items:stretch;}
+  .linkrow input{flex:1;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:11px 12px;font-family:var(--mono);font-size:13px;}
+  .copy{font-family:var(--mono);font-size:12.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:0 14px;border-radius:10px;cursor:pointer;background:transparent;white-space:nowrap;}
+  .qr{width:152px;height:152px;background:#fff;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;}
+  .qr svg,.qr img{width:100%;height:100%;display:block;}
+  .qcap{font-family:var(--mono);font-size:11px;color:var(--faint);text-align:center;margin-top:8px;}
+  .status{display:flex;align-items:center;gap:10px;padding:14px 24px;border-top:1px solid var(--line);font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .pulse{width:9px;height:9px;border-radius:50%;background:var(--faint);flex:none;}
+  .pulse.live{background:var(--accent);box-shadow:0 0 10px rgba(var(--accentRGB),.8);animation:bp 1.3s var(--ease) infinite;}
+  .pulse.err{background:#ff6a5a;box-shadow:0 0 10px rgba(255,106,90,.7);}
+  @keyframes bp{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .files{display:grid;gap:12px;padding:6px 24px 24px;}
+  .frow{border:1px solid var(--line);border-radius:14px;padding:13px 15px;background:rgba(var(--surfaceRGB),.4);}
+  .frow .top{display:flex;justify-content:space-between;gap:12px;align-items:baseline;}
+  .frow .n{font-size:14px;color:var(--ink);word-break:break-all;}
+  .frow .s{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;}
+  .track{height:7px;border-radius:6px;background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line);margin-top:10px;overflow:hidden;}
+  .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .12s linear;}
+  .frow .dl{margin-top:11px;display:inline-flex;font-family:var(--mono);font-size:12.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:7px 12px;border-radius:8px;cursor:pointer;background:transparent;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 24px 22px;}
+  .meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .meta b{color:var(--accent);}
+  .hide{display:none!important;}
+  section.copyc{padding:30px 0 10px;}
+  section.copyc h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copyc p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;}
+  @media(max-width:620px){.steps{grid-template-columns:1fr;}}
+  .step{border:1px solid var(--line);border-radius:16px;padding:18px;background:rgba(var(--surfaceRGB),.4);}
+  .step .num{font-family:var(--mono);font-size:12px;color:var(--accent);}
+  .step h3{font-family:var(--display);font-weight:600;font-size:17px;margin:8px 0 6px;}
+  .step p{font-size:14.5px;color:var(--muted);margin:0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · peer-to-peer · runs in your browser</div>
+    <h1 id="title">Beam a file, browser to browser.</h1>
+    <p class="sub" id="subtitle">Drop a file, share the link or QR code, and it streams straight to the other person's browser. No upload, no account, no size cap.</p>
+    <span class="priv">&#128274; Your file goes peer-to-peer — it never touches a server</span>
+  </header>
+
+  <!-- ============ SENDER ============ -->
+  <div class="panel" id="senderPanel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add files to send">
+      <h2>Drop files to send</h2>
+      <p>or click to choose · any type, any size</p>
+      <input type="file" id="file" multiple hidden />
+      <div class="or">or <a id="sample">send a sample file</a> to see how it works</div>
+    </div>
+
+    <div class="share hide" id="shareBox">
+      <div>
+        <div class="lab">Share this link with the receiver</div>
+        <div class="linkrow">
+          <input id="link" readonly />
+          <button class="copy" id="copyLink">Copy</button>
+        </div>
+        <div class="bar" style="padding:16px 0 0;">
+          <button class="btn btn-out" id="openRecv">Open a receiver tab to test &rarr;</button>
+          <span class="meta" id="sendMeta"></span>
+        </div>
+      </div>
+      <div>
+        <div class="qr" id="qr"></div>
+        <div class="qcap">scan to receive on a phone</div>
+      </div>
+    </div>
+
+    <div class="status hide" id="sStatus"><span class="pulse" id="sPulse"></span><span id="sStatusText">Waiting&hellip;</span></div>
+    <div class="files" id="sFiles"></div>
+  </div>
+
+  <!-- ============ RECEIVER ============ -->
+  <div class="panel hide" id="recvPanel">
+    <div class="status"><span class="pulse live" id="rPulse"></span><span id="rStatusText">Connecting to the sender&hellip;</span></div>
+    <div class="files" id="rFiles"></div>
+    <div class="bar"><button class="btn hide" id="saveAll">Save all files</button><span class="meta" id="recvMeta"></span></div>
+  </div>
+
+  <!-- ============ UNSUPPORTED ============ -->
+  <div class="panel hide" id="noWebrtc" style="padding:30px 24px;">
+    <h2 style="font-family:var(--display);font-weight:600;">This browser can't do peer-to-peer</h2>
+    <p style="color:var(--muted);margin-top:8px;">Beam needs WebRTC, which your current browser doesn't support. Try the latest Chrome, Edge, Firefox, or Safari.</p>
+  </div>
+
+  <section class="copyc">
+    <h2>How it works</h2>
+    <p>Most "file sharing" sites upload your file to their server, store it, and hand the other person a download link. Beam doesn't. When you pick a file, your browser opens a direct, encrypted connection to the other person's browser using WebRTC — the same peer-to-peer technology behind video calls — and streams the file straight across. The only thing that passes through a server is a tiny handshake that introduces the two browsers to each other. After that, the bytes flow directly between you.</p>
+    <div class="steps">
+      <div class="step"><div class="num">01</div><h3>Pick a file</h3><p>Drop anything into the sender. A private room is created and you get a link and a QR code.</p></div>
+      <div class="step"><div class="num">02</div><h3>Share the link</h3><p>Send the link to anyone, or scan the QR with a phone. They open it and the two browsers shake hands.</p></div>
+      <div class="step"><div class="num">03</div><h3>It beams across</h3><p>The file streams peer-to-peer, encrypted in transit, with a live progress bar. Nothing is stored anywhere.</p></div>
+    </div>
+    <h2>Why send a file this way?</h2>
+    <p>It's private by construction: there's no copy of your file sitting on someone's cloud waiting to be leaked, scanned, or kept after a "link expires." It's fast, because the file takes the shortest path — directly between the two devices — instead of a round trip up to a server and back down. And there's no real size cap, since you're not paying for anyone's storage. It's the closest thing the open web has to AirDrop, except it works between any two browsers, on any two platforms.</p>
+    <h2>The honest caveats</h2>
+    <p>Both browser tabs need to stay open during the transfer, since the file flows live between them. The connection uses public STUN servers to find a direct path, which works on the large majority of home and office networks; a small number of very locked-down corporate networks block direct peer connections, in which case the handshake won't complete. And the handshake (just the connection details, never your file) is relayed so the two browsers can find each other.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my file uploaded anywhere?</summary><p>No. The file goes directly from your browser to the other person's browser over a WebRTC data channel. Only a small connection handshake is relayed to introduce the two browsers. Your file bytes never touch a server.</p></details>
+    <details><summary>Is it encrypted?</summary><p>Yes. WebRTC data channels are encrypted in transit with DTLS by default, so the file is encrypted on the wire between the two browsers.</p></details>
+    <details><summary>How big a file can I send?</summary><p>There's no fixed limit. The file is streamed in chunks peer-to-peer, so the practical ceiling is your connection speed and both tabs staying open, not a storage quota.</p></details>
+    <details><summary>Do we need accounts?</summary><p>No sign-up for either side. One person picks a file and shares the link or QR; the other opens it and the transfer starts.</p></details>
+    <details><summary>Does it work between a phone and a laptop?</summary><p>Yes. Scan the QR code on a phone, or open the link on any device. It works across platforms because it's just two web browsers talking to each other.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- early theme: match the portfolio's saved theme -->
+<script>
+(function(){
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<!-- QR code generator (tiny, no deps) -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+// ---- public, client-safe Supabase (used ONLY for the connection handshake) ----
+const SUPA_URL = "https://cunynpmbjogrexkrxbwf.supabase.co";
+const SUPA_KEY = "sb_publishable_cOG9I9Rh6NJNEUxM4MDT4A_KceeVBsQ";
+const ICE = { iceServers: [
+  { urls: ["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302"] }
+] };
+const CHUNK = 64 * 1024;          // 64 KB data-channel messages
+const HIGH = 16 * 1024 * 1024;    // pause sending above 16 MB buffered
+const LOW  = 1 * 1024 * 1024;     // resume below 1 MB buffered
+
+const $ = (id) => document.getElementById(id);
+const fmtSize = (b) => b < 1024 ? b + " B" : b < 1048576 ? (b/1024).toFixed(1)+" KB" : b < 1073741824 ? (b/1048576).toFixed(1)+" MB" : (b/1073741824).toFixed(2)+" GB";
+
+// capability check
+if (typeof RTCPeerConnection === "undefined") {
+  $("senderPanel").classList.add("hide");
+  $("noWebrtc").classList.remove("hide");
+} else {
+  const params = new URLSearchParams(location.search);
+  const room = params.get("r");
+  if (room) startReceiver(room); else initSender();
+}
+
+function newCode(){
+  const a = "23456789abcdefghjkmnpqrstuvwxyz";
+  let s = ""; const r = crypto.getRandomValues(new Uint8Array(7));
+  for (let i=0;i<7;i++) s += a[r[i] % a.length];
+  return s;
+}
+function makeChannel(supa, code){
+  return supa.channel("beam-" + code, { config: { broadcast: { self: false } } });
+}
+function drawQR(el, text){
+  try {
+    const qr = qrcode(0, "M"); qr.addData(text); qr.make();
+    el.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+  } catch(e){ el.parentElement.style.display = "none"; }
+}
+
+/* ===================== SENDER ===================== */
+function initSender(){
+  const drop = $("drop"), fileIn = $("file");
+  drop.addEventListener("click", () => fileIn.click());
+  drop.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); fileIn.click(); }});
+  ["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,(e)=>{e.preventDefault();drop.classList.add("over");}));
+  ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,(e)=>{e.preventDefault();drop.classList.remove("over");}));
+  drop.addEventListener("drop",(e)=>{ if(e.dataTransfer.files.length) beginSend([...e.dataTransfer.files]); });
+  fileIn.addEventListener("change",()=>{ if(fileIn.files.length) beginSend([...fileIn.files]); });
+  $("sample").addEventListener("click",(e)=>{
+    e.stopPropagation();
+    const body = "This file was beamed peer-to-peer, browser to browser.\nIt was never uploaded to any server.\n\nGenerated at " + new Date().toISOString() + "\n" + "x".repeat(40000);
+    const f = new File([body], "beam-sample.txt", { type: "text/plain" });
+    beginSend([f]);
+  });
+}
+
+async function beginSend(files){
+  $("drop").classList.add("hide");
+  const supa = createClient(SUPA_URL, SUPA_KEY);
+  const code = newCode();
+  const url = location.origin + location.pathname + "?r=" + code;
+  $("link").value = url;
+  $("shareBox").classList.remove("hide");
+  $("sStatus").classList.remove("hide");
+  drawQR($("qr"), url);
+  $("copyLink").addEventListener("click", async ()=>{
+    try{ await navigator.clipboard.writeText(url); $("copyLink").textContent="Copied"; setTimeout(()=>$("copyLink").textContent="Copy",1400);}catch(e){ $("link").select(); }
+  });
+  $("openRecv").addEventListener("click", ()=> window.open(url, "_blank"));
+
+  const totalBytes = files.reduce((a,f)=>a+f.size,0);
+  $("sendMeta").innerHTML = files.length + " file" + (files.length>1?"s":"") + " · " + fmtSize(totalBytes);
+
+  // render file rows
+  const rows = files.map((f,i)=>{
+    const el = document.createElement("div"); el.className="frow";
+    el.innerHTML = '<div class="top"><span class="n">'+escapeHtml(f.name)+'</span><span class="s" id="ss'+i+'">'+fmtSize(f.size)+'</span></div><div class="track"><div class="fill" id="sf'+i+'"></div></div>';
+    $("sFiles").appendChild(el); return el;
+  });
+
+  const channel = makeChannel(supa, code);
+  let started = false, pc = null, dc = null, pendingIce = [], remoteSet = false;
+
+  const sig = (msg) => channel.send({ type:"broadcast", event:"sig", payload: msg });
+  setStatus("s","live","Waiting for the receiver to open the link…");
+
+  channel.on("broadcast", { event:"sig" }, async ({ payload }) => {
+    if (payload.type === "hello" && !started){
+      started = true;
+      setStatus("s","live","Receiver joined — connecting…");
+      pc = new RTCPeerConnection(ICE);
+      pc.onicecandidate = (e)=>{ if(e.candidate) sig({type:"ice", candidate:e.candidate}); };
+      pc.onconnectionstatechange = ()=>{ if(pc.connectionState==="failed") setStatus("s","err","Couldn't open a direct connection on this network."); };
+      dc = pc.createDataChannel("beam", { ordered:true });
+      dc.binaryType = "arraybuffer";
+      dc.bufferedAmountLowThreshold = LOW;
+      dc.onopen = ()=> sendAll(dc, files, rows);
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      sig({ type:"offer", sdp: pc.localDescription });
+    } else if (payload.type === "answer" && pc){
+      await pc.setRemoteDescription(payload.sdp); remoteSet = true;
+      for (const c of pendingIce) { try{ await pc.addIceCandidate(c);}catch(e){} }
+      pendingIce = [];
+    } else if (payload.type === "ice" && pc){
+      if (remoteSet) { try{ await pc.addIceCandidate(payload.candidate);}catch(e){} }
+      else pendingIce.push(payload.candidate);
+    }
+  });
+  channel.subscribe();
+}
+
+async function sendAll(dc, files, rows){
+  setStatus("s","live","Connected · sending…");
+  const ctrl = (o)=> dc.send(JSON.stringify(o));
+  const totalBytes = files.reduce((a,f)=>a+f.size,0);
+  ctrl({ type:"meta", count:files.length, totalBytes });
+  let sent = 0; const t0 = performance.now();
+  for (let i=0;i<files.length;i++){
+    const f = files[i];
+    ctrl({ type:"file-start", idx:i, name:f.name, size:f.size, mime:f.type||"application/octet-stream" });
+    let off = 0;
+    while (off < f.size){
+      if (dc.bufferedAmount > HIGH) await drain(dc);
+      const end = Math.min(off + CHUNK, f.size);
+      const buf = await f.slice(off, end).arrayBuffer();
+      dc.send(buf);
+      sent += (end - off); off = end;
+      const pct = Math.round((off / f.size) * 100);
+      $("sf"+i).style.width = pct + "%";
+      const secs = (performance.now()-t0)/1000;
+      $("sendMeta").innerHTML = '<b>'+Math.round(sent/totalBytes*100)+'%</b> · '+fmtSize(sent)+' / '+fmtSize(totalBytes)+' · '+fmtSize(sent/Math.max(secs,0.001))+'/s';
+    }
+    $("ss"+i).textContent = "sent ✓";
+    ctrl({ type:"file-end", idx:i });
+  }
+  ctrl({ type:"done" });
+  // wait for the buffer to flush before declaring done
+  while (dc.bufferedAmount > 0) await drain(dc);
+  setStatus("s","live","All files sent. You can close this tab.");
+}
+
+function drain(dc){
+  return new Promise((res)=>{ const h=()=>{ dc.removeEventListener("bufferedamountlow",h); res(); }; dc.addEventListener("bufferedamountlow",h); });
+}
+
+/* ===================== RECEIVER ===================== */
+async function startReceiver(code){
+  $("senderPanel").classList.add("hide");
+  $("recvPanel").classList.remove("hide");
+  $("title").textContent = "Incoming file…";
+  $("subtitle").textContent = "Someone is beaming you a file directly, browser to browser. Keep this tab open while it transfers.";
+  const supa = createClient(SUPA_URL, SUPA_KEY);
+  const channel = makeChannel(supa, code);
+  const sig = (msg)=> channel.send({ type:"broadcast", event:"sig", payload: msg });
+
+  let pc = null, pendingIce = [], remoteSet = false, helloTimer = null, tries = 0;
+  const got = { saved: [], cur: null };
+
+  channel.on("broadcast", { event:"sig" }, async ({ payload }) => {
+    if (payload.type === "offer" && !pc){
+      clearInterval(helloTimer);
+      setStatus("r","live","Handshaking…");
+      pc = new RTCPeerConnection(ICE);
+      pc.onicecandidate = (e)=>{ if(e.candidate) sig({type:"ice", candidate:e.candidate}); };
+      pc.onconnectionstatechange = ()=>{ if(pc.connectionState==="failed") setStatus("r","err","Couldn't open a direct connection on this network."); };
+      pc.ondatachannel = (e)=> wireReceive(e.channel, got);
+      await pc.setRemoteDescription(payload.sdp); remoteSet = true;
+      for (const c of pendingIce){ try{ await pc.addIceCandidate(c);}catch(e){} }
+      pendingIce = [];
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      sig({ type:"answer", sdp: pc.localDescription });
+    } else if (payload.type === "ice" && pc){
+      if (remoteSet){ try{ await pc.addIceCandidate(payload.candidate);}catch(e){} }
+      else pendingIce.push(payload.candidate);
+    }
+  });
+
+  channel.subscribe((st)=>{
+    if (st === "SUBSCRIBED"){
+      sig({ type:"hello" });
+      helloTimer = setInterval(()=>{ if (++tries > 12){ clearInterval(helloTimer); if(!pc) setStatus("r","err","No sender found. Ask them to keep their tab open and re-share the link."); return; } if(!pc) sig({ type:"hello" }); }, 1500);
+    }
+  });
+}
+
+function wireReceive(dc, got){
+  dc.binaryType = "arraybuffer";
+  let meta = null, recv = 0, t0 = 0;
+  dc.onmessage = (e)=>{
+    if (typeof e.data === "string"){
+      const m = JSON.parse(e.data);
+      if (m.type === "meta"){ meta = m; t0 = performance.now(); setStatus("r","live","Connected · receiving "+m.count+" file"+(m.count>1?"s":"")+"…"); }
+      else if (m.type === "file-start"){
+        const el = document.createElement("div"); el.className="frow"; el.id="rrow"+m.idx;
+        el.innerHTML = '<div class="top"><span class="n">'+escapeHtml(m.name)+'</span><span class="s" id="rs'+m.idx+'">'+fmtSize(m.size)+'</span></div><div class="track"><div class="fill" id="rf'+m.idx+'"></div></div>';
+        $("rFiles").appendChild(el);
+        got.cur = { idx:m.idx, name:m.name, size:m.size, mime:m.mime, chunks:[], at:0 };
+      }
+      else if (m.type === "file-end"){
+        const c = got.cur; if(!c) return;
+        const blob = new Blob(c.chunks, { type: c.mime });
+        c.chunks = []; const u = URL.createObjectURL(blob);
+        const row = $("rrow"+c.idx);
+        const b = document.createElement("a"); b.className="dl"; b.textContent="Download"; b.href=u; b.download=c.name;
+        row.appendChild(document.createElement("br")); row.appendChild(b);
+        $("rf"+c.idx).style.width = "100%"; $("rs"+c.idx).textContent = "received ✓";
+        got.saved.push({ name:c.name, url:u });
+        $("saveAll").classList.toggle("hide", got.saved.length < 2);
+      }
+      else if (m.type === "done"){
+        setStatus("r","live","All files received ✓  Saved nothing to any server.");
+        $("saveAll").onclick = ()=> got.saved.forEach((s,i)=> setTimeout(()=>{ const a=document.createElement("a"); a.href=s.url; a.download=s.name; a.click(); }, i*250));
+      }
+    } else {
+      const c = got.cur; if(!c) return;
+      c.chunks.push(e.data); c.at += e.data.byteLength; recv += e.data.byteLength;
+      $("rf"+c.idx).style.width = Math.round(c.at / c.size * 100) + "%";
+      if (meta){ const secs=(performance.now()-t0)/1000; $("recvMeta").innerHTML = '<b>'+Math.round(recv/meta.totalBytes*100)+'%</b> · '+fmtSize(recv)+' / '+fmtSize(meta.totalBytes)+' · '+fmtSize(recv/Math.max(secs,0.001))+'/s'; }
+    }
+  };
+}
+
+/* ===================== shared ===================== */
+function setStatus(side, cls, text){
+  const pulse = side==="s" ? $("sPulse") : $("rPulse");
+  const label = side==="s" ? $("sStatusText") : $("rStatusText");
+  if (pulse){ pulse.className = "pulse " + cls; }
+  if (label){ label.textContent = text; }
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, (c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+</script>
+
+<!-- Monetization slot (left intentionally empty for now):
+<ins class="adsbygoogle" ...></ins>  |  Polar.sh checkout button
+-->
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
