@@ -573,6 +573,8 @@
   document.getElementById("share").addEventListener("click",copyLink);
 
   // ---- main loop: countdown + live broadcast ----
+  // Driven by a timer, not requestAnimationFrame, so the countdown and live
+  // updates keep running even when the tab is not the focused window.
   function loop(){
     if(phase==="countdown"){
       var rem=startAt-Date.now();
@@ -583,13 +585,12 @@
       updateStats(); sendProgress(false);
     }
     renderLanes();
-    requestAnimationFrame(loop);
   }
 
   // ---- boot ----
   renderPassage(); updateStats(); renderLanes();
   setLed("connecting"); connect();
-  requestAnimationFrame(loop);
+  setInterval(loop, 100);
 
   // expose state for live verification
   window.__trState=function(){ return {room:room,selfId:selfId,live:!!live,phase:phase,passageLen:passage.length,pos:prevVal.length,wpm:myWpm(),acc:accuracy(keystrokes,errors),players:Object.keys(mergedPlayers()).length,name:myName}; };
