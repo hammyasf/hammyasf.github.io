@@ -341,13 +341,21 @@ async function sendAll(dc, files, rows){
     ctrl({ type:"file-end", idx:i });
   }
   ctrl({ type:"done" });
-  // wait for the buffer to flush before declaring done
-  while (dc.bufferedAmount > 0) await drain(dc);
-  setStatus("s","live","All files sent. You can close this tab.");
+  // wait for the send buffer to flush before declaring done (poll, no event reliance)
+  while (dc.bufferedAmount > 0) await new Promise((r)=>setTimeout(r, 60));
+  setStatus("s","live","All files sent ✓  You can close this tab.");
 }
 
+// resolve once the buffered amount drops to/under the low threshold; poll so we
+// never hang if the buffer is already below it (the event only fires on a downward crossing)
 function drain(dc){
-  return new Promise((res)=>{ const h=()=>{ dc.removeEventListener("bufferedamountlow",h); res(); }; dc.addEventListener("bufferedamountlow",h); });
+  return new Promise((res)=>{
+    if (dc.bufferedAmount <= dc.bufferedAmountLowThreshold) return res();
+    const cleanup = ()=>{ clearInterval(iv); dc.removeEventListener("bufferedamountlow", h); };
+    const h = ()=>{ cleanup(); res(); };
+    const iv = setInterval(()=>{ if (dc.bufferedAmount <= dc.bufferedAmountLowThreshold){ cleanup(); res(); } }, 60);
+    dc.addEventListener("bufferedamountlow", h);
+  });
 }
 
 /* ===================== RECEIVER ===================== */
