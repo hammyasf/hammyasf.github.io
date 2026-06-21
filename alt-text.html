@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Alt Text Generator — describe any image, in your browser</title>
+<meta name="description" content="Generate alt text and image descriptions with a real AI model that runs 100% in your browser. Drop images, get accessible alt text, edit and copy. No upload, no sign-up, fully private." />
+<meta name="keywords" content="alt text generator, ai alt text, image to text, image captioning, generate alt text, describe image ai, accessibility alt text, image description generator, free alt text, alt text no upload, on-device ai" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="AI Alt Text Generator — runs in your browser" />
+<meta property="og:description" content="A real image-captioning AI model writes alt text for your images, entirely on your device. No upload, no sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/alt-text.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="AI Alt Text Generator — runs in your browser" />
+<meta name="twitter:description" content="A real AI model writes alt text for your images, 100% on-device. Private, no sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/alt-text.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://huggingface.co" crossorigin>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"AI Alt Text Generator","url":"https://hammyasf.github.io/alt-text.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Generate alt text and image descriptions with an AI model that runs entirely in the browser. Private, no upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my images uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI model is downloaded once and runs entirely inside your browser. Your images are never uploaded and never leave your device."}},{"@type":"Question","name":"How does AI run in the browser without a server?","acceptedAnswer":{"@type":"Answer","text":"The image-captioning model (ViT + GPT-2) is loaded with Transformers.js and runs on your own CPU through WebAssembly in a background worker. After the first download it is cached and works offline."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up and no limit on the number of images you describe."}},{"@type":"Question","name":"Can I edit the alt text it writes?","acceptedAnswer":{"@type":"Answer","text":"Yes. Every description is editable. The AI gives you a fast first draft and you refine it, then copy it or export all of them as CSV or JSON."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:42px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .drop .or{margin-top:14px;}
+  .controls{display:flex;flex-wrap:wrap;gap:14px 22px;padding:0 24px 16px;align-items:center;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 15px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 24px 18px;}
+  .status{font-family:var(--mono);font-size:13px;color:var(--muted);padding:0 24px;}
+  .status b{color:var(--accent);}
+  .prog{display:none;margin:6px 24px 16px;height:8px;border-radius:100px;background:rgba(var(--surfaceRGB),.8);border:1px solid var(--line);overflow:hidden;}
+  .prog > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .25s;}
+  .cards{display:grid;gap:14px;padding:8px 24px 24px;}
+  .card{display:grid;grid-template-columns:120px 1fr;gap:16px;border:1px solid var(--line);border-radius:14px;padding:14px;background:rgba(var(--surfaceRGB),.4);}
+  .card .thumb{width:120px;height:120px;object-fit:cover;border-radius:10px;background:#0a0a0a;}
+  .card .body{display:flex;flex-direction:column;gap:8px;min-width:0;}
+  .card .fname{font-family:var(--mono);font-size:12px;color:var(--muted);word-break:break-all;}
+  .card textarea{width:100%;min-height:62px;resize:vertical;background:rgba(var(--surfaceRGB),.7);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:10px 12px;font-family:var(--body);font-size:15px;line-height:1.45;}
+  .card textarea:focus{outline:none;border-color:rgba(var(--accentRGB),.55);}
+  .card .row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .card .cc{font-family:var(--mono);font-size:11px;color:var(--faint);}
+  .card .acts{display:flex;gap:6px;flex-wrap:wrap;}
+  .mini{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:6px 10px;border-radius:8px;cursor:pointer;background:transparent;white-space:nowrap;transition:.15s;}
+  .mini:hover{background:rgba(var(--accentRGB),.1);}
+  .mini.gray{color:var(--muted);border-color:var(--line-2);}
+  .cstatus{font-family:var(--mono);font-size:12px;color:var(--faint);}
+  .cstatus.work{color:var(--accent);}
+  .cstatus.err{color:#ff8f6b;}
+  .spin{display:inline-block;width:11px;height:11px;border:2px solid rgba(var(--accentRGB),.3);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-1px;margin-right:6px;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.card{grid-template-columns:1fr;}.card .thumb{width:100%;height:200px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">On-device AI · runs in your browser</div>
+    <h1>AI Alt Text Generator</h1>
+    <p class="sub">Drop in your images and a real AI captioning model writes the alt text for you. It runs entirely on your own machine, so nothing is uploaded. Edit any description, then copy it or export them all.</p>
+    <span class="priv">&#128274; 100% private — the model runs locally, your images never leave your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add images">
+      <h2>Drop images here</h2>
+      <p>or click to choose files · PNG, JPG, WebP, GIF · as many as you like</p>
+      <p class="or"><button class="btn btn-out" id="sample" type="button">Try sample images</button></p>
+      <input type="file" id="file" accept="image/*" multiple hidden />
+    </div>
+
+    <div class="controls">
+      <div class="ctl"><label>Description length</label>
+        <div class="seg" id="len">
+          <button data-len="concise" class="on">Concise</button>
+          <button data-len="detailed">Detailed</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bar">
+      <button class="btn" id="go" disabled>Generate alt text</button>
+      <button class="btn btn-out" id="csv" disabled>Export CSV</button>
+      <button class="btn btn-out" id="json" disabled>Copy all JSON</button>
+      <button class="btn btn-out" id="clear" disabled>Clear</button>
+    </div>
+    <div class="status" id="status">Add an image to begin. The AI model downloads once (a few hundred MB) and is then cached for next time.</div>
+    <div class="prog" id="prog"><i id="progBar"></i></div>
+
+    <div class="cards" id="cards"></div>
+  </div>
+
+  <section class="copy">
+    <h2>How does AI run in your browser?</h2>
+    <p>This page loads a real image-captioning neural network — a Vision Transformer that looks at the picture, paired with a GPT-2 text decoder that turns what it sees into a sentence. It is fetched once with Transformers.js and then runs on your own CPU through WebAssembly, inside a background worker so the page never freezes. There is no API key and no server doing the work. After the first download the model is cached, so it keeps working even with your internet off.</p>
+    <h2>Why on-device matters for alt text</h2>
+    <p>Most alt-text tools send your images to someone else's server. For private photos, client screenshots, or anything under NDA, that is a non-starter. Here the picture is read, downscaled, and described all on your machine, then thrown away when you close the tab. You get the speed of a local tool and the privacy of never uploading anything.</p>
+    <h2>Good alt text, faster</h2>
+    <p>Accessible images need short, accurate descriptions, and writing them by hand for a whole gallery is tedious. The AI gives you a solid first draft for every image in seconds. You skim, fix the few it gets wrong, and move on. Keep it under roughly 125 characters, describe what matters in the image rather than starting with "image of", and leave purely decorative images with empty alt text.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Are my images uploaded anywhere?</summary><p>No. The model runs locally in your browser through WebAssembly. Your images are downscaled and described on your device and never sent to a server.</p></details>
+    <details><summary>How big is the download and is it slow?</summary><p>The model is a few hundred megabytes, downloaded once and cached by your browser. The first image takes a moment while the model warms up; after that each description takes a few seconds on a normal laptop.</p></details>
+    <details><summary>Can I edit what it writes?</summary><p>Yes. Every description is a normal editable text box. The AI gives you a first draft, you refine it, then copy it or export everything as CSV or JSON.</p></details>
+    <details><summary>How accurate is it?</summary><p>It is a compact open model, so it is good at the main subject of a photo but can miss small details or text in the image. Treat it as a fast first draft, not a final answer — always read it before you ship it.</p></details>
+    <details><summary>Does it work offline?</summary><p>Yes, once the model has downloaded the first time. Everything after that runs without a network connection.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var drop=document.getElementById("drop"),file=document.getElementById("file"),sampleBtn=document.getElementById("sample"),
+      cards=document.getElementById("cards"),go=document.getElementById("go"),csvBtn=document.getElementById("csv"),
+      jsonBtn=document.getElementById("json"),clearBtn=document.getElementById("clear"),
+      statusEl=document.getElementById("status"),prog=document.getElementById("prog"),progBar=document.getElementById("progBar");
+
+  var items=[], idc=0, lenMode="concise";
+  var worker=null, modelReady=false, modelLoading=false, pendingAfterLoad=null, dispatching=false;
+
+  // ---- length toggle ----
+  document.querySelectorAll("#len button").forEach(function(b){ b.addEventListener("click",function(){
+    document.querySelectorAll("#len button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); lenMode=b.getAttribute("data-len");
+  }); });
+
+  // ---- input wiring ----
+  drop.addEventListener("click",function(e){ if(e.target===sampleBtn) return; file.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ if(document.activeElement===sampleBtn) return; e.preventDefault(); file.click(); } });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop",function(e){ var f=e.dataTransfer.files; for(var i=0;i<f.length;i++) addFile(f[i]); });
+  file.addEventListener("change",function(){ for(var i=0;i<file.files.length;i++) addFile(file.files[i]); file.value=""; });
+  sampleBtn.addEventListener("click",function(e){ e.stopPropagation(); loadSamples(); });
+
+  function loadSamples(){
+    var base="https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/";
+    var urls=[["cats.jpg","cats.jpg"],["football-match.jpg","football-match.jpg"],["young-man-standing-and-leaning-on-car.jpg","man-and-car.jpg"]];
+    sampleBtn.disabled=true; sampleBtn.textContent="Loading samples…";
+    var n=0; urls.forEach(function(u){
+      fetch(base+u[0]).then(function(r){ return r.blob(); }).then(function(b){
+        addFile(new File([b],u[1],{type:b.type||"image/jpeg"}));
+      }).catch(function(){}).then(function(){ n++; if(n===urls.length){ sampleBtn.disabled=false; sampleBtn.textContent="Try sample images"; } });
+    });
+  }
+
+  function addFile(f){
+    if(!f) return;
+    if(f.type.indexOf("image/")!==0 && !/\.(png|jpe?g|webp|gif|bmp)$/i.test(f.name)) return;
+    var it={id:++idc,name:f.name,status:"prepping",alt:"",thumb:"",capBlob:null,err:""};
+    items.push(it); renderCard(it); refreshBar();
+    prepImage(f).then(function(p){
+      if(!p){ it.status="error"; it.err="Could not read this image."; updateCard(it); return; }
+      it.thumb=p.thumb; it.capBlob=p.capBlob; it.status="ready"; updateCard(it); refreshBar();
+    });
+  }
+
+  function prepImage(f){ return new Promise(function(res){
+    var img=new Image(), url=URL.createObjectURL(f);
+    img.onload=function(){
+      var max=1024, w=img.width, h=img.height, s=Math.min(1,max/Math.max(w,h));
+      w=Math.max(1,Math.round(w*s)); h=Math.max(1,Math.round(h*s));
+      var c=document.createElement("canvas"); c.width=w; c.height=h;
+      var ctx=c.getContext("2d"); ctx.drawImage(img,0,0,w,h);
+      var thumb=c.toDataURL("image/jpeg",0.7);
+      c.toBlob(function(b){ URL.revokeObjectURL(url); res({thumb:thumb,capBlob:b||f}); },"image/jpeg",0.85);
+    };
+    img.onerror=function(){ URL.revokeObjectURL(url); res(null); };
+    img.src=url;
+  }); }
+
+  // ---- rendering ----
+  function renderCard(it){
+    var el=document.createElement("div"); el.className="card"; el.id="card-"+it.id;
+    el.innerHTML='<img class="thumb" alt="" src="'+(it.thumb||"")+'">'+
+      '<div class="body">'+
+        '<div class="fname"></div>'+
+        '<textarea class="alt" placeholder="Alt text will appear here…" spellcheck="true"></textarea>'+
+        '<div class="row"><span class="cc">0 characters</span>'+
+          '<div class="acts">'+
+            '<button class="mini copy" type="button">Copy</button>'+
+            '<button class="mini tag" type="button">Copy &lt;img&gt;</button>'+
+            '<button class="mini gray regen" type="button">Regenerate</button>'+
+            '<button class="mini gray rm" type="button">Remove</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="cstatus"></div>'+
+      '</div>';
+    cards.appendChild(el);
+    var ta=el.querySelector(".alt"), cc=el.querySelector(".cc");
+    ta.addEventListener("input",function(){ it.alt=ta.value; cc.textContent=ta.value.length+" characters"; refreshBar(); });
+    el.querySelector(".copy").addEventListener("click",function(){ copyText(it.alt, this); });
+    el.querySelector(".tag").addEventListener("click",function(){ copyText('<img src="'+it.name+'" alt="'+(it.alt||"").replace(/"/g,"&quot;")+'">', this); });
+    el.querySelector(".regen").addEventListener("click",function(){ if(it.capBlob){ it.status="queued"; updateCard(it); ensureModel(runQueue); } });
+    el.querySelector(".rm").addEventListener("click",function(){ items=items.filter(function(x){return x!==it;}); el.remove(); refreshBar(); });
+    updateCard(it);
+  }
+
+  function updateCard(it){
+    var el=document.getElementById("card-"+it.id); if(!el) return;
+    var img=el.querySelector(".thumb"), fn=el.querySelector(".fname"), ta=el.querySelector(".alt"),
+        cc=el.querySelector(".cc"), cs=el.querySelector(".cstatus");
+    if(it.thumb && img.getAttribute("src")!==it.thumb) img.src=it.thumb;
+    fn.textContent=it.name;
+    if(document.activeElement!==ta){ ta.value=it.alt||""; cc.textContent=(it.alt||"").length+" characters"; }
+    cs.className="cstatus";
+    if(it.status==="prepping"){ cs.innerHTML='<span class="spin"></span>Reading image…'; }
+    else if(it.status==="ready"){ cs.textContent="Ready — click Generate alt text."; }
+    else if(it.status==="queued"){ cs.innerHTML='<span class="spin"></span>Queued…'; cs.className="cstatus work"; }
+    else if(it.status==="working"){ cs.innerHTML='<span class="spin"></span>Describing image…'; cs.className="cstatus work"; }
+    else if(it.status==="done"){ cs.textContent="Done — edit if needed."; }
+    else if(it.status==="error"){ cs.textContent=it.err||"Something went wrong."; cs.className="cstatus err"; }
+  }
+
+  function copyText(txt, btn){
+    if(!txt){ return; }
+    navigator.clipboard.writeText(txt).then(function(){ var o=btn.textContent; btn.textContent="Copied!"; setTimeout(function(){ btn.textContent=o; },1100); }).catch(function(){});
+  }
+
+  function refreshBar(){
+    var hasReady=items.some(function(it){ return it.status==="ready"||it.status==="done"||it.status==="error"; });
+    var hasText=items.some(function(it){ return (it.alt||"").trim().length>0; });
+    go.disabled=!items.some(function(it){ return it.status==="ready"; });
+    csvBtn.disabled=!hasText; jsonBtn.disabled=!hasText; clearBtn.disabled=items.length===0;
+    if(!modelLoading){
+      if(items.length===0) statusEl.innerHTML="Add an image to begin. The AI model downloads once (a few hundred MB) and is then cached for next time.";
+      else if(modelReady) statusEl.innerHTML="<b>Model ready.</b> Runs fully on your device. Click Generate, or Regenerate on any card.";
+      else statusEl.textContent=items.length+" image"+(items.length>1?"s":"")+" ready. Click Generate to load the AI model and describe "+(items.length>1?"them":"it")+".";
+    }
+  }
+
+  // ---- generate ----
+  go.addEventListener("click",function(){
+    items.forEach(function(it){ if(it.status==="ready"){ it.status="queued"; updateCard(it); } });
+    refreshBar(); ensureModel(runQueue);
+  });
+
+  function ensureModel(cb){
+    if(modelReady){ if(cb) cb(); return; }
+    pendingAfterLoad=cb;
+    if(modelLoading) return;
+    modelLoading=true; go.disabled=true;
+    prog.style.display="block"; progBar.style.width="0%";
+    statusEl.innerHTML="Downloading the AI model (a few hundred MB, cached after the first time)…";
+    startWorker();
+    worker.postMessage({type:"load"});
+  }
+
+  function startWorker(){
+    var code=[
+      'import { pipeline, env, RawImage } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1";',
+      'env.allowLocalModels=false;',
+      'let capt=null;',
+      'self.onmessage = async (e)=>{',
+      '  const d=e.data;',
+      '  if(d.type==="load"){',
+      '    try{',
+      '      capt = await pipeline("image-to-text","Xenova/vit-gpt2-image-captioning",{ dtype:"q8", progress_callback:(p)=>{ if(p&&p.status==="progress"&&p.total) self.postMessage({type:"progress",loaded:p.loaded,total:p.total}); } });',
+      '      self.postMessage({type:"ready"});',
+      '    }catch(err){ self.postMessage({type:"error",error:String(err&&err.message||err)}); }',
+      '  } else if(d.type==="caption"){',
+      '    try{',
+      '      const image = await RawImage.fromBlob(d.blob);',
+      '      const out = await capt(image, { max_new_tokens:d.maxTokens, num_beams:d.beams, repetition_penalty:1.2 });',
+      '      let text = Array.isArray(out) ? (out[0] && out[0].generated_text || "") : (out && out.generated_text || "");',
+      '      self.postMessage({type:"result", id:d.id, text:(text||"").trim()});',
+      '    }catch(err){ self.postMessage({type:"error", id:d.id, error:String(err&&err.message||err)}); }',
+      '  }',
+      '};'
+    ].join("\n");
+    try{
+      worker=new Worker(URL.createObjectURL(new Blob([code],{type:"text/javascript"})),{type:"module"});
+    }catch(err){ failLoad("Your browser blocked the AI worker."); return; }
+    worker.onmessage=function(ev){
+      var m=ev.data;
+      if(m.type==="progress"){ if(m.total){ var pct=Math.round(m.loaded/m.total*100); if(pct>=0&&pct<=100){ progBar.style.width=pct+"%"; statusEl.textContent="Downloading the AI model… "+pct+"%"; } } }
+      else if(m.type==="ready"){ modelReady=true; modelLoading=false; prog.style.display="none"; refreshBar();
+        var f=pendingAfterLoad; pendingAfterLoad=null; if(f) f(); }
+      else if(m.type==="result"){ onResult(m.id,m.text,null); }
+      else if(m.type==="error"){ if(m.id!=null) onResult(m.id,null,m.error||"failed"); else failLoad("Model failed to load: "+(m.error||"unknown")); }
+    };
+    worker.onerror=function(e){ failLoad("Worker error: "+(e.message||"unknown")); };
+  }
+
+  function failLoad(msg){
+    modelLoading=false; modelReady=false; prog.style.display="none"; go.disabled=false;
+    statusEl.innerHTML='<span style="color:#ff8f6b">'+msg+'</span> Your browser may not support in-browser AI. Try a recent Chrome, Edge, or Firefox on desktop.';
+    items.forEach(function(it){ if(it.status==="queued"||it.status==="working"){ it.status="ready"; updateCard(it); } });
+  }
+
+  function runQueue(){
+    if(dispatching) return;
+    var next=null; for(var i=0;i<items.length;i++){ if(items[i].status==="queued"){ next=items[i]; break; } }
+    if(!next){ dispatching=false; refreshBar(); return; }
+    if(!modelReady){ ensureModel(runQueue); return; }
+    dispatching=true; next.status="working"; updateCard(next);
+    var beams = lenMode==="detailed"?3:1;
+    var maxTokens = lenMode==="detailed"?52:22;
+    worker.postMessage({type:"caption", id:next.id, blob:next.capBlob, maxTokens:maxTokens, beams:beams});
+  }
+
+  function onResult(id, text, err){
+    var it=null; for(var i=0;i<items.length;i++){ if(items[i].id===id){ it=items[i]; break; } }
+    dispatching=false;
+    if(it){
+      if(err){ it.status="error"; it.err="Could not describe this image."; }
+      else{ it.alt=cleanup(text); it.status="done"; }
+      updateCard(it);
+    }
+    refreshBar();
+    runQueue();
+  }
+
+  function cleanup(t){
+    t=(t||"").replace(/\s+/g," ").trim();
+    if(!t) return t;
+    return t.charAt(0).toUpperCase()+t.slice(1)+(/[.!?]$/.test(t)?"":".");
+  }
+
+  // ---- exports ----
+  function rows(){ return items.filter(function(it){ return (it.alt||"").trim(); }).map(function(it){ return {file:it.name, alt:it.alt.trim()}; }); }
+  csvBtn.addEventListener("click",function(){
+    var r=rows(); if(!r.length) return;
+    var csv="filename,alt_text\r\n"+r.map(function(x){ return q(x.file)+","+q(x.alt); }).join("\r\n");
+    function q(s){ return '"'+String(s).replace(/"/g,'""')+'"'; }
+    var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="alt-text.csv"; a.click();
+  });
+  jsonBtn.addEventListener("click",function(){ var r=rows(); if(!r.length) return; copyText(JSON.stringify(r,null,2), jsonBtn); });
+  clearBtn.addEventListener("click",function(){ items=[]; cards.innerHTML=""; refreshBar(); });
+
+  refreshBar();
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+<!-- Monetization slots (left intentionally empty for later): AdSense / Polar.sh can mount here. -->
+</body>
+</html>
