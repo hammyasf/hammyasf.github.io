@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pixel Party — collaborative pixel art canvas you draw on together, live</title>
+<meta name="description" content="A free real-time pixel art canvas. Share a link and place pixels together with anyone, live. See everyone's cursors, watch the art grow, replay how it was made. No sign-up, runs in your browser." />
+<meta name="keywords" content="collaborative pixel art, multiplayer pixel canvas, pixel art together, online pixel art editor, r place clone, place pixel canvas, draw pixel art with friends, shared pixel canvas, pixel art maker online, real time pixel art, pixel art game, make pixel art online free, multiplayer drawing" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Pixel Party — collaborative pixel art canvas, live" />
+<meta property="og:description" content="Share a link and place pixels together in real time. See live cursors, watch the art grow, replay the build. No sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/pixel-party.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Pixel Party — collaborative pixel art, live" />
+<meta name="twitter:description" content="Share a link, place pixels together in real time with live cursors. No sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/pixel-party.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Pixel Party","url":"https://hammyasf.github.io/pixel-party.html","applicationCategory":"DesignApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free real-time collaborative pixel art canvas. Share a link and place pixels together live with shared cursors, no sign-up.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an account to draw pixel art together?","acceptedAnswer":{"@type":"Answer","text":"No. There is no sign-up and no install. Open the page, share the link, and anyone who opens it places pixels on the same canvas with you instantly."}},{"@type":"Question","name":"How is it live without a server I have to run?","acceptedAnswer":{"@type":"Answer","text":"Every pixel you place is broadcast over a realtime message channel to the other browsers in the room, which paint it onto their own copy of the grid. Presence (who is here and which cell their cursor is on) rides the same channel. When you join, one person already in the room hands you the whole canvas in a single message, so you see all the art that already exists."}},{"@type":"Question","name":"Can I save the pixel art?","acceptedAnswer":{"@type":"Answer","text":"Yes. Hit Save PNG to download a crisp, upscaled image of the canvas at any time. You can also hit Replay to watch a fast timelapse of how the art was built."}},{"@type":"Question","name":"How many people can paint at once?","acceptedAnswer":{"@type":"Answer","text":"A handful of people can paint together comfortably in real time. It is built for friends, classes, and small teams rather than thousands at once."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:30px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  .app{margin:22px 0 8px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .toolbar{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line);background:rgba(var(--surfaceRGB),.6);}
+  .tgroup{display:flex;align-items:center;gap:6px;}
+  .palette{display:flex;gap:5px;align-items:center;flex-wrap:wrap;max-width:330px;}
+  .sw{width:24px;height:24px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:transform .12s;box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;}
+  .sw:hover{transform:scale(1.12);}
+  .sw.on{border-color:var(--ink);box-shadow:0 0 0 2px rgba(0,0,0,.4) inset;}
+  .sw.eraser{background:repeating-conic-gradient(#cfd8d4 0% 25%,#fff 0% 50%) 50%/10px 10px;display:flex;align-items:center;justify-content:center;}
+  .tbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 10px;border-radius:10px;border:1px solid var(--line-2);background:transparent;color:var(--muted);cursor:pointer;transition:.15s;font-family:var(--mono);font-size:12.5px;}
+  .tbtn:hover{color:var(--ink);border-color:var(--accent);}
+  .tbtn.on{background:var(--accent);color:#07100e;border-color:var(--accent);}
+  .tbtn svg{width:17px;height:17px;}
+  .zoom{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .zoom input{accent-color:var(--accent);}
+  .spacer{flex:1 1 auto;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;white-space:nowrap;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
+  .who{display:flex;align-items:center;gap:8px;}
+  .avs{display:flex;}
+  .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:#07100e;margin-left:-8px;border:2px solid var(--bg-2);}
+  .av:first-child{margin-left:0;}
+  .cnt{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .namewrap{display:flex;align-items:center;gap:6px;}
+  .nameinput{width:120px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:7px 10px;font-family:var(--mono);font-size:12.5px;}
+
+  .stage{position:relative;width:100%;background:#0e1a17;overflow:auto;max-height:72vh;display:flex;justify-content:center;align-items:flex-start;touch-action:none;}
+  .canvas-pad{position:relative;margin:18px;}
+  #board,#gridlay,#cursorlay,#surface{position:absolute;top:0;left:0;image-rendering:pixelated;}
+  #board{position:relative;display:block;box-shadow:0 10px 40px rgba(0,0,0,.4);}
+  #gridlay,#cursorlay{pointer-events:none;}
+  #surface{cursor:crosshair;}
+
+  .statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .conn{display:inline-flex;align-items:center;gap:7px;}
+  .led{width:8px;height:8px;border-radius:50%;background:var(--faint);box-shadow:0 0 8px currentColor;}
+  .led.live{background:#2be3b0;color:#2be3b0;}
+  .led.off{background:#ff6a5d;color:#ff6a5d;}
+  .hint{color:var(--faint);}
+
+  .intro{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(7,16,14,.8);backdrop-filter:blur(4px);text-align:center;padding:24px;}
+  .intro .card{max-width:470px;}
+  .intro h3{font-family:var(--display);font-weight:600;font-size:26px;}
+  .intro p{color:#cdd8d3;font-size:15px;margin-top:10px;}
+  .intro .row{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+  .toast{position:absolute;left:50%;bottom:18px;transform:translateX(-50%) translateY(20px);z-index:40;background:var(--ink);color:#07100e;font-family:var(--mono);font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:100px;opacity:0;transition:.25s;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  section.copy{padding:24px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:640px){.nameinput{width:88px;}.hint{display:none;}.palette{max-width:200px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · real-time, no sign-up</div>
+    <h1>Pixel Party</h1>
+    <p class="sub">A shared pixel-art canvas you paint on together. Share the link, place pixels next to your friends in real time, watch their cursors move, then replay how the whole thing was built. No account, runs in your browser.</p>
+    <span class="priv">&#9889; Live multiplayer — share the link, paint pixels together instantly</span>
+  </header>
+
+  <div class="app">
+    <div class="toolbar">
+      <div class="palette" id="palette"></div>
+      <div class="tgroup">
+        <button class="tbtn" id="undo" title="Undo your last pixels (Ctrl+Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>Undo</button>
+        <button class="tbtn" id="grid" title="Toggle grid lines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"></path></svg>Grid</button>
+        <button class="tbtn" id="replay" title="Replay a timelapse of the art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>Replay</button>
+        <button class="tbtn" id="clear" title="Clear the whole canvas for everyone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path></svg></button>
+      </div>
+      <div class="zoom">Zoom<input type="range" id="zoom" min="6" max="22" step="1" value="11" /></div>
+      <div class="spacer"></div>
+      <div class="namewrap"><input class="nameinput" id="name" maxlength="18" aria-label="Your name" /></div>
+      <div class="who"><div class="avs" id="avs"></div><span class="cnt" id="cnt">1 here</span></div>
+      <button class="btn" id="share">Copy link</button>
+      <button class="btn btn-out" id="png" title="Download a PNG of the canvas">Save PNG</button>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="canvas-pad" id="pad">
+        <canvas id="board"></canvas>
+        <canvas id="gridlay"></canvas>
+        <canvas id="cursorlay"></canvas>
+        <div id="surface"></div>
+      </div>
+      <div class="intro" id="intro">
+        <div class="card">
+          <h3>You're in a private pixel room.</h3>
+          <p>Share the link and anyone who opens it paints on this same canvas with you, live. To feel it now, open the link in a second tab and watch the pixels appear in both.</p>
+          <div class="row">
+            <button class="btn" id="introCopy">Copy invite link</button>
+            <button class="btn btn-out" id="introGo">Start painting</button>
+          </div>
+        </div>
+      </div>
+      <div class="toast" id="toast">Link copied</div>
+    </div>
+
+    <div class="statusbar">
+      <span class="conn"><span class="led" id="led"></span><span id="connlbl">Connecting…</span></span>
+      <span class="hint">Tip: pick a color, click or drag to paint · the checkerboard swatch is the eraser · zoom in for detail</span>
+      <span id="room"></span>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Every canvas is a private room with its own link. When you open the page you land in a fresh 64&times;64 grid, and the room code rides in the URL. Send that link to anyone and the moment they open it they are on the same canvas as you, with a live cursor you can watch hop from cell to cell as they paint. Each pixel you place streams to everyone in the room the instant you place it.</p>
+    <h2>How is it live without a server I have to run?</h2>
+    <p>The pixels travel through a realtime message channel, not a database. When you paint, the cell index and color are broadcast as a tiny message, and every other browser in the room paints that same cell. Presence (who is here, and which cell each person's cursor is on) rides the same channel. When a new person joins, one of the people already in the room hands them the entire grid in a single compact message, so a late arrival immediately sees all the art that already exists. Because nothing is written to disk by default, the canvas lives for as long as people are in the room, which is exactly what you want for a quick collaborative doodle.</p>
+    <h2>Things to try</h2>
+    <p>Make a tiny game sprite with a friend, run a pixel-art jam in class, build a team logo one pixel at a time, or play a guessing game where one person draws and the rest watch it appear. Open the link on your phone and your laptop at once to paint from both. When you like the result, hit Save PNG for a crisp upscaled image, or hit Replay to watch a timelapse of every pixel going down in order.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Do I need to sign up?</summary><p>No. There is no account and no install. Open the page, copy the link, and share it. Anyone who opens the link joins your canvas instantly and starts painting.</p></details>
+    <details><summary>Is anything saved or uploaded?</summary><p>By default the canvas is relayed live between the browsers in the room and is not written to a database, so when everyone leaves, the room resets. Use Save PNG if you want to keep the art. (The page also supports an optional permanent-canvas mode if a small database is connected.)</p></details>
+    <details><summary>How big is the canvas?</summary><p>It is a 64&times;64 grid, which is a comfortable size for sprites, logos, and collaborative doodles. Zoom in for pixel-perfect detail and the canvas scrolls.</p></details>
+    <details><summary>How many people can paint at once?</summary><p>It is built for small groups, a handful of people painting together comfortably in real time, like a team, a class, or friends, rather than thousands at once.</p></details>
+    <details><summary>Can I undo someone else's pixels?</summary><p>Undo reverts your own most recent pixels. Anyone can use Clear to wipe the whole canvas for everyone, so use it with care.</p></details>
+    <details><summary>Does it work on mobile?</summary><p>Yes, you can paint with your finger. It works best with a mouse or stylus, but touch is fully supported.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build a tool like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Real-time in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- Ad slot (commented for later):
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XX" data-ad-slot="XX" data-ad-format="auto"></ins>
+-->
+<!-- Monetization (Polar.sh) slot for a future Pro: permanent canvases, bigger grids, private rooms. -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  "use strict";
+  // ---- match the portfolio's saved theme ----
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var tt=T[localStorage.getItem("siteTheme")]; if(tt){var r=document.documentElement.style; r.setProperty("--accent",tt[0]);r.setProperty("--accent-2",tt[1]);r.setProperty("--accentRGB",tt[2]);r.setProperty("--surfaceRGB",tt[3]);r.setProperty("--bg",tt[4]);r.setProperty("--bg-2",tt[5]);} }catch(e){}
+
+  // ---- Supabase config (anon/publishable key is public and safe to embed; broadcast+presence live, DB optional) ----
+  var SUPA_URL="https://cunynpmbjogrexkrxbwf.supabase.co";
+  var SUPA_KEY="sb_publishable_cOG9I9Rh6NJNEUxM4MDT4A_KceeVBsQ";
+
+  // ===================== PURE HELPERS (unit-tested) =====================
+  var N=64, CELLS=N*N;
+  function clamp(v,lo,hi){ return v<lo?lo:v>hi?hi:v; }
+  function roomFromHash(h){ var m=/[#&]r=([A-Za-z0-9_-]{4,24})/.exec(h||""); return m?m[1]:""; }
+  function makeRoom(rnd){ var s="",a="abcdefghijkmnpqrstuvwxyz23456789"; for(var i=0;i<8;i++){ s+=a[Math.floor((rnd?rnd():Math.random())*a.length)]; } return s; }
+  function hashStr(s){ var h=2166136261; for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=(h*16777619)>>>0; } return h>>>0; }
+  function colorFor(id){ var hues=[8,28,48,140,168,190,210,260,300,330]; var h=hues[hashStr(id)%hues.length]; return "hsl("+h+",70%,58%)"; }
+  function initials(name){ name=(name||"").trim(); if(!name) return "?"; var p=name.split(/\s+/); return (p.length>1?(p[0][0]+p[1][0]):name.slice(0,2)).toUpperCase(); }
+  var ANIMALS=["Fox","Owl","Wolf","Bear","Hawk","Lynx","Otter","Crane","Puma","Heron","Mole","Wren","Seal","Koi","Ibex"];
+  function randomName(rnd){ var f=function(){return (rnd?rnd():Math.random());}; return ANIMALS[Math.floor(f()*ANIMALS.length)]+"-"+(10+Math.floor(f()*90)); }
+  function shortId(){ try{ return (crypto.randomUUID().replace(/-/g,"")).slice(0,12); }catch(e){ return (Date.now().toString(36)+Math.random().toString(36).slice(2,8)); } }
+  function pickResponder(memberIds, requesterId, selfId){
+    var others=memberIds.filter(function(x){return x!==requesterId;}).sort();
+    return others.length>0 && others[0]===selfId;
+  }
+  function cellIndex(x,y){ if(x<0||y<0||x>=N||y>=N) return -1; return y*N+x; }
+  // encode a Uint8Array(CELLS) of palette indices 0..15 to a hex-char string (1 char/cell)
+  function gridEncode(arr){ var s=""; for(var i=0;i<CELLS;i++){ s+=(arr[i]&15).toString(16); } return s; }
+  function gridDecode(str){ var a=new Uint8Array(CELLS); if(typeof str!=="string") return a; var n=Math.min(CELLS,str.length); for(var i=0;i<n;i++){ var v=parseInt(str[i],16); a[i]=(isNaN(v)?0:v)&15; } return a; }
+  // Bresenham line between two cells -> array of indices (so fast drags leave no gaps)
+  function lineCells(x0,y0,x1,y1){
+    var out=[], dx=Math.abs(x1-x0), dy=Math.abs(y1-y0), sx=x0<x1?1:-1, sy=y0<y1?1:-1, err=dx-dy;
+    for(var guard=0; guard<8192; guard++){
+      var idx=cellIndex(x0,y0); if(idx>=0) out.push(idx);
+      if(x0===x1 && y0===y1) break;
+      var e2=2*err; if(e2>-dy){ err-=dy; x0+=sx; } if(e2<dx){ err+=dx; y0+=sy; }
+    }
+    return out;
+  }
+  window.__ppPure={N:N,CELLS:CELLS,clamp:clamp,roomFromHash:roomFromHash,makeRoom:makeRoom,hashStr:hashStr,colorFor:colorFor,initials:initials,randomName:randomName,pickResponder:pickResponder,cellIndex:cellIndex,gridEncode:gridEncode,gridDecode:gridDecode,lineCells:lineCells};
+  // ===================== END PURE HELPERS =====================
+
+  // palette: index 0 = empty (board background). 1..15 = paint colors.
+  var BG="#f7f9f8";
+  var PAL=[BG,"#ffffff","#1a1a1a","#8a949a","#e63946","#ff7a3d","#ffd23d","#3ddc84","#1d9a6c","#2bd4e3","#4d8bff","#3b4cc0","#b07cff","#ff7ad1","#8b5a2b","#5a3a1a"];
+
+  // ---- state ----
+  var selfId=shortId();
+  var myName=""; try{ myName=localStorage.getItem("pp_name")||""; }catch(e){}
+  if(!myName) myName=randomName();
+  var myColor=colorFor(selfId);
+  var paintIdx=4;                 // current palette index (start: red)
+  var grid=new Uint8Array(CELLS); // 0 = empty
+  var history=[];                 // [{i,c}] applied order, for timelapse
+  var myUndo=[];                  // [{i,prev}]
+  var cursors={};                 // id -> {x,y,name,color,last}
+  var cell=11, showGrid=true, synced=false, dbEnabled=false, replaying=false;
+  var channel=null, client=null, live=false, opSeq=0;
+
+  // ---- elements ----
+  var stage=document.getElementById("stage"), pad=document.getElementById("pad");
+  var board=document.getElementById("board"), bctx=board.getContext("2d");
+  var gridlay=document.getElementById("gridlay"), gctx=gridlay.getContext("2d");
+  var cursorlay=document.getElementById("cursorlay"), cctx=cursorlay.getContext("2d");
+  var surface=document.getElementById("surface");
+  var avsEl=document.getElementById("avs"), cntEl=document.getElementById("cnt"), roomEl=document.getElementById("room");
+  var ledEl=document.getElementById("led"), connlbl=document.getElementById("connlbl"), nameInput=document.getElementById("name");
+  var intro=document.getElementById("intro"), toast=document.getElementById("toast");
+  nameInput.value=myName;
+
+  // ---- room ----
+  var room=roomFromHash(location.hash);
+  if(!room){ room=makeRoom(); try{ window.history.replaceState(null,"","#r="+room); }catch(e){} }
+  roomEl.textContent="Room "+room;
+
+  // ---- sizing / rendering ----
+  function sizeCanvases(){
+    var px=N*cell;
+    [board,gridlay,cursorlay].forEach(function(c){ c.width=px; c.height=px; c.style.width=px+"px"; c.style.height=px+"px"; });
+    surface.style.width=px+"px"; surface.style.height=px+"px";
+    drawAll(); drawGridLines();
+  }
+  function fillCell(i,v){
+    var x=i%N, y=(i/N|0), px=x*cell, py=y*cell;
+    bctx.fillStyle=(v===0?BG:PAL[v]); bctx.fillRect(px,py,cell,cell);
+  }
+  function drawAll(){
+    bctx.fillStyle=BG; bctx.fillRect(0,0,N*cell,N*cell);
+    for(var i=0;i<CELLS;i++){ if(grid[i]){ fillCell(i,grid[i]); } }
+  }
+  function drawGridLines(){
+    gctx.clearRect(0,0,gridlay.width,gridlay.height);
+    if(!showGrid) return;
+    gctx.strokeStyle="rgba(0,0,0,.10)"; gctx.lineWidth=1;
+    gctx.beginPath();
+    for(var k=0;k<=N;k++){ var p=k*cell+0.5; gctx.moveTo(p,0); gctx.lineTo(p,N*cell); gctx.moveTo(0,p); gctx.lineTo(N*cell,p); }
+    gctx.stroke();
+  }
+
+  // ---- apply a pixel (local origin or remote) ----
+  function applyPixel(i,c,track){
+    if(i<0||i>=CELLS) return;
+    var prev=grid[i];
+    if(prev===c) return;
+    if(track){ myUndo.push({i:i,prev:prev}); if(myUndo.length>4000) myUndo.shift(); }
+    grid[i]=c; fillCell(i,c);
+    history.push({i:i,c:c}); if(history.length>40000) history.shift();
+  }
+
+  // ---- broadcast batching ----
+  var sendBuf=[], lastSent=0;
+  function bcast(event,payload){ if(channel&&live){ try{ channel.send({type:"broadcast",event:event,payload:payload}); }catch(e){} } }
+  function flushPixels(force){
+    var now=Date.now();
+    if(!sendBuf.length) return;
+    if(!force && now-lastSent<45) return;
+    lastSent=now;
+    bcast("px",{cells:sendBuf.splice(0,sendBuf.length)});
+    scheduleDbSave();
+  }
+  function queuePixel(i,c){ sendBuf.push([i,c]); flushPixels(false); }
+
+  // ---- pointer painting ----
+  var painting=false, lastCell=-1;
+  function cellFromEvent(e){
+    var r=board.getBoundingClientRect();
+    var x=Math.floor((e.clientX-r.left)/cell), y=Math.floor((e.clientY-r.top)/cell);
+    return cellIndex(x,y);
+  }
+  function paintAt(i){
+    if(i<0||replaying) return;
+    applyPixel(i,paintIdx,true);
+    queuePixel(i,paintIdx);
+  }
+  function paintLine(fromIdx,toIdx){
+    if(fromIdx<0){ paintAt(toIdx); return; }
+    var x0=fromIdx%N,y0=(fromIdx/N|0),x1=toIdx%N,y1=(toIdx/N|0);
+    var cellsArr=lineCells(x0,y0,x1,y1);
+    for(var k=0;k<cellsArr.length;k++) paintAt(cellsArr[k]);
+  }
+  surface.addEventListener("pointerdown",function(e){
+    if(e.button!==0 && e.pointerType==="mouse") return;
+    hideIntro();
+    surface.setPointerCapture(e.pointerId);
+    painting=true; var i=cellFromEvent(e); paintAt(i); lastCell=i; e.preventDefault();
+  });
+  var lastCurSent=0;
+  surface.addEventListener("pointermove",function(e){
+    var i=cellFromEvent(e);
+    if(painting){ paintLine(lastCell,i); lastCell=i; }
+    var now=Date.now();
+    if(now-lastCurSent>50 && i>=0){ lastCurSent=now; bcast("cur",{id:selfId,name:myName,color:myColor,i:i}); }
+  });
+  function endPaint(){ if(painting){ painting=false; lastCell=-1; flushPixels(true); } }
+  window.addEventListener("pointerup",endPaint);
+  surface.addEventListener("pointercancel",endPaint);
+
+  // ---- remote handlers ----
+  function onRemotePx(p){ var cs=p.cells; if(!cs) return; for(var k=0;k<cs.length;k++){ applyPixel(cs[k][0],cs[k][1],false); } }
+  function onRemoteCur(p){ if(p.id===selfId) return; cursors[p.id]={x:p.i%N,y:(p.i/N|0),name:p.name,color:p.color,last:Date.now()}; }
+  function onRemoteClear(){ grid=new Uint8Array(CELLS); myUndo=[]; history=[]; drawAll(); }
+  function onRemoteUndo(p){ var u=p.cells; if(!u) return; for(var k=0;k<u.length;k++){ applyPixel(u[k][0],u[k][1],false); } }
+
+  // ---- cursor overlay loop ----
+  function cursorLoop(){
+    cctx.clearRect(0,0,cursorlay.width,cursorlay.height);
+    var now=Date.now();
+    for(var id in cursors){ if(!cursors.hasOwnProperty(id)) continue;
+      var c=cursors[id]; if(now-c.last>6000){ delete cursors[id]; continue; }
+      var px=c.x*cell, py=c.y*cell;
+      cctx.strokeStyle=c.color; cctx.lineWidth=2; cctx.strokeRect(px+1,py+1,cell-2,cell-2);
+      var nm=(c.name||"Guest").slice(0,12);
+      cctx.font="11px ui-monospace,monospace"; var w=cctx.measureText(nm).width+8;
+      var lx=clamp(px,0,N*cell-w), ly=py-15>2?py-15:py+cell+3;
+      cctx.fillStyle=c.color; cctx.fillRect(lx,ly,w,14);
+      cctx.fillStyle="#07100e"; cctx.fillText(nm,lx+4,ly+11);
+    }
+    requestAnimationFrame(cursorLoop);
+  }
+  requestAnimationFrame(cursorLoop);
+
+  // ---- palette UI ----
+  var palEl=document.getElementById("palette");
+  // eraser swatch (index 0)
+  var er=document.createElement("div"); er.className="sw eraser"; er.title="Eraser"; er.setAttribute("data-idx","0");
+  er.addEventListener("click",function(){ selectIdx(0); }); palEl.appendChild(er);
+  for(var pi=1;pi<PAL.length;pi++){ (function(idx){ var d=document.createElement("div"); d.className="sw"+(idx===paintIdx?" on":""); d.style.background=PAL[idx]; d.title=PAL[idx]; d.setAttribute("data-idx",idx); d.addEventListener("click",function(){ selectIdx(idx); }); palEl.appendChild(d); })(pi); }
+  function selectIdx(idx){ paintIdx=idx; document.querySelectorAll("#palette .sw").forEach(function(x){ x.classList.toggle("on", parseInt(x.getAttribute("data-idx"),10)===idx); }); }
+
+  // ---- toolbar wiring ----
+  document.getElementById("zoom").addEventListener("input",function(e){ cell=parseInt(e.target.value,10)||11; sizeCanvases(); });
+  document.getElementById("grid").addEventListener("click",function(){ showGrid=!showGrid; document.getElementById("grid").classList.toggle("on",showGrid); drawGridLines(); });
+  document.getElementById("grid").classList.toggle("on",showGrid);
+  document.getElementById("undo").addEventListener("click",doUndo);
+  function doUndo(){
+    if(replaying || !myUndo.length) return;
+    var batch=[]; var n=Math.min(64,myUndo.length);
+    // revert in reverse; pull a contiguous run from the end
+    for(var k=0;k<n;k++){ var u=myUndo.pop(); applyPixel(u.i,u.prev,false); batch.push([u.i,u.prev]); }
+    if(batch.length){ bcast("undo",{cells:batch}); scheduleDbSave(); }
+  }
+  document.getElementById("clear").addEventListener("click",function(){ if(replaying) return; if(confirm("Clear the whole canvas for everyone in the room?")){ onRemoteClear(); bcast("clear",{}); scheduleDbSave(); } });
+  document.getElementById("replay").addEventListener("click",doReplay);
+  nameInput.addEventListener("change",function(){ myName=(nameInput.value||"").trim().slice(0,18)||randomName(); nameInput.value=myName; try{localStorage.setItem("pp_name",myName);}catch(e){} if(channel&&live){ try{channel.track({name:myName,color:myColor});}catch(e){} } });
+  window.addEventListener("keydown",function(e){
+    if(e.target&&(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")) return;
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){ e.preventDefault(); doUndo(); return; }
+    var k=parseInt(e.key,10); if(!isNaN(k)&&k>=1&&k<=9){ selectIdx(k); }
+  });
+
+  // ---- replay (timelapse, local only) ----
+  function doReplay(){
+    if(replaying) return;
+    var snapshot=grid.slice(0);
+    var seq=[];
+    // seed with current non-empty cells if history is short (e.g. arrived via full sync)
+    if(history.length < 40){ for(var i=0;i<CELLS;i++){ if(snapshot[i]) seq.push({i:i,c:snapshot[i]}); } }
+    else { seq=history.slice(0); }
+    if(!seq.length) return;
+    replaying=true;
+    grid=new Uint8Array(CELLS); drawAll();
+    var idx=0, total=seq.length, perStep=Math.max(1,Math.floor(total/240));
+    var timer=setInterval(function(){
+      for(var s=0;s<perStep && idx<total;s++){ var o=seq[idx++]; grid[o.i]=o.c; fillCell(o.i,o.c); }
+      if(idx>=total){ clearInterval(timer); grid=snapshot.slice(0); drawAll(); replaying=false; }
+    },16);
+  }
+
+  // ---- share / png / intro ----
+  function showToast(msg){ toast.textContent=msg; toast.classList.add("show"); setTimeout(function(){ toast.classList.remove("show"); },1600); }
+  function copyLink(){ var url=location.origin+location.pathname+"#r="+room; var done=function(){ showToast("Invite link copied"); }; if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done,function(){ prompt("Copy this link:",url); }); } else { prompt("Copy this link:",url); } }
+  document.getElementById("share").addEventListener("click",copyLink);
+  document.getElementById("introCopy").addEventListener("click",copyLink);
+  function hideIntro(){ intro.style.display="none"; }
+  document.getElementById("introGo").addEventListener("click",hideIntro);
+  document.getElementById("png").addEventListener("click",function(){
+    var scale=12, tmp=document.createElement("canvas"); tmp.width=N*scale; tmp.height=N*scale;
+    var tx=tmp.getContext("2d"); tx.imageSmoothingEnabled=false;
+    tx.fillStyle=BG; tx.fillRect(0,0,tmp.width,tmp.height);
+    for(var i=0;i<CELLS;i++){ if(grid[i]){ tx.fillStyle=PAL[grid[i]]; tx.fillRect((i%N)*scale,(i/N|0)*scale,scale,scale); } }
+    tmp.toBlob(function(b){ var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="pixel-party-"+room+".png"; a.click(); });
+  });
+
+  // ---- optional DB persistence (inert unless the table exists) ----
+  var dbTimer=null;
+  function scheduleDbSave(){ if(!dbEnabled||!client) return; if(dbTimer) return; dbTimer=setTimeout(saveToDb,2500); }
+  function saveToDb(){ dbTimer=null; if(!dbEnabled||!client) return;
+    try{ client.from("pixel_rooms").upsert({room:room,grid:gridEncode(grid),updated_at:new Date().toISOString()}).then(function(){},function(){}); }catch(e){}
+  }
+  function loadFromDb(){
+    if(!client) return;
+    try{
+      client.from("pixel_rooms").select("grid").eq("room",room).maybeSingle().then(function(res){
+        if(res && !res.error){ dbEnabled=true;
+          if(res.data && res.data.grid && !synced){ grid=gridDecode(res.data.grid); synced=true; drawAll(); }
+        }
+      },function(){});
+    }catch(e){}
+  }
+
+  // ===================== REALTIME =====================
+  function setLed(state){ ledEl.className="led"+(state==="live"?" live":state==="off"?" off":""); connlbl.textContent=(state==="live"?"Live · synced":state==="off"?"Offline — painting solo":"Connecting…"); }
+  function updatePresence(){
+    if(!channel) return;
+    var st={}; try{ st=channel.presenceState(); }catch(e){ st={}; }
+    var ids=Object.keys(st); if(ids.indexOf(selfId)<0) ids.push(selfId);
+    avsEl.innerHTML=""; var seen={}, shown=0;
+    ids.forEach(function(id){
+      if(seen[id]||shown>=6) return; seen[id]=1; shown++;
+      var meta=(st[id]&&st[id][0])||{}; var nm=id===selfId?myName:(meta.name||"Guest"); var cl=id===selfId?myColor:(meta.color||colorFor(id));
+      var a=document.createElement("div"); a.className="av"; a.style.background=cl; a.textContent=initials(nm); a.title=nm; avsEl.appendChild(a);
+    });
+    cntEl.textContent=ids.length+" here";
+  }
+  function connect(){
+    if(!window.supabase||!window.supabase.createClient){ setLed("off"); window.__ppLive=false; return; }
+    try{ client=window.supabase.createClient(SUPA_URL,SUPA_KEY,{realtime:{params:{eventsPerSecond:40}}}); }
+    catch(e){ setLed("off"); window.__ppLive=false; return; }
+    loadFromDb();
+    channel=client.channel("pixelparty:"+room,{config:{presence:{key:selfId},broadcast:{self:false}}});
+    channel.on("broadcast",{event:"px"},function(m){ onRemotePx(m.payload); });
+    channel.on("broadcast",{event:"cur"},function(m){ onRemoteCur(m.payload); });
+    channel.on("broadcast",{event:"undo"},function(m){ onRemoteUndo(m.payload); });
+    channel.on("broadcast",{event:"clear"},function(){ onRemoteClear(); });
+    channel.on("broadcast",{event:"sync-req"},function(m){
+      var st={}; try{ st=channel.presenceState(); }catch(e){}
+      var ids=Object.keys(st); if(ids.indexOf(selfId)<0) ids.push(selfId);
+      if(pickResponder(ids,m.payload.from,selfId)){
+        channel.send({type:"broadcast",event:"sync-res",payload:{to:m.payload.from,grid:gridEncode(grid)}});
+      }
+    });
+    channel.on("broadcast",{event:"sync-res"},function(m){
+      if(m.payload.to!==selfId||synced) return; synced=true;
+      var inc=gridDecode(m.payload.grid);
+      // merge: keep any pixels we already placed locally; take incoming where we're empty
+      for(var i=0;i<CELLS;i++){ if(grid[i]===0 && inc[i]!==0) grid[i]=inc[i]; }
+      drawAll();
+    });
+    channel.on("presence",{event:"sync"},updatePresence);
+    channel.on("presence",{event:"join"},updatePresence);
+    channel.on("presence",{event:"leave"},updatePresence);
+    channel.subscribe(function(status){
+      if(status==="SUBSCRIBED"){
+        live=true; window.__ppLive=true; setLed("live");
+        try{ channel.track({name:myName,color:myColor}); }catch(e){}
+        updatePresence();
+        setTimeout(function(){ if(!synced) channel.send({type:"broadcast",event:"sync-req",payload:{from:selfId}}); },350);
+      } else if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"||status==="CLOSED"){
+        live=false; window.__ppLive=false; setLed("off");
+      }
+    });
+    window.addEventListener("beforeunload",function(){ try{ channel.untrack(); client.removeChannel(channel); }catch(e){} });
+  }
+  setLed("connecting");
+  selectIdx(paintIdx);
+  sizeCanvases();
+  connect();
+
+  // expose state for live verification
+  window.__ppState=function(){ var painted=0; for(var i=0;i<CELLS;i++) if(grid[i]) painted++; return {room:room,selfId:selfId,live:!!live,synced:synced,dbEnabled:dbEnabled,painted:painted,history:history.length,cursors:Object.keys(cursors).length,cell:cell,name:myName}; };
+  window.__ppPaint=function(i,c){ applyPixel(i,c,true); queuePixel(i,c); flushPixels(true); }; // test hook
+  window.__ppBoot=true;
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
