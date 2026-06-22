@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fourier Epicycle Machine — draw anything, watch spinning circles redraw it</title>
+<meta name="description" content="Draw a shape or type your name and watch a chain of rotating circles retrace it perfectly. A real Discrete Fourier Transform runs in your browser to turn any path into Fourier epicycles. Free, private, nothing uploaded." />
+<meta name="keywords" content="fourier epicycles, fourier series drawing, draw with circles, epicycle drawing, fourier transform visualizer, spinning circles drawing, draw your name with circles, fourier draw, discrete fourier transform visualizer, fourier art, 3blue1brown circles, epicycle animation" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Fourier Epicycle Machine — draw anything, circles redraw it" />
+<meta property="og:description" content="Draw a shape or type your name and watch rotating circles retrace it. A real Fourier transform, running entirely in your browser." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/epicycle.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Fourier Epicycle Machine" />
+<meta name="twitter:description" content="Draw anything and watch a chain of spinning circles redraw it. Real Fourier transform, in your browser." />
+<link rel="canonical" href="https://hammyasf.github.io/epicycle.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Fourier Epicycle Machine","url":"https://hammyasf.github.io/epicycle.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Draw a shape or type text and a real Discrete Fourier Transform turns it into a chain of rotating circles (epicycles) that retrace the path, all in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does drawing with circles actually work?","acceptedAnswer":{"@type":"Answer","text":"Your path is treated as a list of complex numbers and run through a Discrete Fourier Transform. Each frequency becomes a rotating vector with its own size, speed, and starting angle. Stacked tip to tail, those vectors trace your original drawing."}},{"@type":"Question","name":"Is anything uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The Fourier transform and the animation run entirely in your browser with plain JavaScript and Canvas. Your drawing never leaves your device."}},{"@type":"Question","name":"Can it draw my name?","acceptedAnswer":{"@type":"Answer","text":"Yes. Type text and the tool traces the outline of the letters into a path, then rebuilds that path from spinning circles."}},{"@type":"Question","name":"What do more circles do?","acceptedAnswer":{"@type":"Answer","text":"More circles means more Fourier terms, so the reconstruction matches your drawing more precisely. Fewer circles gives a smoother, rounder approximation, which is fun to watch."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .stage{position:relative;background:
+    linear-gradient(rgba(var(--accentRGB),.05) 1px,transparent 1px) 0 0/26px 26px,
+    linear-gradient(90deg,rgba(var(--accentRGB),.05) 1px,transparent 1px) 0 0/26px 26px,
+    radial-gradient(120% 90% at 50% 0%,rgba(var(--accentRGB),.06),transparent 60%),#060d0b;
+    touch-action:none;}
+  canvas{display:block;width:100%;height:auto;cursor:crosshair;}
+  .hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;text-align:center;}
+  .hint span{font-family:var(--mono);font-size:13px;color:var(--muted);background:rgba(6,13,11,.6);border:1px solid var(--line);padding:8px 14px;border-radius:100px;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:16px 18px;border-top:1px solid var(--line);align-items:center;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .textrow{display:flex;gap:8px;align-items:center;flex:1;min-width:220px;}
+  .textrow input[type=text]{flex:1;min-width:120px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:9px 12px;font-family:var(--body);font-size:14px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:4px 18px 18px;align-items:center;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl .row{display:flex;align-items:center;gap:10px;}
+  input[type=range]{accent-color:var(--accent);width:150px;}
+  .val{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:42px;}
+  .chk{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;}
+  .chk input{accent-color:var(--accent);width:16px;height:16px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 17px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .btn-out.rec{border-color:#ff5b6e;color:#ff8b97;}
+  .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:0 18px 18px;}
+  .swatches{display:flex;gap:8px;}
+  .sw{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;}
+  .sw.on{border-color:var(--ink);}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Fourier Epicycle Machine</h1>
+    <p class="sub">Draw any shape or type your name, and a chain of spinning circles will retrace it. It is a real Fourier transform turning your path into rotating vectors, computed live on your device.</p>
+    <span class="priv">&#128274; 100% private — your drawing never leaves your browser</span>
+  </header>
+
+  <div class="panel">
+    <div class="stage" id="stage">
+      <canvas id="cv" width="1700" height="1100" aria-label="Epicycle canvas"></canvas>
+      <div class="hint" id="hint"><span>Drawing with circles…</span></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="seg" id="mode">
+        <button data-m="draw" class="on">Draw</button>
+        <button data-m="preset">Presets</button>
+        <button data-m="text">Type text</button>
+      </div>
+      <div class="seg" id="presets" style="display:none">
+        <button data-p="heart" class="on">Heart</button>
+        <button data-p="star">Star</button>
+        <button data-p="infinity">Infinity</button>
+        <button data-p="flower">Flower</button>
+        <button data-p="pi">&pi;</button>
+      </div>
+      <div class="textrow" id="textrow" style="display:none">
+        <input type="text" id="txt" maxlength="14" value="hello" aria-label="Text to draw" />
+        <button class="btn" id="txtgo">Draw it</button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="ctl"><label>Circles <span id="nlabel" class="val">—</span></label>
+        <div class="row"><input type="range" id="ncirc" min="1" max="300" value="120" /></div>
+      </div>
+      <div class="ctl"><label>Speed</label>
+        <div class="row"><input type="range" id="speed" min="5" max="120" value="40" /><span class="val" id="speedv">0.4×</span></div>
+      </div>
+      <div class="ctl"><label>Show</label>
+        <div class="row" style="gap:16px">
+          <label class="chk"><input type="checkbox" id="showCirc" checked> circles</label>
+          <label class="chk"><input type="checkbox" id="showPath"> target</label>
+        </div>
+      </div>
+      <div class="ctl"><label>Trace color</label>
+        <div class="row"><div class="swatches" id="sw"></div></div>
+      </div>
+    </div>
+
+    <div class="bar">
+      <button class="btn" id="play">Pause</button>
+      <button class="btn btn-out" id="restart">Restart trace</button>
+      <button class="btn btn-out" id="clear">Clear &amp; draw</button>
+      <button class="btn btn-out" id="png">Save PNG</button>
+      <button class="btn btn-out" id="svg">Export SVG path</button>
+      <button class="btn btn-out rec" id="rec">● Record video</button>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How does this run in my browser?</h2>
+    <p>When you draw, the tool collects the points of your stroke and treats each one as a complex number, the x going on the real axis and the y on the imaginary axis. It then runs a Discrete Fourier Transform over that list. The transform breaks your path into a sum of pure rotations: each one is a circle of a certain size, spinning at a certain whole-number speed, starting at a certain angle. Add those rotating arrows tip to tail and the very last tip traces your original drawing. No server, no library, no upload. The math is a few dozen lines of JavaScript and the animation is plain Canvas.</p>
+    <h2>Why it looks like magic</h2>
+    <p>The surprising part is that almost any closed shape, even your handwritten name, is just a particular recipe of circles. The biggest circle handles the rough overall loop, and each smaller, faster circle adds finer detail. This is the same Fourier idea that powers JPEG images, audio equalizers, and MP3 compression, shown in the most literal way possible. Drag the Circles slider down and you watch detail melt away into a smooth blob; drag it up and the wobble snaps back to your exact line.</p>
+    <h2>Things to try</h2>
+    <p>Draw your signature in one continuous stroke and record the rebuild as a video to share. Type a short word and watch the circles hop between letters. Pull the circle count down to 3 or 4 to see the simplest possible approximation of a complex shape. Turn on the target overlay to see how closely the epicycles hug your original path as you add more terms.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>How does drawing with circles work?</summary><p>Your path becomes a list of complex numbers and is run through a Discrete Fourier Transform. Each frequency comes out as a rotating vector with its own radius, speed, and phase. Chained tip to tail, those vectors retrace your drawing.</p></details>
+    <details><summary>Is my drawing uploaded anywhere?</summary><p>No. The transform and the animation run locally in your browser using JavaScript and Canvas. Nothing is sent to a server.</p></details>
+    <details><summary>Can it draw my name?</summary><p>Yes. Switch to Type text, enter a short word, and it traces the outline of the letters into a path before rebuilding it from circles.</p></details>
+    <details><summary>What does the Circles slider change?</summary><p>It sets how many Fourier terms are used. More circles means a more exact match to your drawing; fewer circles gives a smoother, rounder approximation.</p></details>
+    <details><summary>Does it work on a phone?</summary><p>Yes, you can draw with your finger. Recording video depends on your browser, and is available in most desktop browsers.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+/* ===================== Pure Fourier core (also unit-tested in node) ===================== */
+(function(root){
+  // points: [{x,y}] -> Fourier terms sorted by amplitude desc.
+  // X[k] = (1/N) * sum_n z[n] * e^{-i 2pi k n / N}, signed frequency for clean rotation.
+  function dft(points){
+    var N = points.length, terms = [];
+    for(var k=0;k<N;k++){
+      var re=0, im=0;
+      for(var n=0;n<N;n++){
+        var phi = -2*Math.PI*k*n/N;
+        var c=Math.cos(phi), s=Math.sin(phi);
+        re += points[n].x*c - points[n].y*s;
+        im += points[n].x*s + points[n].y*c;
+      }
+      re/=N; im/=N;
+      var freq = (k<=N/2) ? k : k-N;        // signed frequency
+      terms.push({freq:freq, amp:Math.hypot(re,im), phase:Math.atan2(im,re), re:re, im:im});
+    }
+    terms.sort(function(a,b){ return b.amp-a.amp; });
+    return terms;
+  }
+
+  // Reconstruct the pen position at time t in [0,1) using the first `count` terms.
+  function reconstruct(terms, t, count){
+    var k = (count==null) ? terms.length : Math.min(count, terms.length);
+    var x=0,y=0;
+    for(var i=0;i<k;i++){
+      var ang = terms[i].phase + 2*Math.PI*terms[i].freq*t;
+      x += terms[i].amp*Math.cos(ang);
+      y += terms[i].amp*Math.sin(ang);
+    }
+    return {x:x,y:y};
+  }
+
+  // Resample a polyline to `count` points spaced evenly by arc length.
+  // closed=true loops the path back to its start.
+  function resample(pts, count, closed){
+    if(pts.length<2) return pts.slice();
+    var path = pts.slice();
+    if(closed) path.push({x:pts[0].x,y:pts[0].y});
+    var seg=[], total=0;
+    for(var i=1;i<path.length;i++){
+      var d=Math.hypot(path[i].x-path[i-1].x, path[i].y-path[i-1].y);
+      seg.push(d); total+=d;
+    }
+    if(total===0) return [pts[0]];
+    var out=[], step=total/count, target=0, acc=0, j=0;
+    for(var m=0;m<count;m++){
+      while(j<seg.length-1 && acc+seg[j]<target){ acc+=seg[j]; j++; }
+      var r = seg[j]===0 ? 0 : (target-acc)/seg[j];
+      out.push({ x:path[j].x+(path[j+1].x-path[j].x)*r, y:path[j].y+(path[j+1].y-path[j].y)*r });
+      target+=step;
+    }
+    return out;
+  }
+
+  root.FourierCore = { dft:dft, reconstruct:reconstruct, resample:resample };
+  if(typeof module!=="undefined" && module.exports) module.exports = root.FourierCore;
+})(typeof window!=="undefined" ? window : this);
+
+/* ===================== App (browser only) ===================== */
+if(typeof window!=="undefined") (function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var tm=T[localStorage.getItem("siteTheme")]; if(tm){var r=document.documentElement.style; r.setProperty("--accent",tm[0]);r.setProperty("--accent-2",tm[1]);r.setProperty("--accentRGB",tm[2]);r.setProperty("--surfaceRGB",tm[3]);r.setProperty("--bg",tm[4]);r.setProperty("--bg-2",tm[5]);} }catch(e){}
+
+  var C = window.FourierCore;
+  var cv=document.getElementById("cv"), ctx=cv.getContext("2d");
+  var hint=document.getElementById("hint");
+  var W=cv.width, H=cv.height, CX=W/2, CY=H/2;
+
+  var terms=[];           // Fourier terms (sorted by amp)
+  var target=[];          // resampled target path (for overlay)
+  var t=0;                // animation time 0..1
+  var trail=[];           // traced pen points for current loop
+  var playing=true, count=120, speedHz=0.4;
+  var showCirc=true, showPath=false, traceColor=null;
+  var drawing=false, rawStroke=[];
+  var mode="draw";
+
+  /* ---------- shape sources ---------- */
+  function fitToCanvas(pts, scale){
+    // center on canvas and scale to fill ~scale of min dimension
+    var minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
+    pts.forEach(function(p){ if(p.x<minx)minx=p.x; if(p.y<miny)miny=p.y; if(p.x>maxx)maxx=p.x; if(p.y>maxy)maxy=p.y; });
+    var w=maxx-minx||1, h=maxy-miny||1;
+    var s=(Math.min(W,H)*scale)/Math.max(w,h);
+    var cx=(minx+maxx)/2, cy=(miny+maxy)/2;
+    return pts.map(function(p){ return { x:CX+(p.x-cx)*s, y:CY+(p.y-cy)*s }; });
+  }
+
+  var PRESETS = {
+    heart:function(){ var a=[]; for(var i=0;i<400;i++){ var u=i/400*2*Math.PI;
+      a.push({x:16*Math.pow(Math.sin(u),3), y:-(13*Math.cos(u)-5*Math.cos(2*u)-2*Math.cos(3*u)-Math.cos(4*u))}); } return a; },
+    star:function(){ var a=[],spikes=5,R=1,r=0.42; for(var i=0;i<spikes*2;i++){ var rad=(i%2===0)?R:r; var ang=Math.PI/2 + i*Math.PI/spikes;
+      a.push({x:Math.cos(ang)*rad, y:-Math.sin(ang)*rad}); } // densify edges
+      var dense=[]; for(var j=0;j<a.length;j++){ var p0=a[j],p1=a[(j+1)%a.length]; for(var s=0;s<30;s++){ var f=s/30; dense.push({x:p0.x+(p1.x-p0.x)*f,y:p0.y+(p1.y-p0.y)*f}); } } return dense; },
+    infinity:function(){ var a=[]; for(var i=0;i<400;i++){ var u=i/400*2*Math.PI; var d=1+Math.sin(u)*Math.sin(u);
+      a.push({x:Math.cos(u)/d, y:Math.sin(u)*Math.cos(u)/d}); } return a; },
+    flower:function(){ var a=[],k=5; for(var i=0;i<600;i++){ var u=i/600*2*Math.PI; var rr=Math.cos(k*u);
+      a.push({x:rr*Math.cos(u), y:rr*Math.sin(u)}); } return a; },
+    pi:function(){ return traceText("π"); }
+  };
+
+  /* ---------- text -> outline path (Moore boundary trace of glyph blobs) ---------- */
+  function traceText(str){
+    var GW=900, GH=360, oc=document.createElement("canvas"); oc.width=GW; oc.height=GH;
+    var o=oc.getContext("2d");
+    o.fillStyle="#000"; o.fillRect(0,0,GW,GH);
+    o.fillStyle="#fff"; o.textAlign="center"; o.textBaseline="middle";
+    var fs=240; o.font="700 "+fs+"px 'Clash Display', Arial, sans-serif";
+    while(o.measureText(str).width > GW-60 && fs>40){ fs-=10; o.font="700 "+fs+"px 'Clash Display', Arial, sans-serif"; }
+    o.fillText(str, GW/2, GH/2);
+    var img=o.getImageData(0,0,GW,GH).data;
+    var grid=new Uint8Array(GW*GH);
+    for(var i=0;i<GW*GH;i++){ grid[i]= img[i*4]>128 ? 1:0; }
+
+    function at(x,y){ return (x<0||y<0||x>=GW||y>=GH) ? 0 : grid[y*GW+x]; }
+    // connected components (BFS, 8-conn) -> for each, Moore-trace outer boundary
+    var seen=new Uint8Array(GW*GH), comps=[];
+    var stack=[];
+    for(var y=0;y<GH;y++) for(var x=0;x<GW;x++){
+      var idx=y*GW+x; if(grid[idx]&&!seen[idx]){
+        var minx=x,miny=y,sx=x,sy=y,area=0; stack.length=0; stack.push(idx); seen[idx]=1;
+        while(stack.length){ var p=stack.pop(); var px=p%GW, py=(p/GW)|0; area++;
+          if(py<miny || (py===miny && px<minx)){ minx=px; miny=py; }
+          if(px<sx || (px===sx && py<sy)){ /* keep */ }
+          for(var dy=-1;dy<=1;dy++) for(var dx=-1;dx<=1;dx++){ if(!dx&&!dy)continue;
+            var nx=px+dx, ny=py+dy; if(nx<0||ny<0||nx>=GW||ny>=GH)continue; var ni=ny*GW+nx;
+            if(grid[ni]&&!seen[ni]){ seen[ni]=1; stack.push(ni); } } }
+        if(area>120) comps.push({startx:minx, starty:miny, minx:minx});
+      }
+    }
+    comps.sort(function(a,b){ return a.minx-b.minx; });
+    var path=[];
+    comps.forEach(function(c){
+      var contour=moore(at, c.startx, c.starty);
+      if(contour.length>8){
+        // light decimation
+        for(var q=0;q<contour.length;q+=2) path.push(contour[q]);
+      }
+    });
+    if(path.length<8) return null;
+    return path; // pixel coords; fitToCanvas + resample handled by caller
+  }
+  // Moore-neighbour boundary tracing. (sx,sy)=topmost-leftmost foreground pixel of a component.
+  function moore(at, sx, sy){
+    var nb=[[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]]; // clockwise from East
+    var contour=[], px=sx, py=sy;
+    var backIdx=4;            // arrived from the West (background is to the left of the start)
+    var guard=0, max=300000;
+    while(guard++<max){
+      contour.push({x:px,y:py});
+      var found=-1;
+      for(var i=0;i<8;i++){
+        var d=(backIdx+1+i)%8, nx=px+nb[d][0], ny=py+nb[d][1];
+        if(at(nx,ny)){ found=d; break; }
+      }
+      if(found<0) break;      // isolated pixel
+      var fx=px+nb[found][0], fy=py+nb[found][1];
+      backIdx=(found+4)%8;    // direction from the new pixel back to the one we left
+      px=fx; py=fy;
+      if(px===sx && py===sy && contour.length>2) break;
+    }
+    return contour;
+  }
+
+  /* ---------- compute Fourier from a raw path ---------- */
+  function compute(rawPts, closed){
+    if(!rawPts || rawPts.length<3) return false;
+    var N = Math.min(420, Math.max(64, rawPts.length));
+    target = C.resample(rawPts, N, closed!==false);
+    terms = C.dft(target);
+    var nc=document.getElementById("ncirc"); nc.max=terms.length;
+    if(count>terms.length) count=terms.length;
+    nc.value=Math.min(count, terms.length);
+    document.getElementById("nlabel").textContent=Math.min(count,terms.length)+" / "+terms.length;
+    t=0; trail.length=0; playing=true; document.getElementById("play").textContent="Pause";
+    hint.style.display="none";
+    return true;
+  }
+
+  /* ---------- render loop ---------- */
+  var last=0;
+  function frame(ts){
+    if(!last) last=ts; var dt=(ts-last)/1000; last=ts;
+    if(playing && terms.length){
+      t += dt*speedHz; if(t>=1){ t-=1; trail.length=0; }
+    }
+    draw();
+    requestAnimationFrame(frame);
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // subtle vignette handled by CSS background
+    if(!terms.length){ return; }
+    var col = traceColor || getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#2be3b0";
+
+    // target overlay
+    if(showPath){
+      ctx.strokeStyle="rgba(237,242,239,.18)"; ctx.lineWidth=2; ctx.beginPath();
+      target.forEach(function(p,i){ i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); }); ctx.closePath(); ctx.stroke();
+    }
+
+    var k=Math.min(count, terms.length);
+    var x=0,y=0;
+    if(showCirc){
+      ctx.lineWidth=1;
+      for(var i=0;i<k;i++){
+        var ang=terms[i].phase + 2*Math.PI*terms[i].freq*t;
+        var nx=x+terms[i].amp*Math.cos(ang), ny=y+terms[i].amp*Math.sin(ang);
+        if(terms[i].amp>0.7){
+          ctx.strokeStyle="rgba(237,242,239,.12)";
+          ctx.beginPath(); ctx.arc(x,y,terms[i].amp,0,2*Math.PI); ctx.stroke();
+          ctx.strokeStyle="rgba(237,242,239,.35)";
+          ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(nx,ny); ctx.stroke();
+        }
+        x=nx; y=ny;
+      }
+    } else {
+      var p=C.reconstruct(terms,t,k); x=p.x; y=p.y;
+    }
+
+    // grow the trail up to current t
+    var pen=C.reconstruct(terms,t,k);
+    trail.push({x:pen.x,y:pen.y});
+    ctx.strokeStyle=col; ctx.lineWidth=3.2; ctx.lineJoin="round"; ctx.lineCap="round";
+    ctx.shadowColor=col; ctx.shadowBlur=14;
+    ctx.beginPath(); trail.forEach(function(p,i){ i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); }); ctx.stroke();
+    ctx.shadowBlur=0;
+
+    // pen tip
+    ctx.fillStyle=col; ctx.beginPath(); ctx.arc(pen.x,pen.y,4.5,0,2*Math.PI); ctx.fill();
+  }
+
+  /* ---------- drawing input ---------- */
+  function canvasPt(e){
+    var rect=cv.getBoundingClientRect();
+    var cxp=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
+    var cyp=(e.touches?e.touches[0].clientY:e.clientY)-rect.top;
+    return { x:cxp*(W/rect.width), y:cyp*(H/rect.height) };
+  }
+  function startDraw(e){ if(mode!=="draw")return; e.preventDefault(); drawing=true; rawStroke=[canvasPt(e)];
+    terms.length=0; trail.length=0; hint.style.display="none";
+    ctx.clearRect(0,0,W,H); }
+  function moveDraw(e){ if(!drawing)return; e.preventDefault(); var p=canvasPt(e);
+    var last=rawStroke[rawStroke.length-1];
+    if(!last || Math.hypot(p.x-last.x,p.y-last.y)>4){ rawStroke.push(p);
+      // live preview
+      ctx.clearRect(0,0,W,H);
+      var col=traceColor||getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+      ctx.strokeStyle=col; ctx.lineWidth=3.2; ctx.lineJoin="round"; ctx.lineCap="round";
+      ctx.beginPath(); rawStroke.forEach(function(q,i){ i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y); }); ctx.stroke();
+    } }
+  function endDraw(e){ if(!drawing)return; drawing=false;
+    if(rawStroke.length>=3){ compute(rawStroke, true); } else { hint.style.display="flex"; } }
+
+  cv.addEventListener("mousedown",startDraw); cv.addEventListener("mousemove",moveDraw);
+  window.addEventListener("mouseup",endDraw);
+  cv.addEventListener("touchstart",startDraw,{passive:false}); cv.addEventListener("touchmove",moveDraw,{passive:false});
+  cv.addEventListener("touchend",endDraw);
+
+  /* ---------- controls ---------- */
+  function setMode(m){ mode=m;
+    document.querySelectorAll("#mode button").forEach(function(b){ b.classList.toggle("on", b.dataset.m===m); });
+    document.getElementById("presets").style.display = m==="preset"?"flex":"none";
+    document.getElementById("textrow").style.display = m==="text"?"flex":"none";
+    cv.style.cursor = m==="draw" ? "crosshair":"default";
+    if(m==="draw"){ hint.querySelector("span").textContent="Draw a shape in one stroke"; if(!terms.length) hint.style.display="flex"; }
+  }
+  document.querySelectorAll("#mode button").forEach(function(b){ b.addEventListener("click",function(){ setMode(b.dataset.m); }); });
+  document.querySelectorAll("#presets button").forEach(function(b){ b.addEventListener("click",function(){
+    document.querySelectorAll("#presets button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on");
+    loadPreset(b.dataset.p); }); });
+  function loadPreset(name){ var pts=PRESETS[name](); if(!pts){ return; } compute(fitToCanvas(pts,0.62), true); }
+
+  document.getElementById("txtgo").addEventListener("click",function(){ drawTextNow(); });
+  document.getElementById("txt").addEventListener("keydown",function(e){ if(e.key==="Enter") drawTextNow(); });
+  function drawTextNow(){ var s=(document.getElementById("txt").value||"").trim(); if(!s) return;
+    var pts=traceText(s); if(!pts){ hint.querySelector("span").textContent="Could not trace that text — try a shorter word"; hint.style.display="flex"; return; }
+    compute(fitToCanvas(pts,0.74), false); }
+
+  var ncirc=document.getElementById("ncirc");
+  ncirc.addEventListener("input",function(){ count=parseInt(ncirc.value,10);
+    document.getElementById("nlabel").textContent=count+(terms.length?(" / "+terms.length):""); trail.length=0; });
+  var speed=document.getElementById("speed");
+  speed.addEventListener("input",function(){ speedHz=parseInt(speed.value,10)/100; document.getElementById("speedv").textContent=speedHz.toFixed(1)+"×"; });
+  document.getElementById("showCirc").addEventListener("change",function(e){ showCirc=e.target.checked; });
+  document.getElementById("showPath").addEventListener("change",function(e){ showPath=e.target.checked; });
+
+  document.getElementById("play").addEventListener("click",function(){ playing=!playing; this.textContent=playing?"Pause":"Play"; });
+  document.getElementById("restart").addEventListener("click",function(){ t=0; trail.length=0; playing=true; document.getElementById("play").textContent="Pause"; });
+  document.getElementById("clear").addEventListener("click",function(){ setMode("draw"); document.querySelector('#mode button[data-m="draw"]').classList.add("on");
+    terms.length=0; trail.length=0; ctx.clearRect(0,0,W,H); hint.querySelector("span").textContent="Draw a shape in one stroke"; hint.style.display="flex"; });
+
+  // color swatches
+  var COLORS=["__accent__","#ff6a3d","#3da5ff","#b07cff","#ffd23d","#ff5b8a"];
+  var swWrap=document.getElementById("sw");
+  COLORS.forEach(function(c,i){ var d=document.createElement("div"); d.className="sw"+(i===0?" on":"");
+    var real = c==="__accent__" ? (getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#2be3b0") : c;
+    d.style.background=real; d.title=i===0?"theme":real;
+    d.addEventListener("click",function(){ swWrap.querySelectorAll(".sw").forEach(function(x){x.classList.remove("on");}); d.classList.add("on");
+      traceColor = c==="__accent__" ? null : c; });
+    swWrap.appendChild(d); });
+
+  // export PNG (composite background so it isn't transparent)
+  document.getElementById("png").addEventListener("click",function(){
+    var ec=document.createElement("canvas"); ec.width=W; ec.height=H; var e=ec.getContext("2d");
+    e.fillStyle="#060d0b"; e.fillRect(0,0,W,H); e.drawImage(cv,0,0);
+    var a=document.createElement("a"); a.href=ec.toDataURL("image/png"); a.download="epicycle.png"; a.click();
+  });
+  // export the reconstructed path as an SVG polyline
+  document.getElementById("svg").addEventListener("click",function(){
+    if(!terms.length) return; var pts=[]; var k=Math.min(count,terms.length);
+    for(var i=0;i<=600;i++){ var p=C.reconstruct(terms,i/600,k); pts.push(p.x.toFixed(1)+","+p.y.toFixed(1)); }
+    var col=traceColor||getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'"><rect width="'+W+'" height="'+H+'" fill="#060d0b"/><polyline points="'+pts.join(" ")+'" fill="none" stroke="'+col+'" stroke-width="3" stroke-linejoin="round"/></svg>';
+    var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([svg],{type:"image/svg+xml"})); a.download="epicycle.svg"; a.click();
+  });
+  // record video (webm) if supported
+  var recBtn=document.getElementById("rec"), recorder=null, chunks=[];
+  recBtn.addEventListener("click",function(){
+    if(recorder){ recorder.stop(); return; }
+    if(typeof MediaRecorder==="undefined" || !cv.captureStream){ recBtn.textContent="Recording not supported"; recBtn.disabled=true; return; }
+    try{
+      var stream=cv.captureStream(30); chunks=[];
+      var mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" : "video/webm";
+      recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:6000000});
+      recorder.ondataavailable=function(ev){ if(ev.data.size) chunks.push(ev.data); };
+      recorder.onstop=function(){ var blob=new Blob(chunks,{type:"video/webm"});
+        var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="epicycle.webm"; a.click();
+        recorder=null; recBtn.textContent="● Record video"; recBtn.classList.add("rec"); };
+      t=0; trail.length=0; playing=true; recorder.start();
+      recBtn.textContent="■ Stop & save"; recBtn.classList.remove("rec");
+    }catch(err){ recBtn.textContent="Recording failed"; }
+  });
+
+  /* ---------- boot: auto-demo so the magic plays in ~5s ---------- */
+  document.getElementById("speedv").textContent=(speedHz).toFixed(1)+"×";
+  setMode("draw");
+  // wait a tick for the display font, then auto-draw a heart
+  setTimeout(function(){ loadPreset("heart"); }, 350);
+  requestAnimationFrame(frame);
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+<!-- AdSense slot (left for later):
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXataXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
+-->
+<!-- Polar.sh "buy me a coffee" slot (left for later) -->
+</body>
+</html>
