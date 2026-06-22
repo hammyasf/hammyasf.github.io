@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WebGPU Path Tracer — real-time ray tracing in your browser</title>
+<meta name="description" content="A real path tracer running entirely on your GPU in the browser. True global illumination, soft shadows, reflections and glass refraction, accumulated in real time. No install, no upload, nothing leaves your device." />
+<meta name="keywords" content="webgpu path tracer, path tracing in browser, real time ray tracing online, ray tracer online, webgpu ray tracing, global illumination demo, gpu ray tracing browser, cornell box, path tracer online, monte carlo rendering" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="WebGPU Path Tracer — real-time ray tracing in your browser" />
+<meta property="og:description" content="A real Monte Carlo path tracer running on your GPU, in a browser tab. Global illumination, soft shadows, reflections and glass. Nothing is uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/path-tracer.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="WebGPU Path Tracer — real-time ray tracing in your browser" />
+<meta name="twitter:description" content="A real path tracer on your GPU, in a browser tab. Global illumination, soft shadows, reflections, glass. No install." />
+<link rel="canonical" href="https://hammyasf.github.io/path-tracer.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"WebGPU Path Tracer","url":"https://hammyasf.github.io/path-tracer.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (browser with WebGPU)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time Monte Carlo path tracer that runs entirely on your GPU in the browser, with global illumination, soft shadows, reflections and glass refraction.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this really ray tracing, or a video?","acceptedAnswer":{"@type":"Answer","text":"It is a real path tracer. Every frame your GPU shoots rays from the camera, bounces them around the scene, and samples light the same way an offline renderer does. The image is computed live on your machine, not streamed."}},{"@type":"Question","name":"Does it run on a server?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs on your own GPU through the WebGPU API. Nothing is uploaded and there is no backend. You can disconnect from the internet after the page loads and it keeps rendering."}},{"@type":"Question","name":"Why does the image start noisy and then clean up?","acceptedAnswer":{"@type":"Answer","text":"Path tracing is a Monte Carlo method. Each frame adds one new random sample per pixel and averages it with the previous frames, so the picture converges from grainy to smooth the longer you leave it still."}},{"@type":"Question","name":"What do I need to run it?","acceptedAnswer":{"@type":"Answer","text":"A browser with WebGPU enabled, such as a recent Chrome, Edge, or Safari on a reasonably modern machine. If WebGPU is unavailable the page will tell you instead of breaking."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:22px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .stage{position:relative;width:100%;aspect-ratio:16/10;background:#05090a;}
+  .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;}
+  .stage canvas:active{cursor:grabbing;}
+  .hud{position:absolute;left:14px;top:12px;font-family:var(--mono);font-size:12px;color:var(--muted);background:rgba(5,9,10,.55);border:1px solid var(--line);padding:7px 11px;border-radius:10px;backdrop-filter:blur(6px);pointer-events:none;line-height:1.5;}
+  .hud b{color:var(--accent);}
+  .hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:11.5px;color:var(--faint);background:rgba(5,9,10,.5);border:1px solid var(--line);padding:6px 10px;border-radius:10px;pointer-events:none;}
+  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;background:rgba(5,9,10,.92);z-index:5;}
+  .overlay div{max-width:520px;}
+  .overlay h3{font-family:var(--display);font-weight:600;font-size:22px;margin-bottom:10px;}
+  .overlay p{color:var(--muted);font-size:15px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:18px 22px;align-items:flex-end;border-top:1px solid var(--line);}
+  .ctl{display:flex;flex-direction:column;gap:7px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  input[type=range]{accent-color:var(--accent);width:150px;}
+  .rangewrap{display:flex;align-items:center;gap:10px;}
+  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:30px;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 22px 20px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:780px;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;max-width:780px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.controls{gap:14px 18px;}input[type=range]{width:120px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs on your GPU</div>
+    <h1>WebGPU Path Tracer</h1>
+    <p class="sub">A real Monte Carlo path tracer, rendering in a browser tab. Drag to orbit and the image accumulates samples in real time — true global illumination, soft shadows, mirror reflections and glass. Nothing is uploaded; it all runs on your own graphics card.</p>
+    <span class="priv">&#9889; 100% on-device — your GPU does every ray, no server</span>
+  </header>
+
+  <div class="panel">
+    <div class="stage" id="stage">
+      <canvas id="cv"></canvas>
+      <div class="hud" id="hud">starting&hellip;</div>
+      <div class="hint">drag to orbit · scroll to zoom</div>
+      <div class="overlay" id="overlay" style="display:none"><div>
+        <h3 id="ovh">WebGPU not available</h3>
+        <p id="ovp">This path tracer needs WebGPU, which your browser does not seem to expose. Try the latest Chrome or Edge on desktop, or Safari 18+, then reload. Everything else on the page still works.</p>
+      </div></div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Scene</label>
+        <div class="seg" id="scene">
+          <button data-s="0" class="on">Studio</button>
+          <button data-s="1">Cornell box</button>
+        </div>
+      </div>
+      <div class="ctl"><label>Center sphere</label>
+        <div class="seg" id="mat">
+          <button data-m="2" class="on">Glass</button>
+          <button data-m="1">Metal</button>
+          <button data-m="0">Diffuse</button>
+        </div>
+      </div>
+      <div class="ctl"><label>Light bounces</label>
+        <div class="rangewrap"><input type="range" id="bounces" min="2" max="10" value="6" /><span class="qval" id="bouncesv">6</span></div>
+      </div>
+      <div class="ctl"><label>Roughness</label>
+        <div class="rangewrap"><input type="range" id="rough" min="0" max="40" value="3" /><span class="qval" id="roughv">.03</span></div>
+      </div>
+      <div class="ctl"><label id="lightlbl">Light</label>
+        <div class="rangewrap"><input type="range" id="light" min="20" max="260" value="100" /><span class="qval" id="lightv">1.0</span></div>
+      </div>
+      <div class="ctl"><label>Exposure</label>
+        <div class="rangewrap"><input type="range" id="exp" min="30" max="260" value="100" /><span class="qval" id="expv">1.0</span></div>
+      </div>
+      <div class="ctl"><label>Quality</label>
+        <div class="seg" id="qual">
+          <button data-q="0">Fast</button>
+          <button data-q="1" class="on">Balanced</button>
+          <button data-q="2">Sharp</button>
+        </div>
+      </div>
+    </div>
+    <div class="bar">
+      <button class="btn" id="pause">Pause</button>
+      <button class="btn btn-out" id="reset">Reset view</button>
+      <button class="btn btn-out" id="save">Save PNG</button>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How does this run in a browser?</h2>
+    <p>For a long time, ray tracing meant a render farm and a long wait. This page does it live on your own machine using WebGPU, the new browser standard for talking to your graphics card directly. The whole renderer is a pair of shader programs compiled and run on your GPU. There is no server in the loop, no upload, and no install — once the page loads you could pull the network cable and it would keep rendering.</p>
+    <h2>What a path tracer actually does</h2>
+    <p>For every pixel, the GPU fires a ray out of the camera into the scene. When that ray hits a surface it picks a new random direction to bounce, and keeps bouncing until it either reaches a light or runs out of bounces. Doing this honestly is what gives you the things that are painful to fake: colour bleeding between surfaces, soft shadows with real penumbra, mirrors that reflect each other, and glass that bends light through refraction. The trade is noise — a single ray per pixel is a rough guess.</p>
+    <h2>Why it starts grainy and cleans up</h2>
+    <p>This is Monte Carlo rendering. Each frame adds one fresh random sample per pixel and averages it into everything drawn before, so the picture converges from speckled to smooth the longer you hold still. Move the camera and accumulation restarts, which is why it looks noisy while you drag and then resolves the moment you let go. The sample counter in the top-left tells you how many frames have been averaged.</p>
+    <h2>Try this</h2>
+    <p>Switch the centre sphere to glass and watch it refract the room behind it, then to metal to turn it into a mirror that reflects the other spheres. Open the Cornell box scene to see the classic global-illumination test — notice how the red and green walls tint the white surfaces near them, light that no direct lamp is casting. Push light bounces up for richer indirect light, or down for speed.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is this real ray tracing or a pre-rendered video?</summary><p>Real. Every frame is computed on your GPU from the current camera and settings. Change anything and it re-renders from scratch, which a video could not do.</p></details>
+    <details><summary>Does anything get uploaded?</summary><p>No. There is no backend at all. The renderer is pure client-side WebGPU, so nothing about the scene or your machine leaves the page.</p></details>
+    <details><summary>It says WebGPU is unavailable — why?</summary><p>WebGPU needs a recent browser and a supported GPU. Use the latest Chrome or Edge on desktop, or Safari 18+. On some machines you may need to enable hardware acceleration in browser settings.</p></details>
+    <details><summary>Why is it noisy while I move the camera?</summary><p>Because accumulation resets on any change. A single sample per pixel is grainy by nature; the image is meant to be read after you stop moving and let the frames pile up.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build things like this every day.</h3>
+    <p>Senior full-stack engineer, comfortable from GPU shaders to product, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Rendered in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- AdSense / Polar.sh monetization slot (left intentionally empty for later) -->
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<!-- ===== Pure helpers (also unit-tested under node) ===== -->
+<script id="pt-helpers">
+var PT = (function(){
+  function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+  // Build an orthonormal camera basis from orbit angles around a target.
+  // Returns {pos, fwd, right, up} as length-3 arrays. worldUp = (0,1,0).
+  function orbitCamera(target, yaw, pitch, dist){
+    var cp=Math.cos(pitch), sp=Math.sin(pitch);
+    var sy=Math.sin(yaw), cy=Math.cos(yaw);
+    var off=[cp*sy*dist, sp*dist, cp*cy*dist];
+    var pos=[target[0]+off[0], target[1]+off[1], target[2]+off[2]];
+    var fwd=norm([target[0]-pos[0], target[1]-pos[1], target[2]-pos[2]]);
+    var right=norm(cross(fwd,[0,1,0]));
+    // guard against looking straight up/down (fwd parallel to worldUp)
+    if(!isFinite(right[0])||(right[0]===0&&right[1]===0&&right[2]===0)){ right=[1,0,0]; }
+    var up=cross(right,fwd);
+    return {pos:pos, fwd:fwd, right:right, up:up};
+  }
+  function cross(a,b){ return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; }
+  function dot(a,b){ return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]; }
+  function norm(a){ var l=Math.hypot(a[0],a[1],a[2])||1; return [a[0]/l,a[1]/l,a[2]/l]; }
+  function tanHalfFov(fovDeg){ return Math.tan(fovDeg*Math.PI/180/2); }
+  // Compute internal render size from CSS size, a quality scale and devicePixelRatio,
+  // capped so the longest side never exceeds maxSide.
+  function renderSize(cssW, cssH, scale, dpr, maxSide){
+    var d=Math.min(dpr||1, 2);
+    var w=Math.max(2, Math.round(cssW*scale*d));
+    var h=Math.max(2, Math.round(cssH*scale*d));
+    var m=Math.max(w,h);
+    if(m>maxSide){ var k=maxSide/m; w=Math.max(2,Math.round(w*k)); h=Math.max(2,Math.round(h*k)); }
+    return [w,h];
+  }
+  function fmtInt(n){ return n.toLocaleString("en-US"); }
+  return {clamp:clamp, orbitCamera:orbitCamera, cross:cross, dot:dot, norm:norm,
+          tanHalfFov:tanHalfFov, renderSize:renderSize, fmtInt:fmtInt};
+})();
+if(typeof module!=="undefined"&&module.exports){ module.exports=PT; }
+</script>
+
+<!-- ===== WebGPU path tracer ===== -->
+<script id="pt-app">
+(function(){
+  if(typeof module!=="undefined"&&module.exports){ return; } // skip under node
+  var clamp=PT.clamp;
+  var canvas=document.getElementById("cv");
+  var hud=document.getElementById("hud");
+  var overlay=document.getElementById("overlay");
+  var ovh=document.getElementById("ovh"), ovp=document.getElementById("ovp");
+
+  function showOverlay(title,msg){ ovh.textContent=title; ovp.textContent=msg; overlay.style.display="flex"; }
+
+  // ---- scene defaults per scene index ----
+  var SCENES=[
+    { target:[0,1,0], yaw:0.55, pitch:0.18, dist:6.2, fov:32, exposure:1.0, light:1.0, sky:1.0,
+      yawMin:-100, yawMax:100, pitchMin:-0.04, pitchMax:1.45, distMin:2.6, distMax:14 },
+    { target:[0,1,0], yaw:0.0, pitch:0.02, dist:3.9, fov:38, exposure:1.35, light:1.0, sky:0.0,
+      yawMin:-0.9, yawMax:0.9, pitchMin:-0.35, pitchMax:0.95, distMin:2.7, distMax:7 }
+  ];
+
+  // ---- live state ----
+  var st={ scene:0, heroMat:2, bounces:6, roughness:0.03, light:1.0, exposure:1.0,
+           yaw:0.55, pitch:0.18, dist:6.2, qualityScale:0.85, ior:1.5, sky:1.0, target:[0,1,0] };
+  function loadSceneDefaults(i){
+    var s=SCENES[i]; st.scene=i; st.target=s.target.slice();
+    st.yaw=s.yaw; st.pitch=s.pitch; st.dist=s.dist; st.fov=s.fov;
+    st.exposure=s.exposure; st.light=s.light; st.sky=s.sky;
+    document.getElementById("exp").value=Math.round(s.exposure*100);
+    document.getElementById("expv").textContent=s.exposure.toFixed(2);
+    document.getElementById("light").value=Math.round(s.light*100);
+    document.getElementById("lightv").textContent=s.light.toFixed(1);
+    document.getElementById("lightlbl").textContent = i===1 ? "Lamp" : "Sun";
+  }
+  loadSceneDefaults(0);
+
+  var QSCALE=[0.6,0.85,1.0];
+
+  // ---- WGSL ----
+  var WGSL = [
+"struct Uniforms {",
+"  resolution: vec4f,",  // x,y res; z=frame; w=time
+"  camPos: vec4f,",
+"  camFwd: vec4f,",
+"  camRight: vec4f,",
+"  camUp: vec4f,",
+"  params: vec4f,",   // x=tanHalfFov y=maxDepth z=scene w=exposure
+"  params2: vec4f,",  // x=heroMat y=roughness z=light w=ior
+"  params3: vec4f,",  // x=sky y,z,w unused
+"};",
+"@group(0) @binding(0) var<uniform> U: Uniforms;",
+"@group(0) @binding(1) var prevTex: texture_2d<f32>;",
+"",
+"struct VSOut { @builtin(position) pos: vec4f };",
+"@vertex fn vs(@builtin(vertex_index) i:u32) -> @builtin(position) vec4f {",
+"  var p = array<vec2f,3>(vec2f(-1.0,-1.0), vec2f(3.0,-1.0), vec2f(-1.0,3.0));",
+"  return vec4f(p[i], 0.0, 1.0);",
+"}",
+"",
+"const PI:f32 = 3.14159265359;",
+"const EPS:f32 = 0.0012;",
+"",
+"fn rand(state: ptr<function,u32>) -> f32 {",
+"  var s = *state;",
+"  s = s * 747796405u + 2891336453u;",
+"  var word = ((s >> ((s >> 28u) + 4u)) ^ s) * 277803737u;",
+"  word = (word >> 22u) ^ word;",
+"  *state = s;",
+"  return f32(word) / 4294967295.0;",
+"}",
+"fn randUnit(seed: ptr<function,u32>) -> vec3f {",
+"  let z = rand(seed)*2.0 - 1.0;",
+"  let a = rand(seed)*2.0*PI;",
+"  let r = sqrt(max(0.0, 1.0 - z*z));",
+"  return vec3f(r*cos(a), r*sin(a), z);",
+"}",
+"fn onb(n: vec3f) -> mat3x3<f32> {",
+"  let a = select(vec3f(1.0,0.0,0.0), vec3f(0.0,0.0,1.0), abs(n.x) > 0.9);",
+"  let t = normalize(cross(a, n));",
+"  let b = cross(n, t);",
+"  return mat3x3<f32>(t, b, n);",
+"}",
+"fn cosineHemisphere(n: vec3f, r1: f32, r2: f32) -> vec3f {",
+"  let phi = 2.0*PI*r1;",
+"  let r = sqrt(r2);",
+"  let v = vec3f(r*cos(phi), r*sin(phi), sqrt(max(0.0, 1.0 - r2)));",
+"  return normalize(onb(n) * v);",
+"}",
+"fn schlick(cosine: f32, ior: f32) -> f32 {",
+"  var r0 = (1.0 - ior) / (1.0 + ior);",
+"  r0 = r0*r0;",
+"  return r0 + (1.0 - r0) * pow(1.0 - cosine, 5.0);",
+"}",
+"fn aces(x: vec3f) -> vec3f {",
+"  let a=2.51; let b=0.03; let c=2.43; let d=0.59; let e=0.14;",
+"  return clamp((x*(a*x+b))/(x*(c*x+d)+e), vec3f(0.0), vec3f(1.0));",
+"}",
+"",
+"struct Hit { t:f32, pos:vec3f, nrm:vec3f, mat:i32, albedo:vec3f, emission:vec3f, rough:f32 };",
+"",
+"fn hitSphere(ro:vec3f, rd:vec3f, c:vec3f, r:f32) -> f32 {",
+"  let oc = ro - c;",
+"  let b = dot(oc, rd);",
+"  let cc = dot(oc, oc) - r*r;",
+"  let disc = b*b - cc;",
+"  if (disc < 0.0) { return -1.0; }",
+"  let s = sqrt(disc);",
+"  var t = -b - s;",
+"  if (t > 1e-3) { return t; }",
+"  t = -b + s;",
+"  if (t > 1e-3) { return t; }",
+"  return -1.0;",
+"}",
+"fn trySphere(ro:vec3f, rd:vec3f, c:vec3f, r:f32, mat:i32, alb:vec3f, emis:vec3f, rough:f32, tBest: ptr<function,f32>, h: ptr<function,Hit>) {",
+"  let t = hitSphere(ro, rd, c, r);",
+"  if (t > 0.0 && t < *tBest) {",
+"    *tBest = t;",
+"    let p = ro + rd*t;",
+"    (*h).t = t; (*h).pos = p; (*h).nrm = normalize(p - c);",
+"    (*h).mat = mat; (*h).albedo = alb; (*h).emission = emis; (*h).rough = rough;",
+"  }",
+"}",
+"fn tryQuad(ro:vec3f, rd:vec3f, axis:i32, k:f32, a0:f32, a1:f32, b0:f32, b1:f32, nrm:vec3f, mat:i32, alb:vec3f, emis:vec3f, tBest: ptr<function,f32>, h: ptr<function,Hit>) {",
+"  var t:f32 = -1.0;",
+"  if (axis == 0) { if (abs(rd.x) < 1e-6) { return; } t = (k - ro.x)/rd.x; }",
+"  else if (axis == 1) { if (abs(rd.y) < 1e-6) { return; } t = (k - ro.y)/rd.y; }",
+"  else { if (abs(rd.z) < 1e-6) { return; } t = (k - ro.z)/rd.z; }",
+"  if (t <= 1e-3 || t >= *tBest) { return; }",
+"  let p = ro + rd*t;",
+"  var u:f32; var v:f32;",
+"  if (axis == 0) { u = p.y; v = p.z; }",
+"  else if (axis == 1) { u = p.x; v = p.z; }",
+"  else { u = p.x; v = p.y; }",
+"  if (u < a0 || u > a1 || v < b0 || v > b1) { return; }",
+"  *tBest = t;",
+"  (*h).t = t; (*h).pos = p; (*h).nrm = nrm; (*h).mat = mat;",
+"  (*h).albedo = alb; (*h).emission = emis; (*h).rough = 0.0;",
+"}",
+"",
+"fn skyColor(rd: vec3f) -> vec3f {",
+"  if (U.params.z > 0.5) { return vec3f(0.0); }",
+"  let t = clamp(0.5*(rd.y + 1.0), 0.0, 1.0);",
+"  let horizon = vec3f(0.95, 0.97, 1.0);",
+"  let zenith = vec3f(0.34, 0.54, 0.95);",
+"  var col = mix(horizon, zenith, t) * U.params3.x;",
+"  let sunDir = normalize(vec3f(0.55, 0.72, 0.42));",
+"  let d = max(dot(rd, sunDir), 0.0);",
+"  col += vec3f(1.0, 0.96, 0.86) * pow(d, 720.0) * U.params2.z * 16.0;",
+"  col += vec3f(1.0, 0.92, 0.78) * pow(d, 28.0) * U.params2.z * 0.45;",
+"  return col;",
+"}",
+"",
+"fn sceneHit(ro: vec3f, rd: vec3f, h: ptr<function,Hit>) -> bool {",
+"  var tBest = 1e30;",
+"  let scene = i32(U.params.z);",
+"  let hm = i32(U.params2.x);",
+"  var halb = vec3f(0.90, 0.86, 0.80);",
+"  if (hm == 1) { halb = vec3f(0.97, 0.97, 0.99); }",
+"  if (scene == 0) {",
+"    if (abs(rd.y) > 1e-6) {",
+"      let tg = (0.0 - ro.y)/rd.y;",
+"      if (tg > 1e-3 && tg < tBest) {",
+"        let p = ro + rd*tg;",
+"        if (abs(p.x) < 40.0 && abs(p.z) < 40.0) {",
+"          tBest = tg;",
+"          let cx = i32(floor(p.x)); let cz = i32(floor(p.z));",
+"          let even = ((cx + cz) & 1) == 0;",
+"          let g = select(0.13, 0.34, even);",
+"          (*h).t = tg; (*h).pos = p; (*h).nrm = vec3f(0.0,1.0,0.0);",
+"          (*h).mat = 0; (*h).albedo = vec3f(g); (*h).emission = vec3f(0.0); (*h).rough = 0.0;",
+"        }",
+"      }",
+"    }",
+"    trySphere(ro, rd, vec3f(0.0,1.0,0.0), 1.0, hm, halb, vec3f(0.0), U.params2.y, &tBest, h);",
+"    trySphere(ro, rd, vec3f(-2.15,1.0,-0.1), 1.0, 1, vec3f(1.0,0.78,0.34), vec3f(0.0), 0.04, &tBest, h);",
+"    trySphere(ro, rd, vec3f(2.15,1.0,-0.1), 1.0, 2, vec3f(1.0), vec3f(0.0), 0.0, &tBest, h);",
+"    trySphere(ro, rd, vec3f(0.05,0.4,2.25), 0.4, 0, vec3f(0.95,0.42,0.30), vec3f(0.0), 0.0, &tBest, h);",
+"    trySphere(ro, rd, vec3f(-1.25,0.32,2.0), 0.32, 0, vec3f(0.25,0.55,0.95), vec3f(0.0), 0.0, &tBest, h);",
+"  } else {",
+"    let lr = 1.0; let h2 = 2.0; let zb = -1.0; let zf = 1.0;",
+"    let white = vec3f(0.74); let red = vec3f(0.68,0.06,0.06); let green = vec3f(0.12,0.46,0.16);",
+"    tryQuad(ro, rd, 1, 0.0, -lr, lr, zb, zf, vec3f(0.0,1.0,0.0), 0, white, vec3f(0.0), &tBest, h);",  // floor
+"    tryQuad(ro, rd, 1, h2, -lr, lr, zb, zf, vec3f(0.0,-1.0,0.0), 0, white, vec3f(0.0), &tBest, h);",  // ceiling
+"    tryQuad(ro, rd, 2, zb, -lr, lr, 0.0, h2, vec3f(0.0,0.0,1.0), 0, white, vec3f(0.0), &tBest, h);",  // back
+"    tryQuad(ro, rd, 0, -lr, 0.0, h2, zb, zf, vec3f(1.0,0.0,0.0), 0, red, vec3f(0.0), &tBest, h);",   // left
+"    tryQuad(ro, rd, 0, lr, 0.0, h2, zb, zf, vec3f(-1.0,0.0,0.0), 0, green, vec3f(0.0), &tBest, h);", // right
+"    let emis = vec3f(1.0,0.86,0.62) * U.params2.z * 14.0;",
+"    tryQuad(ro, rd, 1, h2-0.002, -0.35, 0.35, -0.35, 0.35, vec3f(0.0,-1.0,0.0), 3, vec3f(0.0), emis, &tBest, h);", // lamp
+"    trySphere(ro, rd, vec3f(-0.42,0.5,-0.18), 0.5, 1, vec3f(0.95), vec3f(0.0), 0.02, &tBest, h);",
+"    trySphere(ro, rd, vec3f(0.44,0.35,0.38), 0.35, hm, halb, vec3f(0.0), U.params2.y, &tBest, h);",
+"  }",
+"  return tBest < 1e29;",
+"}",
+"",
+"fn radiance(ro_in: vec3f, rd_in: vec3f, seed: ptr<function,u32>) -> vec3f {",
+"  var ro = ro_in; var rd = rd_in;",
+"  var throughput = vec3f(1.0);",
+"  var L = vec3f(0.0);",
+"  let maxd = i32(U.params.y);",
+"  for (var depth = 0; depth < 12; depth = depth + 1) {",
+"    if (depth >= maxd) { break; }",
+"    var h: Hit;",
+"    if (!sceneHit(ro, rd, &h)) { L += throughput * skyColor(rd); break; }",
+"    L += throughput * h.emission;",
+"    if (h.mat == 0) {",
+"      let nd = cosineHemisphere(h.nrm, rand(seed), rand(seed));",
+"      ro = h.pos + h.nrm*EPS; rd = nd;",
+"      throughput *= h.albedo;",
+"    } else if (h.mat == 1) {",
+"      var refl = reflect(rd, h.nrm);",
+"      refl = normalize(refl + h.rough * randUnit(seed));",
+"      if (dot(refl, h.nrm) <= 0.0) { break; }",
+"      ro = h.pos + h.nrm*EPS; rd = refl;",
+"      throughput *= h.albedo;",
+"    } else if (h.mat == 3) {",
+"      break;",
+"    } else {",
+"      let ior = U.params2.w;",
+"      var n = h.nrm;",
+"      var eta = 1.0/ior;",
+"      var cosi = dot(-rd, h.nrm);",
+"      if (cosi < 0.0) { n = -h.nrm; eta = ior; cosi = dot(-rd, n); }",
+"      let k = 1.0 - eta*eta*(1.0 - cosi*cosi);",
+"      var dir: vec3f;",
+"      let fres = schlick(cosi, ior);",
+"      if (k < 0.0 || rand(seed) < fres) { dir = reflect(rd, n); }",
+"      else { dir = normalize(eta*rd + (eta*cosi - sqrt(k))*n); }",
+"      ro = h.pos + dir*EPS; rd = dir;",
+"    }",
+"    if (depth > 2) {",
+"      let p = max(throughput.r, max(throughput.g, throughput.b));",
+"      if (rand(seed) > p) { break; }",
+"      throughput /= max(p, 0.001);",
+"    }",
+"  }",
+"  return L;",
+"}",
+"",
+"@fragment fn fsTrace(@builtin(position) fc: vec4f) -> @location(0) vec4f {",
+"  let res = U.resolution.xy;",
+"  let frame = U.resolution.z;",
+"  var seed = ((u32(fc.x) * 1973u) ^ (u32(fc.y) * 9277u) ^ (u32(frame) * 26699u)) | 1u;",
+"  let jx = rand(&seed); let jy = rand(&seed);",
+"  let aspect = res.x / res.y;",
+"  let ndcx = (fc.x + jx)/res.x * 2.0 - 1.0;",
+"  let ndcy = 1.0 - (fc.y + jy)/res.y * 2.0;",
+"  let th = U.params.x;",
+"  let dir = normalize(U.camFwd.xyz + ndcx*th*aspect*U.camRight.xyz + ndcy*th*U.camUp.xyz);",
+"  let ro = U.camPos.xyz;",
+"  var sample = radiance(ro, dir, &seed);",
+"  sample = clamp(sample, vec3f(0.0), vec3f(64.0));",
+"  let prev = textureLoad(prevTex, vec2i(i32(fc.x), i32(fc.y)), 0).rgb;",
+"  var outc: vec3f;",
+"  if (frame <= 1.0) { outc = sample; } else { outc = prev + (sample - prev)/frame; }",
+"  return vec4f(outc, 1.0);",
+"}",
+"",
+"@fragment fn fsPresent(@builtin(position) fc: vec4f) -> @location(0) vec4f {",
+"  let c = textureLoad(prevTex, vec2i(i32(fc.x), i32(fc.y)), 0).rgb;",
+"  let mapped = aces(c * U.params.w);",
+"  let g = pow(mapped, vec3f(1.0/2.2));",
+"  return vec4f(g, 1.0);",
+"}"
+  ].join("\n");
+
+  // ---- GPU bootstrap ----
+  var device, ctx, format, uBuf, tracePipe, presentPipe, bgl;
+  var texA, texB, viewA, viewB, bgPrevA, bgPrevB;
+  var rw=0, rh=0;
+  var accFrames=0, srcIsA=true, paused=false, pendingCapture=false;
+  var lastResetTime=0, introUntil=0, interacted=false;
+  var uData=new Float32Array(32);
+
+  function setUniforms(){
+    var cam=PT.orbitCamera(st.target, st.yaw, st.pitch, st.dist);
+    var th=PT.tanHalfFov(st.fov);
+    uData[0]=rw; uData[1]=rh; uData[2]=accFrames; uData[3]=performance.now()*0.001;
+    uData[4]=cam.pos[0]; uData[5]=cam.pos[1]; uData[6]=cam.pos[2]; uData[7]=0;
+    uData[8]=cam.fwd[0]; uData[9]=cam.fwd[1]; uData[10]=cam.fwd[2]; uData[11]=0;
+    uData[12]=cam.right[0]; uData[13]=cam.right[1]; uData[14]=cam.right[2]; uData[15]=0;
+    uData[16]=cam.up[0]; uData[17]=cam.up[1]; uData[18]=cam.up[2]; uData[19]=0;
+    uData[20]=th; uData[21]=st.bounces; uData[22]=st.scene; uData[23]=st.exposure;
+    uData[24]=st.heroMat; uData[25]=st.roughness; uData[26]=st.light; uData[27]=st.ior;
+    uData[28]=st.sky; uData[29]=0; uData[30]=0; uData[31]=0;
+    device.queue.writeBuffer(uBuf, 0, uData);
+  }
+
+  function makeTextures(w,h){
+    if(texA){ texA.destroy(); texB.destroy(); }
+    rw=w; rh=h;
+    var usage=GPUTextureUsage.RENDER_ATTACHMENT|GPUTextureUsage.TEXTURE_BINDING;
+    texA=device.createTexture({size:[w,h],format:"rgba16float",usage:usage});
+    texB=device.createTexture({size:[w,h],format:"rgba16float",usage:usage});
+    viewA=texA.createView(); viewB=texB.createView();
+    bgPrevA=device.createBindGroup({layout:bgl,entries:[{binding:0,resource:{buffer:uBuf}},{binding:1,resource:viewA}]});
+    bgPrevB=device.createBindGroup({layout:bgl,entries:[{binding:0,resource:{buffer:uBuf}},{binding:1,resource:viewB}]});
+    resetAccum();
+  }
+
+  function resetAccum(){ accFrames=0; srcIsA=true; }
+
+  function resize(){
+    var r=canvas.getBoundingClientRect();
+    var size=PT.renderSize(r.width||960, r.height||600, QSCALE[qIndex], window.devicePixelRatio||1, 1600);
+    canvas.width=size[0]; canvas.height=size[1];
+    if(device) makeTextures(size[0], size[1]);
+  }
+
+  var qIndex=1;
+
+  function frame(){
+    if(!device){ return; }
+    if(!paused){
+      // auto-orbit intro until first interaction
+      if(!interacted && performance.now()<introUntil){ st.yaw+=0.0032; resetAccum(); }
+      accFrames++;
+      setUniforms();
+      var srcView = srcIsA ? viewA : viewB;   // holds running mean so far
+      var dstView = srcIsA ? viewB : viewA;   // we render into here
+      var bgPrev  = srcIsA ? bgPrevA : bgPrevB; // prevTex = src
+      var enc=device.createCommandEncoder();
+      var tp=enc.beginRenderPass({colorAttachments:[{view:dstView,loadOp:"clear",clearValue:{r:0,g:0,b:0,a:1},storeOp:"store"}]});
+      tp.setPipeline(tracePipe); tp.setBindGroup(0,bgPrev); tp.draw(3); tp.end();
+      // present from dst (the freshly written mean)
+      var bgDst = srcIsA ? bgPrevB : bgPrevA; // prevTex = dst
+      var pp=enc.beginRenderPass({colorAttachments:[{view:ctx.getCurrentTexture().createView(),loadOp:"clear",clearValue:{r:0,g:0,b:0,a:1},storeOp:"store"}]});
+      pp.setPipeline(presentPipe); pp.setBindGroup(0,bgDst); pp.draw(3); pp.end();
+      device.queue.submit([enc.finish()]);
+      srcIsA=!srcIsA;
+      if(pendingCapture){ pendingCapture=false; doCapture(); }
+      updateHud();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function updateHud(){
+    var spp=accFrames;
+    hud.innerHTML="<b>"+PT.fmtInt(spp)+"</b> samples · "+rw+"&times;"+rh+(gpuName?(" · "+gpuName):"");
+  }
+
+  function doCapture(){
+    try{
+      canvas.toBlob(function(b){
+        if(!b){ return; }
+        var a=document.createElement("a"); a.href=URL.createObjectURL(b);
+        a.download="photon-render.png"; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+      }, "image/png");
+    }catch(e){}
+  }
+
+  var gpuName="";
+
+  async function boot(){
+    if(!navigator.gpu){ showOverlay("WebGPU not available","This path tracer needs WebGPU, which your browser does not expose. Try the latest Chrome or Edge on desktop, or Safari 18+, then reload."); return; }
+    var adapter;
+    try{ adapter=await navigator.gpu.requestAdapter({powerPreference:"high-performance"}); }catch(e){}
+    if(!adapter){ showOverlay("No GPU adapter","WebGPU is present but no graphics adapter was returned. On some machines you need to enable hardware acceleration in your browser settings, then reload."); return; }
+    try{
+      var info = adapter.info || (adapter.requestAdapterInfo ? await adapter.requestAdapterInfo() : null);
+      if(info){ gpuName = (info.description||info.vendor||"").toString().slice(0,28); }
+    }catch(e){}
+    try{ device=await adapter.requestDevice(); }catch(e){ showOverlay("Could not start WebGPU","Requesting a GPU device failed: "+(e&&e.message?e.message:e)); return; }
+    device.lost.then(function(i){ showOverlay("GPU device lost","The graphics device was lost ("+(i&&i.reason?i.reason:"unknown")+"). Reload to restart the renderer."); });
+
+    ctx=canvas.getContext("webgpu");
+    format=navigator.gpu.getPreferredCanvasFormat();
+    ctx.configure({device:device,format:format,alphaMode:"opaque"});
+
+    var module=device.createShaderModule({code:WGSL});
+    // surface any shader compile errors clearly
+    try{
+      var ci=await module.getCompilationInfo();
+      var errs=(ci.messages||[]).filter(function(m){return m.type==="error";});
+      if(errs.length){ showOverlay("Shader failed to compile", errs[0].message+" (line "+errs[0].lineNum+")"); return; }
+    }catch(e){}
+
+    uBuf=device.createBuffer({size:uData.byteLength,usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST});
+    bgl=device.createBindGroupLayout({entries:[
+      {binding:0,visibility:GPUShaderStage.FRAGMENT,buffer:{type:"uniform"}},
+      {binding:1,visibility:GPUShaderStage.FRAGMENT,texture:{sampleType:"unfilterable-float"}}
+    ]});
+    var pl=device.createPipelineLayout({bindGroupLayouts:[bgl]});
+    tracePipe=device.createRenderPipeline({layout:pl,vertex:{module:module,entryPoint:"vs"},
+      fragment:{module:module,entryPoint:"fsTrace",targets:[{format:"rgba16float"}]},primitive:{topology:"triangle-list"}});
+    presentPipe=device.createRenderPipeline({layout:pl,vertex:{module:module,entryPoint:"vs"},
+      fragment:{module:module,entryPoint:"fsPresent",targets:[{format:format}]},primitive:{topology:"triangle-list"}});
+
+    resize();
+    introUntil=performance.now()+7000;
+    requestAnimationFrame(frame);
+  }
+
+  // ---- interaction ----
+  function markInteract(){ interacted=true; resetAccum(); }
+  var dragging=false, px=0, py=0;
+  canvas.addEventListener("pointerdown",function(e){ dragging=true; px=e.clientX; py=e.clientY; markInteract(); try{canvas.setPointerCapture(e.pointerId);}catch(_){} });
+  canvas.addEventListener("pointermove",function(e){
+    if(!dragging) return;
+    var dx=e.clientX-px, dy=e.clientY-py; px=e.clientX; py=e.clientY;
+    var s=SCENES[st.scene];
+    st.yaw -= dx*0.005;
+    st.pitch = clamp(st.pitch + dy*0.005, s.pitchMin, s.pitchMax);
+    if(st.scene===1){ st.yaw=clamp(st.yaw, s.yawMin, s.yawMax); }
+    resetAccum();
+  });
+  function endDrag(e){ dragging=false; try{canvas.releasePointerCapture(e.pointerId);}catch(_){} }
+  canvas.addEventListener("pointerup",endDrag);
+  canvas.addEventListener("pointercancel",endDrag);
+  canvas.addEventListener("wheel",function(e){
+    e.preventDefault(); markInteract();
+    var s=SCENES[st.scene];
+    st.dist=clamp(st.dist*(1+(e.deltaY>0?0.08:-0.08)), s.distMin, s.distMax);
+  },{passive:false});
+
+  // ---- controls ----
+  function segPick(id, attr, cb){
+    var box=document.getElementById(id);
+    box.querySelectorAll("button").forEach(function(b){
+      b.addEventListener("click",function(){
+        box.querySelectorAll("button").forEach(function(x){x.classList.remove("on");});
+        b.classList.add("on"); cb(b.getAttribute(attr));
+      });
+    });
+  }
+  segPick("scene","data-s",function(v){ loadSceneDefaults(parseInt(v,10)); markInteract(); });
+  segPick("mat","data-m",function(v){ st.heroMat=parseInt(v,10); resetAccum(); });
+  segPick("qual","data-q",function(v){ qIndex=parseInt(v,10); resize(); });
+  var bsl=document.getElementById("bounces"), bv=document.getElementById("bouncesv");
+  bsl.addEventListener("input",function(){ st.bounces=parseInt(bsl.value,10); bv.textContent=bsl.value; resetAccum(); });
+  var rsl=document.getElementById("rough"), rv=document.getElementById("roughv");
+  rsl.addEventListener("input",function(){ st.roughness=parseInt(rsl.value,10)/100; rv.textContent="."+("0"+rsl.value).slice(-2); resetAccum(); });
+  var lsl=document.getElementById("light"), lv=document.getElementById("lightv");
+  lsl.addEventListener("input",function(){ st.light=parseInt(lsl.value,10)/100; lv.textContent=st.light.toFixed(1); resetAccum(); });
+  var esl=document.getElementById("exp"), ev=document.getElementById("expv");
+  esl.addEventListener("input",function(){ st.exposure=parseInt(esl.value,10)/100; ev.textContent=st.exposure.toFixed(2); resetAccum(); });
+  document.getElementById("pause").addEventListener("click",function(){
+    paused=!paused; this.textContent=paused?"Resume":"Pause"; if(!paused){ requestAnimationFrame(frame); }
+  });
+  document.getElementById("reset").addEventListener("click",function(){ loadSceneDefaults(st.scene); markInteract(); });
+  document.getElementById("save").addEventListener("click",function(){ pendingCapture=true; if(paused){ paused=false; document.getElementById("pause").textContent="Pause"; requestAnimationFrame(frame);} });
+
+  var rt;
+  window.addEventListener("resize",function(){ clearTimeout(rt); rt=setTimeout(resize,150); });
+
+  boot();
+})();
+</script>
+
+<!-- Analytics: Cloudflare Web Analytics beacon -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
