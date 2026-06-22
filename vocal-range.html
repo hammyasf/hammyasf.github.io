@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vocal Range Finder — test your singing range in your browser</title>
+<meta name="description" content="Find your vocal range by singing your lowest and highest notes. A real-time pitch tracker runs entirely in your browser, then tells you your range, octaves, and voice type. 100% private, nothing is uploaded, no sign-up." />
+<meta name="keywords" content="vocal range test, vocal range finder, what is my vocal range, find my vocal range, voice type test, am i a tenor or baritone, singing range test, pitch detector, soprano alto tenor bass test" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Vocal Range Finder — test your singing range" />
+<meta property="og:description" content="Sing your lowest and highest notes and find your vocal range, octaves, and voice type. Real-time, in your browser, nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/vocal-range.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Vocal Range Finder — test your singing range" />
+<meta name="twitter:description" content="Find your vocal range and voice type in real time, in your browser. Private, no sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/vocal-range.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Vocal Range Finder","url":"https://hammyasf.github.io/vocal-range.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Find your vocal range and voice type by singing. Real-time pitch detection runs entirely in the browser, nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my microphone audio uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The pitch detection runs entirely in your browser using the Web Audio API. Your microphone audio never leaves your device and nothing is recorded or uploaded."}},{"@type":"Question","name":"How does it figure out my vocal range?","acceptedAnswer":{"@type":"Answer","text":"As you sing, it tracks the pitch of your voice many times a second using the McLeod Pitch Method. It keeps the lowest and highest clear notes you reach, then reports the span between them in notes and octaves."}},{"@type":"Question","name":"How accurate is the voice type result?","acceptedAnswer":{"@type":"Answer","text":"Voice type is an approximation based on where your comfortable range sits relative to the standard classical categories (bass, baritone, tenor, alto, mezzo-soprano, soprano). A real vocal coach also considers your tone and tessitura, so treat it as a fun guide, not a verdict."}},{"@type":"Question","name":"What is a normal vocal range?","acceptedAnswer":{"@type":"Answer","text":"Most untrained adults have a comfortable range of about 1.5 to 2 octaves. Trained singers often reach 3 octaves or more. The numbers vary by source and by how hard you push your highest and lowest notes."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .start{padding:46px 24px;text-align:center;}
+  .start h2{font-family:var(--display);font-weight:600;font-size:24px;}
+  .start p{color:var(--muted);font-size:15px;margin-top:10px;max-width:520px;margin-left:auto;margin-right:auto;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .live{display:none;padding:20px 24px 26px;}
+  .live.on{display:block;}
+  .now{display:flex;align-items:flex-end;justify-content:center;gap:18px;text-align:center;margin:6px 0 6px;}
+  .note{font-family:var(--display);font-weight:700;font-size:clamp(64px,16vw,128px);line-height:.92;letter-spacing:-.03em;}
+  .note .oct{font-size:.42em;color:var(--muted);vertical-align:super;}
+  .note.silent{color:var(--faint);opacity:.5;}
+  .nowmeta{font-family:var(--mono);font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:8px;padding-bottom:10px;min-width:120px;text-align:left;}
+  .nowmeta b{color:var(--accent);}
+  .cents{height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.8);border:1px solid var(--line);position:relative;overflow:hidden;}
+  .cents .mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line-2);}
+  .cents .nd{position:absolute;top:-2px;width:3px;height:12px;border-radius:2px;background:var(--accent);transform:translateX(-50%);transition:left .08s linear,background .1s;}
+  .clarity{height:6px;border-radius:6px;background:rgba(var(--surfaceRGB),.8);border:1px solid var(--line);overflow:hidden;}
+  .clarity .f{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .1s;}
+  canvas{display:block;width:100%;border-radius:14px;background:rgba(var(--surfaceRGB),.5);border:1px solid var(--line);}
+  #trail{height:120px;margin:16px 0 4px;}
+  .pianowrap{margin:14px 0 4px;}
+  #piano{height:96px;}
+  .rangebar{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;justify-content:space-between;margin:16px 0 4px;}
+  .rng{font-family:var(--mono);font-size:14px;color:var(--muted);}
+  .rng b{color:var(--accent);font-size:18px;}
+  .rng .dim{color:var(--faint);font-size:12px;}
+  .live .bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+  .hint{font-family:var(--mono);font-size:12.5px;color:var(--faint);margin-top:12px;text-align:center;}
+  .hint b{color:var(--accent);}
+  /* results */
+  .result{display:none;padding:24px;}
+  .result.on{display:block;}
+  .rverdict{text-align:center;padding:10px 0 18px;}
+  .rverdict .vt{font-family:var(--display);font-weight:700;font-size:clamp(34px,7vw,56px);letter-spacing:-.02em;}
+  .rverdict .rspan{font-family:var(--mono);font-size:18px;color:var(--accent);margin-top:6px;}
+  .rverdict .rdesc{color:#cdd8d3;font-size:15.5px;margin:12px auto 0;max-width:560px;}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0;}
+  .stat{border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center;background:rgba(var(--surfaceRGB),.4);}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:26px;color:var(--accent);}
+  .stat .l{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:4px;}
+  .compare{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:rgba(var(--surfaceRGB),.4);font-size:14.5px;color:#cdd8d3;}
+  .compare b{color:var(--accent);}
+  #cardCanvas{margin:18px 0 6px;height:auto;}
+  @media(max-width:560px){.stats{grid-template-columns:1fr;}.now{flex-direction:column;align-items:center;gap:4px;}.nowmeta{text-align:center;align-items:center;}}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .vtable{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px;}
+  .vtable th,.vtable td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);}
+  .vtable th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);font-weight:500;}
+  .vtable td:first-child{color:var(--ink);font-weight:600;}
+  .vtable td .n{font-family:var(--mono);color:var(--accent);}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Vocal Range Finder</h1>
+    <p class="sub">Sing your lowest note, then slide up to your highest. It tracks your pitch live and tells you your range, how many octaves you cover, and your voice type.</p>
+    <span class="priv">&#128274; 100% private — your mic audio never leaves your device</span>
+  </header>
+
+  <div class="panel">
+    <!-- START STATE -->
+    <div class="start" id="start">
+      <h2>Let's find your range</h2>
+      <p>Allow your microphone, then sing low to high. Sing a clear "ah" and hold each note for a second. The more you stretch your lowest and highest, the more accurate it gets.</p>
+      <div style="margin-top:20px;"><button class="btn" id="startBtn">&#127908; Start microphone</button></div>
+      <p id="capWarn" style="margin-top:14px;color:var(--faint);font-size:13px;"></p>
+    </div>
+
+    <!-- LIVE STATE -->
+    <div class="live" id="liveBox">
+      <div class="now">
+        <div class="note silent" id="noteEl">—</div>
+        <div class="nowmeta">
+          <div><span id="hzEl">0 Hz</span></div>
+          <div>cents</div>
+          <div class="cents"><div class="mid"></div><div class="nd" id="centsNeedle" style="left:50%"></div></div>
+          <div>signal <b id="clarityPct">0%</b></div>
+          <div class="clarity"><div class="f" id="clarityFill"></div></div>
+        </div>
+      </div>
+
+      <canvas id="trail" width="1200" height="240" aria-label="Live pitch trail"></canvas>
+
+      <div class="pianowrap">
+        <canvas id="piano" width="1200" height="192" aria-label="Piano keyboard showing your captured range"></canvas>
+      </div>
+
+      <div class="rangebar">
+        <div class="rng">Lowest <b id="loNote">—</b></div>
+        <div class="rng">Highest <b id="hiNote">—</b></div>
+        <div class="rng">Span <b id="spanOct">—</b> <span class="dim" id="spanSemis"></span></div>
+      </div>
+
+      <div class="bar">
+        <button class="btn" id="revealBtn" disabled>Reveal my voice type &rarr;</button>
+        <button class="btn btn-out" id="resetBtn">Reset range</button>
+        <button class="btn btn-out" id="stopBtn">Stop mic</button>
+      </div>
+      <div class="hint">Sing your <b>lowest comfortable note</b> first, hold it, then glide up to your <b>highest</b>. Don't strain.</div>
+    </div>
+
+    <!-- RESULT STATE -->
+    <div class="result" id="resultBox">
+      <div class="rverdict">
+        <div class="vt" id="vtName">—</div>
+        <div class="rspan" id="rSpan">—</div>
+        <div class="rdesc" id="rDesc"></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="v" id="sLow">—</div><div class="l">Lowest note</div></div>
+        <div class="stat"><div class="v" id="sHigh">—</div><div class="l">Highest note</div></div>
+        <div class="stat"><div class="v" id="sOct">—</div><div class="l">Octaves</div></div>
+      </div>
+      <div class="compare" id="compareBox"></div>
+      <canvas id="cardCanvas" width="1200" height="630" aria-label="Shareable result card"></canvas>
+      <div class="bar" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+        <button class="btn" id="dlCard">&#11015; Download result card</button>
+        <button class="btn btn-out" id="copyText">Copy result</button>
+        <button class="btn btn-out" id="againBtn">Test again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AdSense / Polar.sh slot (left intentionally empty for later) -->
+  <!-- <div class="ad-slot" data-slot="vocal-range-inline"></div> -->
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>When you sing, your voice produces a fundamental frequency, and that frequency is your pitch. This tool reads your microphone with the Web Audio API and runs a pitch tracker on each short slice of sound, many times a second, using the McLeod Pitch Method — the same family of algorithms used in real tuners. It measures the fundamental, converts it to a musical note, and keeps the lowest and highest clear notes you reach. The span between them is your vocal range. All of this runs on your own machine, so nothing is recorded and nothing is uploaded.</p>
+    <h2>How to get an accurate result</h2>
+    <p>Use a quiet room and sing an open "ah". Start at the bottom: drop to the lowest note you can still hold cleanly, without it turning into a rasp or vocal fry, and hold it for a second so it registers. Then glide upward, note by note, to the highest pitch you can sing without straining or flipping into a breathy whistle. Pushing past what is comfortable does not make you a better singer and can hurt your voice, so stop at your honest limit. If the signal meter is low, move a little closer to the mic.</p>
+    <h2>Voice types, roughly</h2>
+    <p>Singers are loosely grouped by the range that sits most comfortably for them. The result here is an approximation based on where your low and high notes land relative to the standard categories below. Your true voice type also depends on your tone and your tessitura — the part of the range you can sustain with ease — which a vocal coach judges by ear. Treat the label as a starting point, not a diagnosis.</p>
+    <table class="vtable">
+      <thead><tr><th>Voice type</th><th>Typical range</th><th>Voice</th></tr></thead>
+      <tbody>
+        <tr><td>Bass</td><td class="n">E2 – E4</td><td>Lowest male</td></tr>
+        <tr><td>Baritone</td><td class="n">G2 – G4</td><td>Middle male</td></tr>
+        <tr><td>Tenor</td><td class="n">C3 – C5</td><td>Highest male</td></tr>
+        <tr><td>Alto / Contralto</td><td class="n">F3 – F5</td><td>Lowest female</td></tr>
+        <tr><td>Mezzo-soprano</td><td class="n">A3 – A5</td><td>Middle female</td></tr>
+        <tr><td>Soprano</td><td class="n">C4 – C6</td><td>Highest female</td></tr>
+      </tbody>
+    </table>
+    <p>For reference, most untrained adults have a comfortable range of around one and a half to two octaves. Trained singers often reach three octaves or more. Ranges popularly attributed to famous singers — for instance the roughly five octaves often cited for Mariah Carey — are widely circulated approximations that vary a lot by source, so the comparison in your result is meant to be fun rather than exact.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my microphone audio uploaded anywhere?</summary><p>No. The pitch detection runs locally in your browser with the Web Audio API. Your audio is never recorded, stored, or sent to a server. You can confirm it by going offline after the page loads — it keeps working.</p></details>
+    <details><summary>How does it detect my range?</summary><p>It tracks your pitch dozens of times a second and keeps the lowest and highest clear, sustained notes you sing. The span between them, in notes and octaves, is your range.</p></details>
+    <details><summary>Why does it sometimes jump an octave or read nothing?</summary><p>Pitch detection needs a clear, sustained tone. Breathy notes, vocal fry, background noise, or notes held too briefly can confuse it. Sing a steady "ah", get closer to the mic, and watch the signal meter — it only captures notes when the signal is strong and stable.</p></details>
+    <details><summary>How accurate is the voice type?</summary><p>It is an approximation from your range alone. A real classification also weighs your tone and the part of your range you can sustain comfortably, which only a coach can judge by ear. Use it as a fun guide.</p></details>
+    <details><summary>Does it work on my phone?</summary><p>Yes, in most modern mobile browsers. Allow microphone access when prompted. A wired headset mic often gives a cleaner signal than the built-in mic in a noisy room.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var NOTE_NAMES=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+  function freqToMidi(f){ return 69+12*Math.log2(f/440); }
+  function midiToFreq(m){ return 440*Math.pow(2,(m-69)/12); }
+  function midiName(m){ var r=Math.round(m); var n=NOTE_NAMES[((r%12)+12)%12]; var o=Math.floor(r/12)-1; return {name:n,oct:o,label:n+o}; }
+  function accentColor(){ return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#2be3b0'; }
+  function accentRGB(){ return getComputedStyle(document.documentElement).getPropertyValue('--accentRGB').trim()||'43,227,176'; }
+
+  // ---- McLeod Pitch Method pitch detector ----
+  var MIN_F=58, MAX_F=1300; // a touch below C2 to above E6
+  function detectPitch(buf, sr){
+    var SIZE=buf.length, i;
+    var rms=0; for(i=0;i<SIZE;i++){ rms+=buf[i]*buf[i]; } rms=Math.sqrt(rms/SIZE);
+    if(rms<0.012) return {freq:-1,clarity:0,rms:rms};
+    var tauMax=Math.min(SIZE-2, Math.floor(sr/MIN_F));
+    var tauMin=Math.max(2, Math.floor(sr/MAX_F));
+    var nsdf=new Float32Array(tauMax+1);
+    for(var tau=0; tau<=tauMax; tau++){
+      var acf=0, div=0, lim=SIZE-tau;
+      for(i=0;i<lim;i++){ var a=buf[i], b=buf[i+tau]; acf+=a*b; div+=a*a+b*b; }
+      nsdf[tau]= div>0 ? (2*acf/div) : 0;
+    }
+    // peak picking: key maxima between positive zero crossings
+    var peaks=[];
+    var k=tauMin;
+    while(k<=tauMax && nsdf[k]>0) k++;          // skip the initial positive lobe near tau~0
+    while(k<=tauMax){
+      if(nsdf[k]>0){
+        var mx=k;
+        while(k<=tauMax && nsdf[k]>0){ if(nsdf[k]>nsdf[mx]) mx=k; k++; }
+        if(mx>=tauMin) peaks.push(mx);
+      } else { k++; }
+    }
+    if(!peaks.length) return {freq:-1,clarity:0,rms:rms};
+    var maxVal=0; for(i=0;i<peaks.length;i++){ if(nsdf[peaks[i]]>maxVal) maxVal=nsdf[peaks[i]]; }
+    var thresh=0.9*maxVal, chosen=peaks[0];
+    for(i=0;i<peaks.length;i++){ if(nsdf[peaks[i]]>=thresh){ chosen=peaks[i]; break; } }
+    var betterTau=chosen;
+    if(chosen>0 && chosen<tauMax){
+      var x0=nsdf[chosen-1], x1=nsdf[chosen], x2=nsdf[chosen+1];
+      var aa=(x0+x2-2*x1)/2, bb=(x2-x0)/2;
+      if(aa!==0){ var off=-bb/(2*aa); if(off>-1&&off<1) betterTau=chosen+off; }
+    }
+    var freq=sr/betterTau;
+    if(freq<MIN_F||freq>MAX_F) return {freq:-1,clarity:0,rms:rms};
+    return {freq:freq, clarity:maxVal, rms:rms};
+  }
+
+  // ---- elements ----
+  var startBox=document.getElementById('start'), liveBox=document.getElementById('liveBox'), resultBox=document.getElementById('resultBox');
+  var startBtn=document.getElementById('startBtn'), capWarn=document.getElementById('capWarn');
+  var noteEl=document.getElementById('noteEl'), hzEl=document.getElementById('hzEl'), centsNeedle=document.getElementById('centsNeedle'),
+      clarityPct=document.getElementById('clarityPct'), clarityFill=document.getElementById('clarityFill');
+  var loNote=document.getElementById('loNote'), hiNote=document.getElementById('hiNote'), spanOct=document.getElementById('spanOct'), spanSemis=document.getElementById('spanSemis');
+  var revealBtn=document.getElementById('revealBtn'), resetBtn=document.getElementById('resetBtn'), stopBtn=document.getElementById('stopBtn'), againBtn=document.getElementById('againBtn');
+  var trail=document.getElementById('trail'), piano=document.getElementById('piano');
+  var tctx=trail.getContext('2d'), pctx=piano.getContext('2d');
+
+  // capability check
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !(window.AudioContext||window.webkitAudioContext)){
+    capWarn.textContent="Your browser does not support microphone access or the Web Audio API. Try the latest Chrome, Edge, Firefox, or Safari.";
+    startBtn.disabled=true;
+  }
+
+  // ---- state ----
+  var audioCtx=null, analyser=null, micStream=null, srcNode=null, rafId=null;
+  var bufLen=2048, dataBuf=null, sr=48000;
+  var loMidi=null, hiMidi=null;                 // captured extremes (continuous midi)
+  var hist=[];                                  // recent pitch history for median smoothing
+  var trailData=[];                             // {midi, clarity} scrolling
+  var TRAIL_MAX=240;
+  // stable-capture gate
+  var stableMidi=null, stableCount=0;
+  var PIANO_LO=36, PIANO_HI=84;                 // C2..C6 display
+
+  function median(arr){ if(!arr.length) return null; var s=arr.slice().sort(function(a,b){return a-b;}); var m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; }
+
+  function start(){
+    navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}).then(function(stream){
+      micStream=stream;
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      sr=audioCtx.sampleRate;
+      srcNode=audioCtx.createMediaStreamSource(stream);
+      analyser=audioCtx.createAnalyser();
+      analyser.fftSize=4096; bufLen=analyser.fftSize; dataBuf=new Float32Array(bufLen);
+      srcNode.connect(analyser);
+      startBox.style.display='none'; liveBox.classList.add('on'); resultBox.classList.remove('on');
+      fitCanvas();
+      loop();
+    }).catch(function(err){
+      capWarn.textContent="Couldn't access the microphone: "+(err && err.message ? err.message : err)+". Check your browser's mic permission and try again.";
+    });
+  }
+
+  function stop(){
+    if(rafId) cancelAnimationFrame(rafId), rafId=null;
+    if(srcNode) try{srcNode.disconnect();}catch(e){}
+    if(micStream) micStream.getTracks().forEach(function(t){t.stop();});
+    if(audioCtx) try{audioCtx.close();}catch(e){}
+    audioCtx=null; analyser=null; micStream=null; srcNode=null;
+  }
+
+  function resetRange(){ loMidi=null; hiMidi=null; trailData=[]; hist=[]; stableMidi=null; stableCount=0; updateRangeUI(); revealBtn.disabled=true; }
+
+  var lastDetect=0;
+  function loop(){
+    rafId=requestAnimationFrame(loop);
+    if(!analyser) return;
+    var now=performance.now();
+    if(now-lastDetect<22){ drawTrail(); return; } // detect ~45Hz, still draw smoothly
+    lastDetect=now;
+    analyser.getFloatTimeDomainData(dataBuf);
+    var res=detectPitch(dataBuf, sr);
+    var midi=null;
+    if(res.freq>0 && res.clarity>0.82){
+      midi=freqToMidi(res.freq);
+      hist.push(midi); if(hist.length>5) hist.shift();
+    } else {
+      if(hist.length) hist.shift();
+    }
+    var disp = hist.length>=2 ? median(hist) : (midi!==null?midi:null);
+
+    // live readouts
+    if(disp!==null && res.clarity>0.82){
+      var nm=midiName(disp);
+      noteEl.classList.remove('silent');
+      noteEl.innerHTML=nm.name+'<span class="oct">'+nm.oct+'</span>';
+      hzEl.textContent=Math.round(midiToFreq(disp))+' Hz';
+      var cents=(disp-Math.round(disp))*100; // -50..50
+      centsNeedle.style.left=(50+cents)+'%';
+      centsNeedle.style.background = Math.abs(cents)<8 ? accentColor() : '#e8c84a';
+    } else {
+      noteEl.classList.add('silent'); noteEl.textContent='—'; hzEl.textContent='0 Hz';
+    }
+    clarityPct.textContent=Math.round(Math.max(0,res.clarity)*100)+'%';
+    clarityFill.style.width=(Math.max(0,Math.min(1,res.clarity))*100)+'%';
+
+    // stable-capture gate: note must hold steady & clear for a few frames before it counts
+    if(disp!==null && res.clarity>0.9 && res.rms>0.02){
+      if(stableMidi!==null && Math.abs(disp-stableMidi)<0.6){ stableCount++; }
+      else { stableMidi=disp; stableCount=1; }
+      if(stableCount>=3){
+        if(loMidi===null || disp<loMidi) loMidi=disp;
+        if(hiMidi===null || disp>hiMidi) hiMidi=disp;
+        updateRangeUI();
+        if(loMidi!==null && hiMidi!==null && (hiMidi-loMidi)>=4) revealBtn.disabled=false;
+      }
+    } else { stableCount=0; }
+
+    // trail
+    trailData.push({midi: (disp!==null&&res.clarity>0.82)?disp:null, clarity:res.clarity});
+    if(trailData.length>TRAIL_MAX) trailData.shift();
+    drawTrail(); drawPiano(disp, res.clarity);
+  }
+
+  function updateRangeUI(){
+    loNote.textContent = loMidi!==null ? midiName(loMidi).label : '—';
+    hiNote.textContent = hiMidi!==null ? midiName(hiMidi).label : '—';
+    if(loMidi!==null && hiMidi!==null){
+      var semis=Math.round(hiMidi-loMidi);
+      spanOct.textContent=(semis/12).toFixed(1)+' oct';
+      spanSemis.textContent='('+semis+' semitones)';
+    } else { spanOct.textContent='—'; spanSemis.textContent=''; }
+  }
+
+  // ---- drawing ----
+  function fitCanvas(){
+    [trail,piano].forEach(function(c){
+      var w=c.clientWidth||900; var dpr=Math.min(window.devicePixelRatio||1,2);
+      c.width=Math.round(w*dpr); c.height=Math.round(c.clientHeight*dpr);
+      var ctx=c.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+      c._w=w; c._h=c.clientHeight;
+    });
+  }
+  window.addEventListener('resize', function(){ if(analyser){ fitCanvas(); } });
+
+  function drawTrail(){
+    var w=trail._w||trail.width, h=trail._h||trail.height;
+    tctx.clearRect(0,0,w,h);
+    // y maps PIANO_LO..PIANO_HI
+    var lo=PIANO_LO-2, hi=PIANO_HI+2;
+    function y(m){ return h - (m-lo)/(hi-lo)*h; }
+    // captured band
+    if(loMidi!==null && hiMidi!==null){
+      tctx.fillStyle='rgba('+accentRGB()+',.10)';
+      tctx.fillRect(0, y(hiMidi), w, y(loMidi)-y(hiMidi));
+    }
+    // octave gridlines (C notes)
+    tctx.strokeStyle='rgba(237,242,239,.07)'; tctx.lineWidth=1; tctx.font='10px ui-monospace,monospace'; tctx.fillStyle='rgba(147,168,161,.6)';
+    for(var m=Math.ceil(lo/12)*12; m<=hi; m+=12){ var yy=y(m); tctx.beginPath(); tctx.moveTo(0,yy); tctx.lineTo(w,yy); tctx.stroke(); tctx.fillText(midiName(m).label, 4, yy-3); }
+    // trail line
+    var n=trailData.length; if(n>1){
+      var dx=w/TRAIL_MAX;
+      tctx.lineWidth=2.5; tctx.strokeStyle=accentColor(); tctx.lineJoin='round';
+      var drawing=false;
+      for(var i=0;i<n;i++){
+        var d=trailData[i]; var x=w-(n-i)*dx;
+        if(d.midi!==null){
+          if(!drawing){ tctx.beginPath(); tctx.moveTo(x,y(d.midi)); drawing=true; }
+          else tctx.lineTo(x,y(d.midi));
+        } else { if(drawing){ tctx.stroke(); drawing=false; } }
+      }
+      if(drawing) tctx.stroke();
+      // head dot
+      var last=trailData[n-1];
+      if(last.midi!==null){ tctx.fillStyle=accentColor(); tctx.beginPath(); tctx.arc(w-dx, y(last.midi), 4, 0, 7); tctx.fill(); }
+    }
+  }
+
+  function drawPiano(curMidi, clarity){
+    var w=piano._w||piano.width, h=piano._h||piano.height;
+    pctx.clearRect(0,0,w,h);
+    var total=PIANO_HI-PIANO_LO; // semitones across
+    var whiteCount=0, mm; for(mm=PIANO_LO; mm<=PIANO_HI; mm++){ if(!isBlack(mm)) whiteCount++; }
+    var ww=w/whiteCount;
+    // first pass white keys
+    var idx=0; var whiteX={};
+    for(mm=PIANO_LO; mm<=PIANO_HI; mm++){
+      if(isBlack(mm)) continue;
+      var x=idx*ww; whiteX[mm]=x;
+      var inRange = loMidi!==null && hiMidi!==null && mm>=Math.round(loMidi) && mm<=Math.round(hiMidi);
+      pctx.fillStyle = inRange ? 'rgba('+accentRGB()+',.32)' : 'rgba(237,242,239,.92)';
+      pctx.fillRect(x+1, 0, ww-2, h);
+      pctx.strokeStyle='rgba(7,16,14,.35)'; pctx.lineWidth=1; pctx.strokeRect(x+1,0,ww-2,h);
+      // C labels
+      if(mm%12===0){ pctx.fillStyle='rgba(7,16,14,.55)'; pctx.font='9px ui-monospace,monospace'; pctx.fillText(midiName(mm).label, x+3, h-5); }
+      idx++;
+    }
+    // captured low/high markers
+    [loMidi,hiMidi].forEach(function(M){ if(M===null) return; var r=Math.round(M); var x=keyX(r,whiteX,ww);
+      pctx.fillStyle=accentColor(); pctx.fillRect(x, 0, isBlack(r)?ww*0.6:ww, 4); });
+    // black keys
+    for(mm=PIANO_LO; mm<=PIANO_HI; mm++){
+      if(!isBlack(mm)) continue;
+      var bx=keyX(mm,whiteX,ww); var bw=ww*0.62, bh=h*0.62;
+      var inR = loMidi!==null && hiMidi!==null && mm>=Math.round(loMidi) && mm<=Math.round(hiMidi);
+      pctx.fillStyle = inR ? 'rgba('+accentRGB()+',.55)' : '#0c1a16';
+      pctx.fillRect(bx, 0, bw, bh);
+    }
+    // current note marker
+    if(curMidi!==null && clarity>0.82){
+      var r2=Math.round(curMidi); var cx=keyX(r2,whiteX,ww)+(isBlack(r2)?ww*0.31:ww*0.5);
+      pctx.fillStyle=accentColor();
+      pctx.beginPath(); pctx.arc(cx, h*0.5, 6, 0, 7); pctx.fill();
+      pctx.globalAlpha=.3; pctx.beginPath(); pctx.arc(cx, h*0.5, 12, 0, 7); pctx.fill(); pctx.globalAlpha=1;
+    }
+  }
+  function isBlack(m){ var p=((m%12)+12)%12; return p===1||p===3||p===6||p===8||p===10; }
+  function keyX(m, whiteX, ww){
+    if(!isBlack(m)) return whiteX[m]!==undefined?whiteX[m]:0;
+    // black key sits between previous white and itself
+    var below=m-1; if(whiteX[below]!==undefined) return whiteX[below]+ww*0.69;
+    return 0;
+  }
+
+  // ---- voice type classification ----
+  // standard ranges in midi: [low, high]
+  var TYPES=[
+    {name:'Bass', lo:40, hi:64, blurb:'the deepest of the male voices, at home in the low end where most singers can’t go.'},
+    {name:'Baritone', lo:43, hi:67, blurb:'the most common male voice, warm and centered between bass and tenor.'},
+    {name:'Tenor', lo:48, hi:72, blurb:'the highest of the standard male voices, bright and carrying up top.'},
+    {name:'Alto', lo:53, hi:77, blurb:'the lowest female voice, rich and dark through the lower register.'},
+    {name:'Mezzo-soprano', lo:57, hi:81, blurb:'the middle female voice, full in the middle with a strong top.'},
+    {name:'Soprano', lo:60, hi:84, blurb:'the highest voice, soaring and clear in the upper register.'}
+  ];
+  function classify(lo, hi){
+    var best=null, bestScore=1e9;
+    for(var i=0;i<TYPES.length;i++){
+      var t=TYPES[i];
+      var d=Math.abs(lo-t.lo)+Math.abs(hi-t.hi);
+      if(d<bestScore){ bestScore=d; best=t; }
+    }
+    return best;
+  }
+
+  function reveal(){
+    if(loMidi===null||hiMidi===null) return;
+    if(rafId) cancelAnimationFrame(rafId), rafId=null;
+    var loR=Math.round(loMidi), hiR=Math.round(hiMidi);
+    var semis=hiR-loR, oct=semis/12;
+    var t=classify(loR,hiR);
+    var loL=midiName(loR).label, hiL=midiName(hiR).label;
+    document.getElementById('vtName').textContent=t.name;
+    document.getElementById('rSpan').textContent=loL+' – '+hiL;
+    document.getElementById('rDesc').textContent='Your comfortable range lands closest to a '+t.name.toLowerCase()+' — '+t.blurb;
+    document.getElementById('sLow').textContent=loL;
+    document.getElementById('sHigh').textContent=hiL;
+    document.getElementById('sOct').textContent=oct.toFixed(1);
+    // comparison
+    var cmp;
+    if(oct<1.5) cmp='That’s a focused range. Most untrained adults sit around 1.5 to 2 octaves, so a little daily warm-up could open up more.';
+    else if(oct<2.2) cmp='That’s right around the average comfortable range for adults (about 1.5 to 2 octaves). Solid foundation.';
+    else if(oct<3) cmp='That’s a wide range — above the typical 1.5 to 2 octaves. You’re into trained-singer territory.';
+    else cmp='That’s an impressive span. Three octaves and up is the realm of seriously trained voices.';
+    document.getElementById('compareBox').innerHTML='<b>'+oct.toFixed(1)+' octaves.</b> '+cmp+' <span style="color:var(--faint)">For fun: ranges popularly cited for singers like Mariah Carey hover around 5 octaves — a widely circulated approximation.</span>';
+    liveBox.classList.remove('on'); resultBox.classList.add('on');
+    drawCard(t, loL, hiL, oct, loR, hiR);
+    resultBox.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  // ---- shareable card ----
+  function drawCard(t, loL, hiL, oct, loR, hiR){
+    var c=document.getElementById('cardCanvas'); var W=1200,H=630; c.width=W;c.height=H;
+    var x=c.getContext('2d'); var acc=accentColor(), rgb=accentRGB();
+    // bg
+    var g=x.createLinearGradient(0,0,W,H); g.addColorStop(0,'#07100e'); g.addColorStop(1,'#0b1714');
+    x.fillStyle=g; x.fillRect(0,0,W,H);
+    x.fillStyle='rgba('+rgb+',.10)'; x.beginPath(); x.arc(W*0.92,-40,220,0,7); x.fill();
+    // header
+    x.fillStyle=acc; x.font='600 22px "JetBrains Mono",ui-monospace,monospace'; x.fillText('MY VOCAL RANGE', 70, 92);
+    x.fillStyle='#7c8b84'; x.font='15px "JetBrains Mono",ui-monospace,monospace'; x.fillText('hammyasf.github.io/vocal-range.html', 70, 122);
+    // voice type
+    x.fillStyle='#edf2ef'; x.font='600 96px "Clash Display",sans-serif'; x.fillText(t.name, 66, 240);
+    // range
+    x.fillStyle=acc; x.font='600 60px "Clash Display",sans-serif'; x.fillText(loL+'  –  '+hiL, 70, 330);
+    x.fillStyle='#93a8a1'; x.font='30px "JetBrains Mono",ui-monospace,monospace'; x.fillText(oct.toFixed(1)+' octaves', 70, 378);
+    // mini piano strip
+    var px=70, py=440, pw=W-140, ph=110, lo=PIANO_LO, hi=PIANO_HI;
+    var whiteCount=0,mm; for(mm=lo;mm<=hi;mm++){ if(!isBlack(mm)) whiteCount++; }
+    var ww=pw/whiteCount, idx=0, wx={};
+    for(mm=lo;mm<=hi;mm++){ if(isBlack(mm))continue; var kx=px+idx*ww; wx[mm]=kx;
+      var inR=mm>=loR&&mm<=hiR; x.fillStyle=inR?'rgba('+rgb+',.45)':'rgba(237,242,239,.92)';
+      x.fillRect(kx+1,py,ww-2,ph); x.strokeStyle='rgba(7,16,14,.35)'; x.strokeRect(kx+1,py,ww-2,ph); idx++; }
+    for(mm=lo;mm<=hi;mm++){ if(!isBlack(mm))continue; var below=mm-1; var bx=(wx[below]!==undefined?wx[below]:px)+ww*0.69; var inR2=mm>=loR&&mm<=hiR; x.fillStyle=inR2?'rgba('+rgb+',.7)':'#0c1a16'; x.fillRect(bx,py,ww*0.62,ph*0.62); }
+    // footer
+    x.fillStyle='#7c8b84'; x.font='17px "JetBrains Mono",ui-monospace,monospace'; x.fillText('Find yours → free, in your browser, nothing uploaded', 70, H-34);
+  }
+
+  // ---- buttons ----
+  startBtn.addEventListener('click', start);
+  stopBtn.addEventListener('click', function(){ stop(); startBox.style.display='block'; liveBox.classList.remove('on'); });
+  resetBtn.addEventListener('click', resetRange);
+  revealBtn.addEventListener('click', reveal);
+  againBtn.addEventListener('click', function(){ resultBox.classList.remove('on'); resetRange(); if(!analyser){ start(); } else { liveBox.classList.add('on'); loop(); } });
+  document.getElementById('dlCard').addEventListener('click', function(){ var c=document.getElementById('cardCanvas'); var a=document.createElement('a'); a.download='my-vocal-range.png'; a.href=c.toDataURL('image/png'); a.click(); });
+  document.getElementById('copyText').addEventListener('click', function(){
+    var lo=document.getElementById('sLow').textContent, hi=document.getElementById('sHigh').textContent, oc=document.getElementById('sOct').textContent, vt=document.getElementById('vtName').textContent;
+    var txt='My vocal range is '+lo+' to '+hi+' ('+oc+' octaves) — closest to '+vt+'. Found with this free in-browser tool: https://hammyasf.github.io/vocal-range.html';
+    if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(function(){ var b=document.getElementById('copyText'); var o=b.textContent; b.textContent='Copied!'; setTimeout(function(){b.textContent=o;},1400); }); }
+  });
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
