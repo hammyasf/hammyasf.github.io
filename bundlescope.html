@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bundle Size Explorer — see what's bloating your JS bundle, in your browser</title>
+<meta name="description" content="Drop a minified JS bundle and its source map to get a zoomable treemap of exactly which files and npm packages are taking up space. 100% in your browser, nothing uploaded, no install." />
+<meta name="keywords" content="bundle size explorer, source map explorer online, analyze bundle size, javascript bundle analyzer, webpack bundle analyzer online, treemap bundle size, source map visualizer, reduce bundle size, why is my bundle so big, source-map-explorer online, no upload" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Bundle Size Explorer" />
+<meta property="og:description" content="Drop a JS bundle + its source map, get a zoomable treemap of what's taking up space. Runs entirely in your browser, no upload." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/bundlescope.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Bundle Size Explorer" />
+<meta name="twitter:description" content="See what's bloating your JS bundle with a zoomable treemap. Private, in-browser, no install." />
+<link rel="canonical" href="https://hammyasf.github.io/bundlescope.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Bundle Size Explorer","url":"https://hammyasf.github.io/bundlescope.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Drop a minified JS bundle and its source map to see a zoomable treemap of which files and npm packages take up space. Runs entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my bundle uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The source map is parsed and your bundle is measured entirely in your browser using a Web Worker. Nothing is uploaded, which is why it works on private and internal code."}},{"@type":"Question","name":"What do I need to provide?","acceptedAnswer":{"@type":"Answer","text":"Your minified bundle (the .js file) and its source map. The map can be a separate .map file you drop alongside the .js, or an inline base64 map embedded in the .js. Most bundlers (webpack, Vite, Rollup, esbuild, Parcel) can emit source maps."}},{"@type":"Question","name":"How does it know how big each file is?","acceptedAnswer":{"@type":"Answer","text":"It decodes the source map's VLQ mappings and walks every byte of the generated bundle, attributing each run of generated code to the original source file it came from. This is the same technique the source-map-explorer CLI uses, but with no install."}},{"@type":"Question","name":"Does it work for any bundler?","acceptedAnswer":{"@type":"Answer","text":"Yes. It reads standard Source Map v3, including indexed (sectioned) maps, so webpack, Vite, Rollup, esbuild and Parcel output all work as long as a source map is available."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, no limits."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:42px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .drop .mini{font-size:12px;color:var(--faint);margin-top:10px;font-family:var(--mono);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 24px 22px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .status{font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .status b{color:var(--accent);}
+  .err{color:#ff9a8a;}
+  .prog{height:4px;background:rgba(var(--accentRGB),.15);border-radius:3px;overflow:hidden;margin:0 24px 18px;display:none;}
+  .prog i{display:block;height:100%;width:30%;background:var(--accent);border-radius:3px;animation:slide 1.1s var(--ease) infinite;}
+  @keyframes slide{0%{margin-left:-30%}100%{margin-left:100%}}
+  /* results */
+  #results{display:none;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;padding:4px 24px 6px;}
+  .card{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(var(--surfaceRGB),.4);}
+  .card .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .card .v{font-family:var(--display);font-weight:600;font-size:22px;margin-top:6px;color:var(--ink);}
+  .card .v small{font-size:12px;color:var(--muted);font-family:var(--mono);font-weight:400;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:14px 20px;align-items:center;padding:14px 24px 6px;}
+  .toolbar label{font-family:var(--mono);font-size:12px;color:var(--muted);display:inline-flex;gap:8px;align-items:center;cursor:pointer;}
+  .toolbar input[type=search]{flex:1;min-width:160px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:13px;}
+  .toolbar input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;}
+  .crumb{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:8px 24px 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
+  .crumb a{color:var(--accent);cursor:pointer;}
+  .crumb span.sep{color:var(--faint);}
+  .mapwrap{position:relative;margin:12px 24px 6px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#060d0b;}
+  #treemap{display:block;width:100%;height:540px;cursor:pointer;}
+  #tip{position:absolute;pointer-events:none;background:rgba(6,13,11,.96);border:1px solid var(--line-2);border-radius:9px;padding:8px 11px;font-family:var(--mono);font-size:11.5px;color:var(--ink);max-width:320px;display:none;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+  #tip .p{color:var(--accent);word-break:break-all;margin-bottom:3px;}
+  #tip .s{color:var(--muted);}
+  .legend{display:flex;flex-wrap:wrap;gap:10px 16px;padding:6px 24px 4px;font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block;}
+  .list{padding:8px 24px 24px;}
+  .list h3{font-family:var(--display);font-weight:600;font-size:16px;margin:10px 0;color:var(--ink);}
+  .row{display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .row:hover{background:rgba(var(--accentRGB),.05);}
+  .row .nm{font-family:var(--mono);font-size:12.5px;color:var(--ink);word-break:break-all;}
+  .row .nm .dir{color:var(--faint);}
+  .row .meta{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;}
+  .row .meta b{color:var(--accent);}
+  .rowbar{grid-column:1 / -1;height:5px;background:rgba(var(--accentRGB),.1);border-radius:3px;overflow:hidden;}
+  .rowbar i{display:block;height:100%;background:var(--accent);border-radius:3px;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  section.copy code{font-family:var(--mono);font-size:14px;background:rgba(var(--accentRGB),.1);color:var(--accent);padding:2px 6px;border-radius:6px;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){#treemap{height:420px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free dev tool · runs in your browser</div>
+    <h1>Bundle Size Explorer</h1>
+    <p class="sub">Drop a minified JS bundle and its source map. Get a zoomable treemap of exactly which files and npm packages are eating your bundle, decoded byte-by-byte from the source map right here in the tab.</p>
+    <span class="priv">&#128274; 100% private — your bundle is parsed locally and never uploaded</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add bundle and source map">
+      <h2>Drop your bundle + source map</h2>
+      <p>or click to choose files · drop the <b>.js</b> and its <b>.map</b> together</p>
+      <p class="mini">Works with webpack, Vite, Rollup, esbuild, Parcel · inline base64 maps supported</p>
+      <input type="file" id="file" accept=".js,.mjs,.cjs,.map,.json,application/json,text/javascript" multiple hidden />
+    </div>
+    <div class="bar">
+      <button class="btn btn-out" id="sample">Try a sample bundle</button>
+      <span class="status" id="status">Waiting for a bundle&hellip;</span>
+    </div>
+    <div class="prog" id="prog"><i></i></div>
+  </div>
+
+  <div id="results">
+    <div class="cards" id="cards"></div>
+    <div class="toolbar">
+      <label><input type="checkbox" id="collapse" checked /> Group node_modules by package</label>
+      <input type="search" id="search" placeholder="Filter files… (e.g. lodash, .css, src/)" />
+    </div>
+    <div class="crumb" id="crumb"></div>
+    <div class="mapwrap">
+      <canvas id="treemap"></canvas>
+      <div id="tip"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="list">
+      <h3>Every file, biggest first</h3>
+      <div id="rows"></div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>A JavaScript source map records, for every position in your minified bundle, which original file and line it came from. This tool decodes those mappings (the compact base64 VLQ ones) and walks the whole generated file, attributing each run of bytes to the original source it maps back to. Add it all up per file and you get a precise picture of what is actually in your bundle. The same idea powers the <code>source-map-explorer</code> CLI, except here there is nothing to install and nothing to upload.</p>
+    <h2>How is this running in my browser?</h2>
+    <p>All the heavy work happens in a Web Worker so the page never freezes, even on multi-megabyte bundles. Decoding VLQ, summing per-file bytes, building the folder tree and laying out the squarified treemap are all plain JavaScript running on your machine. Your code never leaves the tab, so you can safely analyze private, internal, or unreleased bundles. The gzipped size is measured with the browser's built-in <code>CompressionStream</code>, so that number is real, not an estimate.</p>
+    <h2>What you need</h2>
+    <p>You need the bundle (<code>app.min.js</code>) and its source map. Drop both together, or drop a single <code>.js</code> that has an inline base64 map at the bottom. To produce maps: webpack uses <code>devtool: 'source-map'</code>, Vite and Rollup use <code>build.sourcemap: true</code>, esbuild uses <code>--sourcemap</code>, and Parcel emits them by default. You can also analyze a library straight from a CDN by saving its <code>.js</code> and <code>.js.map</code>.</p>
+    <h2>How to read the treemap</h2>
+    <p>Each rectangle is a file, sized by how many bytes it contributes to the bundle. Click any folder to zoom in, and use the breadcrumb to climb back out. Turn on "Group node_modules by package" to roll every dependency up to its top-level package, which is usually the fastest way to spot the one library that is quietly costing you 200&nbsp;KB.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my bundle uploaded anywhere?</summary><p>No. Parsing and measurement run entirely in your browser in a Web Worker. Your files never touch a server, so it is safe for private and internal code.</p></details>
+    <details><summary>What exactly do I drop in?</summary><p>Your minified bundle and its source map. That can be a <code>.js</code> plus a separate <code>.map</code>, or a single <code>.js</code> with an inline base64 source map. If you only have the <code>.map</code>, drop the matching <code>.js</code> too so byte sizes can be measured.</p></details>
+    <details><summary>Which bundlers are supported?</summary><p>Any tool that emits a standard Source Map v3: webpack, Vite, Rollup, esbuild, Parcel, and more. Indexed (sectioned) maps are handled as well.</p></details>
+    <details><summary>Why is some space marked "unmapped"?</summary><p>Bundler runtime, license banners, and other generated glue often have no source mapping. That space is grouped as "[unmapped]" so the totals always add up to your real bundle size.</p></details>
+    <details><summary>Are the sizes bytes or gzipped?</summary><p>The treemap and per-file numbers are raw (minified) bytes, matching how source-map-explorer reports. The summary also shows the true gzipped size of the whole bundle, measured in-browser.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>&copy; 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- Worker: decode source map + attribute bytes + gzip. Plain JS, instantiated via Blob URL. -->
+<script type="javascript/worker" id="worker-src">
+var B64="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+var B64INV={};for(var _i=0;_i<B64.length;_i++)B64INV[B64.charAt(_i)]=_i;
+function decodeVLQValues(str){var r=[],shift=0,value=0;for(var i=0;i<str.length;i++){var d=B64INV[str.charAt(i)];if(d===undefined)throw new Error("Bad VLQ char");var cont=d&32;d&=31;value+=d<<shift;if(cont){shift+=5;}else{var neg=value&1;value>>=1;r.push(neg?-value:value);value=0;shift=0;}}return r;}
+function decodeMappings(mappings){var lines=[],srcIdx=0,srcLine=0,srcCol=0,nameIdx=0;var lp=mappings.split(";");for(var li=0;li<lp.length;li++){var genCol=0,line=[],part=lp[li];if(part.length){var ss=part.split(",");for(var si=0;si<ss.length;si++){var seg=ss[si];if(!seg.length)continue;var v=decodeVLQValues(seg);genCol+=v[0];if(v.length===1){line.push([genCol]);}else{srcIdx+=v[1];srcLine+=v[2];srcCol+=v[3];if(v.length>4){nameIdx+=v[4];line.push([genCol,srcIdx,srcLine,srcCol,nameIdx]);}else{line.push([genCol,srcIdx,srcLine,srcCol]);}}}}lines.push(line);}return lines;}
+function computeLineStarts(content){var s=[0];for(var i=0;i<content.length;i++){if(content.charCodeAt(i)===10)s.push(i+1);}return s;}
+function normalizeSource(src,sourceRoot){if(src==null)return"[unknown]";var p=src;if(sourceRoot&&p.indexOf(sourceRoot)!==0)p=sourceRoot.replace(/\/$/,"")+"/"+p.replace(/^\//,"");p=p.replace(/^webpack:\/\/\//,"").replace(/^webpack:\/\//,"").replace(/^[a-z]+:\/\//,"");p=p.replace(/^\.\//,"").replace(/^\/+/,"");return p||"[unknown]";}
+function reduceBoundaries(boundaries,total,sources,sourceRoot){var sizes={},unmapped=0;if(!boundaries.length)return{sizes:{},unmapped:total,total:total,files:0};var firstOff=boundaries[0][0];if(firstOff>0)unmapped+=firstOff;for(var i=0;i<boundaries.length;i++){var startOff=boundaries[i][0];var endOff=i+1<boundaries.length?boundaries[i+1][0]:total;var len=endOff-startOff;if(len<=0)continue;var sIdx=boundaries[i][1];if(sIdx===null||sIdx===undefined||sIdx<0||sIdx>=sources.length){unmapped+=len;}else{var path=normalizeSource(sources[sIdx],sourceRoot);sizes[path]=(sizes[path]||0)+len;}}return{sizes:sizes,unmapped:unmapped,total:total,files:Object.keys(sizes).length};}
+function attribute(content,map){if(map.sections)return attributeSectioned(content,map);var sources=map.sources||[],sourceRoot=map.sourceRoot||"";var segByLine=decodeMappings(map.mappings||"");var lineStart=computeLineStarts(content),total=content.length,boundaries=[];for(var gl=0;gl<segByLine.length;gl++){var base=gl<lineStart.length?lineStart[gl]:total;var segs=segByLine[gl];for(var s=0;s<segs.length;s++){var seg=segs[s];var off=base+seg[0];if(off>total)off=total;var sIdx=seg.length>=4?seg[1]:null;boundaries.push([off,sIdx]);}}return reduceBoundaries(boundaries,total,sources,sourceRoot);}
+function attributeSectioned(content,map){var lineStart=computeLineStarts(content),total=content.length,sources=[],boundaries=[],secs=map.sections;for(var i=0;i<secs.length;i++){var sec=secs[i],inner=sec.map,offLine=sec.offset.line,offCol=sec.offset.column,base=sources.length,innerSources=inner.sources||[];for(var j=0;j<innerSources.length;j++)sources.push((inner.sourceRoot||"")+innerSources[j]);var sbl=decodeMappings(inner.mappings||"");for(var gl=0;gl<sbl.length;gl++){var genLine=offLine+gl;var lineBase=genLine<lineStart.length?lineStart[genLine]:total;var segs=sbl[gl];for(var s=0;s<segs.length;s++){var seg=segs[s];var col=seg[0]+(gl===0?offCol:0);var off=lineBase+col;if(off>total)off=total;var sIdx=seg.length>=4?base+seg[1]:null;boundaries.push([off,sIdx]);}}}boundaries.sort(function(a,b){return a[0]-b[0];});return reduceBoundaries(boundaries,total,sources,"");}
+function gzipSize(str){return new Promise(function(resolve){try{if(typeof CompressionStream==="undefined"){resolve(null);return;}var enc=new TextEncoder().encode(str);var cs=new CompressionStream("gzip");var stream=new Blob([enc]).stream().pipeThrough(cs);new Response(stream).arrayBuffer().then(function(ab){resolve(ab.byteLength);}).catch(function(){resolve(null);});}catch(e){resolve(null);}});}
+onmessage=function(e){var d=e.data;try{var map=typeof d.mapText==="string"?JSON.parse(d.mapText):d.mapText;if(!map||(map.version!==3&&!map.sections))throw new Error("Not a valid Source Map v3 (missing version or mappings).");var res=attribute(d.js,map);gzipSize(d.js).then(function(gz){res.gzip=gz;res.ok=true;postMessage(res);});}catch(err){postMessage({ok:false,error:String(err&&err.message||err)});}};
+</script>
+
+<script>
+(function(){
+  // theme — match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  // ---- VLQ encoder (only used by the in-page sample generator) ----
+  var B64="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  function vlqEncode(nums){var out="";for(var n=0;n<nums.length;n++){var v=nums[n];var vlq=v<0?((-v)<<1)|1:v<<1;do{var digit=vlq&31;vlq>>>=5;if(vlq>0)digit|=32;out+=B64.charAt(digit);}while(vlq>0);}return out;}
+  function encodeMappings(segments,lineCount){var byLine=[];for(var i=0;i<lineCount;i++)byLine.push([]);for(var s=0;s<segments.length;s++){var seg=segments[s];(byLine[seg.genLine]||(byLine[seg.genLine]=[])).push(seg);}var pSrc=0,pSL=0,pSC=0,out=[];for(var ln=0;ln<byLine.length;ln++){var segs=byLine[ln].sort(function(a,b){return a.genCol-b.genCol;});var pCol=0,parts=[];for(var k=0;k<segs.length;k++){var g=segs[k];parts.push(vlqEncode([g.genCol-pCol,g.srcIdx-pSrc,g.srcLine-pSL,g.srcCol-pSC]));pCol=g.genCol;pSrc=g.srcIdx;pSL=g.srcLine;pSC=g.srcCol;}out.push(parts.join(","));}return out.join(";");}
+
+  // ---- treemap layout + tree (verbatim from tested treemap.js) ----
+  function worstRatio(areas,side){var sum=0,max=0,min=Infinity;for(var k=0;k<areas.length;k++){sum+=areas[k];if(areas[k]>max)max=areas[k];if(areas[k]<min)min=areas[k];}if(sum<=0)return Infinity;var s2=side*side,sum2=sum*sum;return Math.max(s2*max/sum2,sum2/(s2*min));}
+  function squarify(children,x,y,w,h){var result=[];var items=children.slice().sort(function(a,b){return b.value-a.value;});var total=0;for(var i=0;i<items.length;i++)total+=items[i].value;if(total<=0||w<=0||h<=0){for(i=0;i<items.length;i++)result.push({node:items[i],x:x,y:y,w:0,h:0});return result;}var scale=(w*h)/total;var areas=items.map(function(c){return c.value*scale;});var n=items.length,idx=0,cx=x,cy=y,cw=w,ch=h;while(idx<n){var shorter=Math.min(cw,ch);var row=[areas[idx]],best=worstRatio(row,shorter),j=idx+1;while(j<n){var test=row.concat([areas[j]]);var wr=worstRatio(test,shorter);if(wr>best)break;row=test;best=wr;j++;}var rowSum=0;for(var k=0;k<row.length;k++)rowSum+=row[k];if(cw>=ch){var colW=rowSum/ch,yy=cy;for(k=0;k<row.length;k++){var hh=row[k]/colW;result.push({node:items[idx+k],x:cx,y:yy,w:colW,h:hh});yy+=hh;}cx+=colW;cw-=colW;}else{var rowH=rowSum/cw,xx=cx;for(k=0;k<row.length;k++){var ww=row[k]/rowH;result.push({node:items[idx+k],x:xx,y:cy,w:ww,h:rowH});xx+=ww;}cy+=rowH;ch-=rowH;}idx=j;}return result;}
+  function buildTree(sizes){var root={name:"",path:"",isDir:true,children:{},value:0};Object.keys(sizes).forEach(function(path){var parts=path.split("/").filter(function(p){return p.length;});if(!parts.length)parts=[path];var node=root;for(var i=0;i<parts.length;i++){var last=i===parts.length-1,name=parts[i];if(!node.children[name])node.children[name]={name:name,path:(node.path?node.path+"/":"")+name,isDir:!last,children:{},value:0};node=node.children[name];if(last){node.isDir=false;node.value+=sizes[path];}}});computeDirValues(root);return root;}
+  function computeDirValues(node){if(!node.isDir)return node.value;var sum=0;Object.keys(node.children).forEach(function(k){sum+=computeDirValues(node.children[k]);});node.value=sum;return sum;}
+  function childArray(node){return Object.keys(node.children).map(function(k){return node.children[k];});}
+  function collapsePackages(sizes){var out={};Object.keys(sizes).forEach(function(path){var key=path;var nmIdx=path.lastIndexOf("node_modules/");if(nmIdx!==-1){var before=path.slice(0,nmIdx+"node_modules/".length);var rest=path.slice(nmIdx+"node_modules/".length).split("/");var pkg=rest[0];if(pkg&&pkg.charAt(0)==="@"&&rest.length>1)pkg=pkg+"/"+rest[1];key=before+pkg;}out[key]=(out[key]||0)+sizes[path];});return out;}
+
+  // ---- DOM ----
+  var drop=document.getElementById("drop"),file=document.getElementById("file"),sampleBtn=document.getElementById("sample"),
+      status=document.getElementById("status"),prog=document.getElementById("prog"),results=document.getElementById("results"),
+      cards=document.getElementById("cards"),collapse=document.getElementById("collapse"),search=document.getElementById("search"),
+      crumb=document.getElementById("crumb"),canvas=document.getElementById("treemap"),tip=document.getElementById("tip"),
+      legend=document.getElementById("legend"),rows=document.getElementById("rows");
+  var ctx=canvas.getContext("2d");
+
+  // ---- worker ----
+  var workerSrc=document.getElementById("worker-src").textContent;
+  var workerURL=URL.createObjectURL(new Blob([workerSrc],{type:"text/javascript"}));
+  var worker=null;
+  function getWorker(){ if(!worker){ worker=new Worker(workerURL); worker.onmessage=onResult; worker.onerror=function(ev){ showError("Worker error: "+(ev.message||"failed")); }; } return worker; }
+
+  // ---- state ----
+  var raw=null;       // {sizes, unmapped, total, gzip}
+  var rootNode=null, currentNode=null, tiles=[], hoverTile=-1, hue={}, hueSeed=0;
+
+  function fmtSize(b){ if(b==null)return"—"; return b<1024?b+" B":b<1048576?(b/1024).toFixed(1)+" KB":(b/1048576).toFixed(2)+" MB"; }
+  function showError(msg){ prog.style.display="none"; status.innerHTML='<span class="err">'+escapeHtml(msg)+'</span>'; }
+  function escapeHtml(s){ return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+  // ---- file intake ----
+  drop.addEventListener("click",function(){ file.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();file.click();} });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop",function(e){ handleFiles(e.dataTransfer.files); });
+  file.addEventListener("change",function(){ handleFiles(file.files); });
+
+  function readAll(files){ return Promise.all(Array.prototype.map.call(files,function(f){ return f.text().then(function(text){ return {name:f.name,text:text,size:f.size}; }); })); }
+
+  function looksLikeMap(f){ if(/\.map$/i.test(f.name))return true; if(/\.json$/i.test(f.name)){ return /"mappings"\s*:/.test(f.text); } return false; }
+  function looksLikeJs(f){ return /\.(m|c)?js$/i.test(f.name) || (!looksLikeMap(f) && /sourceMappingURL|function|var |const |=>/.test(f.text)); }
+  function extractInlineMap(js){ var m=js.match(/\/\/[#@]\s*sourceMappingURL=data:application\/json[^,;]*;base64,([A-Za-z0-9+/=]+)/); if(m){ try{ return decodeURIComponent(escape(atob(m[1]))); }catch(e){ try{ return atob(m[1]); }catch(e2){} } } var m2=js.match(/\/\/[#@]\s*sourceMappingURL=data:application\/json[^,;]*,([^\s'"]+)/); if(m2){ try{ return decodeURIComponent(m2[1]); }catch(e){} } return null; }
+
+  function handleFiles(fileList){
+    if(!fileList||!fileList.length)return;
+    status.textContent="Reading files…";
+    readAll(fileList).then(function(files){
+      var maps=files.filter(looksLikeMap);
+      var js=files.filter(function(f){ return !looksLikeMap(f) && looksLikeJs(f); });
+      var genFile=null, mapText=null;
+      if(js.length){
+        // pick the largest js as the bundle
+        genFile=js.slice().sort(function(a,b){return b.text.length-a.text.length;})[0];
+        if(maps.length){
+          // try to pair by basename, else take the only/first map
+          var base=genFile.name.replace(/\.map$/i,"");
+          var paired=maps.filter(function(m){ return m.name===base+".map"||m.name===genFile.name+".map"||m.name.replace(/\.map$/i,"")===genFile.name; })[0];
+          mapText=(paired||maps[0]).text;
+        } else {
+          mapText=extractInlineMap(genFile.text);
+          if(!mapText){
+            var ref=genFile.text.match(/\/\/[#@]\s*sourceMappingURL=([^\s'"]+)/);
+            if(ref){ showError("This bundle points to an external map ("+escapeHtml(ref[1])+"). Drop that .map file in too."); }
+            else { showError("No source map found in this .js. Re-build with source maps on, then drop the .js and its .map together."); }
+            return;
+          }
+        }
+      } else if(maps.length){
+        showError("That's a source map on its own — also drop the matching .js bundle so byte sizes can be measured.");
+        return;
+      } else {
+        showError("Couldn't find a .js bundle. Drop your minified .js and its .map.");
+        return;
+      }
+      analyze(genFile.text, mapText, genFile.name);
+    }).catch(function(err){ showError("Could not read files: "+(err.message||err)); });
+  }
+
+  function analyze(js, mapText, name){
+    prog.style.display="block";
+    status.innerHTML="Decoding source map for <b>"+escapeHtml(name||"bundle")+"</b>…";
+    getWorker().postMessage({js:js, mapText:mapText});
+  }
+
+  function onResult(e){
+    var d=e.data;
+    prog.style.display="none";
+    if(!d||!d.ok){ showError(d&&d.error?d.error:"Failed to parse."); return; }
+    raw=d;
+    status.innerHTML="Mapped <b>"+fmtSize(d.total)+"</b> across <b>"+d.files+"</b> files.";
+    results.style.display="block";
+    render();
+    results.scrollIntoView({behavior:"smooth",block:"nearest"});
+  }
+
+  // ---- rendering ----
+  collapse.addEventListener("change",render);
+  var searchTO=null;
+  search.addEventListener("input",function(){ clearTimeout(searchTO); searchTO=setTimeout(renderList,120); });
+
+  function currentSizes(){
+    var sizes={};
+    Object.keys(raw.sizes).forEach(function(k){ sizes[k]=raw.sizes[k]; });
+    if(raw.unmapped>0) sizes["[unmapped]"]=raw.unmapped;
+    if(collapse.checked) sizes=collapsePackages(sizes);
+    return sizes;
+  }
+
+  function render(){
+    var sizes=currentSizes();
+    rootNode=buildTree(sizes);
+    currentNode=rootNode;
+    hue={}; hueSeed=0;
+    renderCards();
+    renderLegend();
+    renderTreemap();
+    renderCrumb();
+    renderList();
+  }
+
+  function renderCards(){
+    var total=raw.total, gz=raw.gzip;
+    var dep=0, app=0;
+    Object.keys(raw.sizes).forEach(function(k){ if(/node_modules\//.test(k)) dep+=raw.sizes[k]; else app+=raw.sizes[k]; });
+    var biggest=null,bigSize=0; var s2=currentSizes();
+    Object.keys(s2).forEach(function(k){ if(k==="[unmapped]")return; if(s2[k]>bigSize){bigSize=s2[k];biggest=k;} });
+    var depPct=total?Math.round(dep/total*100):0;
+    var bigName=biggest?biggest.split("/").pop():"—";
+    var c=[
+      ["Minified", fmtSize(total), ""],
+      ["Gzipped", gz==null?"—":fmtSize(gz), gz!=null&&total?Math.round(gz/total*100)+"% of raw":""],
+      ["Files", String(raw.files), ""],
+      ["From node_modules", depPct+"%", fmtSize(dep)],
+      ["Your code", (100-depPct-(total?Math.round(raw.unmapped/total*100):0))+"%", fmtSize(app)],
+      ["Biggest", fmtSize(bigSize), bigName]
+    ];
+    cards.innerHTML=c.map(function(x){ return '<div class="card"><div class="l">'+x[0]+'</div><div class="v">'+x[1]+(x[2]?' <small>'+escapeHtml(x[2])+'</small>':'')+'</div></div>'; }).join("");
+  }
+
+  function topSegment(path){ var i=path.indexOf("/"); return i===-1?path:path.slice(0,i); }
+  function hueFor(path){ var top=topSegment(path); if(hue[top]===undefined){ hue[top]=(hueSeed*47+12)%360; hueSeed++; } return hue[top]; }
+  function fillFor(node,depthInView){ if(node.path==="[unmapped]")return "hsl(0,0%,32%)"; var h=hueFor(node.path); var baseAccent=getComputedStyle(document.documentElement).getPropertyValue("--accent"); var l=node.isDir?34:46; var s=node.isDir?38:58; return "hsl("+h+","+s+"%,"+l+"%)"; }
+
+  function setupCanvas(){
+    var dpr=Math.min(window.devicePixelRatio||1,2);
+    var cssW=canvas.clientWidth, cssH=canvas.clientHeight;
+    canvas.width=Math.round(cssW*dpr); canvas.height=Math.round(cssH*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    return {w:cssW,h:cssH};
+  }
+
+  function renderTreemap(){
+    var dim=setupCanvas();
+    ctx.clearRect(0,0,dim.w,dim.h);
+    var kids=childArray(currentNode).filter(function(n){return n.value>0;});
+    var pad=3;
+    tiles=squarify(kids,pad,pad,dim.w-pad*2,dim.h-pad*2);
+    ctx.font='12px "JetBrains Mono",monospace';
+    ctx.textBaseline="top";
+    for(var i=0;i<tiles.length;i++){
+      var t=tiles[i],n=t.node;
+      if(t.w<1||t.h<1)continue;
+      ctx.fillStyle=fillFor(n);
+      ctx.fillRect(t.x,t.y,t.w-1,t.h-1);
+      if(i===hoverTile){ ctx.fillStyle="rgba(255,255,255,.14)"; ctx.fillRect(t.x,t.y,t.w-1,t.h-1); }
+      // label
+      if(t.w>54&&t.h>24){
+        ctx.save();
+        ctx.beginPath();ctx.rect(t.x+5,t.y+4,t.w-9,t.h-7);ctx.clip();
+        ctx.fillStyle="rgba(0,0,0,.78)";
+        ctx.font='600 12px "JetBrains Mono",monospace';
+        var label=n.name+(n.isDir?"/":"");
+        ctx.fillText(label,t.x+6,t.y+5);
+        if(t.h>40){ ctx.font='11px "JetBrains Mono",monospace'; ctx.fillStyle="rgba(0,0,0,.6)"; ctx.fillText(fmtSize(n.value),t.x+6,t.y+21); }
+        ctx.restore();
+      }
+    }
+  }
+
+  function renderLegend(){
+    // build legend from top-level dirs of the whole tree
+    var sizes=currentSizes(); var tops={};
+    Object.keys(sizes).forEach(function(k){ var t=topSegment(k); tops[t]=(tops[t]||0)+sizes[k]; });
+    var arr=Object.keys(tops).map(function(k){return {k:k,v:tops[k]};}).sort(function(a,b){return b.v-a.v;}).slice(0,8);
+    legend.innerHTML=arr.map(function(x){ var color=x.k==="[unmapped]"?"hsl(0,0%,32%)":"hsl("+hueFor(x.k+"/")+",52%,46%)"; return '<span><i style="background:'+color+'"></i>'+escapeHtml(x.k)+' · '+fmtSize(x.v)+'</span>'; }).join("");
+  }
+
+  function renderCrumb(){
+    var chain=[]; var n=currentNode;
+    while(n){ chain.unshift(n); n=n.parent; }
+    // rootNode has no parent set; build path from currentNode.path
+    var parts=currentNode.path?currentNode.path.split("/"):[];
+    var html='<a data-p="">root</a>';
+    var acc="";
+    for(var i=0;i<parts.length;i++){ acc=acc?acc+"/"+parts[i]:parts[i]; html+='<span class="sep"> / </span><a data-p="'+escapeHtml(acc)+'">'+escapeHtml(parts[i])+'</a>'; }
+    crumb.innerHTML=html;
+    Array.prototype.forEach.call(crumb.querySelectorAll("a"),function(a){ a.addEventListener("click",function(){ zoomToPath(a.getAttribute("data-p")); }); });
+  }
+
+  function nodeByPath(path){ if(!path)return rootNode; var parts=path.split("/"),n=rootNode; for(var i=0;i<parts.length;i++){ if(n.children[parts[i]])n=n.children[parts[i]]; else return rootNode; } return n; }
+  function zoomToPath(path){ currentNode=nodeByPath(path); hoverTile=-1; renderTreemap(); renderCrumb(); }
+
+  // canvas interaction
+  function tileAt(mx,my){ for(var i=0;i<tiles.length;i++){ var t=tiles[i]; if(mx>=t.x&&mx<=t.x+t.w&&my>=t.y&&my<=t.y+t.h)return i; } return -1; }
+  canvas.addEventListener("mousemove",function(e){
+    var rect=canvas.getBoundingClientRect();
+    var mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    var i=tileAt(mx,my);
+    if(i!==hoverTile){ hoverTile=i; renderTreemap(); }
+    if(i>=0){
+      var n=tiles[i].node;
+      var pctTotal=raw.total?(n.value/raw.total*100):0;
+      var pctParent=currentNode.value?(n.value/currentNode.value*100):0;
+      tip.innerHTML='<div class="p">'+escapeHtml(n.path)+(n.isDir?"/":"")+'</div><div class="s">'+fmtSize(n.value)+' · '+pctTotal.toFixed(1)+'% of bundle · '+pctParent.toFixed(1)+'% of this view'+(n.isDir?' · click to zoom':'')+'</div>';
+      tip.style.display="block";
+      var tw=tip.offsetWidth, th=tip.offsetHeight;
+      var x=mx+14, y=my+14;
+      if(x+tw>rect.width)x=mx-tw-14; if(y+th>rect.height)y=my-th-14;
+      tip.style.left=Math.max(2,x)+"px"; tip.style.top=Math.max(2,y)+"px";
+    } else { tip.style.display="none"; }
+  });
+  canvas.addEventListener("mouseleave",function(){ hoverTile=-1; tip.style.display="none"; renderTreemap(); });
+  canvas.addEventListener("click",function(e){
+    var rect=canvas.getBoundingClientRect();
+    var i=tileAt(e.clientX-rect.left,e.clientY-rect.top);
+    if(i<0)return; var n=tiles[i].node;
+    if(n.isDir&&Object.keys(n.children).length){ currentNode=n; hoverTile=-1; renderTreemap(); renderCrumb(); }
+  });
+
+  function renderList(){
+    var sizes=currentSizes();
+    var q=(search.value||"").toLowerCase().trim();
+    var arr=Object.keys(sizes).map(function(k){return {path:k,size:sizes[k]};});
+    if(q) arr=arr.filter(function(x){ return x.path.toLowerCase().indexOf(q)!==-1; });
+    arr.sort(function(a,b){return b.size-a.size;});
+    var max=arr.length?arr[0].size:1;
+    var top=arr.slice(0,400);
+    rows.innerHTML=top.map(function(x){
+      var parts=x.path.split("/"); var nm=parts.pop(); var dir=parts.length?parts.join("/")+"/":"";
+      var pct=raw.total?(x.size/raw.total*100):0;
+      return '<div class="row" data-path="'+escapeHtml(x.path)+'"><div class="nm"><span class="dir">'+escapeHtml(dir)+'</span>'+escapeHtml(nm)+'</div><div class="meta"><b>'+fmtSize(x.size)+'</b> · '+pct.toFixed(1)+'%</div><div class="rowbar"><i style="width:'+Math.max(2,x.size/max*100)+'%"></i></div></div>';
+    }).join("")+(arr.length>top.length?'<div class="row" style="cursor:default"><div class="nm" style="color:var(--faint)">+ '+(arr.length-top.length)+' more files…</div><div></div></div>':"");
+    Array.prototype.forEach.call(rows.querySelectorAll(".row[data-path]"),function(row){
+      row.addEventListener("click",function(){
+        var p=row.getAttribute("data-path"); var parts=p.split("/");
+        var dirPath=parts.slice(0,-1).join("/");
+        zoomToPath(dirPath);
+        canvas.scrollIntoView({behavior:"smooth",block:"nearest"});
+      });
+    });
+  }
+
+  // redraw treemap on resize
+  var rTO=null;
+  window.addEventListener("resize",function(){ if(!raw)return; clearTimeout(rTO); rTO=setTimeout(function(){ renderTreemap(); },150); });
+
+  // ---- sample bundle (generated in-page; self-consistent map) ----
+  function buildSample(){
+    var modules=[
+      {path:"node_modules/react-dom/cjs/react-dom.production.min.js",bytes:130412},
+      {path:"node_modules/moment/moment.js",bytes:59203},
+      {path:"node_modules/lodash/lodash.js",bytes:71045},
+      {path:"node_modules/@mui/material/styles/index.js",bytes:42180},
+      {path:"node_modules/@mui/material/Button/Button.js",bytes:14860},
+      {path:"node_modules/core-js/modules/es.array.js",bytes:31200},
+      {path:"node_modules/react/cjs/react.production.min.js",bytes:11020},
+      {path:"node_modules/axios/lib/axios.js",bytes:18450},
+      {path:"node_modules/date-fns/index.js",bytes:22310},
+      {path:"src/index.js",bytes:1840},
+      {path:"src/App.js",bytes:8420},
+      {path:"src/components/Chart.jsx",bytes:15230},
+      {path:"src/components/Sidebar.jsx",bytes:7610},
+      {path:"src/components/Table.jsx",bytes:10440},
+      {path:"src/pages/Dashboard.jsx",bytes:12880},
+      {path:"src/pages/Settings.jsx",bytes:6120},
+      {path:"src/utils/format.js",bytes:3380},
+      {path:"src/styles/theme.css",bytes:9260}
+    ];
+    var sources=modules.map(function(m){return m.path;});
+    var segments=[],content="",col=0,line=0,LW=220;
+    var chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789(){}[].,;=+ ";
+    var seed=12345; function rnd(){ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; }
+    for(var i=0;i<modules.length;i++){
+      segments.push({genLine:line,genCol:col,srcIdx:i,srcLine:0,srcCol:0});
+      var remaining=modules[i].bytes;
+      while(remaining>0){
+        var room=LW-col, take=Math.min(room,remaining), chunk="";
+        for(var c=0;c<take;c++) chunk+=chars.charAt((rnd()*chars.length)|0);
+        content+=chunk; col+=take; remaining-=take;
+        if(col>=LW){ content+="\n"; line++; col=0; }
+      }
+    }
+    var mappings=encodeMappings(segments,line+1);
+    var map={version:3,file:"bundle.min.js",sources:sources,sourcesContent:null,names:[],mappings:mappings};
+    return {js:content, mapText:JSON.stringify(map)};
+  }
+  sampleBtn.addEventListener("click",function(){
+    var s=buildSample();
+    analyze(s.js, s.mapText, "sample-bundle.min.js");
+  });
+
+  // expose a tiny hook for verification
+  window.__bsBoot=true;
+  window.__bsSample=buildSample;
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+<!-- AdSense slot (enable later):
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
+-->
+<!-- Polar.sh "buy me a coffee" slot (enable later) -->
+</body>
+</html>
