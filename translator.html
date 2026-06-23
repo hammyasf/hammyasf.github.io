@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Private On-Device Translator — translate offline in your browser, no upload</title>
+<meta name="description" content="Translate text between 100+ languages with a real neural model (Meta NLLB-200) that runs entirely in your browser. Nothing is uploaded, works offline after the first load. Free, no sign-up." />
+<meta name="keywords" content="offline translator, private translator, browser translator, translate offline, on-device translation, nllb translator, free translator no upload, local translation, translate without internet, ai translator in browser, privacy translator" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Private On-Device Translator — runs in your browser" />
+<meta property="og:description" content="A real 600M-parameter neural translation model running 100% in your browser. 100+ languages, nothing uploaded, works offline." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/translator.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Private On-Device Translator" />
+<meta name="twitter:description" content="Neural translation across 100+ languages, entirely in your browser. Private, offline, no sign-up." />
+<link rel="canonical" href="https://hammyasf.github.io/translator.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Private On-Device Translator","url":"https://hammyasf.github.io/translator.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser with WebAssembly)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Translate text across 100+ languages with Meta's NLLB-200 neural model running entirely in the browser. Private, offline-capable, no upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The translation model is downloaded to your browser once and every translation runs on your own device. Your text never leaves your computer."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. After the model downloads the first time, it is cached by your browser, so you can translate with your internet disconnected."}},{"@type":"Question","name":"Which model does it use?","acceptedAnswer":{"@type":"Answer","text":"Meta's open-source NLLB-200 (distilled, 600M parameters), a multilingual neural machine translation model, quantized and run in your browser through Transformers.js and WebAssembly."}},{"@type":"Question","name":"How big is the download?","acceptedAnswer":{"@type":"Answer","text":"About 320 MB, one time. Your browser caches it, so later visits load instantly and work offline."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, with no sign-up, no API key, and no limits on how much you translate."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .langbar{display:grid;grid-template-columns:1fr 44px 1fr;gap:10px;align-items:end;padding:18px 18px 6px;}
+  .ctl{display:flex;flex-direction:column;gap:6px;min-width:0;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  select{width:100%;background:rgba(var(--surfaceRGB),.85);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:11px 12px;font-family:var(--body);font-size:15px;cursor:pointer;}
+  select:focus{outline:none;border-color:var(--accent);}
+  .swap{align-self:end;margin-bottom:1px;height:42px;width:42px;border-radius:10px;border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.6);color:var(--ink);cursor:pointer;font-size:18px;transition:.15s;display:flex;align-items:center;justify-content:center;}
+  .swap:hover{border-color:var(--accent);color:var(--accent);transform:rotate(180deg);}
+  .io{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:8px 18px 6px;}
+  @media(max-width:640px){.io{grid-template-columns:1fr;}.langbar{grid-template-columns:1fr 40px 1fr;}}
+  .box{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:rgba(var(--surfaceRGB),.4);min-height:210px;overflow:hidden;}
+  .box .bh{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--faint);}
+  textarea{flex:1;width:100%;resize:vertical;background:transparent;border:none;color:var(--ink);padding:14px;font-family:var(--body);font-size:16px;line-height:1.55;min-height:150px;}
+  textarea:focus{outline:none;}
+  .outtext{flex:1;padding:14px;font-size:16px;line-height:1.55;color:var(--ink);white-space:pre-wrap;word-break:break-word;overflow:auto;min-height:150px;}
+  .outtext.placeholder{color:var(--faint);}
+  .mini{font-family:var(--mono);font-size:11px;color:var(--faint);background:transparent;border:1px solid var(--line);border-radius:7px;padding:5px 9px;cursor:pointer;color:var(--muted);}
+  .mini:hover{border-color:var(--accent);color:var(--accent);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:8px 18px 18px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .samples{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 14px;}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:100px;padding:6px 12px;cursor:pointer;background:transparent;}
+  .chip:hover{border-color:var(--accent);color:var(--accent);}
+  .status{font-family:var(--mono);font-size:12.5px;color:var(--muted);min-height:18px;}
+  .status b{color:var(--accent);}
+  .prog{height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line);overflow:hidden;margin:2px 18px 0;display:none;}
+  .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s;}
+  .note{padding:0 18px 16px;font-family:var(--mono);font-size:11.5px;color:var(--faint);}
+  .warn{margin:18px;padding:14px 16px;border:1px solid rgba(255,180,80,.4);background:rgba(255,180,80,.07);border-radius:12px;color:#ffd9a8;font-size:14px;display:none;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">On-device AI · runs in your browser</div>
+    <h1>Private Translator</h1>
+    <p class="sub">Translate between 100+ languages with a real neural model that runs entirely on your device. Your text is never uploaded, and once it loads, it works with your internet off.</p>
+    <span class="priv">&#128274; 100% private — nothing leaves your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="warn" id="warn"></div>
+
+    <div class="langbar">
+      <div class="ctl"><label for="src">From</label><select id="src"></select></div>
+      <button class="swap" id="swap" title="Swap languages" aria-label="Swap languages">&#8646;</button>
+      <div class="ctl"><label for="tgt">To</label><select id="tgt"></select></div>
+    </div>
+
+    <div class="io">
+      <div class="box">
+        <div class="bh"><span>Your text</span><span id="cin">0</span></div>
+        <textarea id="in" placeholder="Type or paste text to translate..." spellcheck="false"></textarea>
+      </div>
+      <div class="box">
+        <div class="bh"><span>Translation</span><button class="mini" id="copy" style="display:none">Copy</button></div>
+        <div class="outtext placeholder" id="out">Your translation will appear here.</div>
+      </div>
+    </div>
+
+    <div class="prog" id="prog"><i id="progi"></i></div>
+
+    <div class="bar">
+      <button class="btn" id="go">Translate</button>
+      <button class="btn btn-out" id="share" style="display:none">Copy share link</button>
+      <span class="status" id="status"></span>
+    </div>
+
+    <div class="samples" id="samples"></div>
+    <div class="note">First use downloads the model once (about 320&nbsp;MB) and caches it in your browser. After that, translation is instant and works offline. Runs on Meta&rsquo;s open NLLB-200 via Transformers.js + WebAssembly.</div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>When you translate for the first time, the page downloads a quantized copy of Meta&rsquo;s NLLB-200 model, a 600-million-parameter neural network trained to translate between 200 languages. The model file is stored in your browser&rsquo;s cache. From then on, every translation is computed locally: your sentence is tokenized, run through the encoder and decoder on your own CPU using WebAssembly, and turned back into text. There is no server in the loop, which is why nothing you type is ever sent anywhere.</p>
+    <h2>Why translate on your own device?</h2>
+    <p>Most translation sites send whatever you paste to a company&rsquo;s servers. For a quick phrase that is fine, but for a contract clause, a medical note, a private message, or anything covered by a confidentiality agreement, it means handing your words to a third party. Running the model in your browser keeps the text on your machine. It also means no rate limits, no sign-up, no API key, and it keeps working on a plane or anywhere without a connection once the model has cached.</p>
+    <h2>Good things to try</h2>
+    <p>Paste a paragraph and watch it translate sentence by sentence. Use the swap button to flip the direction and translate a reply back. Switch the target to a language you are learning and check your own writing. Translate the same sentence into several languages in a row to compare. Because it is all local, you can do this as many times as you like, on text you would never paste into a website.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my text uploaded anywhere?</summary><p>No. The model runs in your browser. Your text is processed on your own device and never sent to a server, which is why it is private and works offline.</p></details>
+    <details><summary>How good are the translations?</summary><p>NLLB-200 is a strong open research model from Meta covering 200 languages, including many that big translators handle poorly. The in-browser build is quantized to keep the download reasonable, so for very nuanced or literary text a large cloud model may still edge it out, but for everyday translation it is very capable.</p></details>
+    <details><summary>Why does the first translation take a moment?</summary><p>The first time, it downloads the model (about 320&nbsp;MB) and warms it up. That happens once. Your browser caches it, so later visits start fast and run with no connection.</p></details>
+    <details><summary>Which languages are supported?</summary><p>The model supports 200 languages. This tool exposes 100+ of the most widely used, with correct scripts, and you can pick any pair in either direction.</p></details>
+    <details><summary>Do I need a fast computer or a GPU?</summary><p>No GPU is needed; it runs on your CPU through WebAssembly. A modern laptop or desktop handles it comfortably. Very long passages translate sentence by sentence so you see progress as it goes.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>&copy; 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- Worker source (module). Not executed inline; loaded as a Blob URL worker. -->
+<script type="text/worker-js" id="wsrc">
+import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1';
+env.allowLocalModels = false;
+let translator = null;
+const MODEL = 'Xenova/nllb-200-distilled-600M';
+async function ensure(){
+  if (translator) return translator;
+  translator = await pipeline('translation', MODEL, {
+    dtype: 'q8',
+    device: 'wasm',
+    progress_callback: function(p){ self.postMessage({ kind:'progress', p:p }); }
+  });
+  return translator;
+}
+self.onmessage = async function(e){
+  const m = e.data || {};
+  try{
+    if (m.kind === 'load'){
+      await ensure();
+      self.postMessage({ kind:'ready' });
+    } else if (m.kind === 'translate'){
+      const t = await ensure();
+      const chunks = m.chunks || [];
+      const parts = [];
+      for (let i=0;i<chunks.length;i++){
+        const r = await t(chunks[i], { src_lang:m.src, tgt_lang:m.tgt });
+        const txt = (r && r[0] && r[0].translation_text) || '';
+        parts.push(txt);
+        self.postMessage({ kind:'chunk', id:m.id, i:i, n:chunks.length, text:txt, joiner:m.joiner });
+      }
+      self.postMessage({ kind:'done', id:m.id, text: parts.join(m.joiner), n:chunks.length });
+    } else if (m.kind === 'probe'){
+      // translate one short word into each code to validate codes; reply per code
+      const t = await ensure();
+      const out = {};
+      for (let i=0;i<m.codes.length;i++){
+        const c = m.codes[i];
+        try{ const r = await t('Hello', { src_lang:'eng_Latn', tgt_lang:c }); out[c] = (r&&r[0]&&r[0].translation_text)||''; }
+        catch(err){ out[c] = '__ERR__'; }
+      }
+      self.postMessage({ kind:'probe-done', out:out });
+    }
+  }catch(err){
+    self.postMessage({ kind:'error', id:m.id, error:String(err && err.message || err) });
+  }
+};
+</script>
+
+<script>
+/* Private On-Device Translator — Harman Kamboj.  Theme-match + app. */
+(function(){
+  // ---- match the portfolio's saved theme ----
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  // ============ PURE HELPERS (unit-tested) ============
+  // Languages: [display, FLORES-200 code, spacelessScript?]
+  var LANGS = [
+    ["English","eng_Latn",0],["Spanish","spa_Latn",0],["French","fra_Latn",0],["German","deu_Latn",0],
+    ["Italian","ita_Latn",0],["Portuguese","por_Latn",0],["Dutch","nld_Latn",0],["Russian","rus_Cyrl",0],
+    ["Ukrainian","ukr_Cyrl",0],["Polish","pol_Latn",0],["Czech","ces_Latn",0],["Slovak","slk_Latn",0],
+    ["Romanian","ron_Latn",0],["Hungarian","hun_Latn",0],["Greek","ell_Grek",0],["Bulgarian","bul_Cyrl",0],
+    ["Serbian","srp_Cyrl",0],["Croatian","hrv_Latn",0],["Slovenian","slv_Latn",0],["Bosnian","bos_Latn",0],
+    ["Macedonian","mkd_Cyrl",0],["Belarusian","bel_Cyrl",0],["Swedish","swe_Latn",0],["Danish","dan_Latn",0],
+    ["Norwegian Bokmal","nob_Latn",0],["Finnish","fin_Latn",0],["Icelandic","isl_Latn",0],["Estonian","est_Latn",0],
+    ["Latvian","lvs_Latn",0],["Lithuanian","lit_Latn",0],["Irish","gle_Latn",0],["Welsh","cym_Latn",0],
+    ["Catalan","cat_Latn",0],["Galician","glg_Latn",0],["Basque","eus_Latn",0],["Maltese","mlt_Latn",0],
+    ["Luxembourgish","ltz_Latn",0],["Albanian","als_Latn",0],["Turkish","tur_Latn",0],["Azerbaijani","azj_Latn",0],
+    ["Armenian","hye_Armn",0],["Georgian","kat_Geor",0],["Kazakh","kaz_Cyrl",0],["Uzbek","uzn_Latn",0],
+    ["Kyrgyz","kir_Cyrl",0],["Tajik","tgk_Cyrl",0],["Mongolian","khk_Cyrl",0],["Arabic","arb_Arab",0],
+    ["Hebrew","heb_Hebr",0],["Persian","pes_Arab",0],["Pashto","pbt_Arab",0],["Kurdish (Kurmanji)","kmr_Latn",0],
+    ["Urdu","urd_Arab",0],["Sindhi","snd_Arab",0],["Hindi","hin_Deva",0],["Bengali","ben_Beng",0],
+    ["Punjabi","pan_Guru",0],["Gujarati","guj_Gujr",0],["Marathi","mar_Deva",0],["Nepali","npi_Deva",0],
+    ["Tamil","tam_Taml",0],["Telugu","tel_Telu",0],["Kannada","kan_Knda",0],["Malayalam","mal_Mlym",0],
+    ["Sinhala","sin_Sinh",0],["Assamese","asm_Beng",0],["Odia","ory_Orya",0],["Chinese (Simplified)","zho_Hans",1],
+    ["Chinese (Traditional)","zho_Hant",1],["Japanese","jpn_Jpan",1],["Korean","kor_Hang",0],["Thai","tha_Thai",1],
+    ["Lao","lao_Laoo",1],["Khmer","khm_Khmr",1],["Burmese","mya_Mymr",1],["Vietnamese","vie_Latn",0],
+    ["Indonesian","ind_Latn",0],["Malay","zsm_Latn",0],["Tagalog","tgl_Latn",0],["Cebuano","ceb_Latn",0],
+    ["Javanese","jav_Latn",0],["Sundanese","sun_Latn",0],["Swahili","swh_Latn",0],["Amharic","amh_Ethi",0],
+    ["Yoruba","yor_Latn",0],["Igbo","ibo_Latn",0],["Hausa","hau_Latn",0],["Zulu","zul_Latn",0],
+    ["Xhosa","xho_Latn",0],["Shona","sna_Latn",0],["Somali","som_Latn",0],["Afrikaans","afr_Latn",0],
+    ["Nyanja","nya_Latn",0],["Kinyarwanda","kin_Latn",0],["Luganda","lug_Latn",0],["Sesotho","sot_Latn",0],
+    ["Wolof","wol_Latn",0],["Haitian Creole","hat_Latn",0],["Maori","mri_Latn",0],["Samoan","smo_Latn",0],
+    ["Esperanto","epo_Latn",0],["Occitan","oci_Latn",0]
+  ];
+  var SPACELESS = {};
+  LANGS.forEach(function(l){ if(l[2]) SPACELESS[l[1]]=1; });
+
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+
+  function joinerFor(code){ return SPACELESS[code] ? "" : " "; }
+
+  // Split into translation-sized chunks: by sentence, then hard-cap long ones at word boundaries.
+  function splitChunks(text){
+    if(!text) return [];
+    var norm = String(text).replace(/\r\n/g,"\n");
+    var raw = norm.split(/(?<=[。！？])\s*|(?<=[.!?…])\s+|\n+/);
+    var out = [];
+    for(var k=0;k<raw.length;k++){
+      var p = raw[k].trim();
+      if(!p) continue;
+      while(p.length > 480){
+        var cut = p.lastIndexOf(" ", 480);
+        if(cut < 200) cut = 480;
+        out.push(p.slice(0,cut).trim());
+        p = p.slice(cut).trim();
+      }
+      if(p) out.push(p);
+    }
+    return out;
+  }
+
+  function b64urlEncode(str){ return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
+  function b64urlDecode(s){ s=String(s).replace(/-/g,"+").replace(/_/g,"/"); while(s.length%4) s+="="; return decodeURIComponent(escape(atob(s))); }
+
+  function validCode(code){ for(var i=0;i<LANGS.length;i++){ if(LANGS[i][1]===code) return true; } return false; }
+
+  function encodeShare(st){ var h="#s="+st.s+"&t="+st.t; if(st.q) h+="&q="+b64urlEncode(st.q); return h; }
+  function parseShare(hash){
+    var o={s:null,t:null,q:null}; if(!hash) return o;
+    var h = hash.charAt(0)==="#" ? hash.slice(1) : hash;
+    h.split("&").forEach(function(kv){
+      var i=kv.indexOf("="); if(i<0) return;
+      var k=kv.slice(0,i), v=kv.slice(i+1);
+      if(k==="s"&&validCode(v)) o.s=v;
+      else if(k==="t"&&validCode(v)) o.t=v;
+      else if(k==="q"){ try{ o.q=b64urlDecode(v); }catch(e){} }
+    });
+    return o;
+  }
+
+  function fmtMB(bytes){ return (bytes/1048576).toFixed(1)+" MB"; }
+
+  // Expose pure helpers for live unit tests
+  window.__mtPure = { LANGS:LANGS, escapeHtml:escapeHtml, joinerFor:joinerFor, splitChunks:splitChunks,
+    b64urlEncode:b64urlEncode, b64urlDecode:b64urlDecode, validCode:validCode, encodeShare:encodeShare,
+    parseShare:parseShare, fmtMB:fmtMB };
+
+  // ============ DOM / APP ============
+  var $ = function(id){ return document.getElementById(id); };
+  var srcSel=$("src"), tgtSel=$("tgt"), inEl=$("in"), outEl=$("out"), goBtn=$("go"),
+      copyBtn=$("copy"), shareBtn=$("share"), statusEl=$("status"), progEl=$("prog"), progi=$("progi"),
+      cin=$("cin"), warnEl=$("warn"), swapBtn=$("swap"), samplesEl=$("samples");
+
+  // populate selects
+  function fillSelect(sel, code){
+    var html="";
+    for(var i=0;i<LANGS.length;i++){ html += '<option value="'+LANGS[i][1]+'">'+escapeHtml(LANGS[i][0])+'</option>'; }
+    sel.innerHTML = html; sel.value = code;
+  }
+  fillSelect(srcSel,"eng_Latn");
+  fillSelect(tgtSel,"spa_Latn");
+
+  // restore last pair
+  try{ var lp=localStorage.getItem("mt_pair"); if(lp){ var pr=JSON.parse(lp); if(validCode(pr.s)) srcSel.value=pr.s; if(validCode(pr.t)) tgtSel.value=pr.t; } }catch(e){}
+
+  // share hash overrides
+  var sh = parseShare(location.hash);
+  if(sh.s) srcSel.value=sh.s;
+  if(sh.t) tgtSel.value=sh.t;
+  if(sh.q){ inEl.value=sh.q; }
+
+  function savePair(){ try{ localStorage.setItem("mt_pair", JSON.stringify({s:srcSel.value,t:tgtSel.value})); }catch(e){} }
+
+  // char count
+  function updCount(){ cin.textContent = String(inEl.value.length); }
+  inEl.addEventListener("input", updCount); updCount();
+
+  // samples
+  var SAMPLES = [
+    "Hello! It is a pleasure to meet you. How are you doing today?",
+    "Could you tell me where the nearest train station is, please?",
+    "I would like to book a table for two at eight o'clock this evening.",
+    "Thank you so much for your help. I really appreciate your kindness.",
+    "The meeting has been moved to Thursday afternoon. Please let me know if that works for you."
+  ];
+  SAMPLES.forEach(function(s){
+    var b=document.createElement("button"); b.className="chip"; b.textContent='"'+ s.slice(0,28).trim() + (s.length>28?'…':'') + '"';
+    b.addEventListener("click", function(){ inEl.value=s; updCount(); inEl.focus(); });
+    samplesEl.appendChild(b);
+  });
+
+  // capability detection
+  var supported = (typeof Worker!=="undefined") && (typeof WebAssembly!=="undefined") && (typeof Blob!=="undefined") && !!window.URL && !!URL.createObjectURL;
+  if(!supported){
+    warnEl.style.display="block";
+    warnEl.textContent = "Your browser can't run this tool. It needs WebAssembly and Web Workers — please try a recent version of Chrome, Edge, Firefox, or Safari on a desktop or laptop.";
+    goBtn.disabled = true;
+  }
+
+  // ---- worker ----
+  var worker=null, ready=false, loading=false, busy=false, jobId=0;
+  var seenFiles = {}; // file -> {loaded,total}
+
+  function makeWorker(){
+    var src = document.getElementById("wsrc").textContent;
+    var blob = new Blob([src], {type:"text/javascript"});
+    var url = URL.createObjectURL(blob);
+    var w = new Worker(url, {type:"module"});
+    w.onmessage = onWorkerMsg;
+    w.onerror = function(ev){ setStatus("Something went wrong loading the engine. Try reloading the page.", false); console.error(ev); busy=false; loading=false; goBtn.disabled=false; hideProg(); };
+    return w;
+  }
+
+  function setStatus(html, ok){ statusEl.innerHTML = html; }
+  function showProg(){ progEl.style.display="block"; }
+  function hideProg(){ progEl.style.display="none"; progi.style.width="0"; }
+
+  function onWorkerMsg(e){
+    var m = e.data || {};
+    if(m.kind==="progress"){
+      var p=m.p||{};
+      if(p.status==="progress" && p.file && p.total){
+        seenFiles[p.file] = {loaded:p.loaded||0, total:p.total||0};
+        var L=0,Tt=0; for(var f in seenFiles){ L+=seenFiles[f].loaded; Tt+=seenFiles[f].total; }
+        var pct = Tt? Math.min(100, Math.round(L/Tt*100)) : 0;
+        progi.style.width = pct+"%";
+        setStatus("Downloading model… <b>"+pct+"%</b> ("+fmtMB(L)+" of ~"+fmtMB(Tt)+")", true);
+      } else if(p.status==="ready" || p.status==="done"){ /* per-file done */ }
+    } else if(m.kind==="ready"){
+      ready=true; loading=false; hideProg();
+    } else if(m.kind==="chunk"){
+      // progressive output
+      if(m.id===jobId){
+        if(outEl.classList.contains("placeholder")){ outEl.classList.remove("placeholder"); outEl.textContent=""; }
+        outEl.textContent += (outEl.textContent? m.joiner : "") + m.text;
+        if(m.n>1) setStatus("Translating… <b>"+(m.i+1)+"/"+m.n+"</b> sentences", true);
+      }
+    } else if(m.kind==="done"){
+      if(m.id===jobId){
+        busy=false; goBtn.disabled=false; goBtn.textContent="Translate";
+        outEl.classList.remove("placeholder");
+        outEl.textContent = m.text;
+        copyBtn.style.display = m.text? "inline-block":"none";
+        shareBtn.style.display = "inline-block";
+        var name = nameOf(tgtSel.value);
+        setStatus("Done · translated to <b>"+escapeHtml(name)+"</b> on your device", true);
+      }
+    } else if(m.kind==="error"){
+      busy=false; loading=false; goBtn.disabled=false; goBtn.textContent="Translate"; hideProg();
+      setStatus("Error: "+escapeHtml(m.error||"translation failed"), false);
+    } else if(m.kind==="probe-done"){
+      if(window.__mtProbeResolve) window.__mtProbeResolve(m.out);
+    }
+  }
+
+  function nameOf(code){ for(var i=0;i<LANGS.length;i++){ if(LANGS[i][1]===code) return LANGS[i][0]; } return code; }
+
+  function ensureWorker(){ if(!worker){ worker=makeWorker(); window.__mtWorker=worker; } return worker; }
+
+  function translate(){
+    if(busy || !supported) return;
+    var text = inEl.value.trim();
+    if(!text){ setStatus("Type some text to translate.", false); inEl.focus(); return; }
+    if(srcSel.value===tgtSel.value){ setStatus("Pick two different languages.", false); return; }
+    savePair();
+    var chunks = splitChunks(text);
+    if(!chunks.length){ setStatus("Nothing to translate.", false); return; }
+    busy=true; goBtn.disabled=true;
+    outEl.classList.add("placeholder"); outEl.textContent=""; copyBtn.style.display="none";
+    ensureWorker();
+    jobId++;
+    var joiner = joinerFor(tgtSel.value);
+    if(!ready){
+      loading=true; showProg();
+      setStatus("Loading the translation model… one-time ~320 MB download", true);
+      goBtn.textContent="Loading…";
+    } else {
+      goBtn.textContent="Translating…";
+      setStatus("Translating on your device…", true);
+    }
+    worker.postMessage({ kind:"translate", id:jobId, chunks:chunks, src:srcSel.value, tgt:tgtSel.value, joiner:joiner });
+  }
+
+  goBtn.addEventListener("click", translate);
+  inEl.addEventListener("keydown", function(e){ if((e.ctrlKey||e.metaKey) && e.key==="Enter"){ e.preventDefault(); translate(); } });
+
+  swapBtn.addEventListener("click", function(){
+    var s=srcSel.value, tg=tgtSel.value; srcSel.value=tg; tgtSel.value=s; savePair();
+    // also swap the text fields if there is an output
+    var outTxt = outEl.classList.contains("placeholder")? "" : outEl.textContent;
+    if(outTxt){ inEl.value=outTxt; updCount(); outEl.classList.add("placeholder"); outEl.textContent="Your translation will appear here."; copyBtn.style.display="none"; }
+  });
+
+  copyBtn.addEventListener("click", function(){
+    var txt = outEl.classList.contains("placeholder")? "" : outEl.textContent;
+    if(!txt) return;
+    navigator.clipboard.writeText(txt).then(function(){ copyBtn.textContent="Copied"; setTimeout(function(){copyBtn.textContent="Copy";},1200); });
+  });
+
+  shareBtn.addEventListener("click", function(){
+    var st={ s:srcSel.value, t:tgtSel.value, q: inEl.value.trim().slice(0,2000) };
+    var link = location.origin + location.pathname + encodeShare(st);
+    navigator.clipboard.writeText(link).then(function(){ shareBtn.textContent="Link copied"; setTimeout(function(){shareBtn.textContent="Copy share link";},1400); });
+  });
+
+  // expose for tests/verification
+  window.__mtBoot = true;
+  window.__mtTranslateAPI = { translate: translate, get ready(){ return ready; }, get busy(){ return busy; } };
+  window.__mtProbe = function(codes){ ensureWorker(); return new Promise(function(res){ window.__mtProbeResolve=res; worker.postMessage({kind:"probe", codes:codes}); }); };
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
