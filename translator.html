@@ -393,6 +393,7 @@ self.onmessage = async function(e){
         if(m.n>1) setStatus("Translating… <b>"+(m.i+1)+"/"+m.n+"</b> sentences", true);
       }
     } else if(m.kind==="done"){
+      ready=true; loading=false; hideProg();
       if(m.id===jobId){
         busy=false; goBtn.disabled=false; goBtn.textContent="Translate";
         outEl.classList.remove("placeholder");
