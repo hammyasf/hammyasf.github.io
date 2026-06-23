@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Your MCP server is eating the context window — Harman Kamboj</title>
+<meta name="description" content="Why MCP servers quietly fill an agent's context window with bloated tool schemas and oversized results, and how I keep an agent's context lean and useful." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Your MCP server is eating the context window — Harman Kamboj" />
+<meta property="og:description" content="Why MCP servers quietly fill an agent's context window with bloated tool schemas and oversized results, and how I keep an agent's context lean and useful." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/mcp-server-context-window.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Your MCP server is eating the context window — Harman Kamboj" />
+<meta name="twitter:description" content="Why MCP servers quietly fill an agent's context window with bloated tool schemas and oversized results, and how I keep an agent's context lean and useful." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/mcp-server-context-window.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Your MCP server is eating the context window","description":"Why MCP servers quietly fill an agent's context window with bloated tool schemas and oversized results, and how I keep an agent's context lean and useful.","datePublished":"2026-06-23","dateModified":"2026-06-23","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/mcp-server-context-window.html","url":"https://hammyasf.github.io/mcp-server-context-window.html","keywords":"AI, Agents, MCP, Context","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  .blist{padding:30px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:30px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(24px,3.2vw,34px);letter-spacing:-.02em;margin:10px 0 8px;}
+  .bcard p{color:var(--muted);font-size:16px;}
+  .bhero{padding:150px 0 10px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Your MCP server is eating the context window</h1>
+   <div class="pmeta"><span>June 23, 2026</span><span>4 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>AI</span><span>Agents</span><span>MCP</span><span>Tooling</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The fastest way to wreck an agent is to hand it a sloppy MCP server. I found this out the dull way, watching a capable model go vague and start fumbling steps it had nailed an hour earlier. When I actually looked at the prompt, it was two thirds full before the agent had done a single useful thing. None of that space went to the task. It went to tool definitions and tool output. If you are connecting an agent to tools right now, the MCP server context window problem is the one that bites first, and the docs barely mention it.</p>
+<p>I have been plugging LLM features and small agents into real products for a while, and the same lesson keeps showing up in a new costume. The model is rarely the bottleneck. What you put in front of it is.</p>
+<h2>Where the tokens actually go</h2>
+<p>An MCP server spends your context in two places, and both hide until you measure them.</p>
+<ul><li>Schema cost. Every tool the server exposes ships its full definition into the prompt: the name, the description, each parameter, every nested type. Connect three talkative servers and you can burn a few thousand tokens before the agent reads its first real instruction.</li><li>Result cost. A single call can return a wall of JSON. A schema introspection tool on a database with two hundred tables. A directory listing with every file attribute. A search that hands back forty hits with all fields on each one. The agent needed three numbers and you gave it a phone book.</li></ul>
+<p>Both of these feed straight into the slow decay I wrote about in <a href="context-rot-long-running-agents.html">context rot</a>. The window does not have to be full for quality to drop. It just has to be cluttered, and a chatty MCP server is a clutter machine running on autopilot.</p>
+<h2>A tool schema is an API you publish to a model</h2>
+<p>The mistake I see most is treating tool definitions as throwaway config. They are not. A tool schema is an interface, and it gets read by the model on every single call, so I design it the same way I design a <a href="api-design-that-lasts.html">public API meant to last</a>. Small surface, clear names, no surprises.</p>
+<p>In practice that means a few habits.</p>
+<ul><li>Expose the tools the job needs, not the whole catalog. If six tools cover the work, do not register thirty. Every extra one is permanent rent on the context.</li><li>Write descriptions that are short and exact. The model uses them to pick a tool. A vague paragraph makes it guess, and a wrong guess costs you a whole round trip of tokens and latency.</li><li>Keep parameters honest. Mark optional things optional. Do not dump a sixty value enum into the schema when a free text field and one good sentence would do.</li></ul>
+<p>None of this is exotic. It is the boring discipline of API design, pointed at a new kind of client that happens to read your schema every time it thinks.</p>
+<h2>Trim what the tools hand back</h2>
+<p>The default <code>get_everything</code> tool is the quiet villain here. It feels generous and it is poison for context. When I built the query layer behind <a href="elasticswap.html">ElasticSwap</a>, the whole game was returning a tight slice of on-chain data instead of the entire dataset, because the difference was a fast product versus a frozen one. The same instinct applies to MCP tools, just with the model as the consumer instead of a frontend.</p>
+<p>So I cap and shape results at the server, not after they have already landed in the prompt.</p>
+<ul><li>Paginate by default and return a count, so the agent can ask for more only if it needs it.</li><li>Return the fields that matter for the task, not the full record. A row with three useful columns should not arrive with thirty.</li><li>Summarize on the server when you can. A tool that says what it found in a sentence often beats one that dumps raw rows the model then has to wade through.</li></ul>
+<p>A tool that returns less is not a weaker tool. It is one that respects the budget it is spending on your behalf.</p>
+<h2>Spend the context like money</h2>
+<p>I have stopped thinking about context as a container to fill and started treating it as a budget I am spending every call. That framing changes which MCP server I trust. The good ones let me control verbosity, filter fields, and page through results. The bad ones assume infinite room and make me pay for it on every turn.</p>
+<p>There is a real bill attached too. Each token of schema and stale result rides along on every subsequent call for the rest of the run, which is exactly the kind of slow leak I watch for when I am <a href="llm-cost-control.html">keeping LLM costs from wrecking a margin</a>. Tight tooling and a sane invoice turn out to be the same piece of work.</p>
+<h2>The cheap test before you blame the model</h2>
+<p>Before you reach for a bigger window or a smarter model, measure where your context goes. Log the token count at each step and split it three ways: tool schemas, tool results, and the actual task. The first time I did this on a misbehaving agent, the task was a thin sliver and two fat servers were eating the rest. I cut the tool list, capped the results, and the same model that looked dim suddenly looked sharp.</p>
+<p>Most agent failures I get pulled in to fix are not a weak model. They are a model buried under tooling nobody bothered to trim. Keep the schemas small, keep the results lean, and treat every MCP server as something that has to earn the room it takes. I keep more notes like this in my <a href="ai.html">AI writing</a>, and the rest of the work is on the <a href="index.html">homepage</a>.</p>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If your agent or the hard part of your product is fighting you, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="context-rot-long-running-agents.html">Context rot: why a bigger context window will not fix your agent →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>
