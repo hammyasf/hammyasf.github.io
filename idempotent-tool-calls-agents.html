@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Idempotent tool calls: do this before you let an agent retry — Harman Kamboj</title>
+<meta name="description" content="When a tool call times out, an AI agent often runs it twice. Here is how idempotent tool calls and a retry budget stop retries from corrupting real data." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Idempotent tool calls: do this before you let an agent retry — Harman Kamboj" />
+<meta property="og:description" content="When a tool call times out, an AI agent often runs it twice. Here is how idempotent tool calls and a retry budget stop retries from corrupting real data." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/idempotent-tool-calls-agents.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Idempotent tool calls: do this before you let an agent retry — Harman Kamboj" />
+<meta name="twitter:description" content="When a tool call times out, an AI agent often runs it twice. Here is how idempotent tool calls and a retry budget stop retries from corrupting real data." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/idempotent-tool-calls-agents.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Idempotent tool calls: do this before you let an agent retry","description":"When a tool call times out, an AI agent often runs it twice. Here is how idempotent tool calls and a retry budget stop retries from corrupting real data.","datePublished":"2026-06-24","dateModified":"2026-06-24","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/idempotent-tool-calls-agents.html","url":"https://hammyasf.github.io/idempotent-tool-calls-agents.html","keywords":"AI, Agents, Idempotency, Reliability, Backend","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  .rel{margin:40px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin-bottom:6px;}
+  .rel a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .blist{padding:30px 0;display:grid;gap:8px;}
+  .bcard{display:block;padding:30px 4px;border-top:1px solid var(--line);transition:padding .25s var(--ease);position:relative;}
+  .bcard:last-child{border-bottom:1px solid var(--line);}
+  .bcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
+  .bcard:hover::before{transform:scaleY(1);}.bcard:hover{padding-left:22px;}
+  .bcard .d{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.06em;}
+  .bcard h2{font-family:var(--display);font-weight:600;font-size:clamp(24px,3.2vw,34px);letter-spacing:-.02em;margin:10px 0 8px;}
+  .bcard p{color:var(--muted);font-size:16px;}
+  .bhero{padding:150px 0 10px;}
+  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
+  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
+  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:620px;}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Idempotent tool calls: do this before you let an agent retry</h1>
+   <div class="pmeta"><span>June 24, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>AI</span><span>Agents</span><span>Idempotency</span><span>Backend</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>An agent that can retry is an agent that can do the same thing twice. I started caring about idempotent tool calls the day I watched a sensible little agent send a message, sit there waiting for a reply that never came, decide the call had failed, and send the exact same thing again. The person on the other end got two of everything. The agent was sure it had acted once. If you are wiring an agent up to tools that touch real state, this is the bug that waits for you in production instead of in the demo.</p>
+<p>I have spent years on the kind of systems where running an action twice is not a cosmetic slip. A cross-chain bridge that releases funds twice. A swap that submits the same transaction again. A job queue that double-charges a card. So when agents showed up calling tools in a loop, the failure mode looked very familiar, just wearing a new outfit.</p>
+<h2>Retries are going to happen whether you plan for them or not</h2>
+<p>People talk about agent retries like a feature you switch on. They are not. They leak in from every direction. The network times out. The orchestrator restarts a failed run from the top. The model itself, unsure whether its last call landed, decides to call the same tool one more time to be safe. You do not get to opt out of retries. You only get to decide whether they are safe.</p>
+<h2>The real gap is between "it worked" and "the agent heard back"</h2>
+<p>Here is the part that trips people up. A tool can do its job perfectly and the agent can still believe it failed. The write commits to the database, the email leaves the server, and then the connection drops before the response makes it back. From the agent's side that looks identical to a real failure. So it does the only reasonable thing it knows: it tries again. The work was already done. Now it is done twice.</p>
+<p>You cannot close that gap by making the network reliable, because you do not control the network. You close it at the tool, by making a second identical call cost nothing.</p>
+<h2>Make the tool idempotent, not the agent careful</h2>
+<p>The tempting fix is to make the model smarter about when to retry. Resist that. The model is the worst possible place to put a correctness guarantee, because it is a probabilistic thing and your money is not. Put the guarantee in the tool, where it is plain code you can test.</p>
+<p>The pattern is old and it comes straight from API design. The agent attaches an idempotency key to every call that changes state. The key is derived deterministically, usually a hash of the turn id, the tool name, and the arguments, so a genuine retry produces the same key and a brand new action produces a new one. The tool server keeps a small record of keys it has already handled. If it sees a key again, it skips the work and returns the result it gave the first time. Stripe has shipped exactly this for over a decade, and it is the same instinct I leaned on when I wrote about <a href="background-jobs-queues.html">background jobs and queues</a>, where a worker that picks up the same message twice has to land in the same place either way.</p>
+<h2>Give it a retry budget so a loop cannot bankrupt you</h2>
+<p>Idempotency keeps a retry from corrupting data. It does nothing to stop a retry from running forever. I have seen a single misbehaving tool drag an agent into a tight loop, calling, timing out, calling again, burning thousands of tokens before the outer timeout finally woke up and killed it. So every turn gets a retry budget, a hard cap on how many times a tool can be attempted before the agent has to stop and report that it is stuck. A loud failure is cheaper than a quiet one that bills you by the token.</p>
+<h2>Reads are cheap, writes are where you slow down</h2>
+<p>Not every tool needs this. A tool that only reads can be called ten times with no harm done, so do not wrap it in machinery it does not need. The discipline is to sort your tools into the ones that change something and the ones that do not, then spend your attention only on the first group. This is the same line I draw when <a href="mcp-server-context-window.html">trimming what an MCP server feeds an agent</a>: most of the work is deciding what actually deserves the weight.</p>
+<h2>What I actually wire up</h2>
+<p>When I am setting an agent loose on real tools, the checklist is short and I do not skip it. Every tool that mutates state takes an idempotency key as a first-class argument. The server keeps a dedup table with a time-to-live, usually a day, so old keys do not pile up forever. The agent derives the key the same way every time so a retry collides on purpose. Each turn carries a retry budget. And I log the key on every call, because the first time you see two calls share a key you know a retry happened and you know your guard caught it.</p>
+<p>None of this is clever. It is the boring reliability work that backend engineers have done for years, pointed at a new kind of caller that happens to be a language model with a habit of second-guessing itself. The teams that ship agents people trust are not the ones with the fanciest prompts. They are the ones who assumed the agent would do everything twice and made sure twice was safe.</p>
+<p>If this is the kind of problem your product is fighting, I write more about it in my <a href="ai.html">AI notes</a>, and the rest of the work is on the <a href="index.html">homepage</a>.</p>
+   <div class="rel">
+     <h2>Related in AI</h2>
+     <ul>
+       <li><a href="mcp-server-context-window.html">Your MCP server is eating the context window</a></li>
+       <li><a href="context-rot-long-running-agents.html">Context rot: why a bigger context window will not fix your agent</a></li>
+       <li><a href="securing-ai-generated-code.html">Securing AI-generated code before it ships</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If your agent or the hard part of your product is fighting you, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="mcp-server-context-window.html">Your MCP server is eating the context window →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>
