@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RegexLab — Regex Visualizer, NFA Explorer &amp; ReDoS Backtracking Profiler</title>
+<meta name="description" content="Visualize any regular expression as a finite automaton, step through matching live, and detect catastrophic backtracking (ReDoS) — all in your browser. Built on a from-scratch regex engine. Nothing uploaded." />
+<meta name="keywords" content="regex visualizer, regex debugger, regex tester, nfa, finite automaton, regular expression, redos, catastrophic backtracking, regex backtracking, thompson construction, regex engine, regex performance, regex security" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="RegexLab — see how your regex really runs" />
+<meta property="og:description" content="Visualize a regex as an automaton, step through matching live, and catch catastrophic backtracking (ReDoS). Runs entirely in your browser." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/regexlab.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="RegexLab — see how your regex really runs" />
+<meta name="twitter:description" content="Regex → automaton visualizer + live step debugger + catastrophic-backtracking (ReDoS) profiler. 100% in your browser." />
+<link rel="canonical" href="https://hammyasf.github.io/regexlab.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"RegexLab","url":"https://hammyasf.github.io/regexlab.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Visualize a regular expression as a finite automaton, step through matching live, and detect catastrophic backtracking (ReDoS), all in the browser on a from-scratch regex engine.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does this run entirely in my browser?","acceptedAnswer":{"@type":"Answer","text":"RegexLab ships its own regular-expression engine written in JavaScript. When you type a pattern it is parsed into a syntax tree, compiled to a Thompson NFA for the automaton view and linear-time matching, and run through a separate backtracking matcher for the step profiler. There is no server and nothing is uploaded."}},{"@type":"Question","name":"What is catastrophic backtracking (ReDoS)?","acceptedAnswer":{"@type":"Answer","text":"Some patterns, like nested quantifiers such as (a+)+$, cause a backtracking engine to try an exponential number of ways to match a crafted input. A few dozen characters can lock up a CPU for seconds or minutes. This is the basis of a ReDoS (regular-expression denial of service) attack. RegexLab grows an adversarial input and charts the step count so you can see the blow-up."}},{"@type":"Question","name":"Is my data uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. Your pattern and test text never leave your device. Everything runs locally in JavaScript, so you can use it on private logs and data safely."}},{"@type":"Question","name":"Which regex features are supported?","acceptedAnswer":{"@type":"Answer","text":"Literals and escapes, the dot, character classes with ranges and shorthands, anchors ^ $ \\b \\B, groups and non-capturing groups, alternation, and quantifiers * + ? {m} {m,} {m,n} including lazy forms, with the i, m and s flags. Backreferences and lookaround are not part of the visual engine by design."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);--bad:#ff5c6a;--warn:#ffb454;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 6px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,50px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:17.5px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .pad{padding:22px 24px;}
+  label.lab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:7px;}
+  .rxrow{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;}
+  .rxfield{flex:1;min-width:260px;display:flex;align-items:center;border:1px solid var(--line-2);border-radius:12px;background:rgba(var(--surfaceRGB),.6);overflow:hidden;}
+  .rxfield .slash{font-family:var(--mono);color:var(--faint);padding:0 12px;font-size:18px;}
+  #pattern{flex:1;background:transparent;border:none;color:var(--ink);font-family:var(--mono);font-size:17px;padding:14px 6px;outline:none;}
+  .flags{display:flex;gap:6px;}
+  .flagbtn{font-family:var(--mono);font-size:14px;width:42px;border:1px solid var(--line-2);background:transparent;color:var(--muted);border-radius:10px;cursor:pointer;transition:.15s;}
+  .flagbtn.on{background:var(--accent);color:#07100e;border-color:var(--accent);font-weight:600;}
+  .flagbtn:hover{color:var(--ink);}
+  #test{width:100%;margin-top:16px;min-height:92px;resize:vertical;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);border-radius:12px;color:var(--ink);font-family:var(--mono);font-size:14.5px;padding:13px 14px;outline:none;line-height:1.7;}
+  .err{display:none;margin-top:12px;color:var(--bad);font-family:var(--mono);font-size:13px;border:1px solid rgba(255,92,106,.35);background:rgba(255,92,106,.08);padding:9px 12px;border-radius:10px;}
+  .status{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center;}
+  .pill{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);padding:5px 11px;border-radius:100px;}
+  .pill.ok{color:var(--accent);border-color:rgba(var(--accentRGB),.4);}
+  .pill.bad{color:var(--bad);border-color:rgba(255,92,106,.4);}
+  .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+  .preset{font-family:var(--mono);font-size:12.5px;color:var(--ink);border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.5);padding:7px 12px;border-radius:9px;cursor:pointer;transition:.15s;}
+  .preset:hover{border-color:rgba(var(--accentRGB),.5);background:rgba(var(--accentRGB),.06);}
+  .preset.evil{color:var(--bad);border-color:rgba(255,92,106,.4);}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);padding:0 12px;flex-wrap:wrap;}
+  .tabbtn{font-family:var(--body);font-weight:600;font-size:14px;color:var(--muted);background:transparent;border:none;border-bottom:2px solid transparent;padding:14px 16px;cursor:pointer;transition:.15s;}
+  .tabbtn.on{color:var(--ink);border-bottom-color:var(--accent);}
+  .tabbtn:hover{color:var(--ink);}
+  .tabpanel{padding:22px 24px;}
+  #matchOut{font-family:var(--mono);font-size:15px;line-height:1.9;white-space:pre-wrap;word-break:break-word;background:rgba(var(--surfaceRGB),.5);border:1px solid var(--line);border-radius:12px;padding:16px;min-height:60px;}
+  mark{background:rgba(var(--accentRGB),.28);color:var(--ink);border-radius:4px;padding:1px 1px;box-shadow:inset 0 -2px 0 rgba(var(--accentRGB),.6);}
+  mark.mk1{background:rgba(20,195,201,.28);box-shadow:inset 0 -2px 0 rgba(20,195,201,.7);}
+  mark.mk2{background:rgba(255,180,84,.26);box-shadow:inset 0 -2px 0 rgba(255,180,84,.7);}
+  mark.mk3{background:rgba(176,124,255,.26);box-shadow:inset 0 -2px 0 rgba(176,124,255,.7);}
+  .zw{color:var(--accent);font-style:italic;opacity:.8;}
+  .dim{color:var(--faint);}
+  .mlist{margin-top:14px;display:grid;gap:6px;max-height:240px;overflow:auto;}
+  .mrow{display:flex;gap:12px;align-items:center;font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:8px;padding:7px 11px;}
+  .mrow .mi{color:var(--accent);}
+  .mrow .mtxt{flex:1;color:var(--ink);word-break:break-all;}
+  .mrow .mspan{color:var(--faint);}
+  #nfaCaption{font-size:14px;color:var(--muted);margin-bottom:14px;}
+  #nfaCaption b{color:var(--accent);}
+  .nfaWrap{overflow:auto;border:1px solid var(--line);border-radius:12px;background:rgba(var(--surfaceRGB),.35);padding:6px;}
+  svg .edge{stroke:var(--faint);stroke-width:1.4;opacity:.7;}
+  svg .edge.eps{stroke-dasharray:4 4;opacity:.5;}
+  svg .elabel{fill:var(--ink);font-family:var(--mono);font-size:12px;}
+  svg .elabel.assert{fill:var(--accent-2);}
+  svg .ncirc{fill:rgba(var(--surfaceRGB),.95);stroke:var(--line-2);stroke-width:1.5;transition:.2s;}
+  svg .ninner{stroke:var(--accent);stroke-width:1.5;}
+  svg .nlabel{fill:var(--muted);font-family:var(--mono);font-size:12px;}
+  svg .node.accept .ncirc{stroke:var(--accent);}
+  svg .node.start .ncirc{stroke:var(--accent-2);stroke-width:2;}
+  svg .node.on .ncirc{fill:var(--accent);stroke:var(--accent);filter:drop-shadow(0 0 7px rgba(var(--accentRGB),.7));}
+  svg .node.on .nlabel{fill:#07100e;font-weight:600;}
+  svg .node.on .ninner{stroke:#07100e;}
+  .execRow{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap;}
+  .execRow input[type=range]{accent-color:var(--accent);flex:1;min-width:160px;}
+  .playbtn{font-family:var(--mono);font-size:13px;color:var(--ink);border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.6);padding:8px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;}
+  .playbtn:hover{border-color:rgba(var(--accentRGB),.5);}
+  #execLabel{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  #execLabel b{color:var(--accent);}#execLabel .ok{color:var(--accent);}
+  .execChars{margin-top:14px;font-family:var(--mono);font-size:18px;line-height:1.7;white-space:pre-wrap;word-break:break-word;background:rgba(var(--surfaceRGB),.5);border:1px solid var(--line);border-radius:12px;padding:14px;}
+  .ec{padding:1px 0;border-radius:3px;}
+  .ec.done{color:var(--faint);}
+  .ec.cur{background:var(--accent);color:#07100e;box-shadow:0 0 10px rgba(var(--accentRGB),.6);}
+  .ec.end{color:var(--faint);}
+  .verdict{border-radius:14px;padding:16px 18px;border:1px solid var(--line);margin-bottom:16px;}
+  .verdict .vlabel{font-family:var(--display);font-weight:600;font-size:20px;}
+  .verdict.good{border-color:rgba(var(--accentRGB),.45);background:rgba(var(--accentRGB),.07);}
+  .verdict.good .vlabel{color:var(--accent);}
+  .verdict.warn{border-color:rgba(255,180,84,.45);background:rgba(255,180,84,.07);}
+  .verdict.warn .vlabel{color:var(--warn);}
+  .verdict.bad{border-color:rgba(255,92,106,.5);background:rgba(255,92,106,.08);}
+  .verdict.bad .vlabel{color:var(--bad);}
+  #redosExplain{font-size:15px;color:#cdd8d3;margin-bottom:14px;}
+  #redosExplain b{color:var(--ink);}
+  #redosExplain .probe{margin-top:10px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  #redosExplain code{background:rgba(var(--surfaceRGB),.8);border:1px solid var(--line);padding:1px 6px;border-radius:5px;color:var(--ink);}
+  #redosChart{width:100%;height:220px;border:1px solid var(--line);border-radius:12px;background:rgba(var(--surfaceRGB),.4);}
+  #liveSteps{margin-top:14px;font-family:var(--mono);font-size:13px;color:var(--muted);}
+  #liveSteps b{color:var(--accent);}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  section.copy code{font-family:var(--mono);background:rgba(var(--surfaceRGB),.8);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:14px;}
+  .faq{border-top:1px solid var(--line);margin-top:14px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){#pattern{font-size:15px;}.execChars{font-size:16px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free dev tool · runs in your browser</div>
+    <h1>RegexLab</h1>
+    <p class="sub">See how a regular expression actually runs. Visualize it as a state machine, step through matching character by character, and catch the catastrophic backtracking that hangs servers — on a regex engine built from scratch, all in your browser.</p>
+    <span class="priv">&#9889; 100% local — your pattern and text never leave your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="pad">
+      <label class="lab" for="pattern">Regular expression</label>
+      <div class="rxrow">
+        <div class="rxfield"><span class="slash">/</span><input id="pattern" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Regular expression" /><span class="slash">/</span></div>
+        <div class="flags">
+          <button class="flagbtn" id="flag-i" title="ignore case">i</button>
+          <button class="flagbtn" id="flag-m" title="multiline ^ $">m</button>
+          <button class="flagbtn" id="flag-s" title="dotall — . matches newline">s</button>
+        </div>
+      </div>
+      <div class="err" id="err"></div>
+      <label class="lab" for="test" style="margin-top:18px;">Test string</label>
+      <textarea id="test" spellcheck="false" aria-label="Test string"></textarea>
+      <div class="status" id="status"></div>
+      <div class="presets">
+        <button class="preset" data-tab="matches" data-p="\b[\w.]+@[\w.]+\.\w{2,}\b" data-t="contact me at hi@example.com or sales@my-shop.co.uk, not at @nope">Email</button>
+        <button class="preset" data-tab="matches" data-p="#?[0-9a-fA-F]{6}\b" data-t="brand colors: #2be3b0, 14c3c9 and #FF6A3D look great">Hex color</button>
+        <button class="preset" data-tab="matches" data-p="(\d{1,3}\.){3}\d{1,3}" data-t="ping 192.168.0.1 then 10.0.0.255 and 8.8.8.8">IP address</button>
+        <button class="preset" data-tab="nfa" data-p="gr(a|e)y" data-t="is it gray or grey?">Alternation → NFA</button>
+        <button class="preset" data-tab="nfa" data-p="a(b|c)*d" data-t="abcbcd">Star loop → NFA</button>
+        <button class="preset evil" data-tab="redos" data-p="(a+)+$" data-t="aaaaaaaaaaaaaaaaaaaa!">🚨 ReDoS: (a+)+$</button>
+        <button class="preset evil" data-tab="redos" data-p="(.*,)*$" data-t="1,2,3,4,5,6,7,8,9,10,11,12,13,14!">🚨 ReDoS: (.*,)*$</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tabbtn on" data-tab="matches">Matches</button>
+      <button class="tabbtn" data-tab="nfa">NFA automaton</button>
+      <button class="tabbtn" data-tab="redos">Backtracking &amp; ReDoS</button>
+    </div>
+    <div class="tabpanel" id="tab-matches">
+      <div id="matchOut"></div>
+      <div class="mlist" id="matchList"></div>
+    </div>
+    <div class="tabpanel" id="tab-nfa" style="display:none;">
+      <div id="nfaCaption"></div>
+      <div class="nfaWrap" id="nfaWrap"><svg id="nfaSvg" xmlns="http://www.w3.org/2000/svg"></svg></div>
+      <div class="execRow">
+        <button class="playbtn" id="execPlay">▶ Play</button>
+        <input type="range" id="execPos" min="0" max="0" value="0" aria-label="execution position" />
+      </div>
+      <div id="execLabel"></div>
+      <div class="execChars" id="execChars"></div>
+    </div>
+    <div class="tabpanel" id="tab-redos" style="display:none;">
+      <div class="verdict" id="redosVerdict"><span class="vlabel">Analyzing…</span></div>
+      <div id="redosExplain"></div>
+      <canvas id="redosChart" width="600" height="220"></canvas>
+      <div id="liveSteps"></div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>RegexLab ships its own regular-expression engine. When you type a pattern, it is parsed into a syntax tree and compiled two ways. The first is a <b>Thompson NFA</b>, the classic construction that turns a regex into a finite state machine. The automaton view draws that machine, and the play button runs it as a real linear-time simulation: at each character it keeps a <i>set</i> of states the engine could be in, so it never has to guess or backtrack. That is how tools like grep and RE2 stay fast no matter what you throw at them.</p>
+    <p>The second compilation is a <b>backtracking matcher</b>, the same family of algorithm that JavaScript, Python, Java and PCRE use. It is more flexible, but on certain patterns it explores an exponential number of paths. The profiler tab feeds the engine a crafted, ever-longer input and charts how many steps it takes, so a dangerous pattern reveals itself as a curve that shoots straight up.</p>
+    <h2>What is catastrophic backtracking (ReDoS)?</h2>
+    <p>Take <code>(a+)+$</code>. Against a string of <code>a</code>s followed by a character that can't match, a backtracking engine tries every possible way to split those <code>a</code>s between the inner and outer <code>+</code>, and the number of splits doubles with every extra character. Twenty or thirty characters is enough to freeze a thread for seconds. When that thread is a web server validating user input, an attacker can take the whole service down with a tiny request. This is a <b>regular-expression denial of service</b>, or ReDoS, and it hides in innocent-looking validation patterns all the time. RegexLab flags it before it reaches production.</p>
+    <h2>Why run it in the browser?</h2>
+    <p>Because your patterns and test data often aren't things you want to paste into someone else's website. Everything here — parsing, the automaton, the simulation, the profiler — is plain JavaScript running on your own machine. Nothing is uploaded, there is no account, and it keeps working with your connection off.</p>
+    <h2>Things to try</h2>
+    <p>Load the <code>(a+)+$</code> preset and watch the profiler curve. Then change the pattern to <code>a+$</code> or <code>a{1,20}$</code> and see the same input become safe. Switch to the NFA tab with <code>gr(a|e)y</code> to see alternation as two branches, or <code>a(b|c)*d</code> to see a star become a loop in the graph. Share any pattern with the URL — the link carries your regex, flags and test string.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Does my pattern or text get uploaded?</summary><p>No. RegexLab runs entirely in your browser on its own engine. Nothing is sent to a server, so it is safe to use on private logs and data.</p></details>
+    <details><summary>Which regex features are supported?</summary><p>Literals and escapes (<code>\d \w \s</code> and friends), the dot, character classes with ranges, anchors <code>^ $ \b \B</code>, groups and <code>(?:…)</code>, alternation, and quantifiers <code>* + ? {m} {m,} {m,n}</code> including lazy <code>*?</code> forms, plus the <code>i</code>, <code>m</code> and <code>s</code> flags. Backreferences and lookaround are intentionally out of scope for the visual engine, because the NFA view exists to show the regular core of regular expressions.</p></details>
+    <details><summary>Is the ReDoS verdict authoritative?</summary><p>It is an empirical probe: RegexLab grows an adversarial input and measures real step counts, then classifies the growth as linear, polynomial or exponential. It is excellent at catching the common catastrophic patterns, but treat it as a strong warning, not a formal proof. A clean result is not a security guarantee.</p></details>
+    <details><summary>Why are there two engines?</summary><p>To show the trade-off. The NFA is fast and immune to catastrophic backtracking but can't do features like backreferences. The backtracking engine is flexible but can blow up. Seeing both side by side is the whole point.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build a tool like this every day.</h3>
+    <p>Senior full-stack engineer, open to senior or staff roles and contract work, fully remote. Browse the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+<script>
+/* RegexLab engine — a from-scratch regular-expression engine.
+   Two independent matchers over the same parsed AST:
+     1) Thompson NFA  (subset construction, linear time)  -> used for the automaton view + live execution
+     2) Backtracking   (recursive, generator-based)        -> used for the step profiler + ReDoS detection
+   Supported subset: literals, escapes (\d \w \s \D \W \S \t \n \r \f \v \0 and escaped metachars),
+   ., character classes [..] with ranges/negation/shorthand, anchors ^ $ \b \B,
+   groups (...) and (?:...), alternation |, quantifiers * + ? {m} {m,} {m,n} and their lazy ? forms.
+   Flags: i (ignore case), s (dotall), m (multiline anchors).
+   Not supported (by design, disclosed in the UI): backreferences, lookaround, named groups.
+*/
+(function (root) {
+  "use strict";
+
+  // ---------- helpers ----------
+  var WORD = function (ch) { return ch !== "" && /[A-Za-z0-9_]/.test(ch); };
+  var DIGIT = function (ch) { return ch >= "0" && ch <= "9"; };
+  var SPACE = function (ch) { return /\s/.test(ch); };
+
+  function ParseError(msg, pos) { this.name = "RegexParseError"; this.message = msg; this.pos = pos; }
+  ParseError.prototype = Object.create(Error.prototype);
+
+  // ---------- parser ----------
+  // Produces an AST. Throws ParseError on invalid input.
+  function parse(pattern, flags) {
+    flags = flags || "";
+    var i = 0, n = pattern.length;
+    var groupCount = 0;
+
+    function peek() { return pattern[i]; }
+    function eof() { return i >= n; }
+    function eat(c) { if (pattern[i] !== c) throw new ParseError("Expected '" + c + "'", i); i++; }
+
+    function parseAlt() {
+      var opts = [parseConcat()];
+      while (!eof() && peek() === "|") { i++; opts.push(parseConcat()); }
+      return opts.length === 1 ? opts[0] : { t: "alt", opts: opts };
+    }
+
+    function parseConcat() {
+      var parts = [];
+      while (!eof() && peek() !== "|" && peek() !== ")") {
+        parts.push(parseRepeat());
+      }
+      if (parts.length === 0) return { t: "empty" };
+      return parts.length === 1 ? parts[0] : { t: "concat", parts: parts };
+    }
+
+    function parseRepeat() {
+      var atom = parseAtom();
+      while (!eof()) {
+        var c = peek();
+        var node = null;
+        if (c === "*") { i++; node = { t: "repeat", min: 0, max: Infinity, child: atom }; }
+        else if (c === "+") { i++; node = { t: "repeat", min: 1, max: Infinity, child: atom }; }
+        else if (c === "?") { i++; node = { t: "repeat", min: 0, max: 1, child: atom }; }
+        else if (c === "{") {
+          var brace = tryParseBrace();
+          if (!brace) break; // a literal { handled in atom; here treat as stop
+          node = { t: "repeat", min: brace.min, max: brace.max, child: atom };
+        } else break;
+        // lazy?
+        if (!eof() && peek() === "?") { i++; node.lazy = true; } else node.lazy = false;
+        atom = node;
+        // a quantifier cannot itself be quantified except via the lazy ? already consumed
+        if (!eof() && (peek() === "*" || peek() === "+")) {
+          throw new ParseError("Nothing to repeat / invalid quantifier", i);
+        }
+      }
+      return atom;
+    }
+
+    function tryParseBrace() {
+      // assumes current char is '{'. Returns {min,max} or null if not a valid quantifier.
+      var save = i;
+      i++; // {
+      var a = "";
+      while (!eof() && /[0-9]/.test(peek())) { a += peek(); i++; }
+      var min, max;
+      if (peek() === "}") {
+        if (a === "") { i = save; return null; }
+        i++; min = parseInt(a, 10); max = min;
+      } else if (peek() === ",") {
+        i++;
+        var b = "";
+        while (!eof() && /[0-9]/.test(peek())) { b += peek(); i++; }
+        if (peek() !== "}") { i = save; return null; }
+        i++;
+        if (a === "") { i = save; return null; }
+        min = parseInt(a, 10);
+        max = b === "" ? Infinity : parseInt(b, 10);
+      } else { i = save; return null; }
+      if (max < min) throw new ParseError("Quantifier range out of order {" + min + "," + max + "}", save);
+      return { min: min, max: max };
+    }
+
+    function parseAtom() {
+      var c = peek();
+      if (c === "(") {
+        i++;
+        var capturing = true;
+        if (peek() === "?") {
+          if (pattern[i + 1] === ":") { i += 2; capturing = false; }
+          else throw new ParseError("Unsupported group (only (…) and (?:…) are supported)", i);
+        }
+        var gi = capturing ? ++groupCount : 0;
+        var inner = parseAlt();
+        if (eof() || peek() !== ")") throw new ParseError("Unclosed group", i);
+        eat(")");
+        return { t: "group", child: inner, capturing: capturing, index: gi };
+      }
+      if (c === "[") return parseClass();
+      if (c === ".") { i++; return { t: "any" }; }
+      if (c === "^") { i++; return { t: "anchorStart" }; }
+      if (c === "$") { i++; return { t: "anchorEnd" }; }
+      if (c === "*" || c === "+" || c === "?") throw new ParseError("Nothing to repeat", i);
+      if (c === ")") throw new ParseError("Unmatched ')'", i);
+      if (c === "\\") return parseEscape(false);
+      if (c === "{") {
+        // a brace that is not a valid quantifier here is a literal '{'
+        i++; return { t: "char", c: "{" };
+      }
+      // literal char
+      i++; return { t: "char", c: c };
+    }
+
+    function parseEscape(inClass) {
+      // assumes current char is '\\'
+      i++;
+      if (eof()) throw new ParseError("Trailing backslash", i);
+      var c = peek(); i++;
+      switch (c) {
+        case "d": return { t: "klass", test: DIGIT, label: "\\d" };
+        case "D": return { t: "klass", test: function (ch) { return ch !== "" && !DIGIT(ch); }, label: "\\D" };
+        case "w": return { t: "klass", test: WORD, label: "\\w" };
+        case "W": return { t: "klass", test: function (ch) { return ch !== "" && !WORD(ch); }, label: "\\W" };
+        case "s": return { t: "klass", test: SPACE, label: "\\s" };
+        case "S": return { t: "klass", test: function (ch) { return ch !== "" && !SPACE(ch); }, label: "\\S" };
+        case "b": if (!inClass) return { t: "wordBoundary", neg: false }; return { t: "char", c: "\b" };
+        case "B": if (!inClass) return { t: "wordBoundary", neg: true }; return { t: "char", c: "B" };
+        case "t": return { t: "char", c: "\t" };
+        case "n": return { t: "char", c: "\n" };
+        case "r": return { t: "char", c: "\r" };
+        case "f": return { t: "char", c: "\f" };
+        case "v": return { t: "char", c: "\v" };
+        case "0": return { t: "char", c: "\0" };
+        default: return { t: "char", c: c }; // escaped metachar or literal
+      }
+    }
+
+    function parseClass() {
+      eat("[");
+      var neg = false;
+      if (peek() === "^") { neg = true; i++; }
+      var ranges = []; // {lo,hi} char codes
+      var preds = [];  // shorthand predicates
+      var labels = [];
+      if (peek() === "]") { // ] as first member is literal
+        ranges.push({ lo: 93, hi: 93 }); labels.push("]"); i++;
+      }
+      while (!eof() && peek() !== "]") {
+        var node, lo;
+        if (peek() === "\\") {
+          node = parseEscape(true);
+          if (node.t === "klass") { preds.push(node.test); labels.push(node.label); continue; }
+          lo = node.c; // escaped char
+        } else { lo = peek(); i++; }
+        // range?
+        if (peek() === "-" && pattern[i + 1] !== "]" && !eof() && pattern[i + 1] !== undefined) {
+          i++; // -
+          var hiCh;
+          if (peek() === "\\") { var e = parseEscape(true); hiCh = e.c; }
+          else { hiCh = peek(); i++; }
+          var loC = lo.charCodeAt(0), hiC = hiCh.charCodeAt(0);
+          if (hiC < loC) throw new ParseError("Class range out of order", i);
+          ranges.push({ lo: loC, hi: hiC }); labels.push(lo + "-" + hiCh);
+        } else {
+          ranges.push({ lo: lo.charCodeAt(0), hi: lo.charCodeAt(0) }); labels.push(lo);
+        }
+      }
+      if (eof()) throw new ParseError("Unterminated character class", i);
+      eat("]");
+      var test = function (ch) {
+        if (ch === "") return false;
+        var code = ch.charCodeAt(0), hit = false, k;
+        for (k = 0; k < ranges.length; k++) { if (code >= ranges[k].lo && code <= ranges[k].hi) { hit = true; break; } }
+        if (!hit) { for (k = 0; k < preds.length; k++) { if (preds[k](ch)) { hit = true; break; } } }
+        return neg ? !hit : hit;
+      };
+      return { t: "klass", test: test, label: "[" + (neg ? "^" : "") + labels.join("") + "]", isClass: true };
+    }
+
+    var ast = parseAlt();
+    if (!eof()) throw new ParseError("Unexpected '" + peek() + "'", i);
+    return { ast: ast, groupCount: groupCount, flags: flags };
+  }
+
+  // Build a char-matching predicate honoring the i flag (and s flag handled by 'any').
+  function charPred(node, flags) {
+    var ic = flags.indexOf("i") >= 0;
+    var dotAll = flags.indexOf("s") >= 0;
+    if (node.t === "char") {
+      var target = node.c;
+      if (ic) {
+        var lo = target.toLowerCase(), up = target.toUpperCase();
+        return { test: function (ch) { return ch === lo || ch === up || ch === target; }, label: quoteChar(target) };
+      }
+      return { test: function (ch) { return ch === target; }, label: quoteChar(target) };
+    }
+    if (node.t === "any") {
+      return { test: dotAll ? function (ch) { return ch !== ""; } : function (ch) { return ch !== "" && ch !== "\n"; }, label: "." };
+    }
+    if (node.t === "klass") {
+      if (ic) {
+        var base = node.test;
+        return { test: function (ch) { return base(ch) || base(ch.toLowerCase()) || base(ch.toUpperCase()); }, label: node.label };
+      }
+      return { test: node.test, label: node.label };
+    }
+    return null;
+  }
+
+  function quoteChar(c) {
+    if (c === "\n") return "\\n"; if (c === "\t") return "\\t"; if (c === "\r") return "\\r";
+    if (c === " ") return "␣"; if (c === "\0") return "\\0";
+    return c;
+  }
+
+  // ---------- Thompson NFA construction ----------
+  // States: {id, eps:[{to, assert?}], edges:[{to, test, label}], accept:bool}
+  function compileNFA(parsed) {
+    var flags = parsed.flags;
+    var states = [];
+    function newState() { var s = { id: states.length, eps: [], edges: [], accept: false }; states.push(s); return s; }
+    function epsLink(a, b, assert) { a.eps.push({ to: b.id, assert: assert || null }); }
+
+    var mFlag = flags.indexOf("m") >= 0;
+
+    function build(node) {
+      // returns {start, end}
+      switch (node.t) {
+        case "empty": { var s = newState(); return { start: s, end: s }; }
+        case "char": case "any": case "klass": {
+          var p = charPred(node, flags);
+          var a = newState(), b = newState();
+          a.edges.push({ to: b.id, test: p.test, label: p.label });
+          return { start: a, end: b };
+        }
+        case "anchorStart": {
+          var sa = newState(), sb = newState();
+          epsLink(sa, sb, function (pos, input) { return pos === 0 || (mFlag && input[pos - 1] === "\n"); });
+          return { start: sa, end: sb };
+        }
+        case "anchorEnd": {
+          var ea = newState(), eb = newState();
+          epsLink(ea, eb, function (pos, input) { return pos === input.length || (mFlag && input[pos] === "\n"); });
+          return { start: ea, end: eb };
+        }
+        case "wordBoundary": {
+          var wa = newState(), wb = newState();
+          var neg = node.neg;
+          epsLink(wa, wb, function (pos, input) {
+            var before = pos > 0 && WORD(input[pos - 1]);
+            var after = pos < input.length && WORD(input[pos]);
+            var boundary = before !== after;
+            return neg ? !boundary : boundary;
+          });
+          return { start: wa, end: wb };
+        }
+        case "concat": {
+          var first = build(node.parts[0]);
+          var cur = first.end;
+          for (var k = 1; k < node.parts.length; k++) {
+            var nx = build(node.parts[k]);
+            epsLink(cur, nx.start);
+            cur = nx.end;
+          }
+          return { start: first.start, end: cur };
+        }
+        case "alt": {
+          var as = newState(), ae = newState();
+          for (var j = 0; j < node.opts.length; j++) {
+            var frag = build(node.opts[j]);
+            epsLink(as, frag.start);
+            epsLink(frag.end, ae);
+          }
+          return { start: as, end: ae };
+        }
+        case "group": return build(node.child);
+        case "repeat": {
+          // expand {min,max} via Thompson: min mandatory copies then optional copies / star
+          var start = newState(), end = newState();
+          var prev = start;
+          var min = node.min, max = node.max;
+          // mandatory copies
+          for (var c = 0; c < min; c++) {
+            var f = build(node.child);
+            epsLink(prev, f.start);
+            prev = f.end;
+          }
+          if (max === Infinity) {
+            // star/plus tail: a loop
+            var loopIn = newState();
+            epsLink(prev, loopIn);
+            var body = build(node.child);
+            epsLink(loopIn, body.start);
+            epsLink(body.end, loopIn);
+            epsLink(loopIn, end);
+            // if min===0 also allow skipping entirely (loopIn->end already covers, prev is start)
+          } else {
+            // optional copies up to (max-min)
+            var optPrev = prev;
+            for (var o = 0; o < (max - min); o++) {
+              var of = build(node.child);
+              epsLink(optPrev, of.start);
+              epsLink(optPrev, end); // skip remaining optionals
+              optPrev = of.end;
+            }
+            epsLink(optPrev, end);
+          }
+          if (min === 0 && max !== Infinity) { /* covered by skip links */ }
+          if (min === 0) epsLink(start, end);
+          return { start: start, end: end };
+        }
+        default: throw new Error("Unknown node " + node.t);
+      }
+    }
+
+    var frag = build(parsed.ast);
+    frag.end.accept = true;
+    return { states: states, start: frag.start.id, accept: frag.end.id };
+  }
+
+  // epsilon-closure honoring position-based assertions
+  function closure(nfa, stateIds, pos, input) {
+    var stack = stateIds.slice(), seen = {}, out = [];
+    for (var s = 0; s < stack.length; s++) seen[stack[s]] = true;
+    while (stack.length) {
+      var id = stack.pop(); out.push(id);
+      var st = nfa.states[id];
+      for (var e = 0; e < st.eps.length; e++) {
+        var ed = st.eps[e];
+        if (ed.assert && !ed.assert(pos, input)) continue;
+        if (!seen[ed.to]) { seen[ed.to] = true; stack.push(ed.to); }
+      }
+    }
+    return out;
+  }
+
+  // Simulate NFA as an unanchored search. Returns frames + whether it matched.
+  function simulateNFA(nfa, input, opts) {
+    opts = opts || {};
+    var frames = [];
+    var active = [];
+    var matched = false, matchEnd = -1;
+    function isAccept(ids) { for (var i = 0; i < ids.length; i++) if (nfa.states[ids[i]].accept) return true; return false; }
+
+    for (var pos = 0; pos <= input.length; pos++) {
+      // allow a match to begin here (unanchored): inject start closure
+      var merged = active.slice();
+      var seen = {}; for (var a = 0; a < merged.length; a++) seen[merged[a]] = true;
+      var startClos = closure(nfa, [nfa.start], pos, input);
+      for (var sc = 0; sc < startClos.length; sc++) if (!seen[startClos[sc]]) { seen[startClos[sc]] = true; merged.push(startClos[sc]); }
+      // also closure the carried-over set at this pos (assertions may now pass)
+      merged = closure(nfa, merged, pos, input);
+
+      var acc = isAccept(merged);
+      if (acc && !matched) { matched = true; matchEnd = pos; }
+      frames.push({ pos: pos, active: merged.slice(), accept: acc, ch: pos < input.length ? input[pos] : null });
+
+      if (pos === input.length) break;
+      // consume input[pos]
+      var ch = input[pos];
+      var next = [], nseen = {};
+      for (var m = 0; m < merged.length; m++) {
+        var st = nfa.states[merged[m]];
+        for (var ee = 0; ee < st.edges.length; ee++) {
+          if (st.edges[ee].test(ch)) { var to = st.edges[ee].to; if (!nseen[to]) { nseen[to] = true; next.push(to); } }
+        }
+      }
+      active = next;
+    }
+    return { matched: matched, matchEnd: matchEnd, frames: frames, stateCount: nfa.states.length };
+  }
+
+  // ---------- Backtracking matcher (generator-based) with step counting ----------
+  // Tries to match the AST starting at a fixed position; yields each possible end index in
+  // greedy/lazy priority order. ctx.steps counts work; throws {capped:true} when over budget.
+  function makeBacktracker(parsed) {
+    var flags = parsed.flags;
+    var mFlag = flags.indexOf("m") >= 0;
+
+    function* gen(node, input, pos, ctx) {
+      ctx.steps++;
+      if (ctx.steps > ctx.cap) { ctx.capped = true; throw "CAP"; }
+      switch (node.t) {
+        case "empty": yield pos; return;
+        case "char": case "any": case "klass": {
+          var p = node.__pred || (node.__pred = charPred(node, flags).test);
+          if (pos < input.length && p(input[pos])) yield pos + 1;
+          return;
+        }
+        case "anchorStart":
+          if (pos === 0 || (mFlag && input[pos - 1] === "\n")) yield pos; return;
+        case "anchorEnd":
+          if (pos === input.length || (mFlag && input[pos] === "\n")) yield pos; return;
+        case "wordBoundary": {
+          var before = pos > 0 && WORD(input[pos - 1]);
+          var after = pos < input.length && WORD(input[pos]);
+          var b = before !== after;
+          if (node.neg ? !b : b) yield pos; return;
+        }
+        case "group": yield* gen(node.child, input, pos, ctx); return;
+        case "concat": {
+          yield* concatGen(node.parts, 0, input, pos, ctx); return;
+        }
+        case "alt": {
+          for (var a = 0; a < node.opts.length; a++) {
+            yield* gen(node.opts[a], input, pos, ctx);
+          }
+          return;
+        }
+        case "repeat": {
+          yield* repeatGen(node, node.min, input, pos, ctx); return;
+        }
+        default: throw new Error("bt: unknown " + node.t);
+      }
+    }
+
+    function* concatGen(parts, idx, input, pos, ctx) {
+      if (idx >= parts.length) { yield pos; return; }
+      for (var p of gen(parts[idx], input, pos, ctx)) {
+        yield* concatGen(parts, idx + 1, input, p, ctx);
+      }
+    }
+
+    // repeat: must do at least `remainingMin` more, up to max, greedy or lazy
+    function* repeatGen(node, remainingMin, input, pos, ctx) {
+      ctx.steps++;
+      if (ctx.steps > ctx.cap) { ctx.capped = true; throw "CAP"; }
+      if (remainingMin > 0) {
+        // mandatory iteration
+        for (var p of gen(node.child, input, pos, ctx)) {
+          if (p === pos) { // zero-width; avoid infinite loop on mandatory
+            yield* repeatGen(node, remainingMin - 1, input, p, ctx);
+            return;
+          }
+          yield* repeatGen(node, remainingMin - 1, input, p, ctx);
+        }
+        return;
+      }
+      // optional region: we've satisfied min. max bound handled by depth via node.max tracking
+      var maxMore = node.__maxMore;
+      if (maxMore === undefined) maxMore = node.max === Infinity ? Infinity : node.max - node.min;
+      yield* optRepeat(node, maxMore, input, pos, ctx);
+    }
+
+    function* optRepeat(node, budget, input, pos, ctx) {
+      ctx.steps++;
+      if (ctx.steps > ctx.cap) { ctx.capped = true; throw "CAP"; }
+      if (node.lazy) {
+        yield pos; // try matching zero more first
+        if (budget > 0) {
+          for (var p of gen(node.child, input, pos, ctx)) {
+            if (p === pos) continue; // no progress -> stop to avoid infinite loop
+            yield* optRepeat(node, budget === Infinity ? Infinity : budget - 1, input, p, ctx);
+          }
+        }
+      } else {
+        if (budget > 0) {
+          for (var p2 of gen(node.child, input, pos, ctx)) {
+            if (p2 === pos) continue;
+            yield* optRepeat(node, budget === Infinity ? Infinity : budget - 1, input, p2, ctx);
+          }
+        }
+        yield pos; // then try matching zero more
+      }
+    }
+
+    // Search: try to find a match starting at each index >= startMin.
+    // Returns {matched, steps, capped, start, end}.
+    function search(input, cap, startMin) {
+      var ctx = { steps: 0, cap: cap || 2000000, capped: false };
+      for (var start = startMin || 0; start <= input.length; start++) {
+        try {
+          var it = gen(parsed.ast, input, start, ctx);
+          var r = it.next();
+          if (!r.done) return { matched: true, steps: ctx.steps, capped: false, start: start, end: r.value };
+        } catch (e) {
+          if (e === "CAP") return { matched: false, steps: ctx.steps, capped: true, start: -1, end: -1 };
+          throw e;
+        }
+      }
+      return { matched: false, steps: ctx.steps, capped: ctx.capped, start: -1, end: -1 };
+    }
+
+    return { search: search, gen: gen };
+  }
+
+  // ---------- ReDoS probe ----------
+  // Empirically grow several adversarial inputs and keep the worst-case backtracking blow-up.
+  var SEVERITY = { linear: 0, polynomial: 1, exponential: 2 };
+
+  function probeOne(bt, pump, suffix) {
+    var points = [], cap = 400000, maxN = 26, hitCap = false, capAtN = null;
+    for (var nLen = 1; nLen <= maxN; nLen++) {
+      var input = repeat(pump, nLen) + suffix;
+      var r = bt.search(input, cap);
+      points.push({ n: nLen, steps: r.steps, capped: r.capped });
+      if (r.capped) { hitCap = true; capAtN = nLen; break; }
+    }
+    return { points: points, cls: classifyGrowth(points, hitCap, capAtN), cappedAt: capAtN };
+  }
+
+  function redosProbe(pattern, flags) {
+    var parsed;
+    try { parsed = parse(pattern, flags); } catch (e) { return { class: "invalid", error: e.message }; }
+    var bt = makeBacktracker(parsed);
+    // Candidate "pump" units + a forcing suffix that usually can't match, so the engine backtracks hard.
+    var candidates = [
+      { pump: "a", suffix: "!" },
+      { pump: "0", suffix: "!" },
+      { pump: "a,", suffix: "!" },
+      { pump: "a ", suffix: "!" },
+      { pump: "ab", suffix: "!" },
+      { pump: "a\t", suffix: "X" }
+    ];
+    var worst = null;
+    for (var i = 0; i < candidates.length; i++) {
+      var c = candidates[i];
+      var res = probeOne(bt, c.pump, c.suffix);
+      res.pump = c.pump; res.suffix = c.suffix;
+      if (!worst || SEVERITY[res.cls] > SEVERITY[worst.cls] ||
+        (SEVERITY[res.cls] === SEVERITY[worst.cls] && (res.cappedAt || 99) < (worst.cappedAt || 99))) {
+        worst = res;
+      }
+      if (worst.cls === "exponential") break; // can't get worse
+    }
+    return {
+      class: worst.cls, points: worst.points, attackChar: worst.pump,
+      pump: worst.pump, suffix: worst.suffix, cappedAt: worst.cappedAt
+    };
+  }
+
+  function classifyGrowth(points, hitCap, capAtN) {
+    if (points.length < 3) return "linear";
+    // exponential if cap hit at small n, or step ratios ~>=1.7 consistently
+    var ratios = [];
+    for (var i = 1; i < points.length; i++) {
+      if (points[i - 1].steps > 0) ratios.push(points[i].steps / points[i - 1].steps);
+    }
+    if (hitCap && capAtN !== null && capAtN <= 22) {
+      // distinguish exponential vs heavy-polynomial by the ratio trend before the cap
+      var tail = ratios.slice(-4);
+      var avg = tail.reduce(function (a, b) { return a + b; }, 0) / (tail.length || 1);
+      if (avg >= 1.6) return "exponential";
+      return "polynomial";
+    }
+    // not capped: fit log(steps) vs log(n) slope for polynomial degree
+    var last = points[points.length - 1], first = points[Math.max(0, points.length - 8)];
+    if (last.steps <= 0 || first.steps <= 0) return "linear";
+    var slope = (Math.log(last.steps) - Math.log(first.steps)) / (Math.log(last.n) - Math.log(first.n) || 1);
+    if (slope >= 1.8) return "polynomial";
+    return "linear";
+  }
+
+  function repeat(s, n) { var o = ""; for (var i = 0; i < n; i++) o += s; return o; }
+
+  // ---------- public convenience ----------
+  function analyze(pattern, flags, input) {
+    var parsed = parse(pattern, flags || "");
+    var nfa = compileNFA(parsed);
+    var sim = simulateNFA(nfa, input || "");
+    var bt = makeBacktracker(parsed);
+    var btRes = bt.search(input || "", 2000000);
+    return { parsed: parsed, nfa: nfa, sim: sim, backtrack: btRes };
+  }
+
+  var API = {
+    parse: parse,
+    compileNFA: compileNFA,
+    simulateNFA: simulateNFA,
+    makeBacktracker: makeBacktracker,
+    redosProbe: redosProbe,
+    analyze: analyze,
+    ParseError: ParseError,
+    _WORD: WORD
+  };
+
+  if (typeof module !== "undefined" && module.exports) module.exports = API;
+  else root.RegexLab = API;
+})(typeof self !== "undefined" ? self : this);
+
+</script>
+<script>
+/* RegexLab UI — drives the engine (window.RegexLab) and renders the three views. */
+(function () {
+  "use strict";
+  var R = window.RegexLab;
+  var $ = function (id) { return document.getElementById(id); };
+  var SVGNS = "http://www.w3.org/2000/svg";
+
+  var els = {
+    pattern: $("pattern"), test: $("test"), status: $("status"),
+    err: $("err"),
+    matchOut: $("matchOut"), matchList: $("matchList"),
+    nfaCaption: $("nfaCaption"), nfaSvg: $("nfaSvg"), nfaWrap: $("nfaWrap"),
+    execPos: $("execPos"), execPlay: $("execPlay"), execChars: $("execChars"), execLabel: $("execLabel"),
+    redosVerdict: $("redosVerdict"), redosChart: $("redosChart"), redosExplain: $("redosExplain"), liveSteps: $("liveSteps")
+  };
+  var flags = { i: false, m: false, s: false };
+  var state = { parsed: null, nfa: null, sim: null, frames: null, playTimer: null };
+
+  function flagStr() { return (flags.i ? "i" : "") + (flags.m ? "m" : "") + (flags.s ? "s" : ""); }
+
+  // ---------- escaping ----------
+  function esc(s) { return s.replace(/[&<>]/g, function (c) { return c === "&" ? "&amp;" : c === "<" ? "&lt;" : "&gt;"; }); }
+  function showChar(c) {
+    if (c === "\n") return "↵\n"; // visible return then real newline
+    if (c === "\t") return "→\t";
+    return esc(c);
+  }
+
+  // ---------- all matches via the backtracking engine ----------
+  function allMatches(input, cap) {
+    var bt = R.makeBacktracker(state.parsed);
+    var out = [], pos = 0, guard = 0, totalSteps = 0, capped = false;
+    while (pos <= input.length && guard++ < input.length + 5) {
+      var r = bt.search(input, cap || 200000, pos);
+      totalSteps += r.steps;
+      if (r.capped) { capped = true; break; }
+      if (!r.matched) break;
+      out.push({ start: r.start, end: r.end });
+      pos = r.end > r.start ? r.end : r.end + 1;
+    }
+    return { matches: out, steps: totalSteps, capped: capped };
+  }
+
+  // ---------- render matches ----------
+  function renderMatches(input) {
+    var res = allMatches(input);
+    var html = "", last = 0;
+    res.matches.forEach(function (m, i) {
+      html += esc(input.slice(last, m.start));
+      var seg = input.slice(m.start, m.end);
+      html += '<mark class="mk' + (i % 4) + '">' + (seg === "" ? '<span class="zw">∅</span>' : esc(seg)) + "</mark>";
+      last = m.end;
+    });
+    html += esc(input.slice(last));
+    els.matchOut.innerHTML = html === "" ? '<span class="dim">(empty)</span>' : html;
+
+    if (res.matches.length === 0) {
+      els.matchList.innerHTML = '<div class="dim">No matches.</div>';
+    } else {
+      var rows = res.matches.slice(0, 200).map(function (m, i) {
+        var seg = input.slice(m.start, m.end);
+        return '<div class="mrow"><span class="mi">#' + (i + 1) + '</span><span class="mtxt">' +
+          (seg === "" ? '<span class="zw">empty match</span>' : esc(seg)) + '</span><span class="mspan">' +
+          m.start + "–" + m.end + "</span></div>";
+      }).join("");
+      els.matchList.innerHTML = rows;
+    }
+    return res;
+  }
+
+  // ---------- NFA layout + render ----------
+  function buildLayout(nfa) {
+    var n = nfa.states.length;
+    var dist = new Array(n).fill(-1);
+    var q = [nfa.start]; dist[nfa.start] = 0;
+    while (q.length) {
+      var id = q.shift(), st = nfa.states[id];
+      var outs = [];
+      st.eps.forEach(function (e) { outs.push(e.to); });
+      st.edges.forEach(function (e) { outs.push(e.to); });
+      outs.forEach(function (to) { if (dist[to] === -1) { dist[to] = dist[id] + 1; q.push(to); } });
+    }
+    for (var i = 0; i < n; i++) if (dist[i] === -1) dist[i] = 0;
+    var layers = {};
+    for (var j = 0; j < n; j++) { (layers[dist[j]] = layers[dist[j]] || []).push(j); }
+    var maxLayer = Math.max.apply(null, Object.keys(layers).map(Number));
+    var maxLane = 0; Object.keys(layers).forEach(function (k) { maxLane = Math.max(maxLane, layers[k].length); });
+    var LX = 120, LY = 64, PADX = 50, PADY = 44;
+    var H = PADY * 2 + Math.max(1, maxLane) * LY;
+    var W = PADX * 2 + (maxLayer + 1) * LX;
+    var pos = {};
+    Object.keys(layers).forEach(function (k) {
+      var lane = layers[k], layer = Number(k);
+      var startY = (H - lane.length * LY) / 2 + LY / 2;
+      lane.forEach(function (id, idx) { pos[id] = { x: PADX + layer * LX, y: startY + idx * LY }; });
+    });
+    return { pos: pos, W: W, H: H, dist: dist };
+  }
+
+  function renderNFA(nfa) {
+    var svg = els.nfaSvg;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    if (nfa.states.length > 160) {
+      els.nfaCaption.textContent = nfa.states.length + " states — automaton is large; showing match + profiler is clearer here.";
+      svg.setAttribute("viewBox", "0 0 10 10"); svg.style.width = "10px"; svg.style.height = "10px";
+      state.nodeEls = {}; return;
+    }
+    var L = buildLayout(nfa);
+    svg.setAttribute("viewBox", "0 0 " + L.W + " " + L.H);
+    svg.style.width = L.W + "px"; svg.style.height = Math.min(L.H, 520) + "px";
+
+    // defs: arrow markers
+    var defs = document.createElementNS(SVGNS, "defs");
+    defs.innerHTML =
+      '<marker id="ah" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">' +
+      '<path d="M0,0 L8,3 L0,6 Z" fill="var(--faint)"/></marker>' +
+      '<marker id="ahA" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">' +
+      '<path d="M0,0 L8,3 L0,6 Z" fill="var(--accent)"/></marker>';
+    svg.appendChild(defs);
+
+    var edgeG = document.createElementNS(SVGNS, "g");
+    var nodeG = document.createElementNS(SVGNS, "g");
+    svg.appendChild(edgeG); svg.appendChild(nodeG);
+
+    function curve(a, b, label, dashed, assertTag) {
+      var p = document.createElementNS(SVGNS, "path");
+      var dx = b.x - a.x, dy = b.y - a.y;
+      var r = 17;
+      var len = Math.hypot(dx, dy) || 1;
+      var ax = a.x + dx / len * r, ay = a.y + dy / len * r;
+      var bx = b.x - dx / len * r, by = b.y - dy / len * r;
+      var d;
+      if (b.x <= a.x + 2) { // back/self/vertical edge -> bow
+        var midx = (ax + bx) / 2, midy = (ay + by) / 2;
+        var bow = (a.y === b.y && a.x === b.x) ? 40 : 36;
+        d = "M" + ax + "," + ay + " Q" + (midx) + "," + (midy - bow) + " " + bx + "," + by;
+      } else {
+        d = "M" + ax + "," + ay + " L" + bx + "," + by;
+      }
+      p.setAttribute("d", d);
+      p.setAttribute("fill", "none");
+      p.setAttribute("class", "edge" + (dashed ? " eps" : ""));
+      p.setAttribute("marker-end", "url(#ah)");
+      edgeG.appendChild(p);
+      var lab = label || assertTag;
+      if (lab) {
+        var mx = (ax + bx) / 2, my = (ay + by) / 2 - (b.x <= a.x + 2 ? 20 : 8);
+        var t = document.createElementNS(SVGNS, "text");
+        t.setAttribute("x", mx); t.setAttribute("y", my);
+        t.setAttribute("class", "elabel" + (assertTag ? " assert" : ""));
+        t.setAttribute("text-anchor", "middle");
+        t.textContent = lab;
+        edgeG.appendChild(t);
+      }
+      return p;
+    }
+
+    nfa.states.forEach(function (st) {
+      var a = L.pos[st.id];
+      st.edges.forEach(function (e) { curve(a, L.pos[e.to], e.label, false, null); });
+      st.eps.forEach(function (e) {
+        var tag = null;
+        if (e.assert) tag = "ε?"; // assertion epsilon
+        curve(a, L.pos[e.to], null, true, tag);
+      });
+    });
+
+    state.nodeEls = {};
+    nfa.states.forEach(function (st) {
+      var p = L.pos[st.id];
+      var g = document.createElementNS(SVGNS, "g");
+      g.setAttribute("class", "node" + (st.accept ? " accept" : "") + (st.id === nfa.start ? " start" : ""));
+      var c = document.createElementNS(SVGNS, "circle");
+      c.setAttribute("cx", p.x); c.setAttribute("cy", p.y); c.setAttribute("r", 16);
+      c.setAttribute("class", "ncirc");
+      g.appendChild(c);
+      if (st.accept) {
+        var c2 = document.createElementNS(SVGNS, "circle");
+        c2.setAttribute("cx", p.x); c2.setAttribute("cy", p.y); c2.setAttribute("r", 12);
+        c2.setAttribute("class", "ninner"); c2.setAttribute("fill", "none");
+        g.appendChild(c2);
+      }
+      var t = document.createElementNS(SVGNS, "text");
+      t.setAttribute("x", p.x); t.setAttribute("y", p.y + 4); t.setAttribute("text-anchor", "middle");
+      t.setAttribute("class", "nlabel"); t.textContent = st.id;
+      g.appendChild(t);
+      if (st.id === nfa.start) {
+        var sa = document.createElementNS(SVGNS, "path");
+        sa.setAttribute("d", "M" + (p.x - 40) + "," + p.y + " L" + (p.x - 18) + "," + p.y);
+        sa.setAttribute("class", "edge"); sa.setAttribute("marker-end", "url(#ah)");
+        edgeG.appendChild(sa);
+      }
+      nodeG.appendChild(g);
+      state.nodeEls[st.id] = g;
+    });
+
+    els.nfaCaption.innerHTML = '<b>' + nfa.states.length + '</b> states. The active set (highlighted) moves left to right as the engine reads your text — no backtracking, linear time. Solid edges consume a character; dashed edges are ε (free) moves, “ε?” marks a positional assertion like ^, $ or \\b.';
+  }
+
+  function highlightActive(ids) {
+    if (!state.nodeEls) return;
+    var set = {}; (ids || []).forEach(function (i) { set[i] = true; });
+    Object.keys(state.nodeEls).forEach(function (id) {
+      state.nodeEls[id].classList.toggle("on", !!set[id]);
+    });
+  }
+
+  // ---------- execution scrubber ----------
+  function setupExec(input) {
+    var sim = state.sim;
+    els.execPos.max = String(input.length);
+    els.execPos.value = "0";
+    renderExecChars(input, 0);
+    scrubTo(0);
+    els.execPos.oninput = function () { stopPlay(); scrubTo(Number(els.execPos.value)); };
+    els.execPlay.onclick = function () {
+      if (state.playTimer) { stopPlay(); return; }
+      els.execPlay.textContent = "⏸ Pause";
+      var pos = Number(els.execPos.value);
+      if (pos >= input.length) pos = 0;
+      state.playTimer = setInterval(function () {
+        if (pos > input.length) { stopPlay(); return; }
+        els.execPos.value = String(pos);
+        scrubTo(pos);
+        pos++;
+      }, 420);
+    };
+  }
+  function stopPlay() { if (state.playTimer) { clearInterval(state.playTimer); state.playTimer = null; } els.execPlay.textContent = "▶ Play"; }
+  function scrubTo(pos) {
+    var fr = state.sim.frames[pos];
+    if (!fr) return;
+    highlightActive(fr.active);
+    var input = els.test.value;
+    renderExecChars(input, pos);
+    var accept = fr.accept;
+    els.execLabel.innerHTML = "pos <b>" + pos + "</b> / " + input.length +
+      " &middot; active states: <b>" + fr.active.length + "</b>" +
+      (accept ? ' &middot; <span class="ok">accept reachable ✓</span>' : "");
+  }
+  function renderExecChars(input, pos) {
+    var html = "";
+    for (var i = 0; i < input.length; i++) {
+      var cls = "ec" + (i === pos ? " cur" : "") + (i < pos ? " done" : "");
+      html += '<span class="' + cls + '">' + showChar(input[i]) + "</span>";
+    }
+    html += '<span class="ec end' + (pos === input.length ? " cur" : "") + '">█</span>';
+    els.execChars.innerHTML = html || '<span class="dim">(empty string)</span>';
+  }
+
+  // ---------- ReDoS profiler ----------
+  function runRedos() {
+    var probe;
+    try { probe = R.redosProbe(els.pattern.value, flagStr()); }
+    catch (e) { return; }
+    if (probe.class === "invalid") return;
+    var v = els.redosVerdict;
+    var label, cls, msg;
+    if (probe.class === "exponential") {
+      label = "🚨 Catastrophic backtracking"; cls = "bad";
+      msg = "Step count roughly <b>doubles</b> for each extra character of a crafted input" +
+        (probe.cappedAt ? " (it blew past the work limit at just <b>" + probe.cappedAt + "</b> characters)" : "") +
+        ". This is exponential time — a classic ReDoS denial-of-service risk. A few dozen characters can hang a server.";
+    } else if (probe.class === "polynomial") {
+      label = "⚠️ Polynomial backtracking"; cls = "warn";
+      msg = "Work grows faster than the input length (super-linear). Not exponential, but a long adversarial string can still cost a lot of CPU. Worth tightening.";
+    } else {
+      label = "✅ Linear — looks safe"; cls = "good";
+      msg = "Backtracking work grows in step with the input length on the adversarial probe. No catastrophic blow-up detected for this pattern.";
+    }
+    v.className = "verdict " + cls;
+    v.innerHTML = "<span class='vlabel'>" + label + "</span>";
+    els.redosExplain.innerHTML = msg +
+      "<div class='probe'>Probe input: <code>" + esc(probe.pump || probe.attackChar) + "</code> × n + <code>" + esc(probe.suffix || "!") + "</code> (a near-miss that forces maximum backtracking).</div>";
+    drawChart(probe.points);
+    return probe;
+  }
+
+  function drawChart(points) {
+    var cv = els.redosChart, dpr = window.devicePixelRatio || 1;
+    var w = cv.clientWidth || 600, h = 220;
+    cv.width = w * dpr; cv.height = h * dpr;
+    var ctx = cv.getContext("2d"); ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, w, h);
+    var css = getComputedStyle(document.documentElement);
+    var accent = css.getPropertyValue("--accent").trim() || "#2be3b0";
+    var faint = "rgba(150,170,160,.5)", grid = "rgba(150,170,160,.15)";
+    var padL = 54, padB = 28, padT = 14, padR = 12;
+    var pw = w - padL - padR, ph = h - padT - padB;
+    var maxN = points[points.length - 1].n;
+    var maxS = 1; points.forEach(function (p) { maxS = Math.max(maxS, p.steps); });
+    var useLog = maxS > 2000;
+    function y(s) {
+      if (useLog) { var ls = Math.log10(Math.max(1, s)), lm = Math.log10(Math.max(10, maxS)); return padT + ph - (ls / lm) * ph; }
+      return padT + ph - (s / maxS) * ph;
+    }
+    function x(n) { return padL + (n - 1) / Math.max(1, maxN - 1) * pw; }
+    // grid + axes
+    ctx.strokeStyle = grid; ctx.lineWidth = 1; ctx.fillStyle = faint;
+    ctx.font = "11px ui-monospace,monospace";
+    var ticks = useLog ? [1, 10, 100, 1000, 10000, 100000, 1000000] : [0, maxS / 2, maxS];
+    ticks.forEach(function (tv) {
+      if (tv > maxS && tv !== 1) return;
+      var yy = y(tv); ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(w - padR, yy); ctx.stroke();
+      ctx.fillText(fmtNum(tv), 6, yy + 3);
+    });
+    ctx.fillText("steps", 6, padT - 2);
+    ctx.fillText("input length →", padL, h - 8);
+    // line
+    ctx.strokeStyle = accent; ctx.lineWidth = 2; ctx.beginPath();
+    points.forEach(function (p, i) { var X = x(p.n), Y = y(p.steps); if (i === 0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y); });
+    ctx.stroke();
+    ctx.fillStyle = accent;
+    points.forEach(function (p) { ctx.beginPath(); ctx.arc(x(p.n), y(p.steps), 2.6, 0, 7); ctx.fill(); });
+    if (useLog) { ctx.fillStyle = faint; ctx.fillText("(log scale)", w - 86, padT + 8); }
+  }
+  function fmtNum(n) { n = Math.round(n); if (n >= 1e6) return (n / 1e6) + "M"; if (n >= 1e3) return (n / 1e3) + "k"; return String(n); }
+
+  // ---------- status line ----------
+  function setStatus(matchRes) {
+    var p = els.pattern.value;
+    var nStates = state.nfa ? state.nfa.states.length : 0;
+    var liveSteps = matchRes ? matchRes.steps : 0;
+    els.liveSteps.innerHTML = "Backtracking steps on your current test string: <b>" + liveSteps.toLocaleString() + "</b>";
+    var pills = [];
+    pills.push('<span class="pill ok">valid ✓</span>');
+    pills.push('<span class="pill">' + (matchRes ? matchRes.matches.length : 0) + ' match' + ((matchRes && matchRes.matches.length === 1) ? "" : "es") + '</span>');
+    pills.push('<span class="pill">' + nStates + ' NFA states</span>');
+    els.status.innerHTML = pills.join("");
+  }
+
+  // ---------- main update ----------
+  var redosTimer = null;
+  function update() {
+    var pat = els.pattern.value, input = els.test.value;
+    syncHash();
+    try {
+      state.parsed = R.parse(pat, flagStr());
+      els.err.style.display = "none";
+    } catch (e) {
+      els.err.style.display = "block";
+      els.err.innerHTML = "⚠ " + esc(e.message) + (typeof e.pos === "number" ? " (at position " + e.pos + ")" : "");
+      els.status.innerHTML = '<span class="pill bad">invalid pattern</span>';
+      return;
+    }
+    state.nfa = R.compileNFA(state.parsed);
+    state.sim = R.simulateNFA(state.nfa, input);
+    var matchRes = renderMatches(input);
+    setStatus(matchRes);
+    renderNFA(state.nfa);
+    setupExec(input);
+    clearTimeout(redosTimer);
+    redosTimer = setTimeout(runRedos, 120);
+  }
+
+  // ---------- tabs ----------
+  function setupTabs() {
+    var btns = document.querySelectorAll(".tabbtn");
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () {
+        btns.forEach(function (x) { x.classList.remove("on"); });
+        b.classList.add("on");
+        var t = b.getAttribute("data-tab");
+        ["matches", "nfa", "redos"].forEach(function (name) {
+          $("tab-" + name).style.display = name === t ? "block" : "none";
+        });
+        if (t === "redos") drawChartLater();
+      });
+    });
+  }
+  function drawChartLater() { setTimeout(runRedos, 10); }
+
+  // ---------- flags + presets + share ----------
+  function setupFlags() {
+    ["i", "m", "s"].forEach(function (f) {
+      var b = $("flag-" + f);
+      b.addEventListener("click", function () { flags[f] = !flags[f]; b.classList.toggle("on", flags[f]); update(); });
+    });
+  }
+  function setupPresets() {
+    document.querySelectorAll(".preset").forEach(function (b) {
+      b.addEventListener("click", function () {
+        els.pattern.value = b.getAttribute("data-p");
+        els.test.value = b.getAttribute("data-t");
+        var fl = b.getAttribute("data-f") || "";
+        flags.i = fl.indexOf("i") >= 0; flags.m = fl.indexOf("m") >= 0; flags.s = fl.indexOf("s") >= 0;
+        ["i", "m", "s"].forEach(function (f) { $("flag-" + f).classList.toggle("on", flags[f]); });
+        update();
+        document.querySelector(".tabbtn[data-tab='" + (b.getAttribute("data-tab") || "matches") + "']").click();
+        if (els.pattern.scrollIntoView) els.pattern.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+  }
+  function syncHash() {
+    try {
+      var data = { p: els.pattern.value, f: flagStr(), t: els.test.value };
+      location.replace("#" + encodeURIComponent(JSON.stringify(data)));
+    } catch (e) {}
+  }
+  function loadHash() {
+    if (!location.hash || location.hash.length < 2) return false;
+    try {
+      var data = JSON.parse(decodeURIComponent(location.hash.slice(1)));
+      if (typeof data.p === "string") {
+        els.pattern.value = data.p; els.test.value = data.t || "";
+        var f = data.f || ""; flags.i = f.indexOf("i") >= 0; flags.m = f.indexOf("m") >= 0; flags.s = f.indexOf("s") >= 0;
+        ["i", "m", "s"].forEach(function (x) { $("flag-" + x).classList.toggle("on", flags[x]); });
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  // ---------- boot ----------
+  function boot() {
+    setupTabs(); setupFlags(); setupPresets();
+    var deb = null;
+    function onEdit() { clearTimeout(deb); deb = setTimeout(update, 90); }
+    els.pattern.addEventListener("input", onEdit);
+    els.test.addEventListener("input", onEdit);
+    if (!loadHash()) {
+      els.pattern.value = "(a+)+$";
+      els.test.value = "aaaaaaaaaaaaaaaaaaaa!";
+    }
+    update();
+    window.__rlBoot = true;
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+
+  // expose for headless verification
+  window.__rl = { allMatches: allMatches, runRedos: runRedos, getState: function () { return state; } };
+})();
+
+</script>
+<!-- Monetization slots (left inert for now):
+<ins class="adsbygoogle" data-ad-client="ca-pub-XXneeds-setupXX"></ins>
+Polar.sh "support this tool" embed can go here. -->
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gravity — a real N-body galaxy simulation running on your GPU</title>
+<meta name="description" content="A real-time N-body gravity simulation in your browser. Tens of thousands of stars, each one pulling on every other, computed every frame on your GPU with WebGPU. Spawn galaxies, collide them, drag to bend spacetime. No upload, no sign-up." />
+<meta name="keywords" content="n-body simulation, gravity simulation, galaxy simulation, webgpu, galaxy collision simulation, particle gravity simulation, n body simulation browser, gpu compute, real time physics, galaxy formation simulation" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Gravity — a real N-body galaxy simulation on your GPU" />
+<meta property="og:description" content="Tens of thousands of stars, each pulling on every other, simulated in real time in your browser with WebGPU. Collide galaxies, drag to bend gravity." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/gravity.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Gravity — N-body galaxy simulation on your GPU" />
+<meta name="twitter:description" content="A real all-pairs N-body gravity simulation running entirely in your browser via WebGPU." />
+<link rel="canonical" href="https://hammyasf.github.io/gravity.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Gravity — N-body Galaxy Simulation","url":"https://hammyasf.github.io/gravity.html","applicationCategory":"GameApplication","operatingSystem":"Any (web browser with WebGPU)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time all-pairs N-body gravity simulation running on the GPU in the browser via WebGPU. Spawn and collide galaxies, watch structure form under gravity.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this a real N-body simulation?","acceptedAnswer":{"@type":"Answer","text":"Yes. Every star gravitationally attracts every other star using Newton's inverse-square law with Plummer softening. There is no fake field or pre-baked animation — the forces are recomputed from scratch every single frame on your GPU."}},{"@type":"Question","name":"How does it run so many bodies in real time?","acceptedAnswer":{"@type":"Answer","text":"It uses WebGPU compute shaders. The all-pairs force calculation is parallelised across thousands of GPU threads and tiled through fast workgroup shared memory, the same technique used in GPU physics engines. Nothing is uploaded — all the math happens on your own graphics card."}},{"@type":"Question","name":"Why does it say my browser is not supported?","acceptedAnswer":{"@type":"Answer","text":"The simulation needs WebGPU, which is available in recent Chrome, Edge, and other Chromium browsers, and in Safari 26+. If you see the fallback message, update your browser or try it on a desktop with a GPU."}},{"@type":"Question","name":"Is anything uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. There is no server and no account. The entire simulation runs locally on your device."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,54px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  .stage{position:relative;margin:22px 0 0;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#02040a;box-shadow:0 30px 80px -40px rgba(0,0,0,.9);}
+  #sim{display:block;width:100%;height:68vh;min-height:420px;touch-action:none;cursor:crosshair;}
+  .presetbar{position:absolute;top:0;left:0;right:0;display:flex;gap:8px;flex-wrap:wrap;padding:14px;background:linear-gradient(180deg,rgba(2,4,10,.78),rgba(2,4,10,0));z-index:3;pointer-events:none;}
+  .presetbar .pchip{pointer-events:auto;}
+  .pchip{font-family:var(--mono);font-size:12px;color:var(--ink);background:rgba(12,22,30,.72);border:1px solid var(--line-2);padding:7px 13px;border-radius:100px;cursor:pointer;transition:.15s;backdrop-filter:blur(6px);}
+  .pchip:hover{border-color:rgba(var(--accentRGB),.6);}
+  .pchip.on{background:var(--accent);color:#04120d;border-color:var(--accent);font-weight:600;}
+  .stats{position:absolute;top:14px;right:14px;z-index:3;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(2,4,10,.6);border:1px solid var(--line);border-radius:10px;padding:8px 11px;line-height:1.7;text-align:right;backdrop-filter:blur(6px);pointer-events:none;}
+  .stats b{color:var(--accent);}
+  .dock{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;gap:18px 22px;flex-wrap:wrap;align-items:center;padding:14px 16px;background:linear-gradient(0deg,rgba(2,4,10,.86),rgba(2,4,10,0));}
+  .dock .grp{display:flex;flex-direction:column;gap:5px;}
+  .dock label{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .dock .row{display:flex;align-items:center;gap:9px;}
+  input[type=range]{accent-color:var(--accent);width:118px;}
+  select{background:rgba(12,22,30,.85);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:7px 9px;font-family:var(--mono);font-size:12px;}
+  .iconbtn{font-family:var(--mono);font-size:12.5px;color:var(--ink);background:rgba(12,22,30,.72);border:1px solid var(--line-2);padding:8px 14px;border-radius:100px;cursor:pointer;transition:.15s;}
+  .iconbtn:hover{border-color:rgba(var(--accentRGB),.6);}
+  .iconbtn.primary{background:var(--accent);color:#04120d;border-color:var(--accent);font-weight:700;}
+  .vval{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:30px;}
+  .hint{position:absolute;left:14px;bottom:78px;z-index:3;font-family:var(--mono);font-size:11px;color:var(--faint);background:rgba(2,4,10,.5);padding:5px 9px;border-radius:8px;pointer-events:none;}
+
+  .fallback{display:none;position:absolute;inset:0;z-index:5;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;background:radial-gradient(120% 100% at 50% 30%,rgba(20,30,50,.5),#02040a);}
+  .fallback h3{font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:10px;}
+  .fallback p{color:var(--muted);font-size:14.5px;max-width:460px;}
+  .fallback .stars{position:absolute;inset:0;z-index:-1;opacity:.5;background-image:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 60%,#cfe,transparent),radial-gradient(1px 1px at 40% 80%,#fff,transparent),radial-gradient(1px 1px at 85% 25%,#aef,transparent),radial-gradient(1px 1px at 55% 45%,#fff,transparent);}
+
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:760px;}
+  .faq{border-top:1px solid var(--line);margin-top:14px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:640px){#sim{height:58vh;}.dock{gap:12px 16px;}.stats{font-size:10.5px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">WebGPU · runs on your GPU</div>
+    <h1>Gravity</h1>
+    <p class="sub">A real N-body simulation. Tens of thousands of stars, each one pulling on every other, recomputed every single frame on your graphics card. Spawn a galaxy, slam two together, or drag your cursor to bend the field.</p>
+    <span class="priv">&#9889; 100% on-device — your GPU does the physics, nothing is uploaded</span>
+  </header>
+
+  <div class="stage">
+    <canvas id="sim"></canvas>
+
+    <div class="presetbar" id="presets">
+      <button class="pchip on" data-p="spiral">Spiral galaxy</button>
+      <button class="pchip" data-p="collision">Galaxy collision</button>
+      <button class="pchip" data-p="blackhole">Black hole</button>
+      <button class="pchip" data-p="bigbang">Big bang</button>
+      <button class="pchip" data-p="cloud">Cold cloud</button>
+    </div>
+
+    <div class="stats" id="stats">starting&hellip;</div>
+
+    <div class="hint" id="hint">drag to pull stars · scroll to zoom</div>
+
+    <div class="dock" id="dock">
+      <div class="grp">
+        <label>Stars</label>
+        <select id="count">
+          <option value="4096">4,096</option>
+          <option value="8192">8,192</option>
+          <option value="16384" selected>16,384</option>
+          <option value="32768">32,768</option>
+          <option value="65536">65,536</option>
+        </select>
+      </div>
+      <div class="grp">
+        <label>Gravity</label>
+        <div class="row"><input type="range" id="grav" min="0.1" max="3" step="0.05" value="1"><span class="vval" id="gravV">1.0</span></div>
+      </div>
+      <div class="grp">
+        <label>Speed</label>
+        <div class="row"><input type="range" id="speed" min="0" max="2.5" step="0.05" value="1"><span class="vval" id="speedV">1.0</span></div>
+      </div>
+      <div class="grp">
+        <label>Glow</label>
+        <div class="row"><input type="range" id="glow" min="0.4" max="2.2" step="0.05" value="1"><span class="vval" id="glowV">1.0</span></div>
+      </div>
+      <div class="grp">
+        <label>&nbsp;</label>
+        <div class="row">
+          <button class="iconbtn" id="pause">Pause</button>
+          <button class="iconbtn primary" id="reset">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fallback" id="fallback">
+      <div class="stars"></div>
+      <h3>This needs WebGPU</h3>
+      <p id="fbmsg">Your browser can't run the simulation yet. WebGPU works in recent Chrome, Edge, and other Chromium browsers, and in Safari 26+. Open this page on a desktop with a GPU for the full effect.</p>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>What you're looking at</h2>
+    <p>This is a gravitational <em>N-body</em> simulation. Each glowing point is a star with mass, position, and velocity. On every frame the simulation works out the gravitational pull between each star and every other star using Newton's inverse-square law, adds it all up, and nudges each star along. Run it long enough and a flat disk winds itself into spiral arms, two galaxies tear each other into tidal streams, and a cold cloud collapses into knots — all from nothing but gravity.</p>
+    <h2>How does this run in a browser tab?</h2>
+    <p>The honest answer is that it doesn't run on your CPU. Computing the pull between every pair of stars is an all-pairs problem: with sixteen thousand stars that's around a quarter of a billion force calculations, and it has to happen sixty times a second. JavaScript on a single core would manage a slideshow. Instead this uses WebGPU, the new browser API for talking to your graphics card directly. The force loop is written as a compute shader and run across thousands of GPU threads at once, with each block of stars streamed through fast on-chip workgroup memory so the GPU isn't constantly waiting on slow reads. It's the same tiling trick that real GPU physics engines use. Your graphics card was built for exactly this, and the whole thing stays on your machine — there's no server in the loop.</p>
+    <h2>Things to try</h2>
+    <p>Hit <b>Galaxy collision</b> and watch the two cores swing past each other and fling out long tidal tails. Drop the <b>Speed</b> to zero, then nudge it up to step through the dynamics slowly. Press and drag anywhere on the canvas to drop a moving gravity well and stir the stars by hand. Crank <b>Stars</b> up to 65,536 if you've got a real GPU, or pull it down if your fans start spinning. Everything is live — change gravity mid-collision and watch the whole system respond.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is this a real simulation or just an animation?</summary><p>Real. There's no pre-baked path and no fake force field. Every frame, the actual gravitational force between each star and every other star is computed from their current positions and the result moves them. That's why it never repeats and why small changes cascade.</p></details>
+    <details><summary>How many stars can it handle?</summary><p>From 4,096 up to 65,536, each one a full participant in the all-pairs gravity. The cap is your GPU, not a server. If it stutters, drop the star count a notch.</p></details>
+    <details><summary>My browser shows a "needs WebGPU" message.</summary><p>WebGPU is the capability this relies on. It's in recent Chrome, Edge, Brave, Arc and other Chromium browsers, and in Safari 26 and up. Update your browser, or open the page on a desktop with a dedicated or integrated GPU.</p></details>
+    <details><summary>Does any of this get uploaded?</summary><p>No. There's no account, no backend, no telemetry of your simulation. The physics and rendering happen entirely on your own device.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build things like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Simulated on your GPU · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+
+(async function(){
+  "use strict";
+  var canvas=document.getElementById("sim"), fb=document.getElementById("fallback"), fbmsg=document.getElementById("fbmsg"),
+      statsEl=document.getElementById("stats"), dock=document.getElementById("dock"), presetbar=document.getElementById("presets");
+
+  function fail(msg){ fb.style.display="flex"; if(msg) fbmsg.textContent=msg; statsEl.style.display="none"; dock.style.display="none"; presetbar.style.display="none"; document.getElementById("hint").style.display="none"; }
+
+  if(!("gpu" in navigator)){ fail(); return; }
+  var adapter;
+  try{ adapter = await navigator.gpu.requestAdapter({powerPreference:"high-performance"}); }catch(e){ adapter=null; }
+  if(!adapter){ fail("Your browser exposes WebGPU but no compatible GPU adapter was found. Try a desktop browser with a GPU, or enable hardware acceleration."); return; }
+  var device;
+  try{ device = await adapter.requestDevice(); }catch(e){ fail("Couldn't initialise the GPU device. Try reloading or updating your browser."); return; }
+  device.lost.then(function(info){ if(info.reason!=="destroyed") fail("The GPU connection was lost. Reload the page to restart the simulation."); });
+
+  var ctx = canvas.getContext("webgpu");
+  var format = navigator.gpu.getPreferredCanvasFormat();
+  ctx.configure({ device:device, format:format, alphaMode:"opaque" });
+
+  var TILE = 256;
+
+  // ---- Shaders -------------------------------------------------------------
+  var computeWGSL = `
+struct Particle { pos: vec2<f32>, vel: vec2<f32>, mass: f32, hue: f32 };
+struct Params {
+  g: f32, dt: f32, eps2: f32, n: u32,
+  pointer: vec2<f32>, pStrength: f32, pActive: f32,
+};
+@group(0) @binding(0) var<storage, read> src: array<Particle>;
+@group(0) @binding(1) var<storage, read_write> dst: array<Particle>;
+@group(0) @binding(2) var<uniform> p: Params;
+
+var<workgroup> sh: array<vec3<f32>, ${TILE}>;
+
+@compute @workgroup_size(${TILE})
+fn main(@builtin(global_invocation_id) gid: vec3<u32>,
+        @builtin(local_invocation_id) lid: vec3<u32>) {
+  let i = gid.x;
+  let safe = min(i, p.n - 1u);
+  let me = src[safe];
+  let myPos = me.pos;
+  var acc = vec2<f32>(0.0, 0.0);
+
+  let tiles = (p.n + ${TILE}u - 1u) / ${TILE}u;
+  for (var t: u32 = 0u; t < tiles; t = t + 1u) {
+    let idx = t * ${TILE}u + lid.x;
+    if (idx < p.n) {
+      let o = src[idx];
+      sh[lid.x] = vec3<f32>(o.pos.x, o.pos.y, o.mass);
+    } else {
+      sh[lid.x] = vec3<f32>(0.0, 0.0, 0.0);
+    }
+    workgroupBarrier();
+    for (var j: u32 = 0u; j < ${TILE}u; j = j + 1u) {
+      let o = sh[j];
+      let d = vec2<f32>(o.x - myPos.x, o.y - myPos.y);
+      let r2 = d.x * d.x + d.y * d.y + p.eps2;
+      let invr = inverseSqrt(r2);
+      let invr3 = invr * invr * invr;
+      acc = acc + d * (p.g * o.z * invr3);
+    }
+    workgroupBarrier();
+  }
+
+  // interactive pointer gravity well
+  if (p.pActive > 0.5) {
+    let d = p.pointer - myPos;
+    let r2 = d.x * d.x + d.y * d.y + 25.0;
+    let invr = inverseSqrt(r2);
+    acc = acc + d * (p.pStrength * invr * invr * invr * 4.0e4);
+  }
+
+  if (i < p.n) {
+    var v = me.vel + acc * p.dt;
+    v = v * 0.9995; // tiny damping keeps it numerically calm over long runs
+    let np = myPos + v * p.dt;
+    dst[i].pos = np;
+    dst[i].vel = v;
+    dst[i].mass = me.mass;
+    dst[i].hue = me.hue;
+  }
+}`;
+
+  var renderWGSL = `
+struct Particle { pos: vec2<f32>, vel: vec2<f32>, mass: f32, hue: f32 };
+struct View { center: vec2<f32>, scale: f32, aspect: f32, starSize: f32, speedScale: f32, glow: f32, _p: f32 };
+@group(0) @binding(0) var<storage, read> parts: array<Particle>;
+@group(0) @binding(1) var<uniform> view: View;
+
+struct VSOut {
+  @builtin(position) pos: vec4<f32>,
+  @location(0) uv: vec2<f32>,
+  @location(1) color: vec3<f32>,
+};
+
+fn palette(t: f32, hue: f32) -> vec3<f32> {
+  let a = vec3<f32>(0.20, 0.42, 1.00); // slow: blue
+  let b = vec3<f32>(0.80, 0.90, 1.00); // mid: blue-white
+  let c = vec3<f32>(1.00, 0.78, 0.46); // fast: warm
+  var col: vec3<f32>;
+  if (t < 0.5) { col = mix(a, b, t * 2.0); }
+  else { col = mix(b, c, (t - 0.5) * 2.0); }
+  // hue tints the two galaxies slightly differently
+  let tint = mix(vec3<f32>(1.0,0.92,0.9), vec3<f32>(0.9,0.96,1.0), hue);
+  return col * tint;
+}
+
+@vertex
+fn vs(@builtin(vertex_index) vi: u32, @builtin(instance_index) ii: u32) -> VSOut {
+  var corners = array<vec2<f32>, 6>(
+    vec2<f32>(-1.0,-1.0), vec2<f32>(1.0,-1.0), vec2<f32>(-1.0,1.0),
+    vec2<f32>(-1.0,1.0),  vec2<f32>(1.0,-1.0), vec2<f32>(1.0,1.0)
+  );
+  let q = corners[vi];
+  let pt = parts[ii];
+  let world = (pt.pos - view.center) * view.scale;
+  let centerClip = vec2<f32>(world.x / view.aspect, world.y);
+  let off = vec2<f32>(q.x * view.starSize / view.aspect, q.y * view.starSize);
+  var out: VSOut;
+  out.pos = vec4<f32>(centerClip + off, 0.0, 1.0);
+  out.uv = q;
+  let spd = length(pt.vel);
+  let t = clamp(spd * view.speedScale, 0.0, 1.0);
+  out.color = palette(t, pt.hue);
+  return out;
+}
+
+@fragment
+fn fs(in: VSOut) -> @location(0) vec4<f32> {
+  let d = length(in.uv);
+  if (d > 1.0) { discard; }
+  var a = 1.0 - d;
+  a = a * a;                 // soft falloff
+  let core = pow(max(0.0, 1.0 - d), 6.0) * 0.7; // bright core
+  let intensity = (a * 0.55 + core) * view.glow;
+  let rgb = in.color * intensity;
+  return vec4<f32>(rgb, intensity); // additive (premultiplied)
+}`;
+
+  var computeModule = device.createShaderModule({code:computeWGSL});
+  var renderModule = device.createShaderModule({code:renderWGSL});
+
+  // ---- Layouts & pipelines -------------------------------------------------
+  var computeBGL = device.createBindGroupLayout({entries:[
+    {binding:0,visibility:GPUShaderStage.COMPUTE,buffer:{type:"read-only-storage"}},
+    {binding:1,visibility:GPUShaderStage.COMPUTE,buffer:{type:"storage"}},
+    {binding:2,visibility:GPUShaderStage.COMPUTE,buffer:{type:"uniform"}},
+  ]});
+  var renderBGL = device.createBindGroupLayout({entries:[
+    {binding:0,visibility:GPUShaderStage.VERTEX,buffer:{type:"read-only-storage"}},
+    {binding:1,visibility:GPUShaderStage.VERTEX,buffer:{type:"uniform"}},
+  ]});
+
+  var computePipeline = device.createComputePipeline({
+    layout: device.createPipelineLayout({bindGroupLayouts:[computeBGL]}),
+    compute:{module:computeModule,entryPoint:"main"}
+  });
+  var renderPipeline = device.createRenderPipeline({
+    layout: device.createPipelineLayout({bindGroupLayouts:[renderBGL]}),
+    vertex:{module:renderModule,entryPoint:"vs"},
+    fragment:{module:renderModule,entryPoint:"fs",targets:[{
+      format:format,
+      blend:{
+        color:{srcFactor:"one",dstFactor:"one",operation:"add"},
+        alpha:{srcFactor:"one",dstFactor:"one",operation:"add"}
+      }
+    }]},
+    primitive:{topology:"triangle-list"}
+  });
+
+  // ---- State / uniforms ----------------------------------------------------
+  var paramsBuf = device.createBuffer({size:32, usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST});
+  var viewBuf   = device.createBuffer({size:32, usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST});
+
+  var bufA=null, bufB=null, bgC=[null,null], bgR=[null,null];
+  var N=16384, parity=0, running=true, paused=false;
+
+  var sim = { center:[0,0], scale:0.0026, gravity:1.0, speedMul:1.0, glow:1.0,
+              eps2:25.0, baseG:6.0, speedScale:0.06, starSize:0.0 };
+
+  // pointer
+  var pointer={x:0,y:0,active:0};
+
+  function allocBuffers(n){
+    if(bufA) bufA.destroy(); if(bufB) bufB.destroy();
+    var bytes = n*24;
+    bufA = device.createBuffer({size:bytes, usage:GPUBufferUsage.STORAGE|GPUBufferUsage.COPY_DST});
+    bufB = device.createBuffer({size:bytes, usage:GPUBufferUsage.STORAGE|GPUBufferUsage.COPY_DST});
+    bgC[0] = device.createBindGroup({layout:computeBGL,entries:[
+      {binding:0,resource:{buffer:bufA}},{binding:1,resource:{buffer:bufB}},{binding:2,resource:{buffer:paramsBuf}}]});
+    bgC[1] = device.createBindGroup({layout:computeBGL,entries:[
+      {binding:0,resource:{buffer:bufB}},{binding:1,resource:{buffer:bufA}},{binding:2,resource:{buffer:paramsBuf}}]});
+    bgR[0] = device.createBindGroup({layout:renderBGL,entries:[
+      {binding:0,resource:{buffer:bufA}},{binding:1,resource:{buffer:viewBuf}}]});
+    bgR[1] = device.createBindGroup({layout:renderBGL,entries:[
+      {binding:0,resource:{buffer:bufB}},{binding:1,resource:{buffer:viewBuf}}]});
+  }
+
+  // ---- Scene generators (write a fresh particle array) ---------------------
+  function rand(a,b){ return a + Math.random()*(b-a); }
+  function gaussian(){ var u=Math.random(),v=Math.random(); return Math.sqrt(-2*Math.log(u+1e-9))*Math.cos(6.2831853*v); }
+
+  // build one rotating disk into the array view, centred at cx,cy with bulk velocity vx,vy
+  function makeDisk(arr, start, k, cx, cy, vx, vy, M, radius, hue, spin){
+    // index "start" is the central heavy mass
+    arr[start*6+0]=cx; arr[start*6+1]=cy; arr[start*6+2]=vx; arr[start*6+3]=vy; arr[start*6+4]=M; arr[start*6+5]=hue;
+    var Gv = sim.baseG; // used to set orbital speed
+    for(var s=1;s<k;s++){
+      var i=start+s;
+      // concentrated-toward-centre disk radius, with a softened inner cutoff
+      var r = radius * (0.09 + 0.91*Math.pow(Math.random(), 0.6));
+      var ang = Math.random()*6.2831853;
+      var px = cx + Math.cos(ang)*r, py = cy + Math.sin(ang)*r;
+      // circular orbital speed around the central mass
+      var v = Math.sqrt(Gv * M / r);
+      var tx = -Math.sin(ang)*spin, ty = Math.cos(ang)*spin;
+      var jitter = 0.04;
+      arr[i*6+0]=px; arr[i*6+1]=py;
+      arr[i*6+2]=vx + tx*v + gaussian()*v*jitter;
+      arr[i*6+3]=vy + ty*v + gaussian()*v*jitter;
+      arr[i*6+4]=1.0;
+      arr[i*6+5]=hue;
+    }
+  }
+
+  function buildScene(preset, n){
+    var arr=new Float32Array(n*6);
+    if(preset==="spiral"){
+      makeDisk(arr,0,n, 0,0, 0,0, 26000, 360, 0.5, 1);
+      sim.center=[0,0]; sim.scale=0.0024; sim.speedScale=0.05;
+    } else if(preset==="collision"){
+      var half=Math.floor(n/2);
+      makeDisk(arr,0,half, -260,-120, 26,16, 17000, 250, 0.0, 1);
+      makeDisk(arr,half,n-half, 260,120, -26,-16, 17000, 250, 1.0, -1);
+      sim.center=[0,0]; sim.scale=0.0018; sim.speedScale=0.045;
+    } else if(preset==="blackhole"){
+      makeDisk(arr,0,n, 0,0, 0,0, 90000, 380, 0.7, 1);
+      arr[4]=90000; // ensure heavy core
+      sim.center=[0,0]; sim.scale=0.0023; sim.speedScale=0.04;
+    } else if(preset==="bigbang"){
+      arr[0]=0;arr[1]=0;arr[2]=0;arr[3]=0;arr[4]=4000;arr[5]=0.5;
+      for(var i=1;i<n;i++){
+        var ang=Math.random()*6.2831853, r=Math.random()*14;
+        var sp=rand(40,150);
+        arr[i*6+0]=Math.cos(ang)*r; arr[i*6+1]=Math.sin(ang)*r;
+        arr[i*6+2]=Math.cos(ang)*sp+gaussian()*8; arr[i*6+3]=Math.sin(ang)*sp+gaussian()*8;
+        arr[i*6+4]=1.0; arr[i*6+5]=Math.random();
+      }
+      sim.center=[0,0]; sim.scale=0.0016; sim.speedScale=0.02;
+    } else { // cold cloud — collapses into structure
+      arr[0]=0;arr[1]=0;arr[2]=0;arr[3]=0;arr[4]=1500;arr[5]=0.5;
+      for(var i2=1;i2<n;i2++){
+        var rx=gaussian()*220, ry=gaussian()*220;
+        arr[i2*6+0]=rx; arr[i2*6+1]=ry;
+        arr[i2*6+2]=gaussian()*1.5; arr[i2*6+3]=gaussian()*1.5;
+        arr[i2*6+4]=1.0; arr[i2*6+5]=Math.random();
+      }
+      sim.center=[0,0]; sim.scale=0.0019; sim.speedScale=0.04;
+    }
+    return arr;
+  }
+
+  var currentPreset="spiral";
+  function loadPreset(preset){
+    currentPreset=preset;
+    N=parseInt(document.getElementById("count").value,10);
+    sim.starSize = Math.max(0.004, 0.013 * Math.sqrt(8192/N));
+    allocBuffers(N);
+    var data=buildScene(preset,N);
+    device.queue.writeBuffer(bufA,0,data);
+    device.queue.writeBuffer(bufB,0,data);
+    parity=0;
+  }
+
+  // ---- Resize --------------------------------------------------------------
+  var dpr=Math.min(window.devicePixelRatio||1, 2), aspect=1;
+  function resize(){
+    var r=canvas.getBoundingClientRect();
+    var w=Math.max(2,Math.floor(r.width*dpr)), h=Math.max(2,Math.floor(r.height*dpr));
+    if(canvas.width!==w||canvas.height!==h){ canvas.width=w; canvas.height=h; }
+    aspect=canvas.width/canvas.height;
+  }
+  window.addEventListener("resize",resize);
+
+  // ---- Uniform writers -----------------------------------------------------
+  var pf32=new Float32Array(8), pu32=new Uint32Array(pf32.buffer);
+  function writeParams(dt){
+    pf32[0]=sim.baseG*sim.gravity;
+    pf32[1]=dt;
+    pf32[2]=sim.eps2;
+    pu32[3]=N;
+    pf32[4]=pointer.x; pf32[5]=pointer.y;
+    pf32[6]=pointer.active?1.0:0.0;   // pStrength scalar (on/off magnitude)
+    pf32[7]=pointer.active?1.0:0.0;   // pActive
+    device.queue.writeBuffer(paramsBuf,0,pf32);
+  }
+  var vf32=new Float32Array(8);
+  function writeView(){
+    vf32[0]=sim.center[0]; vf32[1]=sim.center[1];
+    vf32[2]=sim.scale; vf32[3]=aspect; vf32[4]=sim.starSize;
+    vf32[5]=sim.speedScale; vf32[6]=sim.glow; vf32[7]=0;
+    device.queue.writeBuffer(viewBuf,0,vf32);
+  }
+
+  // ---- Pointer interaction (screen -> world) -------------------------------
+  function screenToWorld(clientX,clientY){
+    var r=canvas.getBoundingClientRect();
+    var nx=( (clientX-r.left)/r.width )*2-1;
+    var ny=-(( (clientY-r.top)/r.height )*2-1);
+    var wx=sim.center[0] + (nx*aspect)/sim.scale;
+    var wy=sim.center[1] + ny/sim.scale;
+    return [wx,wy];
+  }
+  function setPointer(e){ var w=screenToWorld(e.clientX,e.clientY); pointer.x=w[0]; pointer.y=w[1]; }
+  canvas.addEventListener("pointerdown",function(e){ canvas.setPointerCapture(e.pointerId); pointer.active=1; setPointer(e); document.getElementById("hint").style.opacity="0"; });
+  canvas.addEventListener("pointermove",function(e){ if(pointer.active) setPointer(e); });
+  function endPtr(){ pointer.active=0; }
+  canvas.addEventListener("pointerup",endPtr);
+  canvas.addEventListener("pointercancel",endPtr);
+  canvas.addEventListener("pointerleave",endPtr);
+  canvas.addEventListener("wheel",function(e){ e.preventDefault(); var f=Math.exp(-e.deltaY*0.0012); sim.scale=Math.min(0.02,Math.max(0.0004,sim.scale*f)); },{passive:false});
+
+  // ---- UI bindings ---------------------------------------------------------
+  function bindRange(id,prop,fmt){
+    var el=document.getElementById(id), out=document.getElementById(id+"V");
+    function up(){ sim[prop]=parseFloat(el.value); out.textContent=fmt(parseFloat(el.value)); }
+    el.addEventListener("input",up); up();
+  }
+  bindRange("grav","gravity",function(v){return v.toFixed(1);});
+  bindRange("speed","speedMul",function(v){return v.toFixed(1);});
+  bindRange("glow","glow",function(v){return v.toFixed(1);});
+
+  document.querySelectorAll("#presets .pchip").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll("#presets .pchip").forEach(function(x){x.classList.remove("on");});
+      b.classList.add("on"); loadPreset(b.getAttribute("data-p"));
+    });
+  });
+  document.getElementById("count").addEventListener("change",function(){ loadPreset(currentPreset); });
+  document.getElementById("reset").addEventListener("click",function(){ loadPreset(currentPreset); });
+  var pauseBtn=document.getElementById("pause");
+  pauseBtn.addEventListener("click",function(){ paused=!paused; pauseBtn.textContent=paused?"Play":"Pause"; });
+
+  // ---- Main loop -----------------------------------------------------------
+  resize();
+  loadPreset("spiral");
+
+  var lastFps=performance.now(), frames=0, fps=0;
+  function frame(){
+    if(!running) return;
+    resize();
+    var dt = paused ? 0.0 : (0.06 * sim.speedMul);
+
+    writeParams(dt);
+    writeView();
+
+    var enc=device.createCommandEncoder();
+    if(!paused){
+      var cp=enc.beginComputePass();
+      cp.setPipeline(computePipeline);
+      cp.setBindGroup(0, bgC[parity]);
+      cp.dispatchWorkgroups(Math.ceil(N/TILE));
+      cp.end();
+    }
+    // after compute(parity): A->B writes to B when parity 0. render the freshly written buffer.
+    var renderFrom = paused ? parity : (parity^1);
+    var view=ctx.getCurrentTexture().createView();
+    var rp=enc.beginRenderPass({colorAttachments:[{
+      view:view, clearValue:{r:0.004,g:0.01,b:0.02,a:1}, loadOp:"clear", storeOp:"store"
+    }]});
+    rp.setPipeline(renderPipeline);
+    rp.setBindGroup(0, bgR[renderFrom]);
+    rp.draw(6, N, 0, 0);
+    rp.end();
+    device.queue.submit([enc.finish()]);
+
+    if(!paused) parity ^= 1;
+
+    frames++;
+    var now=performance.now();
+    if(now-lastFps>=500){ fps=Math.round(frames*1000/(now-lastFps)); frames=0; lastFps=now;
+      statsEl.innerHTML="<b>"+N.toLocaleString()+"</b> stars<br><b>"+fps+"</b> fps<br><b>"+(N*N/1e6).toFixed(N>=32768?0:1)+"M</b> pairs/frame";
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
+<!-- Monetization slots (left intentionally inert):
+     AdSense: <ins class="adsbygoogle" ...></ins>
+     Polar.sh: support / pro-features link -->
+
+<!-- Analytics: Cloudflare Web Analytics beacon -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
