@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spotter — real-time object detector in your browser (on-device AI, no upload)</title>
+<meta name="description" content="Point your camera or drop a photo and a real AI model boxes and labels every object it sees, live, entirely in your browser. Detects 80 everyday objects, counts them as they appear, and nothing is ever uploaded." />
+<meta name="keywords" content="object detector online, real time object detection, ai object detector, webcam object detection, detect objects in image, count objects in image, what is in this image ai, object recognition online, coco object detection, browser object detection no upload" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#070d14" />
+<meta property="og:title" content="Spotter — real-time object detector in your browser" />
+<meta property="og:description" content="A real AI model boxes and labels every object your camera sees, live and on-device. Nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/spotter.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Spotter — real-time object detector in your browser" />
+<meta name="twitter:description" content="Point your camera and watch an on-device AI box and label everything it sees, live. Nothing uploaded." />
+<link rel="canonical" href="https://hammyasf.github.io/spotter.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://storage.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Spotter","url":"https://hammyasf.github.io/spotter.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (modern web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time object detector that runs an on-device AI model in your browser. Point your camera or drop a photo and it draws boxes and labels around every object it sees, counting them live. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my camera or photos uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI detection model and all the drawing run entirely in your browser through WebAssembly and your GPU. Your camera frames and any photo you drop in never leave your device, and nothing is uploaded."}},{"@type":"Question","name":"What objects can it detect?","acceptedAnswer":{"@type":"Answer","text":"The model recognises 80 common object categories from the COCO dataset, including people, cars, bikes, dogs, cats, cups, bottles, laptops, phones, chairs, books and food. It draws a labelled box around each one with a confidence score."}},{"@type":"Question","name":"How is real-time AI detection running without a server?","acceptedAnswer":{"@type":"Answer","text":"It uses Google's MediaPipe Object Detector, an EfficientDet neural network compiled to run through WebAssembly and your GPU. The model file downloads once, is cached, and then every frame is analysed locally on your machine, so there is no round-trip to a server."}},{"@type":"Question","name":"Does it work without a camera?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can drop in a photo or a video file and it will detect objects in that instead. The camera is just the fastest way to see it work."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up and no watermark. The model downloads once and is cached for instant, offline use afterwards."}}]}</script>
+<style>
+  :root{--bg:#070d14;--bg-2:#0b131f;--ink:#eaf1f8;--muted:#90a3b8;--faint:#76879b;--line:rgba(234,241,248,.12);--line-2:rgba(234,241,248,.22);--accent:#39d0ff;--accent-2:#5b8cff;--accentRGB:57,208,255;--surfaceRGB:11,19,31;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#070d14;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8e4;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .stage{position:relative;width:100%;aspect-ratio:16/9;background:#05090f;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .stage canvas{width:100%;height:100%;object-fit:contain;display:none;}
+  .stage.live canvas{display:block;}
+  .first{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:14px;}
+  .first h2{font-family:var(--display);font-weight:600;font-size:clamp(20px,3vw,26px);}
+  .first p{color:var(--muted);font-size:14px;max-width:440px;}
+  .first .or{font-family:var(--mono);font-size:12px;color:var(--faint);}
+  .drophint{position:absolute;inset:0;border:2px dashed rgba(var(--accentRGB),.6);border-radius:18px;margin:10px;display:none;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;color:var(--accent);background:rgba(var(--accentRGB),.06);pointer-events:none;}
+  .stage.dragover .drophint{display:flex;}
+  .fps{position:absolute;top:10px;left:12px;font-family:var(--mono);font-size:11px;color:var(--accent);background:rgba(5,9,15,.6);border:1px solid var(--line);padding:3px 8px;border-radius:6px;display:none;}
+  .stage.live .fps{display:block;}
+  .loading{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(5,9,15,.85);text-align:center;padding:24px;}
+  .loading.show{display:flex;}
+  .spinner{width:40px;height:40px;border:3px solid rgba(var(--accentRGB),.25);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading p{font-family:var(--mono);font-size:13px;color:var(--ink);}
+  .loading small{font-family:var(--mono);font-size:11px;color:var(--faint);max-width:360px;}
+  .controls{padding:18px 22px 6px;display:none;flex-direction:column;gap:16px;}
+  .controls.show{display:flex;}
+  .row{display:flex;flex-wrap:wrap;gap:16px 26px;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:7px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .seg{display:flex;flex-wrap:wrap;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;border-right:1px solid var(--line);}
+  .seg button:last-child{border-right:none;}
+  .seg button.on{background:var(--accent);color:#070d14;font-weight:600;}
+  input[type=range]{accent-color:var(--accent);width:150px;}
+  .val{font-family:var(--mono);font-size:12px;color:var(--accent);}
+  .toggle{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;}
+  .toggle input{accent-color:var(--accent);width:16px;height:16px;}
+  .stats{display:none;gap:10px;flex-wrap:wrap;padding:4px 22px 2px;}
+  .stats.show{display:flex;}
+  .chip{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--ink);border:1px solid var(--line-2);border-radius:100px;padding:6px 12px;background:rgba(var(--surfaceRGB),.6);}
+  .chip .sw{width:10px;height:10px;border-radius:3px;}
+  .chip b{color:var(--accent);}
+  .empty-stat{font-family:var(--mono);font-size:12.5px;color:var(--faint);padding:2px 0;}
+  .seen{padding:6px 22px 2px;display:none;}
+  .seen.show{display:block;}
+  .seen h4{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
+  .seenrow{display:flex;gap:10px;flex-wrap:wrap;}
+  .seenitem{width:74px;text-align:center;}
+  .seenitem canvas,.seenitem img{width:74px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line-2);background:#05090f;}
+  .seenitem span{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:14px 22px 20px;border-top:1px solid var(--line);margin-top:10px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#070d14;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .btn-rec.recording{background:#ff5a5a;color:#fff;}
+  .note{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .err{margin:0 22px 18px;padding:12px 14px;border:1px solid rgba(255,120,120,.4);background:rgba(255,90,90,.08);border-radius:12px;color:#ffb4b4;font-size:14px;display:none;}
+  .err.show{display:block;}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8e4;font-size:16.5px;margin:12px 0;}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:18px 0;}
+  .step{border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(var(--surfaceRGB),.4);}
+  .step b{font-family:var(--display);color:var(--accent);font-size:15px;}
+  .step p{font-size:14.5px;color:var(--muted);margin-top:6px;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8e4;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.row{gap:14px 18px;}input[type=range]{width:120px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · on-device AI · live camera</div>
+    <h1>Spotter</h1>
+    <p class="sub">Point your camera, or drop in a photo, and a real AI model boxes and labels every object it sees, live. It recognises 80 everyday things and counts them as they appear, all in your browser. Nothing is uploaded.</p>
+    <span class="priv">&#128274; 100% private — your camera and photos never leave your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="stage" id="stage">
+      <canvas id="out"></canvas>
+      <div class="fps" id="fps">— fps</div>
+      <div class="drophint">Drop a photo or video to detect</div>
+      <div class="first" id="first">
+        <h2>See what AI sees</h2>
+        <p>A neural network finds and labels objects in real time, right on your device. Start your camera, or drop in a photo or video to try it without a webcam.</p>
+        <button class="btn" id="startCam">Start camera</button>
+        <div class="or">— or —</div>
+        <button class="btn btn-out" id="pickFile">Drop / choose a photo or video</button>
+        <input type="file" id="file" accept="image/*,video/*" hidden />
+      </div>
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p id="loadMsg">Loading the AI model…</p>
+        <small>The detection model (a few MB) downloads once, then is cached for instant, offline use. Everything runs on your device.</small>
+      </div>
+    </div>
+
+    <div class="err" id="err"></div>
+
+    <div class="controls" id="controls">
+      <div class="row">
+        <div class="ctl">
+          <label>Confidence ≥ <span class="val" id="thrVal">40%</span></label>
+          <input type="range" id="thr" min="10" max="90" step="5" value="40" />
+        </div>
+        <div class="ctl">
+          <label>Max boxes <span class="val" id="maxVal">15</span></label>
+          <input type="range" id="maxr" min="3" max="25" step="1" value="15" />
+        </div>
+        <div class="ctl">
+          <label>Model</label>
+          <div class="seg" id="model">
+            <button data-k="fast" class="on">Fast</button>
+            <button data-k="accurate">Accurate</button>
+          </div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="labels" checked /> Labels</label>
+        <label class="toggle"><input type="checkbox" id="mirror" checked /> Mirror</label>
+      </div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+    <div class="seen" id="seen"><h4>Spotted so far this session</h4><div class="seenrow" id="seenrow"></div></div>
+
+    <div class="bar" id="bar" style="display:none;">
+      <button class="btn" id="snap">Save photo</button>
+      <button class="btn btn-out btn-rec" id="rec">Record clip</button>
+      <button class="btn btn-out" id="reset">Reset spotted</button>
+      <button class="btn btn-out" id="stop">Stop</button>
+      <span class="note" id="note"></span>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Every frame from your camera, or every photo you drop in, is handed to a neural network that has been trained to find objects. For each thing it recognises it returns a box, a label like "person" or "cup" or "laptop", and a confidence score. The page draws those boxes on top of the live image, tallies how many of each kind are in view, and quietly keeps a thumbnail of the first time it sees each new category. All of this happens many times a second, entirely on your machine.</p>
+    <p>The detector is Google's MediaPipe Object Detector, an EfficientDet model running through WebAssembly and your GPU. Because it runs locally, there is no upload, no round-trip to a server and no privacy trade-off, and it keeps working with your internet switched off once the model has cached.</p>
+    <div class="steps">
+      <div class="step"><b>1 · Start</b><p>Allow your camera, or drop in a photo or video to try it with no webcam.</p></div>
+      <div class="step"><b>2 · Watch it detect</b><p>Labelled boxes appear around every object, with a live count of each kind in view.</p></div>
+      <div class="step"><b>3 · Tune it</b><p>Raise the confidence threshold to drop weak guesses, or switch to the accurate model.</p></div>
+      <div class="step"><b>4 · Capture</b><p>Save an annotated still as PNG, or record the detection overlay as a clip.</p></div>
+    </div>
+
+    <h2>Why run it in the browser?</h2>
+    <p>Object detection is usually something you set up on a server or wire to a paid cloud vision API, sending your images or your webcam off to someone else's machine. Doing it on-device means the footage simply never leaves your computer. It is also instant, because there is no upload to wait on, and free to run, because there is no server bill behind it. It is a neat demonstration of how much real machine learning the modern web platform can do on its own.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Are my camera or photos uploaded anywhere?</summary><p>No. The AI model and all the drawing run locally in your browser through WebAssembly and your GPU. Your camera frames and any image you drop in never touch a server, which is why it is instant and private.</p></details>
+    <details><summary>What can it detect?</summary><p>It recognises 80 common categories from the COCO dataset: people, cars, bikes, buses, dogs, cats, cups, bottles, laptops, phones, keyboards, chairs, couches, books, and a range of food, among others. It will not detect things outside that set.</p></details>
+    <details><summary>How is real-time AI running without a server?</summary><p>It uses Google's MediaPipe Object Detector, an EfficientDet neural network compiled to WebAssembly that runs on your GPU. The model downloads once, caches, and then analyses each frame on your own device.</p></details>
+    <details><summary>Why is the frame rate lower on my phone?</summary><p>The model is heavier on a phone than on a laptop, so it analyses fewer frames a second. It still works; the boxes just update a little less often. The Fast model is the smoother choice on mobile.</p></details>
+    <details><summary>Fast versus Accurate — what is the difference?</summary><p>Fast (EfficientDet-Lite0) is smaller and runs at a higher frame rate. Accurate (EfficientDet-Lite2) is a larger model that catches more objects and smaller ones, at the cost of speed and a bigger one-time download.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- theme: match the portfolio's saved accent -->
+<script>
+(function(){
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<script type="module">
+import { ObjectDetector, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/vision_bundle.mjs";
+
+const $ = id => document.getElementById(id);
+const stage=$("stage"), out=$("out"), first=$("first"), loading=$("loading"), loadMsg=$("loadMsg"),
+      controls=$("controls"), bar=$("bar"), errBox=$("err"), fpsEl=$("fps"), note=$("note"),
+      statsEl=$("stats"), seenEl=$("seen"), seenRow=$("seenrow");
+
+const dctx = out.getContext("2d");
+const video=document.createElement("video");
+video.muted=true; video.playsInline=true; video.autoplay=true;
+
+const MODELS={
+  fast:{url:"https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/int8/latest/efficientdet_lite0.tflite",label:"Fast (EfficientDet-Lite0, ~5 MB)"},
+  accurate:{url:"https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite2/int8/latest/efficientdet_lite2.tflite",label:"Accurate (EfficientDet-Lite2, ~12 MB)"}
+};
+
+let vision=null, detector=null, detMode=null, modelKey="fast";
+let stream=null, running=false, source=null, sourceType=null; // 'camera' | 'video' | 'image'
+let lastTime=-1, mirror=true, showLabels=true, thr=0.40, maxBoxes=15;
+let rec=null, chunks=[];
+let frames=0, fpsLast=performance.now();
+let sessionMax={}; // class -> max simultaneous count seen
+let seenClasses={}; // class -> true (already has a thumbnail)
+
+// ---------- pure helpers (exposed for testing) ----------
+function hueForLabel(label){ let h=0; for(let i=0;i<label.length;i++){ h=(h*31 + label.charCodeAt(i))>>>0; } return h%360; }
+function colorForLabel(label){ return "hsl("+hueForLabel(label)+",85%,58%)"; }
+function clampRect(x,y,w,h,W,H){ // clamp a box to canvas bounds, return integer rect or null if empty
+  let x0=Math.max(0,Math.min(W,x)), y0=Math.max(0,Math.min(H,y));
+  let x1=Math.max(0,Math.min(W,x+w)), y1=Math.max(0,Math.min(H,y+h));
+  const rx=Math.round(x0), ry=Math.round(y0), rw=Math.round(x1-x0), rh=Math.round(y1-y0);
+  if(rw<=0||rh<=0) return null; return {x:rx,y:ry,w:rw,h:rh};
+}
+function mirrorX(x,w,W){ return W-(x+w); } // flip a box's x for a mirrored canvas
+function tally(dets){ const m={}; for(const d of dets){ m[d.label]=(m[d.label]||0)+1; } return m; }
+function topCounts(map,n){ return Object.entries(map).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,n); }
+window.__spotter={hueForLabel,colorForLabel,clampRect,mirrorX,tally,topCounts};
+window.__spotterBoot=true;
+// --------------------------------------------------------
+
+function showErr(m){ errBox.textContent=m; errBox.classList.add("show"); }
+function clearErr(){ errBox.classList.remove("show"); }
+
+// ---- controls wiring ----
+$("thr").addEventListener("input",e=>{ thr=+e.target.value/100; $("thrVal").textContent=e.target.value+"%"; if(sourceType==="image") rerunImage(); });
+$("maxr").addEventListener("input",e=>{ maxBoxes=+e.target.value; $("maxVal").textContent=e.target.value; if(sourceType==="image") rerunImage(); });
+$("labels").addEventListener("change",e=>{ showLabels=e.target.checked; if(sourceType==="image") rerunImage(); });
+$("mirror").addEventListener("change",e=>{ mirror=e.target.checked; if(sourceType==="image") rerunImage(); });
+document.querySelectorAll("#model button").forEach(b=>{
+  b.addEventListener("click",async()=>{
+    if(b.dataset.k===modelKey) return;
+    document.querySelectorAll("#model button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on"); modelKey=b.dataset.k;
+    detector=null; detMode=null; // force rebuild with new model
+    loading.classList.add("show"); loadMsg.textContent="Switching to the "+modelKey+" model…";
+    try{ await ensureDetector(sourceType==="image"?"IMAGE":"VIDEO"); }catch(e){ showErr("Could not load that model: "+(e.message||e)); }
+    loading.classList.remove("show");
+    if(sourceType==="image") rerunImage();
+  });
+});
+
+$("startCam").addEventListener("click",startCamera);
+$("pickFile").addEventListener("click",()=>$("file").click());
+$("file").addEventListener("change",e=>{ const f=e.target.files[0]; if(f) startFile(f); });
+["dragover","dragenter"].forEach(ev=>stage.addEventListener(ev,e=>{e.preventDefault(); stage.classList.add("dragover");}));
+["dragleave","dragend"].forEach(ev=>stage.addEventListener(ev,e=>{ stage.classList.remove("dragover"); }));
+stage.addEventListener("drop",e=>{ e.preventDefault(); stage.classList.remove("dragover"); const f=e.dataTransfer.files[0]; if(f) startFile(f); });
+
+$("snap").addEventListener("click",()=>{ const a=document.createElement("a"); a.href=out.toDataURL("image/png"); a.download="spotter.png"; a.click(); });
+$("rec").addEventListener("click",toggleRec);
+$("reset").addEventListener("click",()=>{ sessionMax={}; seenClasses={}; seenRow.innerHTML=""; seenEl.classList.remove("show"); renderStats({}); });
+$("stop").addEventListener("click",stopAll);
+
+// ---- model load ----
+async function ensureVision(){ if(!vision) vision=await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/wasm"); }
+async function ensureDetector(mode){
+  await ensureVision();
+  if(detector && detMode===mode) return;
+  if(detector && detMode!==mode){ await detector.setOptions({runningMode:mode}); detMode=mode; return; }
+  const make=delegate=>ObjectDetector.createFromOptions(vision,{
+    baseOptions:{ modelAssetPath:MODELS[modelKey].url, delegate },
+    runningMode:mode, scoreThreshold:0.2, maxResults:25
+  });
+  try{ detector=await make("GPU"); }
+  catch(gpuErr){ loadMsg.textContent="Loading the AI model (CPU mode)…"; detector=await make("CPU"); }
+  detMode=mode;
+}
+
+// ---- camera ----
+async function startCamera(){
+  clearErr();
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ showErr("Your browser does not support camera access. Try the latest Chrome, Edge, or Safari, or drop in a photo or video instead."); return; }
+  try{
+    first.style.display="none"; loading.classList.add("show"); loadMsg.textContent="Requesting camera…";
+    stream=await navigator.mediaDevices.getUserMedia({ video:{ width:{ideal:1280}, height:{ideal:720}, facingMode:"environment" }, audio:false });
+    loadMsg.textContent="Loading the AI model…";
+    await ensureDetector("VIDEO");
+    sourceType="camera"; source=video; video.srcObject=stream; video.loop=false;
+    await beginStream();
+  }catch(e){
+    loading.classList.remove("show"); first.style.display="flex"; showErr(camMsg(e));
+  }
+}
+function camMsg(e){
+  const n=e&&e.name;
+  if(n==="NotAllowedError"||n==="SecurityError") return "Camera permission was blocked. Allow camera access in your browser and try again, or drop in a photo or video instead.";
+  if(n==="NotFoundError"||n==="DevicesNotFoundError") return "No camera was found. Drop in a photo or video to try the tool.";
+  if(n==="NotReadableError") return "Your camera is in use by another app. Close it (Zoom, Meet, etc.) and try again.";
+  return "Could not start the camera: "+(e.message||e)+". You can drop in a photo or video instead.";
+}
+
+// ---- file (image or video) ----
+async function startFile(file){
+  clearErr();
+  try{
+    first.style.display="none"; loading.classList.add("show"); loadMsg.textContent="Loading the AI model…";
+    if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+    if(file.type.indexOf("image/")===0){
+      await ensureDetector("IMAGE");
+      const img=new Image();
+      img.onload=async()=>{ source=img; sourceType="image"; await beginStill(); };
+      img.onerror=()=>{ loading.classList.remove("show"); first.style.display="flex"; showErr("Could not read that image file."); };
+      img.src=URL.createObjectURL(file);
+    } else if(file.type.indexOf("video/")===0){
+      await ensureDetector("VIDEO");
+      sourceType="video"; source=video; video.srcObject=null; video.loop=true; video.src=URL.createObjectURL(file);
+      await beginStream();
+    } else {
+      loading.classList.remove("show"); first.style.display="flex"; showErr("That file type is not supported. Drop in a photo or a video.");
+    }
+  }catch(e){ loading.classList.remove("show"); first.style.display="flex"; showErr("Could not start: "+(e.message||e)); }
+}
+
+function sizeCanvasTo(w,h){
+  const W=Math.min(w,1280), s=W/w, H=Math.round(h*s);
+  out.width=W; out.height=H; stage.style.aspectRatio=(W/H).toFixed(4);
+  return {W,H,s};
+}
+function showLive(){
+  loading.classList.remove("show"); stage.classList.add("live");
+  controls.classList.add("show"); statsEl.classList.add("show"); bar.style.display="flex";
+}
+
+// ---- video / camera path ----
+async function beginStream(){
+  await video.play().catch(()=>{});
+  const vw=video.videoWidth||1280, vh=video.videoHeight||720;
+  sizeCanvasTo(vw,vh);
+  lastTime=-1; running=true; showLive();
+  note.textContent = sourceType==="camera" ? "Live from your camera, on your device." : "Playing your video on your device.";
+  loop();
+}
+function loop(){
+  if(!running) return;
+  if(video.readyState>=2 && video.currentTime!==lastTime){
+    lastTime=video.currentTime;
+    try{
+      const res=detector.detectForVideo(video, performance.now());
+      drawFrame(video, video.videoWidth, video.videoHeight, res);
+    }catch(e){ /* skip frame */ }
+  }
+  frames++; const now=performance.now();
+  if(now-fpsLast>=500){ fpsEl.textContent=Math.round(frames*1000/(now-fpsLast))+" fps"; frames=0; fpsLast=now; }
+  requestAnimationFrame(loop);
+}
+
+// ---- still image path ----
+async function beginStill(){
+  const iw=source.naturalWidth, ih=source.naturalHeight;
+  sizeCanvasTo(iw,ih);
+  running=false; fpsEl.style.display="none"; showLive();
+  note.textContent="Detected in your photo, on your device.";
+  rerunImage();
+}
+function rerunImage(){
+  if(sourceType!=="image"||!detector) return;
+  try{ const res=detector.detect(source); drawFrame(source, source.naturalWidth, source.naturalHeight, res); }
+  catch(e){ showErr("Detection failed: "+(e.message||e)); }
+}
+
+// ---- shared draw ----
+function normalize(res, srcW){
+  // returns array of {label, score, box:{x,y,w,h}} in OUTPUT-canvas pixels, mirrored if needed, filtered + capped
+  const W=out.width, H=out.height, s=W/srcW;
+  let list=[];
+  const dets=(res&&res.detections)||[];
+  for(const d of dets){
+    const c=d.categories&&d.categories[0]; if(!c) continue;
+    if(c.score<thr) continue;
+    const bb=d.boundingBox; if(!bb) continue;
+    let x=bb.originX*s, y=bb.originY*s, w=bb.width*s, h=bb.height*s;
+    if(mirror) x=mirrorX(x,w,W);
+    const r=clampRect(x,y,w,h,W,H); if(!r) continue;
+    list.push({label:c.categoryName||c.displayName||"object", score:c.score, box:r});
+  }
+  list.sort((a,b)=>b.score-a.score);
+  return list.slice(0,maxBoxes);
+}
+function drawFrame(src, srcW, srcH, res){
+  const W=out.width, H=out.height;
+  dctx.save();
+  if(mirror){ dctx.translate(W,0); dctx.scale(-1,1); }
+  dctx.drawImage(src,0,0,W,H);
+  dctx.restore();
+  const list=normalize(res, srcW);
+  for(const it of list){
+    const col=colorForLabel(it.label), b=it.box;
+    dctx.lineWidth=Math.max(2,Math.round(W/360));
+    dctx.strokeStyle=col;
+    dctx.strokeRect(b.x,b.y,b.w,b.h);
+    if(showLabels){
+      const txt=it.label+" "+Math.round(it.score*100)+"%";
+      dctx.font="600 "+Math.max(12,Math.round(W/64))+"px ui-monospace,Menlo,monospace";
+      const tw=dctx.measureText(txt).width, pad=6, fh=Math.max(18,Math.round(W/40));
+      let ly=b.y-fh; if(ly<0) ly=b.y;
+      dctx.fillStyle=col; dctx.fillRect(b.x,ly,tw+pad*2,fh);
+      dctx.fillStyle="#06121b"; dctx.textBaseline="middle";
+      dctx.fillText(txt,b.x+pad,ly+fh/2);
+    }
+  }
+  updateStats(list, src, srcW, srcH);
+}
+
+function updateStats(list, src, srcW, srcH){
+  const counts=tally(list);
+  for(const k in counts){ if(!(k in sessionMax)||counts[k]>sessionMax[k]) sessionMax[k]=counts[k]; }
+  renderStats(counts);
+  // capture a thumbnail the first time we ever see a class
+  for(const it of list){ if(!seenClasses[it.label]){ seenClasses[it.label]=true; addSeen(it, src, srcW, srcH); } }
+}
+function renderStats(counts){
+  const entries=topCounts(counts,8);
+  if(entries.length===0){ statsEl.innerHTML='<span class="empty-stat">No objects in view yet — point at something, or raise nothing and lower the confidence.</span>'; return; }
+  statsEl.innerHTML="";
+  for(const [label,n] of entries){
+    const chip=document.createElement("span"); chip.className="chip";
+    chip.innerHTML='<span class="sw" style="background:'+colorForLabel(label)+'"></span>'+label+' <b>×'+n+'</b>';
+    statsEl.appendChild(chip);
+  }
+}
+function addSeen(it, src, srcW, srcH){
+  // crop the detection from the SOURCE (unmirrored) into a small thumbnail canvas
+  const W=out.width, s=W/srcW;
+  // box in source pixel space: undo the canvas scale + mirror
+  let bx=it.box.x, by=it.box.y, bw=it.box.w, bh=it.box.h;
+  if(mirror) bx=W-(bx+bw);
+  const sx=bx/s, sy=by/s, sw=bw/s, sh=bh/s;
+  const c=document.createElement("canvas"); c.width=74; c.height=56;
+  const cx=c.getContext("2d");
+  try{ cx.drawImage(src, Math.max(0,sx), Math.max(0,sy), Math.max(1,sw), Math.max(1,sh), 0,0,74,56); }catch(e){ return; }
+  const wrap=document.createElement("div"); wrap.className="seenitem";
+  const span=document.createElement("span"); span.textContent=it.label;
+  wrap.appendChild(c); wrap.appendChild(span); seenRow.appendChild(wrap);
+  seenEl.classList.add("show");
+}
+
+// ---- record ----
+function toggleRec(){
+  if(rec && rec.state==="recording"){ rec.stop(); return; }
+  if(!out.captureStream){ showErr("Recording is not supported in this browser. You can still save a photo."); return; }
+  const fps = sourceType==="image" ? 1 : 30;
+  const st=out.captureStream(fps); chunks=[];
+  let mime="video/webm"; if(window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) mime="video/webm;codecs=vp9";
+  try{ rec=new MediaRecorder(st,{mimeType:mime}); }catch(e){ showErr("Recording failed to start: "+(e.message||e)); return; }
+  rec.ondataavailable=e=>{ if(e.data&&e.data.size) chunks.push(e.data); };
+  rec.onstop=()=>{ const blob=new Blob(chunks,{type:"video/webm"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="spotter.webm"; a.click(); $("rec").classList.remove("recording"); $("rec").textContent="Record clip"; };
+  rec.start(); $("rec").classList.add("recording"); $("rec").textContent="Stop recording";
+}
+
+// ---- stop ----
+function stopAll(){
+  running=false;
+  if(rec && rec.state==="recording") rec.stop();
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  try{ video.pause(); }catch(e){}
+  video.srcObject=null; video.removeAttribute("src"); video.load&&video.load();
+  stage.classList.remove("live"); controls.classList.remove("show"); statsEl.classList.remove("show");
+  bar.style.display="none"; first.style.display="flex"; fpsEl.style.display="";
+  note.textContent="";
+}
+</script>
+
+<!-- Monetization slots (left commented for later):
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX"></ins>
+<a href="https://polar.sh/hammyasf" class="support">Support the lab</a>
+-->
+
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
