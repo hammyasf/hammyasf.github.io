@@ -4,6 +4,12 @@
 <link>https://hammyasf.github.io/blog.html</link>
 <description>Essays on Web3, AI engineering, full-stack, and shipping software.</description>
 <language>en-us</language>
+<item><title>WebGPU will not fix your slow browser game</title><link>https://hammyasf.github.io/webgpu-slow-browser-game.html</link><guid>https://hammyasf.github.io/webgpu-slow-browser-game.html</guid><pubDate>Tue, 30 Jun 2026 00:00:00 GMT</pubDate><description>WebGPU shipped in every browser, but it will not fix a slow browser game. The real bottlenecks are download size and the main thread, not raw GPU power.</description></item>
+
+<item><title>Most multi-agent systems do not need to be multi-agent</title><link>https://hammyasf.github.io/multi-agent-systems-overhead.html</link><guid>https://hammyasf.github.io/multi-agent-systems-overhead.html</guid><pubDate>Fri, 26 Jun 2026 00:00:00 GMT</pubDate><description>Most multi-agent systems add coordination overhead before they add value. When one good agent wins, when multiple agents pay off, and how I decide.</description></item>
+
+<item><title>SSE or WebSockets? How I actually pick for real-time features</title><link>https://hammyasf.github.io/sse-vs-websockets-real-time-choice.html</link><guid>https://hammyasf.github.io/sse-vs-websockets-real-time-choice.html</guid><pubDate>Thu, 25 Jun 2026 00:00:00 GMT</pubDate><description>SSE or WebSockets for real-time features: how I actually decide, from someone who shipped live price and trading screens. Direction of data beats raw power.</description></item>
+
 <item><title>Idempotent tool calls: do this before you let an agent retry</title><link>https://hammyasf.github.io/idempotent-tool-calls-agents.html</link><guid>https://hammyasf.github.io/idempotent-tool-calls-agents.html</guid><pubDate>Wed, 24 Jun 2026 00:00:00 GMT</pubDate><description>When a tool call times out, an AI agent often runs it twice. How idempotent tool calls and a retry budget keep retries from corrupting real data.</description></item>
 <item><title>Your MCP server is eating the context window</title><link>https://hammyasf.github.io/mcp-server-context-window.html</link><guid>https://hammyasf.github.io/mcp-server-context-window.html</guid><pubDate>Tue, 23 Jun 2026 00:00:00 GMT</pubDate><description>Why MCP servers quietly fill an agent's context window with bloated tool schemas and oversized results, and how I keep an agent's context lean and useful.</description></item>
 
@@ -36,11 +42,5 @@
 <item><title>Building a gas-aware frontend users trust</title><link>https://hammyasf.github.io/gas-aware-frontend.html</link><guid>https://hammyasf.github.io/gas-aware-frontend.html</guid><pubDate>Wed, 20 May 2026 00:00:00 GMT</pubDate><description>A gas-aware frontend tells users what a transaction will cost before they sign. Practical patterns for estimates, failures and honest UX.</description></item>
 
 <item><title>A sane team workflow for AI coding agents</title><link>https://hammyasf.github.io/ai-coding-agents-team-workflow.html</link><guid>https://hammyasf.github.io/ai-coding-agents-team-workflow.html</guid><pubDate>Sun, 17 May 2026 00:00:00 GMT</pubDate><description>A practical AI coding agents workflow for teams that keeps review standards high, avoids merge chaos, and actually ships faster instead of slower.</description></item>
-
-<item><title>RAG that actually works in production</title><link>https://hammyasf.github.io/rag-that-actually-works.html</link><guid>https://hammyasf.github.io/rag-that-actually-works.html</guid><pubDate>Thu, 14 May 2026 00:00:00 GMT</pubDate><description>What it really takes to get RAG in production working: retrieval quality, chunking, evals, and the boring plumbing that separates a demo from a real system.</description></item>
-
-<item><title>How to evaluate an LLM feature without fooling yourself</title><link>https://hammyasf.github.io/evaluating-llm-features.html</link><guid>https://hammyasf.github.io/evaluating-llm-features.html</guid><pubDate>Mon, 11 May 2026 00:00:00 GMT</pubDate><description>A grounded guide to evaluate an LLM feature honestly: build real test sets, define what good means, and avoid the demo-driven self-deception that ships bad features.</description></item>
-
-<item><title>Using AI for code review without lowering the bar</title><link>https://hammyasf.github.io/ai-code-review.html</link><guid>https://hammyasf.github.io/ai-code-review.html</guid><pubDate>Fri, 08 May 2026 00:00:00 GMT</pubDate><description>How to use AI code review to catch more bugs without lowering your standards: where the machine helps, where it misleads, and who stays accountable.</description></item>
 
 </channel></rss>
