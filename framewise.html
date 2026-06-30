@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Framewise — Frame-by-Frame Video Player &amp; Frame Extractor (in your browser)</title>
+<meta name="description" content="Step through any video one frame at a time, frame-accurate, right in your browser. Onion-skin overlay, A/B compare, and export the exact frame as a PNG. Nothing is uploaded — it decodes every frame on your own device with WebCodecs." />
+<meta name="keywords" content="frame by frame video player, step through video frame by frame, video frame viewer, frame accurate video, extract frame from video, save frame from video, onion skin video, compare video frames, slow motion frame stepper, study video frame by frame, golf swing frame by frame, webcodecs" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Framewise — Frame-by-Frame Video Player" />
+<meta property="og:description" content="Step through any video one frame at a time, frame-accurate, in your browser. Onion-skin, A/B compare, export the exact frame. Nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/framewise.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Framewise — Frame-by-Frame Video Player" />
+<meta name="twitter:description" content="Step through any video frame by frame in your browser. Frame-accurate. Nothing uploaded." />
+<link rel="canonical" href="https://hammyasf.github.io/framewise.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Framewise — Frame-by-Frame Video Player","url":"https://hammyasf.github.io/framewise.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebCodecs)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Step through any video frame by frame, frame-accurate, in the browser. Onion-skin, A/B compare, export the exact frame as PNG. Nothing is uploaded; frames are decoded on-device with WebCodecs.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my video uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Framewise decodes your video entirely in your browser using the WebCodecs API. The file never leaves your device, and there is no sign-up."}},{"@type":"Question","name":"Why can it step frame by frame when a normal video player can't?","acceptedAnswer":{"@type":"Answer","text":"A normal HTML5 video element only seeks to keyframes, so stepping is jumpy and imprecise. Framewise demuxes the file and decodes every individual frame with a real video decoder, so it can show you any exact frame and the precise timestamp."}},{"@type":"Question","name":"What video formats work?","acceptedAnswer":{"@type":"Answer","text":"MP4 and MOV files using H.264 work in every modern browser. H.265/HEVC, VP9 and AV1 work if your browser and device can decode them. If a file can't be decoded, Framewise tells you instead of failing silently."}},{"@type":"Question","name":"Can I save a single frame as an image?","acceptedAnswer":{"@type":"Answer","text":"Yes. Land on the frame you want and click Save PNG. Framewise re-decodes that exact frame at full native resolution and downloads it, or copies it to your clipboard."}},{"@type":"Question","name":"How long a clip can it handle?","acceptedAnswer":{"@type":"Answer","text":"It works best on short clips — a few seconds to about 20 seconds — because every frame is decoded and held for instant scrubbing. Longer videos are processed up to a frame cap; trim to the moment you care about for the full range."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 10px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.4vw,54px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:54px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:23px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .drop .or{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s,opacity .2s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .btn-sm{font-size:13px;padding:8px 13px;}
+  .hidden{display:none!important;}
+  /* progress */
+  .prog{padding:22px 24px;}
+  .prog .lbl{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;gap:10px;}
+  .track{height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line);overflow:hidden;}
+  .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .15s;}
+  /* viewer */
+  .stage{padding:14px;}
+  .canvas-wrap{position:relative;background:#05090a;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:240px;}
+  #view{max-width:100%;max-height:62vh;display:block;image-rendering:auto;}
+  .badge{position:absolute;top:12px;left:12px;font-family:var(--mono);font-size:12px;color:var(--ink);background:rgba(5,9,10,.72);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:9px;padding:6px 10px;letter-spacing:.02em;}
+  .badge b{color:var(--accent);}
+  .hint{position:absolute;bottom:12px;right:12px;font-family:var(--mono);font-size:11px;color:var(--faint);background:rgba(5,9,10,.6);border:1px solid var(--line);border-radius:8px;padding:5px 9px;}
+  /* transport */
+  .transport{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px;border-top:1px solid var(--line);}
+  .iconbtn{width:42px;height:42px;border-radius:11px;border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.6);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s;font-size:15px;}
+  .iconbtn:hover{border-color:rgba(var(--accentRGB),.5);color:var(--accent);}
+  .iconbtn.play{background:var(--accent);color:#07100e;border-color:var(--accent);}
+  .scrub{flex:1;min-width:200px;display:flex;align-items:center;gap:12px;}
+  input[type=range]{accent-color:var(--accent);width:100%;height:22px;cursor:pointer;}
+  .scrub-meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);white-space:nowrap;}
+  .scrub-meta b{color:var(--accent);}
+  /* filmstrip */
+  .strip-wrap{padding:0 14px 14px;}
+  .strip{display:flex;gap:6px;overflow-x:auto;padding:8px;border:1px solid var(--line);border-radius:12px;background:rgba(5,9,10,.5);scrollbar-width:thin;}
+  .strip canvas{height:58px;width:auto;border-radius:6px;border:2px solid transparent;cursor:pointer;flex:0 0 auto;opacity:.78;transition:opacity .15s,border-color .15s;background:#05090a;}
+  .strip canvas:hover{opacity:1;}
+  .strip canvas.cur{border-color:var(--accent);opacity:1;}
+  /* tool rows */
+  .tools{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;padding:14px;border-top:1px solid var(--line);}
+  .tgroup{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .tgroup .ttl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .chk{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;}
+  .chk input{accent-color:var(--accent);width:15px;height:15px;}
+  .mini-range{width:108px;}
+  select{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:9px;padding:8px 10px;font-family:var(--mono);font-size:12.5px;}
+  .divider{width:1px;align-self:stretch;background:var(--line);}
+  /* compare overlay */
+  .cmp{position:relative;}
+  .cmp .wipe{position:absolute;top:0;bottom:0;width:2px;background:var(--accent);box-shadow:0 0 10px rgba(var(--accentRGB),.8);pointer-events:none;}
+  .note{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:0 14px 14px;}
+  .err{color:#ff9a8f;}
+  /* content */
+  .content{padding:30px 0 10px;}
+  .content h2{font-family:var(--display);font-weight:600;font-size:26px;letter-spacing:-.01em;margin:34px 0 12px;}
+  .content h3{font-family:var(--display);font-weight:600;font-size:18px;margin:22px 0 8px;}
+  .content p{color:#c4d0cb;margin:10px 0;max-width:760px;}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:18px 0;}
+  .step{border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(var(--surfaceRGB),.4);}
+  .step .n{font-family:var(--mono);font-size:12px;color:var(--accent);}
+  .step h4{font-family:var(--display);font-weight:600;font-size:16px;margin:8px 0 6px;}
+  .step p{font-size:14px;color:var(--muted);margin:0;}
+  .faq{border-top:1px solid var(--line);padding:18px 0;}
+  .faq h3{font-family:var(--display);font-weight:600;font-size:17px;margin:0 0 6px;}
+  .faq p{color:var(--muted);font-size:15px;margin:0;}
+  .faq details{margin:0;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:0;}
+  @media(max-width:640px){ .scrub-meta{font-size:11px;} #view{max-height:48vh;} }
+</style>
+<script>
+(function(){
+  // match the portfolio's saved theme (avoids a flash of the default jade)
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Frame-by-frame video player</h1>
+    <p class="sub">Drop in a clip and step through it one exact frame at a time. Onion-skin the previous frame, wipe between any two frames, and save the precise frame you want as a PNG. Every frame is decoded on your own machine.</p>
+    <span class="priv">&#128274; 100% private — your video never leaves your device</span>
+  </header>
+
+  <!-- unsupported -->
+  <div class="panel hidden" id="unsupported">
+    <div class="prog">
+      <p class="note err" style="padding:0">Your browser can&rsquo;t decode video with the WebCodecs API yet. Framewise needs a recent Chrome, Edge, or Opera (desktop), or Safari 17+. Everything else on the site still works.</p>
+    </div>
+  </div>
+
+  <!-- dropzone -->
+  <section class="panel" id="dropPanel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a video file">
+      <h2>Drop a video here</h2>
+      <p>MP4 or MOV (H.264 works everywhere). Or click to choose a file.</p>
+      <div class="or">
+        <button class="btn" id="pick" type="button">Choose video</button>
+        <button class="btn btn-out" id="sampleBtn" type="button">Try a sample clip</button>
+      </div>
+    </div>
+    <input type="file" id="file" accept="video/*,.mp4,.mov,.m4v,.webm" class="hidden" />
+    <p class="note">Tip: best on short clips. A golf swing, a dance move, a sports replay, a tricky animation frame — decode it once, then scrub instantly.</p>
+  </section>
+
+  <!-- progress -->
+  <section class="panel hidden" id="progPanel">
+    <div class="prog">
+      <div class="lbl"><span id="progLbl">Reading file&hellip;</span><span id="progPct">0%</span></div>
+      <div class="track"><div class="fill" id="progFill"></div></div>
+    </div>
+  </section>
+
+  <!-- player -->
+  <section class="panel hidden" id="player">
+    <div class="stage">
+      <div class="canvas-wrap cmp" id="cmpWrap">
+        <canvas id="view"></canvas>
+        <div class="badge" id="badge"><b id="fIdx">0</b> / <span id="fTot">0</span> &middot; <span id="fTime">0.000s</span></div>
+        <div class="hint">&larr; &rarr; step &middot; space play</div>
+        <div class="wipe hidden" id="wipe"></div>
+      </div>
+    </div>
+
+    <div class="transport">
+      <button class="iconbtn" id="first" title="First frame (Home)">&#124;&#9664;</button>
+      <button class="iconbtn" id="prev" title="Previous frame (Left arrow)">&#9664;</button>
+      <button class="iconbtn play" id="play" title="Play / pause (Space)">&#9654;</button>
+      <button class="iconbtn" id="next" title="Next frame (Right arrow)">&#9654;|</button>
+      <button class="iconbtn" id="last" title="Last frame (End)">&#9654;&#124;</button>
+      <div class="scrub">
+        <input type="range" id="scrub" min="0" max="0" value="0" step="1" />
+        <span class="scrub-meta">frame <b id="scrubIdx">0</b></span>
+      </div>
+    </div>
+
+    <div class="strip-wrap"><div class="strip" id="strip"></div></div>
+
+    <div class="tools">
+      <div class="tgroup">
+        <span class="ttl">Speed</span>
+        <select id="speed">
+          <option value="0.1">0.1&times;</option>
+          <option value="0.25">0.25&times;</option>
+          <option value="0.5" selected>0.5&times;</option>
+          <option value="1">1&times;</option>
+          <option value="2">2&times;</option>
+        </select>
+      </div>
+      <div class="divider"></div>
+      <div class="tgroup">
+        <label class="chk"><input type="checkbox" id="onionChk" /> Onion skin</label>
+        <input type="range" class="mini-range" id="onionOp" min="10" max="80" value="40" title="Onion opacity" />
+      </div>
+      <div class="divider"></div>
+      <div class="tgroup">
+        <span class="ttl">Compare</span>
+        <button class="btn btn-out btn-sm" id="setA" type="button">Set A</button>
+        <button class="btn btn-out btn-sm" id="setB" type="button">Set B</button>
+        <label class="chk"><input type="checkbox" id="cmpChk" disabled /> Wipe A/B</label>
+        <input type="range" class="mini-range" id="cmpPos" min="0" max="100" value="50" disabled title="Wipe position" />
+      </div>
+    </div>
+
+    <div class="tools" style="border-top:1px solid var(--line)">
+      <div class="tgroup">
+        <button class="btn btn-sm" id="savePng" type="button">Save PNG (native res)</button>
+        <button class="btn btn-out btn-sm" id="copyPng" type="button">Copy frame</button>
+        <button class="btn btn-out btn-sm" id="newvid" type="button">New video</button>
+      </div>
+      <div class="tgroup"><span class="note" id="cmpNote" style="padding:0"></span></div>
+    </div>
+    <p class="note" id="capNote" style="padding-top:0"></p>
+  </section>
+
+  <!-- content / SEO -->
+  <section class="content"><div>
+    <h2>Step through a video frame by frame, in your browser</h2>
+    <p>A normal video player only lets you seek to keyframes, so when you try to pause on the one frame you care about &mdash; the moment a club meets the ball, the exact frame a logo flashes, the single sharp frame in a shaky clip &mdash; it skips right past it. Framewise demuxes your file and decodes <em>every</em> frame with a real video decoder, so you can land on any exact frame, read its precise timestamp, and save it at full resolution.</p>
+    <p>It runs entirely on your device. Your video is never uploaded, there is no sign-up, and once the page is loaded it keeps working with your internet off.</p>
+
+    <div class="steps">
+      <div class="step"><div class="n">01</div><h4>Drop a clip</h4><p>An MP4 or MOV with H.264 works in every modern browser. The file stays on your machine.</p></div>
+      <div class="step"><div class="n">02</div><h4>It decodes every frame</h4><p>WebCodecs decodes each frame to an image, with a progress bar so you can see it work.</p></div>
+      <div class="step"><div class="n">03</div><h4>Scrub and study</h4><p>Arrow keys nudge one frame at a time. Onion-skin the previous frame or wipe between any two.</p></div>
+      <div class="step"><div class="n">04</div><h4>Save the frame</h4><p>Land on the frame you want and export it as a PNG at full native resolution, or copy it.</p></div>
+    </div>
+
+    <h2>How does this actually run in a browser?</h2>
+    <p>The hard part of a normal &ldquo;frame by frame&rdquo; player is that the bytes in a video file aren&rsquo;t images &mdash; they&rsquo;re a compressed stream where most frames only describe what <em>changed</em> since an earlier frame. Framewise first <strong>demuxes</strong> the MP4 container to pull out the raw encoded video samples and the codec description, then feeds them to the browser&rsquo;s built-in <strong>WebCodecs</strong> video decoder, which is the same hardware-accelerated decoder the browser uses to play video. As decoded frames come out, it draws each one to an image and keeps it for instant scrubbing.</p>
+    <p>To keep the page responsive while a few hundred frames decode, all of that happens inside a <strong>Web Worker</strong>, off the main thread, so the interface never freezes. When you export a single frame, it seeks back to the nearest keyframe and re-decodes that one frame at full native resolution &mdash; so the PNG you save is pixel-exact, not an upscaled thumbnail.</p>
+
+    <h2>Good for</h2>
+    <p>Coaches and athletes breaking down a swing or a sprint; animators and motion designers checking a single in-between frame; editors grabbing a clean still or a thumbnail; anyone who needs to read the exact moment something happens on screen and prove it with a frame they can save and share.</p>
+
+    <h2>Questions</h2>
+    <div class="faq"><details open><summary><h3 style="display:inline">Is my video uploaded anywhere?</h3></summary><p>No. Decoding happens in your browser with WebCodecs. The file never leaves your device, and there is no account.</p></details></div>
+    <div class="faq"><details><summary><h3 style="display:inline">Why can this step frame by frame when YouTube or my player can&rsquo;t?</h3></summary><p>Most players seek only to keyframes, which can be a second or more apart. Framewise decodes every individual frame, so it can show you any exact frame and its precise time.</p></details></div>
+    <div class="faq"><details><summary><h3 style="display:inline">Which formats work?</h3></summary><p>MP4 and MOV with H.264 work in every modern browser. H.265/HEVC, VP9, and AV1 work if your device can decode them. If a file can&rsquo;t be decoded, Framewise says so instead of failing quietly.</p></details></div>
+    <div class="faq"><details><summary><h3 style="display:inline">How long a video can it handle?</h3></summary><p>It&rsquo;s built for short clips. Every frame is decoded and held in memory for instant scrubbing, so long videos are processed up to a frame cap. Trim to the moment you care about for the full range.</p></details></div>
+    <div class="faq"><details><summary><h3 style="display:inline">Is it really free?</h3></summary><p>Yes, completely free, no sign-up, no watermark. It&rsquo;s one of a set of free, privacy-first tools I build in public. <a href="lab.html">See the rest</a> or <a href="index.html#contact">get in touch</a>.</p></details></div>
+  </div></section>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a> · <a href="lab.html">The Lab</a></span>
+</div></footer>
+
+<!--
+  AdSense slot (left for later):
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
+  Polar.sh / support slot (left for later).
+-->
+
+<script>
+(function(){
+  "use strict";
+  /* ============================ pure helpers (also exposed for tests) ============================ */
+  function clamp(v,lo,hi){ return v<lo?lo:(v>hi?hi:v); }
+  function fitScale(sw,sh,maxDim){ if(sw<=0||sh<=0) return 1; var m=Math.max(sw,sh); return m<=maxDim?1:maxDim/m; }
+  function fmtTime(sec){ if(!isFinite(sec)) sec=0; var s=Math.floor(sec); var ms=Math.round((sec-s)*1000); var mm=Math.floor(s/60); var ss=s%60; var p=function(n,w){n=String(n);while(n.length<w)n="0"+n;return n;}; return (mm>0?(mm+":"+p(ss,2)):ss)+"."+p(ms,3)+"s"; }
+  function nearestIndex(sortedTs, t){ // binary search for index of nearest timestamp
+    var a=sortedTs, n=a.length; if(n===0) return -1; if(t<=a[0]) return 0; if(t>=a[n-1]) return n-1;
+    var lo=0, hi=n-1; while(hi-lo>1){ var mid=(lo+hi)>>1; if(a[mid]===t) return mid; if(a[mid]<t) lo=mid; else hi=mid; }
+    return (t-a[lo] <= a[hi]-t) ? lo : hi;
+  }
+  function gopStart(keyflags, j){ var k=clamp(j,0,keyflags.length-1); while(k>0 && !keyflags[k]) k--; return k; }
+  function fmtMB(bytes){ return bytes<1048576 ? (bytes/1024).toFixed(0)+" KB" : (bytes/1048576).toFixed(1)+" MB"; }
+  var H={clamp:clamp,fitScale:fitScale,fmtTime:fmtTime,nearestIndex:nearestIndex,gopStart:gopStart,fmtMB:fmtMB};
+  try{ window.__fw=H; }catch(e){}
+  if(typeof module!=="undefined" && module.exports){ module.exports=H; return; }
+
+  /* ============================ capability check ============================ */
+  var OK = (typeof VideoDecoder!=="undefined") && (typeof EncodedVideoChunk!=="undefined") && (typeof OffscreenCanvas!=="undefined") && (typeof Worker!=="undefined");
+  var $=function(id){return document.getElementById(id);};
+  if(!OK){ $("unsupported").classList.remove("hidden"); $("dropPanel").classList.add("hidden"); return; }
+
+  var MAX_FRAMES=600;          // hard cap on frames decoded+held
+  var DISPLAY_MAX=900;         // cap on stored frame max dimension (px)
+
+  /* ============================ worker source ============================ */
+  var WORKER_SRC = [
+    "self.MP4BOX_OK=false;",
+    "try{ importScripts('https://cdn.jsdelivr.net/npm/mp4box@0.5.2/dist/mp4box.all.min.js'); self.MP4BOX_OK=(typeof MP4Box!=='undefined'); }catch(e){}",
+    "var MAXF="+MAX_FRAMES+", DMAX="+DISPLAY_MAX+";",
+    "var allChunks=[], cfg=null, decoded=0, capped=false, totalToDecode=0;",
+    "function post(m,t){ self.postMessage(m,t||[]); }",
+    "function getDescription(mp4,track){ var trak=mp4.getTrackById(track.id); var ent=trak.mdia.minf.stbl.stsd.entries; for(var i=0;i<ent.length;i++){ var e=ent[i]; var box=e.avcC||e.hvcC||e.vpcC||e.av1C||e.avc1||e.hvc1; if(box && box.write){ var DS=MP4Box.DataStream; var s=new DS(undefined,0,DS.BIG_ENDIAN); box.write(s); return new Uint8Array(s.buffer,8); } } return null; }",
+    "function us(v,scale){ return Math.round(v*1000000/scale); }",
+    "async function drawDisplay(frame){ var sw=frame.displayWidth, sh=frame.displayHeight; var sc=Math.min(1, DMAX/Math.max(sw,sh)); var w=Math.max(1,Math.round(sw*sc)), h=Math.max(1,Math.round(sh*sc)); var oc=new OffscreenCanvas(w,h); var cx=oc.getContext('2d'); cx.drawImage(frame,0,0,w,h); var bmp=await createImageBitmap(oc); return bmp; }",
+    "self.onmessage=async function(ev){ var d=ev.data;",
+    "  if(d.cmd==='load'){ try{ await runLoad(d.buf); }catch(e){ post({type:'error',message:String(e&&e.message||e)}); } }",
+    "  else if(d.cmd==='export'){ try{ await runExport(d.t); }catch(e){ post({type:'exportError',message:String(e&&e.message||e)}); } }",
+    "};",
+    "async function runLoad(buf){",
+    "  if(!self.MP4BOX_OK){ post({type:'error',message:'Could not load the video demuxer (network blocked?). Check your connection and retry.'}); return; }",
+    "  allChunks=[]; decoded=0; capped=false; cfg=null;",
+    "  var mp4=MP4Box.createFile(); var track=null; var samples=[]; var readyErr=null;",
+    "  mp4.onError=function(e){ readyErr=e; };",
+    "  var ready=new Promise(function(res){",
+    "    mp4.onReady=function(info){ var vt=info.videoTracks&&info.videoTracks[0]; if(!vt){ post({type:'error',message:'No video track found in this file.'}); res(false); return; } track=vt; mp4.setExtractionOptions(vt.id,null,{nbSamples:1000000}); res(true); };",
+    "  });",
+    "  mp4.onSamples=function(id,user,smp){ for(var i=0;i<smp.length;i++){ samples.push(smp[i]); } };",
+    "  buf.fileStart=0; mp4.appendBuffer(buf); mp4.flush();",
+    "  var okr=await ready; if(!okr) return; if(readyErr){ post({type:'error',message:'Could not parse this video container.'}); return; }",
+    "  mp4.start();",
+    "  if(!samples.length){ post({type:'error',message:'No frames could be read from this file.'}); return; }",
+    "  var ts=track.timescale; var codec=track.codec;",
+    "  var durSec=track.duration/track.timescale; var fps=durSec>0?(track.nb_samples/durSec):30; if(!isFinite(fps)||fps<=0) fps=30;",
+    "  var description=null; try{ description=getDescription(mp4,track); }catch(e){}",
+    "  cfg={ codec:codec, codedWidth:(track.video&&track.video.width)||track.track_width, codedHeight:(track.video&&track.video.height)||track.track_height };",
+    "  if(description) cfg.description=description;",
+    "  try{ var sup=await VideoDecoder.isConfigSupported(cfg); if(!sup || !sup.supported){ post({type:'error',message:'Your browser can\\'t decode this video codec ('+codec+'). Try an MP4 with H.264, or open it in Chrome/Edge.'}); return; } }catch(e){ post({type:'error',message:'This video codec ('+codec+') is not supported here. Try an H.264 MP4.'}); return; }",
+    "  // build chunks in decode order (the order mp4box yields samples)",
+    "  for(var i=0;i<samples.length;i++){ var s=samples[i]; allChunks.push({ type:s.is_sync?'key':'delta', timestamp:us(s.cts,ts), duration:us(s.duration,ts), data:s.data }); }",
+    "  totalToDecode=Math.min(allChunks.length, MAXF); capped=allChunks.length>MAXF;",
+    "  post({type:'info', width:cfg.codedWidth, height:cfg.codedHeight, fps:fps, total:totalToDecode, capped:capped, codec:codec, nframes:allChunks.length});",
+    "  var pending=0, finished=false;",
+    "  var dec=new VideoDecoder({ output:async function(frame){ var t=frame.timestamp; var idx=decoded; decoded++; pending++; try{ var bmp=await drawDisplay(frame); post({type:'frame', t:t, bitmap:bmp},[bmp]); }catch(e){} frame.close(); pending--; if(decoded%8===0||decoded===totalToDecode) post({type:'progress', done:decoded, total:totalToDecode}); if(finished&&pending===0&&decoded>=totalToDecode) post({type:'done', count:decoded}); }, error:function(e){ post({type:'error',message:'Decoder error: '+(e&&e.message||e)}); } });",
+    "  dec.configure(cfg);",
+    "  for(var i=0;i<totalToDecode;i++){ dec.decode(new EncodedVideoChunk(allChunks[i])); }",
+    "  await dec.flush(); finished=true; post({type:'progress', done:decoded, total:totalToDecode}); if(pending===0) post({type:'done', count:decoded});",
+    "}",
+    "async function runExport(t){",
+    "  if(!cfg||!allChunks.length){ post({type:'exportError',message:'Nothing loaded.'}); return; }",
+    "  var n=allChunks.length; var j=0, best=1e18; for(var i=0;i<n;i++){ var dd=Math.abs(allChunks[i].timestamp-t); if(dd<best){best=dd;j=i;} }",
+    "  var k=j; while(k>0 && allChunks[k].type!=='key') k--;",
+    "  var end=Math.min(n-1, j+48);", // decode a margin past target to flush reordered frames
+    "  var picked=null, pickedDiff=1e18, got=[];",
+    "  var dec=new VideoDecoder({ output:function(frame){ var df=Math.abs(frame.timestamp-t); if(df<pickedDiff){ if(picked) picked.close(); pickedDiff=df; picked=frame; } else { frame.close(); } }, error:function(e){ post({type:'exportError',message:String(e&&e.message||e)}); } });",
+    "  dec.configure(cfg);",
+    "  for(var i=k;i<=end;i++){ dec.decode(new EncodedVideoChunk(allChunks[i])); }",
+    "  await dec.flush();",
+    "  if(!picked){ post({type:'exportError',message:'Could not re-decode that frame.'}); return; }",
+    "  var w=picked.displayWidth, h=picked.displayHeight; var oc=new OffscreenCanvas(w,h); var cx=oc.getContext('2d'); cx.drawImage(picked,0,0); picked.close();",
+    "  var blob=await oc.convertToBlob({type:'image/png'});",
+    "  post({type:'exported', t:t, blob:blob, w:w, h:h});",
+    "}"
+  ].join("\n");
+
+  /* ============================ main thread state ============================ */
+  var worker=null;
+  var frames=[];          // {t, bitmap}
+  var fps=30, vidW=0, vidH=0, capped=false, totalExpected=0, codecStr="";
+  var cur=0, playing=false, rafId=0, lastTick=0;
+  var markA=-1, markB=-1, cmpOn=false, cmpPos=0.5;
+  var onion=false, onionOp=0.4;
+
+  var view=$("view"), vctx=view.getContext("2d");
+  var strip=$("strip");
+
+  /* ---- elements ---- */
+  var drop=$("drop"), fileInput=$("file");
+
+  function showPanel(which){
+    $("dropPanel").classList.toggle("hidden", which!=="drop");
+    $("progPanel").classList.toggle("hidden", which!=="prog");
+    $("player").classList.toggle("hidden", which!=="player");
+  }
+
+  function resetAll(){
+    stopPlay();
+    if(worker){ worker.terminate(); worker=null; }
+    for(var i=0;i<frames.length;i++){ try{ frames[i].bitmap.close&&frames[i].bitmap.close(); }catch(e){} }
+    frames=[]; cur=0; markA=-1; markB=-1; cmpOn=false; capped=false;
+    strip.innerHTML=""; $("cmpChk").checked=false; $("cmpChk").disabled=true; $("cmpPos").disabled=true; $("wipe").classList.add("hidden"); $("cmpNote").textContent="";
+  }
+
+  /* ---- file intake ---- */
+  function handleFile(f){
+    if(!f) return;
+    resetAll();
+    showPanel("prog");
+    $("progLbl").textContent="Reading "+f.name+" · "+H.fmtMB(f.size);
+    $("progPct").textContent="0%"; $("progFill").style.width="6%";
+    f.arrayBuffer().then(function(buf){
+      $("progLbl").textContent="Demuxing & decoding frames…"; $("progFill").style.width="10%";
+      startWorker(buf);
+    }).catch(function(e){ fail("Couldn’t read that file."); });
+  }
+  function fail(msg){
+    showPanel("drop");
+    var n=$("capNote"); // reuse not ideal; show inline on dropzone note
+    var note=document.querySelector("#dropPanel .note");
+    note.innerHTML='<span class="err">'+msg+'</span>';
+  }
+
+  function startWorker(buf){
+    var blob=new Blob([WORKER_SRC],{type:"text/javascript"});
+    var url=URL.createObjectURL(blob);
+    worker=new Worker(url);
+    worker.onmessage=function(ev){ onWorker(ev.data); };
+    worker.onerror=function(e){ fail("Decoder failed to start: "+(e.message||"unknown error")); };
+    worker.postMessage({cmd:"load", buf:buf},[buf]);
+  }
+
+  function onWorker(m){
+    if(m.type==="error"){ fail(m.message||"Could not process this video."); return; }
+    if(m.type==="info"){
+      vidW=m.width; vidH=m.height; fps=m.fps||30; capped=m.capped; totalExpected=m.total; codecStr=m.codec;
+      view.width=Math.max(1,Math.round(vidW*H.fitScale(vidW,vidH,DISPLAY_MAX)));
+      view.height=Math.max(1,Math.round(vidH*H.fitScale(vidW,vidH,DISPLAY_MAX)));
+      return;
+    }
+    if(m.type==="progress"){
+      var pct=m.total?Math.round(m.done/m.total*100):0;
+      $("progPct").textContent=pct+"%"; $("progFill").style.width=Math.max(10,pct)+"%";
+      $("progLbl").textContent="Decoding frames… "+m.done+" / "+m.total;
+      return;
+    }
+    if(m.type==="frame"){
+      frames.push({t:m.t, bitmap:m.bitmap});
+      return;
+    }
+    if(m.type==="done"){
+      frames.sort(function(a,b){ return a.t-b.t; });
+      finalizeLoad();
+      return;
+    }
+    if(m.type==="exported"){ onExported(m); return; }
+    if(m.type==="exportError"){ setCmpNote("Export failed: "+(m.message||""), true); exporting=false; return; }
+  }
+
+  function finalizeLoad(){
+    if(!frames.length){ fail("No frames could be decoded from this video."); return; }
+    showPanel("player");
+    $("scrub").max=String(frames.length-1);
+    $("fTot").textContent=String(frames.length);
+    buildStrip();
+    cur=0; render();
+    var cap=$("capNote");
+    var fpsTxt=(Math.round(fps*100)/100);
+    cap.innerHTML = frames.length+" frames · "+vidW+"×"+vidH+" · ~"+fpsTxt+" fps · "+codecStr +
+      (capped? " · <span class='err'>long video: showing the first "+frames.length+" frames — trim the clip for the full range.</span>" : "");
+  }
+
+  /* ---- filmstrip ---- */
+  function buildStrip(){
+    strip.innerHTML="";
+    var N=frames.length;
+    var step=Math.max(1, Math.ceil(N/80)); // up to ~80 thumbs
+    for(var i=0;i<N;i+=step){
+      (function(idx){
+        var b=frames[idx].bitmap;
+        var th=58, sc=th/b.height, tw=Math.max(1,Math.round(b.width*sc));
+        var c=document.createElement("canvas"); c.width=tw; c.height=th;
+        c.getContext("2d").drawImage(b,0,0,tw,th);
+        c.dataset.idx=String(idx);
+        c.title="frame "+idx;
+        c.addEventListener("click",function(){ goto(idx); });
+        strip.appendChild(c);
+      })(i);
+    }
+    highlightStrip();
+  }
+  function highlightStrip(){
+    var kids=strip.children, best=null, bestd=1e9;
+    for(var i=0;i<kids.length;i++){ kids[i].classList.remove("cur"); var idx=+kids[i].dataset.idx; var d=Math.abs(idx-cur); if(d<bestd){bestd=d;best=kids[i];} }
+    if(best){ best.classList.add("cur"); }
+  }
+
+  /* ---- render ---- */
+  function render(){
+    var f=frames[cur]; if(!f) return;
+    vctx.clearRect(0,0,view.width,view.height);
+    if(cmpOn && markA>=0 && markB>=0){
+      drawCompare();
+    } else {
+      vctx.globalAlpha=1; vctx.drawImage(f.bitmap,0,0,view.width,view.height);
+      if(onion && cur>0){ vctx.globalAlpha=onionOp; vctx.drawImage(frames[cur-1].bitmap,0,0,view.width,view.height); vctx.globalAlpha=1; }
+    }
+    $("fIdx").textContent=String(cur);
+    $("scrubIdx").textContent=String(cur);
+    $("fTime").textContent=H.fmtTime(f.t/1e6);
+    $("scrub").value=String(cur);
+    highlightStrip();
+  }
+  function drawCompare(){
+    var A=frames[markA].bitmap, B=frames[markB].bitmap, W=view.width, Hh=view.height;
+    vctx.globalAlpha=1;
+    vctx.drawImage(A,0,0,W,Hh);
+    var x=Math.round(W*cmpPos);
+    vctx.save(); vctx.beginPath(); vctx.rect(x,0,W-x,Hh); vctx.clip(); vctx.drawImage(B,0,0,W,Hh); vctx.restore();
+    // wipe line positioned over the canvas in CSS px
+    var wipe=$("wipe"); wipe.classList.remove("hidden");
+    var rect=view.getBoundingClientRect(); var wrap=$("cmpWrap").getBoundingClientRect();
+    var cssX=(x/W)*rect.width + (rect.left-wrap.left);
+    wipe.style.left=cssX+"px";
+  }
+
+  /* ---- navigation ---- */
+  function goto(i){ cur=H.clamp(i,0,frames.length-1); render(); }
+  function stepBy(d){ goto(cur+d); }
+  $("prev").addEventListener("click",function(){ stopPlay(); stepBy(-1); });
+  $("next").addEventListener("click",function(){ stopPlay(); stepBy(1); });
+  $("first").addEventListener("click",function(){ stopPlay(); goto(0); });
+  $("last").addEventListener("click",function(){ stopPlay(); goto(frames.length-1); });
+  $("scrub").addEventListener("input",function(){ stopPlay(); goto(+this.value); });
+  $("play").addEventListener("click",togglePlay);
+
+  function togglePlay(){ playing?stopPlay():startPlay(); }
+  function startPlay(){
+    if(frames.length<2) return;
+    playing=true; $("play").innerHTML="&#10073;&#10073;"; $("play").classList.remove("play");
+    lastTick=performance.now();
+    var speed=+$("speed").value;
+    var spf=1000/(fps*speed);
+    var acc=0;
+    function loop(now){
+      if(!playing) return;
+      acc += now-lastTick; lastTick=now;
+      while(acc>=spf){ acc-=spf; cur++; if(cur>=frames.length){ cur=0; } }
+      render();
+      rafId=requestAnimationFrame(loop);
+    }
+    rafId=requestAnimationFrame(loop);
+  }
+  function stopPlay(){ if(!playing) return; playing=false; cancelAnimationFrame(rafId); $("play").innerHTML="&#9654;"; $("play").classList.add("play"); }
+
+  /* ---- onion ---- */
+  $("onionChk").addEventListener("change",function(){ onion=this.checked; render(); });
+  $("onionOp").addEventListener("input",function(){ onionOp=(+this.value)/100; if(onion) render(); });
+
+  /* ---- compare ---- */
+  function setCmpNote(t,err){ var el=$("cmpNote"); el.textContent=t; el.className="note"+(err?" err":""); el.style.padding="0"; }
+  $("setA").addEventListener("click",function(){ markA=cur; maybeEnableCmp(); setCmpNote("A = frame "+markA+(markB>=0?("  ·  B = frame "+markB):"")); });
+  $("setB").addEventListener("click",function(){ markB=cur; maybeEnableCmp(); setCmpNote((markA>=0?("A = frame "+markA+"  ·  "):"")+"B = frame "+markB); });
+  function maybeEnableCmp(){ var ok=markA>=0&&markB>=0; $("cmpChk").disabled=!ok; $("cmpPos").disabled=!ok||!cmpOn; if(!ok){ $("cmpChk").checked=false; cmpOn=false; } }
+  $("cmpChk").addEventListener("change",function(){ cmpOn=this.checked; $("cmpPos").disabled=!cmpOn; $("wipe").classList.toggle("hidden",!cmpOn); render(); });
+  $("cmpPos").addEventListener("input",function(){ cmpPos=(+this.value)/100; if(cmpOn) render(); });
+
+  /* ---- export ---- */
+  var exporting=false;
+  function requestExport(){ if(exporting||!worker||!frames[cur]) return; exporting=true; setCmpNote("Rendering full-res frame…"); worker.postMessage({cmd:"export", t:frames[cur].t}); }
+  var pendingCopy=false;
+  $("savePng").addEventListener("click",function(){ pendingCopy=false; requestExport(); });
+  $("copyPng").addEventListener("click",function(){ pendingCopy=true; requestExport(); });
+  function onExported(m){
+    exporting=false;
+    var blob=m.blob;
+    if(pendingCopy && navigator.clipboard && window.ClipboardItem){
+      navigator.clipboard.write([new ClipboardItem({"image/png":blob})]).then(function(){ setCmpNote("Frame copied to clipboard ("+m.w+"×"+m.h+")."); }).catch(function(){ downloadBlob(blob,m); setCmpNote("Copy blocked — saved the PNG instead."); });
+    } else {
+      downloadBlob(blob,m);
+      setCmpNote("Saved frame "+cur+" at "+m.w+"×"+m.h+".");
+    }
+  }
+  function downloadBlob(blob,m){
+    var a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+    a.download="frame-"+String(cur).padStart(4,"0")+".png"; document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },2000);
+  }
+
+  /* ---- new video ---- */
+  $("newvid").addEventListener("click",function(){ resetAll(); showPanel("drop"); document.querySelector("#dropPanel .note").innerHTML="Tip: best on short clips. A golf swing, a dance move, a sports replay, a tricky animation frame — decode it once, then scrub instantly."; });
+
+  /* ---- keyboard ---- */
+  document.addEventListener("keydown",function(e){
+    if($("player").classList.contains("hidden")) return;
+    var tag=(e.target&&e.target.tagName)||"";
+    if(tag==="INPUT"||tag==="SELECT"||tag==="TEXTAREA") { if(e.key!=="ArrowLeft"&&e.key!=="ArrowRight") return; }
+    if(e.key==="ArrowLeft"){ e.preventDefault(); stopPlay(); stepBy(e.shiftKey?-10:-1); }
+    else if(e.key==="ArrowRight"){ e.preventDefault(); stopPlay(); stepBy(e.shiftKey?10:1); }
+    else if(e.key===" "){ e.preventDefault(); togglePlay(); }
+    else if(e.key==="Home"){ e.preventDefault(); stopPlay(); goto(0); }
+    else if(e.key==="End"){ e.preventDefault(); stopPlay(); goto(frames.length-1); }
+  });
+
+  /* ---- dropzone wiring ---- */
+  drop.addEventListener("click",function(){ fileInput.click(); });
+  $("pick").addEventListener("click",function(e){ e.stopPropagation(); fileInput.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); fileInput.click(); } });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop",function(e){ var f=e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) handleFile(f); });
+  fileInput.addEventListener("change",function(){ if(fileInput.files&&fileInput.files[0]) handleFile(fileInput.files[0]); });
+
+  /* ---- sample ---- */
+  $("sampleBtn").addEventListener("click",function(e){
+    e.stopPropagation();
+    showPanel("prog"); $("progLbl").textContent="Loading sample clip…"; $("progFill").style.width="8%"; $("progPct").textContent="0%";
+    fetch("sample.mp4").then(function(r){ if(!r.ok) throw new Error("sample fetch "+r.status); return r.arrayBuffer(); }).then(function(buf){
+      resetAll(); showPanel("prog"); $("progLbl").textContent="Demuxing & decoding the sample…"; $("progFill").style.width="12%";
+      startWorker(buf);
+    }).catch(function(err){ fail("Couldn’t load the sample clip. Drop your own video instead."); });
+  });
+
+  /* recompute compare wipe position on resize */
+  window.addEventListener("resize",function(){ if(cmpOn) render(); });
+
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
