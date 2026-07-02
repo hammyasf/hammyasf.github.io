@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Distill — AI Text Summarizer that runs in your browser (any length, private)</title>
+<meta name="description" content="Summarize articles, transcripts, papers, and PDFs of any length with a real AI model that runs entirely in your browser. Nothing is uploaded, and it works offline once the model caches. Free, no sign-up." />
+<meta name="keywords" content="summarize text online, ai text summarizer, summarize an article, tldr generator, summarize long text, summarize pdf, summarize transcript, private summarizer, in browser summarizer, offline summarizer, no upload summarizer, free summarizer" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Distill — AI Text Summarizer that runs in your browser" />
+<meta property="og:description" content="Summarize text and PDFs of any length with a real AI model running 100% in your browser. Private, offline-capable, no sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/distill.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Distill — AI Text Summarizer in your browser" />
+<meta name="twitter:description" content="Summarize any length of text or a PDF with a real AI model, 100% private, in your browser." />
+<link rel="canonical" href="https://hammyasf.github.io/distill.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://huggingface.co" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Distill — AI Text Summarizer","url":"https://hammyasf.github.io/distill.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Summarize text and PDFs of any length with a real seq2seq AI model that runs entirely in the browser. Private, offline-capable, no upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI model runs entirely in your browser with WebAssembly. Your text and any PDF you drop in never leave your device."}},{"@type":"Question","name":"How can it summarize very long documents?","acceptedAnswer":{"@type":"Answer","text":"The summarization model reads about a thousand words at a time, so Distill splits long text into sections, summarizes each one, then summarizes those summaries together. This map-reduce approach lets it handle articles, transcripts and whole PDFs that are far longer than the model's own limit."}},{"@type":"Question","name":"Which AI model does it use?","acceptedAnswer":{"@type":"Answer","text":"A quantized build of DistilBART (distilbart-cnn), a distilled version of Facebook's BART model fine-tuned for summarization. It runs through Transformers.js and ONNX Runtime Web."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes, after the first use. The model downloads once (about 270 MB) and is cached by your browser, so later summaries work with no internet."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, with no sign-up and no limit on how much you summarize."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:22px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:22px 22px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px 18px 12px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:19px;}
+  .drop p{color:var(--muted);font-size:13.5px;margin-top:6px;}
+  textarea#src{width:calc(100% - 36px);margin:0 18px;display:block;min-height:190px;resize:vertical;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:14px;padding:14px 16px;font-family:var(--body);font-size:15px;line-height:1.6;}
+  textarea#src:focus{outline:none;border-color:var(--accent);}
+  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:16px 22px 6px;align-items:center;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 15px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .samples{display:flex;flex-wrap:wrap;gap:8px;padding:4px 22px 4px;}
+  .samples span{font-family:var(--mono);font-size:11px;color:var(--faint);align-self:center;}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);background:transparent;border-radius:100px;padding:6px 12px;cursor:pointer;transition:.15s;}
+  .chip:hover{border-color:var(--accent);color:var(--ink);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:14px 22px 20px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 22px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .count{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .count b{color:var(--accent);font-weight:500;}
+  /* progress */
+  .prog{display:none;padding:0 22px 20px;}
+  .prog.on{display:block;}
+  .prog .track{height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line);overflow:hidden;}
+  .prog .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .3s var(--ease);}
+  .prog .lbl{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:9px;}
+  .prog .lbl b{color:var(--accent);font-weight:500;}
+  /* output */
+  .out{display:none;margin:22px 0;}
+  .out.on{display:block;}
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+  .stat{border:1px solid var(--line);border-radius:12px;background:rgba(var(--surfaceRGB),.5);padding:10px 14px;min-width:120px;}
+  .stat .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:22px;color:var(--ink);margin-top:2px;}
+  .stat .v small{font-size:13px;color:var(--muted);font-family:var(--mono);font-weight:400;}
+  .sumcard{border:1px solid var(--line-2);border-radius:16px;background:rgba(var(--surfaceRGB),.6);padding:20px 22px;}
+  .sumcard h3{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+  #summaryText{font-size:16.5px;line-height:1.72;color:#e6ede9;white-space:pre-wrap;}
+  .outbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+  .keywrap{margin-top:14px;}
+  .keywrap details{border:1px solid var(--line);border-radius:14px;background:rgba(var(--surfaceRGB),.4);padding:4px 16px;}
+  .keywrap summary{cursor:pointer;font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:12px 0;list-style:none;}
+  .keywrap summary::-webkit-details-marker{display:none;}
+  .keywrap summary::before{content:"▸ ";color:var(--accent);}
+  .keywrap details[open] summary::before{content:"▾ ";}
+  .source{font-size:15px;line-height:1.75;color:var(--muted);padding:6px 0 16px;max-height:340px;overflow:auto;}
+  .source mark{background:rgba(var(--accentRGB),.18);color:#eafff6;border-radius:4px;padding:1px 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
+  .note{font-family:var(--mono);font-size:12px;color:var(--faint);padding:0 22px 18px;}
+  .warn{display:none;margin:14px 18px;border:1px solid rgba(255,140,90,.4);background:rgba(255,140,90,.08);color:#ffcaa8;border-radius:12px;padding:12px 15px;font-size:13.5px;}
+  .warn.on{display:block;}
+  section.copy{padding:20px 0 8px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:22px;margin:22px 0 8px;letter-spacing:-.01em;}
+  section.copy p{color:#c3d0ca;font-size:15.5px;max-width:720px;}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:16px 0 6px;}
+  .step{border:1px solid var(--line);border-radius:14px;background:rgba(var(--surfaceRGB),.45);padding:16px 18px;}
+  .step .n{font-family:var(--mono);font-size:11px;color:var(--accent);}
+  .step h4{font-family:var(--display);font-weight:600;font-size:16px;margin:6px 0 4px;}
+  .step p{font-size:13.5px;color:var(--muted);}
+  .faq{margin:14px 0;}
+  .faq details{border-bottom:1px solid var(--line);padding:6px 0;}
+  .faq summary{cursor:pointer;font-family:var(--display);font-weight:500;font-size:16.5px;padding:12px 0;color:var(--ink);}
+  .faq p{color:var(--muted);font-size:15px;padding:0 0 12px;max-width:720px;}
+  .cta{margin:26px 0 10px;border:1px solid var(--line);border-radius:18px;background:rgba(var(--accentRGB),.05);padding:24px;}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:20px;}
+  .cta p{color:var(--muted);font-size:15px;margin-top:6px;}
+  footer{border-top:1px solid var(--line);margin-top:36px;padding:24px;}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:var(--mono);font-size:12.5px;color:var(--faint);padding:0 24px;}
+  @media(max-width:640px){textarea#src{width:calc(100% - 24px);margin:0 12px;}.drop{margin:12px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · a real AI model in your browser</div>
+    <h1>Distill</h1>
+    <p class="sub">Summarize an article, a transcript, or a whole PDF &mdash; any length &mdash; with a real summarization model that runs entirely on your own machine. Nothing is uploaded, and once it loads it works offline.</p>
+    <span class="priv">&#128274; 100% private &mdash; your text never leaves your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add a document">
+      <h2>Paste text below, or drop a file here</h2>
+      <p>.txt, .md, or .pdf &mdash; read locally, never uploaded</p>
+      <input type="file" id="file" accept=".txt,.md,.markdown,.pdf,text/plain,application/pdf" hidden />
+    </div>
+    <div class="warn" id="warn"></div>
+    <textarea id="src" placeholder="Paste an article, a meeting transcript, release notes, a research paper... then hit Summarize."></textarea>
+    <div class="samples"><span>Try:</span>
+      <button class="chip" data-sample="press">A long article</button>
+      <button class="chip" data-sample="transcript">A meeting transcript</button>
+      <button class="chip" id="clearBtn">Clear</button>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Summary length</label>
+        <div class="seg" id="len">
+          <button data-l="short">Short</button>
+          <button data-l="medium" class="on">Medium</button>
+          <button data-l="long">Long</button>
+        </div>
+      </div>
+    </div>
+    <div class="bar">
+      <button class="btn" id="go" disabled>Summarize</button>
+      <span class="count" id="count">0 words</span>
+    </div>
+    <div class="prog" id="prog">
+      <div class="track"><div class="fill" id="fill"></div></div>
+      <div class="lbl" id="plbl">Preparing&hellip;</div>
+    </div>
+    <div class="note">First run downloads the AI model once (about 270&nbsp;MB) and caches it. After that, summaries are instant to start and work offline.</div>
+  </div>
+
+  <div class="out" id="out">
+    <div class="stats" id="stats"></div>
+    <div class="sumcard">
+      <h3>Summary</h3>
+      <div id="summaryText"></div>
+      <div class="outbar">
+        <button class="btn" id="copy">Copy summary</button>
+        <button class="btn btn-out" id="dl">Download .txt</button>
+      </div>
+      <div class="keywrap">
+        <details>
+          <summary>Show the key sentences in the source</summary>
+          <div class="source" id="source"></div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Distill runs a real neural summarization model &mdash; a quantized build of DistilBART &mdash; directly inside your browser tab using WebAssembly. When you hit Summarize, your text is tokenized and fed through the model on your own CPU, and the summary comes back without a single byte being sent to a server. If you drop in a PDF, the text is pulled out locally in your browser too.</p>
+    <h2>How it handles documents of any length</h2>
+    <p>A summarization model can only read about a thousand words at once. Distill gets around that the way a person skimming a long report would: it splits your text into sections, writes a short summary of each one, then stitches those together and summarizes the result. For very long inputs it repeats that reduce step until everything fits, so you can summarize a transcript or a paper that is many times longer than the model's own window.</p>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><h4>Load once</h4><p>The model downloads a single time (~270 MB) and is cached, so later visits start instantly and work offline.</p></div>
+      <div class="step"><div class="n">02</div><h4>Split &amp; summarize</h4><p>Long text is chunked into sections and each is summarized on your device, with live progress.</p></div>
+      <div class="step"><div class="n">03</div><h4>Reduce</h4><p>The section summaries are combined and summarized again into one clean result at your chosen length.</p></div>
+      <div class="step"><div class="n">04</div><h4>Trace it back</h4><p>Distill also highlights the sentences in your original text the summary drew from most.</p></div>
+    </div>
+    <h2>Why summarize in the browser?</h2>
+    <p>Most summarizers make you paste sensitive text &mdash; a private email thread, an internal doc, a medical note &mdash; into someone else's server. Distill never does that. The whole thing is one static web page and an open model, so your words stay on your machine, there are no usage limits, and it keeps working on a plane with the wifi off.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my text uploaded anywhere?</summary><p>No. The model runs locally in your browser with WebAssembly, and PDF text is extracted locally too. Nothing you paste or drop in is sent to a server.</p></details>
+    <details><summary>How long does it take?</summary><p>The first run has to download the model (about 270 MB), so give it a minute on a normal connection. After that it is cached. Summarizing itself runs on your CPU, so a short article is quick and a long PDF takes longer while each section is processed.</p></details>
+    <details><summary>How accurate is it?</summary><p>DistilBART is a solid, widely used summarization model, but it is a compact one running quantized for speed, so treat the summary as a fast first pass, not a substitute for reading anything important. It works best on well-structured prose like articles, transcripts, and reports.</p></details>
+    <details><summary>What can I summarize?</summary><p>Paste any text, or drop a .txt, .md, or .pdf file. It is built for articles, blog posts, meeting or video transcripts, release notes, and papers.</p></details>
+    <details><summary>Is it really free?</summary><p>Yes. No sign-up, no account, no limits. It is one of a series of free, privacy-first tools I build in public.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>I'm Harman, a senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>&copy; 2026 Harman Kamboj</span>
+  <span>Built in the browser &middot; <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- match the portfolio's saved theme (runs before paint) -->
+<script>
+(function(){
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<!-- ================= app ================= -->
+<script>
+(function(){
+  "use strict";
+  var STOP={the:1,a:1,an:1,and:1,or:1,but:1,of:1,to:1,in:1,on:1,at:1,for:1,with:1,by:1,from:1,as:1,is:1,are:1,was:1,were:1,be:1,been:1,being:1,it:1,its:1,this:1,that:1,these:1,those:1,he:1,she:1,they:1,them:1,his:1,her:1,their:1,we:1,you:1,i:1,not:1,no:1,so:1,if:1,then:1,than:1,which:1,who:1,what:1,when:1,where:1,how:1,will:1,would:1,can:1,could:1,has:1,have:1,had:1,do:1,does:1,did:1,about:1,into:1,over:1,also:1,more:1,most:1,such:1,up:1,out:1,one:1,all:1,any:1,there:1,here:1};
+
+  /* ---------- pure helpers (exposed for tests) ---------- */
+  function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function wordCount(t){ var m=String(t||"").trim().match(/\S+/g); return m?m.length:0; }
+  function fmtMB(bytes){ return (bytes/1048576).toFixed(0)+" MB"; }
+  function readingMins(words){ return Math.max(1,Math.round(words/200)); }
+  function compressionPct(inW,outW){ if(!inW) return 0; return Math.max(0,Math.round((1-outW/inW)*100)); }
+  // split into sentences, keeping trailing punctuation; robust to newlines & abbreviations-ish
+  function splitSentences(text){
+    var t=String(text||"").replace(/\r/g,"").replace(/\n+/g," ").trim();
+    if(!t) return [];
+    var parts=t.match(/[^.!?]+[.!?]+(?=\s|$)|[^.!?]+$/g)||[t];
+    var out=[]; for(var i=0;i<parts.length;i++){ var s=parts[i].trim(); if(s) out.push(s); }
+    return out;
+  }
+  // greedy chunk sentences into blocks under maxWords; hard-split any oversized sentence
+  function chunkBySentences(sentences,maxWords){
+    var chunks=[],cur=[],curW=0;
+    for(var i=0;i<sentences.length;i++){
+      var s=sentences[i], w=wordCount(s);
+      if(w>maxWords){
+        if(cur.length){chunks.push(cur.join(" "));cur=[];curW=0;}
+        var words=s.split(/\s+/);
+        for(var j=0;j<words.length;j+=maxWords){ chunks.push(words.slice(j,j+maxWords).join(" ")); }
+        continue;
+      }
+      if(curW+w>maxWords && cur.length){ chunks.push(cur.join(" ")); cur=[]; curW=0; }
+      cur.push(s); curW+=w;
+    }
+    if(cur.length) chunks.push(cur.join(" "));
+    return chunks;
+  }
+  function termFreq(s){
+    var m=String(s||"").toLowerCase().match(/[a-z0-9]{2,}/g)||[]; var f={};
+    for(var i=0;i<m.length;i++){ var w=m[i]; if(STOP[w]) continue; f[w]=(f[w]||0)+1; }
+    return f;
+  }
+  function cosine(a,b){
+    var dot=0,na=0,nb=0,k;
+    for(k in a){ na+=a[k]*a[k]; if(b[k]) dot+=a[k]*b[k]; }
+    for(k in b){ nb+=b[k]*b[k]; }
+    if(!na||!nb) return 0;
+    return dot/(Math.sqrt(na)*Math.sqrt(nb));
+  }
+  // pick indices of the source sentences most similar to the summary
+  function keySentenceIdx(sentences,summary,k){
+    var sf=termFreq(summary);
+    var scored=[];
+    for(var i=0;i<sentences.length;i++){ scored.push({i:i,s:cosine(termFreq(sentences[i]),sf)}); }
+    scored.sort(function(x,y){return y.s-x.s;});
+    var out=[];
+    for(var j=0;j<scored.length && out.length<k;j++){ if(scored[j].s>0.04) out.push(scored[j].i); }
+    out.sort(function(x,y){return x-y;});
+    return out;
+  }
+  var PURE={escapeHtml:escapeHtml,wordCount:wordCount,fmtMB:fmtMB,readingMins:readingMins,compressionPct:compressionPct,splitSentences:splitSentences,chunkBySentences:chunkBySentences,termFreq:termFreq,cosine:cosine,keySentenceIdx:keySentenceIdx};
+  try{ window.__distillPure=PURE; }catch(e){}
+  if(typeof module!=="undefined"&&module.exports){ module.exports=PURE; return; }
+
+  /* ---------- samples (original text) ---------- */
+  var SAMPLES={
+    press:"The printing press did not appear in a vacuum. For centuries, European books were copied by hand, one page at a time, by scribes working in monasteries and, later, in commercial workshops. A single Bible could take a skilled copyist well over a year to produce, and the result was so costly that only churches, universities, and the very wealthy could own more than a handful of volumes. Knowledge moved slowly because its container was scarce. Paper, imported techniques for making ink, and a growing merchant class that could read created the conditions for change, but the bottleneck remained the act of copying itself.\n\nJohannes Gutenberg, a goldsmith in the German city of Mainz, brought together several existing ideas into a working system in the middle of the fifteenth century. His key insight was movable type: individual letters cast in metal that could be arranged into a page, inked, pressed onto paper, and then broken apart and reused for the next page. He borrowed the screw press from wine and olive production, developed an oil-based ink that clung to metal type, and devised a metal alloy that cast cleanly and held up under repeated pressure. None of these pieces was entirely new, but the combination was transformative.\n\nThe effect on the speed and cost of producing books was dramatic. Where a scribe might finish a few pages a day, a print shop could produce hundreds of identical copies in the same time. Prices fell, and the number of books in circulation rose from thousands across the whole continent to millions within a few decades. Printers set up shop in city after city, and a new trade grew up around them: typesetters, correctors, illustrators, binders, and booksellers. Reading, once a rare skill, slowly became an ordinary one.\n\nThe consequences reached far beyond convenience. When ideas could be reproduced exactly and spread quickly, it became much harder for any single authority to control what people read. The Protestant Reformation spread in part because pamphlets and translated Bibles could be printed faster than they could be suppressed. Scientific findings could be published, checked, and built upon by people who never met. Standardized spelling and grammar emerged as printers made choices that then hardened into convention. In hindsight, the press looks less like a single invention and more like the beginning of a long shift in how societies store and share what they know.",
+    transcript:"Priya: Okay, thanks everyone for joining. The main thing today is deciding whether we push the mobile release this Friday or hold it a week. Marcus, can you start with where the build is?\n\nMarcus: Sure. The build is feature complete. Login, the new dashboard, and offline mode are all in. We closed out fourteen of the sixteen bugs from last sprint. The two that are left are the notification badge count being off by one on Android, and a rare crash when you rotate the screen during sync.\n\nPriya: Is the crash a blocker?\n\nMarcus: It is uncommon, but it is a crash, so I would call it a soft blocker. We can probably fix it in a day.\n\nDana: From the support side, I would really like offline mode out the door. We have had at least thirty tickets this month from users on the road losing their work. That is the headline feature for them.\n\nPriya: Understood. Raj, what does QA look like if we aim for Friday?\n\nRaj: Tight but doable if Marcus lands the crash fix by Wednesday morning. That gives us a full day of regression on real devices Thursday. The badge count I am comfortable shipping as a known issue and patching next week.\n\nPriya: Marketing, are we committed to any Friday announcement?\n\nDana: Nothing public. We told a few beta customers roughly this week, but there is no press or email scheduled, so slipping would not embarrass us.\n\nPriya: Alright. Here is what I am hearing. The release is close, offline mode is the reason customers want it, the crash is the one real risk, and we have no external commitment forcing Friday. So let us aim for Friday, but make the crash fix the priority. Marcus, you own that fix by Wednesday. Raj, you own regression Thursday. If the fix is not solid by Wednesday end of day, we slip to the following Tuesday with no drama. The badge count ships as a known issue either way. Does that work for everyone?\n\nMarcus: Works for me.\n\nRaj: Agreed.\n\nDana: Great, thank you.\n\nPriya: Perfect. I will write this up and send it out after the call."
+  };
+
+  /* ---------- length presets ---------- */
+  var PRESETS={
+    short:{max_new_tokens:70,min_new_tokens:24},
+    medium:{max_new_tokens:140,min_new_tokens:45},
+    long:{max_new_tokens:250,min_new_tokens:95}
+  };
+
+  /* ---------- dom ---------- */
+  var $=function(id){return document.getElementById(id);};
+  var drop=$("drop"),file=$("file"),src=$("src"),go=$("go"),countEl=$("count"),
+      lenSeg=$("len"),prog=$("prog"),fill=$("fill"),plbl=$("plbl"),
+      out=$("out"),statsEl=$("stats"),summaryText=$("summaryText"),sourceEl=$("source"),
+      copyBtn=$("copy"),dlBtn=$("dl"),warn=$("warn");
+  var length="medium", busy=false, lastSummary="", worker=null, workerReady=false, modelDownloaded=false;
+
+  /* capability guard */
+  if(typeof Worker==="undefined" || typeof WebAssembly==="undefined" || typeof Blob==="undefined" || !window.URL || !URL.createObjectURL){
+    warn.className="warn on";
+    warn.innerHTML="This browser can't run the on-device model (it needs WebAssembly, Web Workers and Blob URLs). Try a recent Chrome, Edge, Firefox or Safari on desktop.";
+    go.disabled=true;
+  }
+
+  function setCount(){ var w=wordCount(src.value); countEl.innerHTML="<b>"+w.toLocaleString()+"</b> word"+(w===1?"":"s"); go.disabled=busy||w<10; }
+  src.addEventListener("input",setCount);
+
+  /* length segmented control */
+  lenSeg.addEventListener("click",function(e){ var b=e.target.closest("button"); if(!b) return;
+    length=b.getAttribute("data-l");
+    lenSeg.querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b);}); });
+
+  /* samples */
+  document.querySelectorAll(".chip[data-sample]").forEach(function(c){
+    c.addEventListener("click",function(){ src.value=SAMPLES[c.getAttribute("data-sample")]||""; setCount(); src.focus(); });
+  });
+  $("clearBtn").addEventListener("click",function(){ src.value=""; setCount(); out.className="out"; });
+
+  /* drag & drop + file pick */
+  ["dragenter","dragover"].forEach(function(ev){ drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add("over");}); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove("over");}); });
+  drop.addEventListener("drop",function(e){ var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) readFile(f); });
+  drop.addEventListener("click",function(){ file.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();file.click();} });
+  file.addEventListener("change",function(){ if(file.files&&file.files[0]) readFile(file.files[0]); file.value=""; });
+
+  function showWarn(msg){ warn.className="warn on"; warn.textContent=msg; }
+  function clearWarn(){ warn.className="warn"; warn.textContent=""; }
+
+  function readFile(f){
+    clearWarn();
+    var name=(f.name||"").toLowerCase();
+    if(name.endsWith(".pdf")||f.type==="application/pdf"){ extractPdf(f); return; }
+    if(name.endsWith(".txt")||name.endsWith(".md")||name.endsWith(".markdown")||f.type==="text/plain"||f.type===""){
+      var r=new FileReader();
+      r.onload=function(){ src.value=String(r.result||""); setCount(); };
+      r.onerror=function(){ showWarn("Could not read that file."); };
+      r.readAsText(f); return;
+    }
+    showWarn("Unsupported file type. Drop a .txt, .md, or .pdf.");
+  }
+
+  async function extractPdf(f){
+    showWarn("Reading PDF locally…");
+    try{
+      var pdfjs=await import("https://cdn.jsdelivr.net/npm/pdfjs-dist@6.1.200/build/pdf.min.mjs");
+      pdfjs.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@6.1.200/build/pdf.worker.min.mjs";
+      var buf=await f.arrayBuffer();
+      var pdf=await pdfjs.getDocument({data:buf}).promise;
+      var all=[];
+      for(var p=1;p<=pdf.numPages;p++){
+        var page=await pdf.getPage(p);
+        var tc=await page.getTextContent();
+        var line=tc.items.map(function(it){return it.str;}).join(" ");
+        all.push(line);
+        showWarn("Reading PDF locally… page "+p+" of "+pdf.numPages);
+      }
+      src.value=all.join("\n\n").replace(/[ \t]{2,}/g," ").trim();
+      setCount();
+      if(wordCount(src.value)<5) showWarn("This PDF looks like scanned images with no selectable text, so there was nothing to summarize. Try a text-based PDF.");
+      else clearWarn();
+    }catch(err){ showWarn("Could not read that PDF: "+(err&&err.message?err.message:err)); }
+  }
+
+  /* ---------- worker ---------- */
+  var WORKER_SRC=[
+"import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1/dist/transformers.web.js';",
+"env.allowLocalModels=false; env.useBrowserCache=true;",
+"let summarizer=null;",
+"const MODEL='Xenova/distilbart-cnn-6-6';",
+"async function load(){",
+"  if(summarizer) return summarizer;",
+"  summarizer=await pipeline('summarization',MODEL,{dtype:'q8',device:'wasm',progress_callback:(p)=>{",
+"    if(p&&p.status==='progress'){ self.postMessage({type:'dl',file:p.file,loaded:p.loaded,total:p.total}); }",
+"    else if(p&&p.status==='ready'){ self.postMessage({type:'dlready'}); }",
+"  }});",
+"  return summarizer;",
+"}",
+"async function summ(text,opts){ const r=await summarizer(text,Object.assign({no_repeat_ngram_size:3,repetition_penalty:1.15,num_beams:1},opts)); return (r&&r[0]&&r[0].summary_text||'').trim(); }",
+"function wc(t){ const m=String(t||'').trim().match(/\\S+/g); return m?m.length:0; }",
+"function sentences(text){ const t=String(text||'').replace(/\\r/g,'').replace(/\\n{2,}/g,' \\u0001 ').replace(/\\n/g,' ').trim(); if(!t) return []; const parts=t.match(/[^.!?\\u0001]+[.!?]+(?=\\s|$)|[^.!?\\u0001]+(?=\\u0001|$)|[^.!?\\u0001]+$/g)||[t]; const out=[]; for(const p of parts){ const s=p.replace(/\\u0001/g,' ').trim(); if(s) out.push(s); } return out; }",
+"function chunk(sents,maxW){ const chunks=[]; let cur=[],curW=0; for(const s of sents){ const w=wc(s); if(w>maxW){ if(cur.length){chunks.push(cur.join(' '));cur=[];curW=0;} const ws=s.split(/\\s+/); for(let j=0;j<ws.length;j+=maxW){chunks.push(ws.slice(j,j+maxW).join(' '));} continue; } if(curW+w>maxW&&cur.length){chunks.push(cur.join(' '));cur=[];curW=0;} cur.push(s);curW+=w; } if(cur.length)chunks.push(cur.join(' ')); return chunks; }",
+"const MAXW=430, MAP={max_new_tokens:120,min_new_tokens:30};",
+"async function run(text,preset){",
+"  await load();",
+"  let chunks=chunk(sentences(text),MAXW);",
+"  if(chunks.length<=1){ self.postMessage({type:'stage',msg:'Summarizing\\u2026',pct:0.5}); const s=await summ(text,preset); return s; }",
+"  let round=0;",
+"  while(chunks.length>1){",
+"    round++;",
+"    const parts=[];",
+"    for(let i=0;i<chunks.length;i++){ self.postMessage({type:'stage',msg:(round>1?'Condensing':'Summarizing section')+' '+(i+1)+' of '+chunks.length,pct:i/chunks.length}); parts.push(await summ(chunks[i],MAP)); }",
+"    const combined=parts.join(' ');",
+"    if(wc(combined)<=MAXW){ self.postMessage({type:'stage',msg:'Writing the final summary\\u2026',pct:0.95}); return await summ(combined,preset); }",
+"    chunks=chunk(sentences(combined),MAXW);",
+"  }",
+"  self.postMessage({type:'stage',msg:'Writing the final summary\\u2026',pct:0.95}); return await summ(chunks[0],preset);",
+"}",
+"self.onmessage=async(e)=>{ const d=e.data; if(d.type==='warm'){ try{ await load(); self.postMessage({type:'ready'}); }catch(err){ self.postMessage({type:'error',error:String(err&&err.message||err)}); } return; }",
+"  if(d.type==='run'){ try{ const s=await run(d.text,d.preset); self.postMessage({type:'result',summary:s}); }catch(err){ self.postMessage({type:'error',error:String(err&&err.message||err)}); } } };"
+].join("\n");
+
+  function ensureWorker(){
+    if(worker) return worker;
+    var blob=new Blob([WORKER_SRC],{type:"text/javascript"});
+    worker=new Worker(URL.createObjectURL(blob),{type:"module"});
+    var files={};
+    worker.onmessage=function(e){
+      var d=e.data;
+      if(d.type==="dl"){
+        if(d.total){ files[d.file]={loaded:d.loaded,total:d.total}; }
+        var l=0,t=0; for(var k in files){ l+=files[k].loaded; t+=files[k].total; }
+        if(t){ var pc=Math.min(0.99,l/t); setProg(pc*0.9, "Downloading model · "+fmtMB(l)+" / "+fmtMB(t)+" (one time)"); }
+      } else if(d.type==="dlready"){ modelDownloaded=true; }
+      else if(d.type==="ready"){ workerReady=true; }
+      else if(d.type==="stage"){ setProg(0.05+0.9*(d.pct||0), d.msg); }
+      else if(d.type==="result"){ busy=false; workerReady=true; renderResult(d.summary); }
+      else if(d.type==="error"){ busy=false; setProg(0,""); prog.className="prog"; showWarn("The model hit an error: "+d.error+". Reload and try again, and check you're on a desktop browser with enough memory."); setCount(); }
+    };
+    return worker;
+  }
+
+  function setProg(frac,label){ prog.className="prog on"; fill.style.width=Math.round(Math.max(0,Math.min(1,frac))*100)+"%"; if(label!=null) plbl.innerHTML=label; }
+
+  /* ---------- run ---------- */
+  go.addEventListener("click",function(){
+    if(busy) return;
+    var text=src.value.trim();
+    if(wordCount(text)<10){ showWarn("Add a bit more text to summarize (at least a sentence or two)."); return; }
+    clearWarn();
+    busy=true; go.disabled=true; out.className="out"; lastSummary="";
+    setProg(0.02, workerReady||modelDownloaded ? "Warming up…" : "Loading the AI model (first run downloads ~270 MB, then it's cached)…");
+    ensureWorker().postMessage({type:"run",text:text,preset:PRESETS[length]});
+  });
+
+  function renderResult(summary){
+    prog.className="prog"; setCount();
+    if(!summary){ showWarn("The model returned an empty summary. Try a longer input or a different length."); return; }
+    lastSummary=summary;
+    var srcText=src.value.trim();
+    var inW=wordCount(srcText), outW=wordCount(summary);
+    summaryText.textContent=summary;
+    statsEl.innerHTML=
+      stat(inW.toLocaleString(),"words in")+
+      stat(outW.toLocaleString(),"words out")+
+      stat(compressionPct(inW,outW)+"%","shorter")+
+      stat("~"+readingMins(inW)+" min","reading time saved");
+    // key sentences
+    var sents=splitSentences(srcText);
+    var k=Math.max(3,Math.min(12,Math.round(sents.length*0.15)));
+    var idx=keySentenceIdx(sents,summary,k);
+    var mark={}; idx.forEach(function(i){mark[i]=1;});
+    var html=""; for(var i=0;i<sents.length;i++){ var e=escapeHtml(sents[i]); html+= mark[i] ? "<mark>"+e+"</mark> " : e+" "; }
+    sourceEl.innerHTML=html||"<span style='color:var(--faint)'>No source text.</span>";
+    out.className="out on";
+    out.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  function stat(v,k){ return '<div class="stat"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>'; }
+
+  copyBtn.addEventListener("click",function(){ if(!lastSummary) return;
+    try{ navigator.clipboard.writeText(lastSummary); copyBtn.textContent="Copied ✓"; setTimeout(function(){copyBtn.textContent="Copy summary";},1600); }catch(e){}
+  });
+  dlBtn.addEventListener("click",function(){ if(!lastSummary) return;
+    var blob=new Blob([lastSummary],{type:"text/plain"}); var u=URL.createObjectURL(blob);
+    var a=document.createElement("a"); a.href=u; a.download="summary.txt"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(u);},1000);
+  });
+
+  setCount();
+})();
+</script>
+
+<!-- shared site enhancer: command palette, theme, analytics beacon -->
+<script src="enhance.js" defer></script>
+<!-- Analytics: Cloudflare Web Analytics beacon (also injected by enhance.js; direct tag kept as fallback). -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+<!-- AdSense slot (left for later):
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
+-->
+<!-- Polar.sh support slot (left for later) -->
+</body>
+</html>

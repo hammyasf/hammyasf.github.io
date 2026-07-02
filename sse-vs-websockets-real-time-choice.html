@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SSE or WebSockets? How I actually pick for real-time features — Harman Kamboj</title>
+<meta name="description" content="SSE or WebSockets for real-time features: how I actually decide, from someone who shipped live price and trading screens. Direction of data beats raw power." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="SSE or WebSockets? How I actually pick for real-time features — Harman Kamboj" />
+<meta property="og:description" content="SSE or WebSockets for real-time features: how I actually decide, from someone who shipped live price and trading screens. Direction of data beats raw power." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/sse-vs-websockets-real-time-choice.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="SSE or WebSockets? How I actually pick for real-time features — Harman Kamboj" />
+<meta name="twitter:description" content="SSE or WebSockets for real-time features: how I actually decide, from someone who shipped live price and trading screens. Direction of data beats raw power." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/sse-vs-websockets-real-time-choice.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"SSE or WebSockets? How I actually pick for real-time features","description":"SSE or WebSockets for real-time features: how I actually decide, from someone who shipped live price and trading screens. Direction of data beats raw power.","datePublished":"2026-06-25","dateModified":"2026-06-25","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/sse-vs-websockets-real-time-choice.html","url":"https://hammyasf.github.io/sse-vs-websockets-real-time-choice.html","keywords":"SSE, WebSockets, Real-time, Full-stack","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .rel{margin:40px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin-bottom:6px;}
+  .rel a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">SSE or WebSockets? How I actually pick for real-time features</h1>
+   <div class="pmeta"><span>June 25, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>SSE</span><span>WebSockets</span><span>Real-time</span><span>Full-stack</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The question I get asked most about real-time features is SSE or WebSockets, usually phrased like there is a right answer printed somewhere and I am hiding it. There is not. I have shipped both on products where the live number on screen was tied to money someone was about to move, and the choice almost never came down to which protocol is more powerful. It came down to which way the data actually needed to flow, and how much operational pain I was willing to sign up for to keep that data honest.</p>
+<p>I spent a few years building live trading surfaces, a token swap and a price-heavy web platform while I was at <a href="shiba-inu.html">Shiba Inu</a>. Those screens updated constantly. Prices ticking, balances moving, fills landing. So I have made this decision more times than I can count, and I have made it badly enough on occasion to have some firm opinions about it now.</p>
+<h2>What the two things actually are</h2>
+<p>Strip away the comparison tables and the difference is small and very physical. A WebSocket is a single connection that stays open and carries messages both ways. The browser can push to the server and the server can push back over the same pipe, as fast as either side wants. Server-sent events are quieter. The browser opens an ordinary HTTP request, the server keeps it open, and streams text down it as things happen. Server to client, one direction. That is the whole feature.</p>
+<p>Almost everything people argue about comes out of that one fact. SSE rides on plain HTTP, so it inherits reconnection, proxy friendliness, and HTTP/2 multiplexing without you doing anything. WebSockets give you true two-way traffic and binary frames, but in exchange you are now running a separate protocol with its own connection lifecycle that you have to watch.</p>
+<h2>The real question is direction, not power</h2>
+<p>When someone asks me which is better, what they usually mean is which one is more capable. WebSockets, easily. They can do everything SSE does and a pile of things it cannot. That framing has led me astray more than once, because the most capable tool is not the same as the right one. The honest question is narrower. Does the client need to talk back over the live connection, right now, as part of the experience? If the answer is no, the extra capability is just weight I have to carry in production for no payoff.</p>
+<p>Most features I have built that felt real-time were actually one direction. A dashboard. A price feed. A status that updates when a job finishes. The user is watching, not conversing. The browser sends the occasional action through a normal request and that is plenty. I reached for WebSockets on a few of these out of habit early on, and all I bought myself was a heavier thing to keep alive.</p>
+<h2>When SSE is the right call</h2>
+<p>My default for a server-to-client stream is SSE, and it is a boring default on purpose. The reasons are practical rather than exciting.</p>
+<ul><li>Reconnection is handled for you. The browser's EventSource reconnects on its own when the stream drops, and with the <code>Last-Event-ID</code> header the server can pick up roughly where it left off. With WebSockets you write that backoff and resume logic yourself, every time.</li><li>It behaves on the network. Because it is just a long HTTP response, it sails through the proxies, load balancers, and corporate firewalls that sometimes get strange about a protocol upgrade. Fewer mystery support tickets from one user on a locked-down network.</li><li>It is cheap to reason about. There is no connection state machine to model on the client. You read messages off a stream and render them. For a price ticker or a notification feed, that simplicity is the whole win.</li></ul>
+<p>The price displays I have built fit this shape exactly. The server has new information, the screen needs to reflect it, and the user is not negotiating with the backend. SSE does that job and gets out of the way.</p>
+<h2>When WebSockets earn the extra cost</h2>
+<p>I do not want to talk anyone out of WebSockets, because there are features where nothing else fits and SSE would be a contortion. The signal I look for is genuine two-way conversation with low tolerance for delay. A multiplayer game loop. A live chat where typing indicators fly in both directions. A collaborative editor where every keystroke from one person has to reach the others in well under a second. The moment the client is an active participant pushing fast updates back, the single bidirectional pipe stops being overhead and starts being the thing that makes the product work.</p>
+<p>Binary is the other honest reason. If you are moving audio, packed game state, or anything you would rather not base64 into a text stream, SSE is the wrong floor to start from. WebSockets carry binary frames natively. I would not pick the protocol for that reason alone, but combined with two-way traffic it settles the matter.</p>
+<h2>Choosing between SSE or WebSockets without overthinking it</h2>
+<p>Here is the shortcut I actually use, and it has held up across every real-time feature I have shipped. If the data flows one way, from server to browser, I start with SSE and only leave it if I hit a wall. If the client has to send a steady stream back over the same connection, or I need binary, I go straight to WebSockets and accept the lifecycle work that comes with them. I stopped trying to pick the universally correct protocol years ago. There is only the right one for the direction this particular feature needs.</p>
+<p>One thing I do not do anymore is run both for no reason. I have seen codebases with a WebSocket for chat and a separate SSE stream for notifications and a third polling loop for presence, each added by a different person solving their own slice. Pick one transport per surface and let it carry as much as it reasonably can. The complexity you avoid is worth more than the theoretical efficiency you give up.</p>
+<h2>The part both of them get wrong</h2>
+<p>Whichever you choose, the protocol is the easy half. The hard half is what happens when the connection drops and comes back, because neither SSE nor a WebSocket will tell you that the data on screen went stale while you were gone. The stream resumes, fresh messages start flowing, and the gap in the middle is invisible unless you designed for it. I wrote a whole piece on that failure, <a href="real-time-ui-stale-data.html">why your real-time UI lies after a reconnect</a>, because it has burned me more than any protocol choice ever has. Get the transport right, then spend your real attention on being honest about freshness.</p>
+<p>So the next time the SSE or WebSockets question comes up, resist the pull toward the more powerful answer. Ask which way the data moves, pick the simpler tool that covers it, and put the time you saved into the resync logic that actually keeps users from trusting a number that is no longer true. If this is the kind of thing your product is wrestling with, I keep more notes in my <a href="full-stack.html">full-stack writing</a>, and the rest of the work is on the <a href="index.html">homepage</a>.</p>
+   <div class="rel">
+     <h2>Related in full-stack</h2>
+     <ul>
+       <li><a href="real-time-ui-stale-data.html">Why your real-time UI lies after a websocket reconnect</a></li>
+       <li><a href="nextjs-performance-real.html">Next.js performance, the parts that actually move the needle</a></li>
+       <li><a href="background-jobs-queues.html">Background jobs and queues without the foot-guns</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the live data layer or the hard part of your product is fighting you, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="idempotent-tool-calls-agents.html">Idempotent tool calls: do this before you let an agent retry →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>

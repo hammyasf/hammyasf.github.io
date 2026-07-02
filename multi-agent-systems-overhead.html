@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Most multi-agent systems do not need to be multi-agent — Harman Kamboj</title>
+<meta name="description" content="Most multi-agent systems add coordination overhead before they add value. When one agent is enough, when multiple agents pay off, and how I decide." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Most multi-agent systems do not need to be multi-agent — Harman Kamboj" />
+<meta property="og:description" content="Most multi-agent systems add coordination overhead before they add value. When one agent is enough, when multiple agents pay off, and how I decide." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/multi-agent-systems-overhead.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Most multi-agent systems do not need to be multi-agent — Harman Kamboj" />
+<meta name="twitter:description" content="Most multi-agent systems add coordination overhead before they add value. When one agent is enough, when multiple agents pay off, and how I decide." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/multi-agent-systems-overhead.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Most multi-agent systems do not need to be multi-agent","description":"Most multi-agent systems add coordination overhead before they add value. When one agent is enough, when multiple agents pay off, and how I decide.","datePublished":"2026-06-26","dateModified":"2026-06-26","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/multi-agent-systems-overhead.html","url":"https://hammyasf.github.io/multi-agent-systems-overhead.html","keywords":"Multi-agent systems, AI agents, Orchestration, LLMs","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .rel{margin:40px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin-bottom:6px;}
+  .rel a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Most multi-agent systems do not need to be multi-agent</h1>
+   <div class="pmeta"><span>June 26, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>AI</span><span>Agents</span><span>Orchestration</span><span>LLMs</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The fastest way to make an agent worse right now is to turn it into a crowd. I keep seeing teams reach for multi-agent systems the moment a single agent gets a little flaky, as if splitting the work across a planner, a researcher, a writer and a critic will make the flakiness go away. Usually it does the opposite. You took one thing that was hard to reason about and turned it into four things that have to agree with each other, and now you get to debug the conversation between them too.</p>
+<p>I want to be careful here, because I am not anti multi-agent. There are shapes of problem where it is the right call and I will get to those. But the default has drifted, and the default is wrong. Most of the systems I have looked at would be faster, cheaper and easier to fix as one well-built agent with good tools.</p>
+<h2>Where the multi-agent overhead actually comes from</h2>
+<p>The pitch for splitting agents up sounds clean. Give each one a narrow job, let them specialize, wire them together. The cost is hidden in the wiring. Every handoff is a place where one agent has to compress what it knows into a message, and the next agent has to reconstruct intent from that message. Meaning leaks at every boundary. The planner thinks it asked for one thing, the worker hears something slightly off, and nobody notices until the output is wrong in a way that is hard to trace back to a single step.</p>
+<p>Then there is the plain arithmetic of it. Each agent carries its own context, its own system prompt, its own copy of the relevant history. A four-agent pipeline can burn many times the tokens of a single agent doing the same job, and a lot of that spend goes into agents re-explaining the situation to each other rather than into the work. You are paying for the coordination, not the result.</p>
+<p>And the failures change character. With one agent, when something breaks, I have one trace to read. With several agents talking asynchronously, I get race conditions, an agent acting on a stale answer from a peer, and cascading mistakes where the first small error gets treated as fact by everyone downstream. The reports I have read on production agent frameworks put a large share of failures squarely on coordination rather than on any single agent being dumb. That matches what I see.</p>
+<h2>This is a distributed systems problem wearing a costume</h2>
+<p>None of this is new if you have built backends. The moment you have independent processes passing messages and acting on each other's output, you are in distributed systems territory, and all the old ghosts come with you. Ordering. Partial failure. One node trusting another node's bad data.</p>
+<p>I spent years building <a href="indexing-onchain-data-subsquid-the-graph.html">on-chain indexers</a> for a top-10 crypto and a DeFi exchange, which is about as unforgiving an async pipeline as you can pick. Events arrive out of order, a handler acts on what looks like settled state, and then the chain reorganizes under you and the thing you committed was never real. The bugs that cost me whole weekends were almost never inside one handler. They lived in the seams, in the assumptions one stage made about another. Multi-agent setups have the exact same seams, except the messages are fuzzy natural language instead of typed structs, so you cannot even rely on a schema to catch the mismatch.</p>
+<p>That is the part that should give people pause. We spent decades building tools to make distributed coordination safe, and a multi-agent design throws away the strongest one, which is a precise contract between components. An LLM message is not a contract. It is a suggestion the next agent is free to misread.</p>
+<h2>What one good agent buys you</h2>
+<p>A single agent with a solid set of tools keeps everything in one head. It can hold the goal, see the full history of what it tried, and notice when an earlier step contradicts a later one, because it is the same context the whole way through. When it fails, I read one timeline. When I want to make it better, I change one prompt and one tool layer.</p>
+<p>Most of what people want from multiple agents is really just structure, and you can get the structure without the crowd:</p>
+<ul><li><strong>Phases instead of personas.</strong> If you wanted a planning step and an execution step, run them as phases inside one agent, not as two agents arguing. Same reasoning thread, clear stages, no handoff to corrupt.</li><li><strong>Tools instead of teammates.</strong> A "research agent" is usually a search tool with a good wrapper. A "critic agent" is often a single verification call. Give the one agent sharper tools before you give it coworkers.</li><li><strong>Idempotent actions over retries.</strong> A lot of the chaos in agent pipelines is a retry firing twice and writing twice. I wrote about that in <a href="idempotent-tool-calls-agents.html">idempotent tool calls</a>, and it matters far more than how many agents you run.</li></ul>
+<h2>When multiple agents do earn it</h2>
+<p>There is a real version of this pattern and I do not want to wave it away. Multi-agent systems start to pay off when the subtasks are genuinely independent, so the agents are not constantly waiting on each other, and when the whole job no longer fits in one agent's working context without rotting. I have written before about how that rot sets in, in <a href="context-rot-long-running-agents.html">context rot</a>, and it is the honest reason to split: not to add intelligence, but to give each chunk a clean, short context of its own.</p>
+<p>So the test I use is simple. Can I cut this work into pieces that run in parallel and barely need to talk? If yes, separate agents can win, because the coordination is cheap and the isolation is worth real money. If the pieces have to keep checking in with each other to make any progress, that constant chatter is the tax, and one agent almost always comes out ahead. A clean fan-out of three independent jobs that report back once is great. A relay race where each runner has to brief the next one mid-stride is where I have watched these systems fall apart.</p>
+<h2>The boring conclusion</h2>
+<p>Start with one agent. Make it good. Give it real tools, a tight context, and actions that are safe to repeat. Reach for more agents only when you can point at work that is truly parallel and too big to hold in one place, and even then, keep the talking between them to a minimum. The number of agents is not a measure of how serious your system is. Most of the time, a smaller system that you can actually debug at 3am is the serious one.</p>
+<p>If you are building this kind of thing and weighing how far to split it, that tradeoff is most of what I write about in my <a href="ai.html">AI and agents notes</a>, and the rest of my work is on the <a href="index.html">homepage</a>.</p>
+   <div class="rel">
+     <h2>Related in AI and agents</h2>
+     <ul>
+       <li><a href="context-rot-long-running-agents.html">Context rot: why a bigger context window will not fix your agent</a></li>
+       <li><a href="idempotent-tool-calls-agents.html">Idempotent tool calls: do this before you let an agent retry</a></li>
+       <li><a href="mcp-server-context-window.html">Your MCP server is eating the context window</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If you are wrestling with agents that have to be reliable in production, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="sse-vs-websockets-real-time-choice.html">SSE or WebSockets? How I actually pick for real-time features →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>
