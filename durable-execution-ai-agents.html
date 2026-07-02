@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Durable execution: how I make an AI agent survive a crash mid-run — Harman Kamboj</title>
+<meta name="description" content="Durable execution for AI agents lets a run resume from the last checkpoint after a crash instead of redoing unsafe work. Here is how I actually set it up." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Durable execution: how I make an AI agent survive a crash mid-run — Harman Kamboj" />
+<meta property="og:description" content="Durable execution for AI agents lets a run resume from the last checkpoint after a crash instead of redoing unsafe work. Here is how I actually set it up." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/durable-execution-ai-agents.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Durable execution: how I make an AI agent survive a crash mid-run — Harman Kamboj" />
+<meta name="twitter:description" content="Durable execution for AI agents lets a run resume from the last checkpoint after a crash instead of redoing unsafe work. Here is how I actually set it up." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/durable-execution-ai-agents.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Durable execution: how I make an AI agent survive a crash mid-run","description":"Durable execution for AI agents lets a run resume from the last checkpoint after a crash instead of redoing unsafe work. Here is how I actually set it up.","datePublished":"2026-07-02","dateModified":"2026-07-02","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/durable-execution-ai-agents.html","url":"https://hammyasf.github.io/durable-execution-ai-agents.html","keywords":"AI, Agents, Durable Execution, Reliability, Backend","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  .rel{margin:40px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin-bottom:6px;}
+  .rel a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Durable execution: how I make an AI agent survive a crash mid-run</h1>
+   <div class="pmeta"><span>July 2, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>AI</span><span>Agents</span><span>Durable Execution</span><span>Backend</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The first time an agent of mine died halfway through a job, it had already done the expensive part. It had pulled the data, called two paid APIs, written half a plan, and then the process got restarted underneath it. When it came back up it had no idea any of that had happened. So it started over from the top, paid for the same two API calls a second time, and produced a slightly different plan than the one it had abandoned. That is the problem durable execution for AI agents is meant to solve, and I wish I had taken it seriously a run earlier than I did.</p>
+<p>Durable execution is a plain idea dressed in a fancy name. You save the agent's progress to real storage after every step that matters, so a crash resumes from the last saved point instead of from zero. Nothing about the model changes. The change is entirely in the plumbing around it, which is where I think most of the real work in agents lives anyway.</p>
+<h2>Why an agent is worse at this than a normal program</h2>
+<p>A regular backend job that dies can usually just be run again from the start with no harm done, especially if you did the boring reliability work up front. An agent is different in two annoying ways. Its steps cost money and take seconds each, so redoing them from scratch is slow and expensive in a way a quick database read never is. And its steps are not deterministic. Ask the model the same question after a restart and you might get a different answer, a different tool choice, a different branch. So a naive restart does not just repeat work. It can quietly produce a run that never would have existed if the crash had not happened.</p>
+<p>That second part is the one people miss. You are not only trying to avoid paying twice. You are trying to make sure the agent that comes back is continuing the same task, not starting a new one that happens to share a name.</p>
+<h2>Checkpoint the boundaries, not every token</h2>
+<p>The instinct is to save everything all the time, and that is a trap. You do not need to persist every thinking step. You need to persist at the boundaries where the agent touched the outside world or made a decision you cannot cheaply recompute. A tool call went out and came back. A step finished and produced a result the next step depends on. Those are your save points. Everything between them is cheap to redo, so let it be redone.</p>
+<p>In practice I keep a small record per run: an ordered log of completed steps, each with its inputs, its output, and a status. When a step is about to run, I check the log first. If it is already there with a result, I skip the call and hand back the stored answer. If it is not, I run it and append the result before moving on. On a crash, replaying the log rebuilds the agent's state up to the exact step it died on, and it carries on from there. This is the same journal-and-replay pattern that frameworks like LangGraph and Temporal have made their whole pitch, and it is the same shape as a write-ahead log in a database. None of it is new. It is just newly pointed at a language model.</p>
+<h2>The order that saves you: do the work, then record it, carefully</h2>
+<p>Here is the part that bites. If you record a step as done before the work actually commits, a crash in that gap leaves you thinking something happened when it did not. If you record it after, a crash in that gap leaves you thinking nothing happened when it did. There is no ordering that makes the window disappear. So you have to make replaying a step safe even when you are not sure it finished.</p>
+<p>That is why durable execution does not stand on its own. It leans hard on <a href="idempotent-tool-calls-agents.html">idempotent tool calls</a>, where running the same action twice lands in the same place as running it once. With that guarantee, the replay does not have to be perfect. It just has to be safe. This is exactly the reasoning I used building indexers, where <a href="handling-chain-reorgs-indexer.html">handling chain reorgs</a> means writing state that survives being rolled back and reapplied without corrupting anything. Agents restarting mid-run and blockchains rewriting recent history are, underneath, the same problem wearing different clothes.</p>
+<h2>Where I actually put the state</h2>
+<p>For anything I want to trust, the step log goes in Postgres, not in memory and not in a file on the box the agent happens to be running on. The whole point is to survive the process, so the state has to live somewhere the process does not. This is the same reflex I lean on with <a href="background-jobs-queues.html">background jobs and queues</a>: the moment work matters, its record belongs in durable storage with a clear status, not in a variable that vanishes when the worker dies. A row with a run id, a step index, inputs, output, and a status column is enough to resume almost anything, and it doubles as the audit trail you will want the first time someone asks what the agent actually did.</p>
+<h2>What I wire up before I trust a long run</h2>
+<p>The checklist is short. Every run gets an id and an ordered step log in Postgres. Every step checks the log before it acts and appends its result after. Every tool that changes state is idempotent so a replay cannot double-apply it. And resume is a first-class path I test on purpose, by killing the process mid-run and watching it come back, not something I hope works the one time production needs it.</p>
+<p>The unglamorous truth is that the agents people trust with long, real tasks are not the ones with the cleverest prompts. They are the ones that treat a crash as a normal event and pick up where they left off without redoing the parts that cost money. If you want to see how the rest of this fits together, I keep writing about it in my <a href="ai.html">AI notes</a>, and the rest of the work is on the <a href="index.html">homepage</a>.</p>
+   <div class="rel">
+     <h2>Related in AI</h2>
+     <ul>
+       <li><a href="idempotent-tool-calls-agents.html">Idempotent tool calls: do this before you let an agent retry</a></li>
+       <li><a href="context-rot-long-running-agents.html">Context rot: why a bigger context window will not fix your agent</a></li>
+       <li><a href="multi-agent-systems-overhead.html">Most multi-agent systems do not need to be multi-agent</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If your agent or the hard part of your product is fighting you, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="webgpu-slow-browser-game.html">WebGPU will not fix your slow browser game →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>
