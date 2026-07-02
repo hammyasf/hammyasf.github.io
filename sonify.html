@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sonify — Turn any image into sound (hide a picture inside audio)</title>
+<meta name="description" content="Turn any image or text into a sound whose spectrogram is your picture, right in your browser. Watch a live FFT redraw your image out of the noise. Nothing is uploaded." />
+<meta name="keywords" content="image to sound, sound of an image, spectrogram synthesizer, hide image in audio, image to spectrogram, aphex twin spectrogram, sonification, draw sound, image sonifier, picture to sound, metasynth online, coagula online, spectrogram art" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Sonify — Turn any image into sound" />
+<meta property="og:description" content="Build a sound whose spectrogram is your image, entirely in your browser. Watch a live FFT redraw your picture out of the noise. No upload." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/sonify.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Sonify — Turn any image into sound" />
+<meta name="twitter:description" content="Hide a picture inside a sound. Real additive synthesis in your browser, with a live spectrogram that proves your image is in the audio. No upload." />
+<link rel="canonical" href="https://hammyasf.github.io/sonify.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Sonify — Image to Sound","url":"https://hammyasf.github.io/sonify.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Turn any image or text into a sound whose spectrogram is the picture, using real additive synthesis in the browser. Includes a live FFT spectrogram and WAV download. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How can an image become a sound?","acceptedAnswer":{"@type":"Answer","text":"Sonify reads your image row by row. Each row becomes a pure tone at a fixed frequency, and each pixel's brightness sets how loud that tone is at that moment in time. Playing all the tones together produces a sound whose spectrogram, the picture of its frequencies over time, is your original image."}},{"@type":"Question","name":"Is my image or text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. All of the synthesis runs locally in your browser using the Web Audio API and an OfflineAudioContext. Your image never leaves your device, and the tool works offline once loaded."}},{"@type":"Question","name":"How do I see the hidden image again?","acceptedAnswer":{"@type":"Answer","text":"Download the WAV and open it in any spectrogram viewer such as Audacity or Spek, or just press play here: the panel on the right runs a live FFT on the generated sound and redraws your image out of what sounds like noise."}},{"@type":"Question","name":"What is a good use for this?","acceptedAnswer":{"@type":"Answer","text":"Spectrogram art and Easter eggs, like the face Aphex Twin hid in a track, secret messages friends can decode with a spectrogram app, unique sound-design textures, and teaching how the Fourier view of sound works."}},{"@type":"Question","name":"Why does the sound resemble noise?","acceptedAnswer":{"@type":"Answer","text":"Hundreds of tones playing at once average out to a dense, hiss-like texture to the ear. The structure only becomes visible when you look at the frequencies over time in a spectrogram."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .stage{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:18px;}
+  @media(max-width:760px){.stage{grid-template-columns:1fr;}}
+  .card{border:1px solid var(--line);border-radius:16px;background:rgba(var(--surfaceRGB),.4);padding:14px;}
+  .card h3{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:500;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+  .cvs{width:100%;display:block;border-radius:10px;background:#050b09;border:1px solid var(--line);aspect-ratio:2/1;}
+  .drop{padding:14px;text-align:center;border:2px dashed var(--line-2);border-radius:12px;transition:border-color .2s,background .2s;cursor:pointer;font-size:13.5px;color:var(--muted);}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .inputs{display:flex;flex-wrap:wrap;gap:10px;padding:0 18px 8px;align-items:center;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 14px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .field{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  input[type=text]{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:9px 12px;font-family:var(--body);font-size:14px;min-width:180px;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:8px 18px 18px;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
+  input[type=range]{accent-color:var(--accent);width:150px;}
+  input[type=number]{width:88px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:13px;}
+  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:52px;display:inline-block;}
+  .chk{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;}
+  .chk input{accent-color:var(--accent);width:16px;height:16px;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 18px 20px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .summary{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .summary b{color:var(--accent);font-weight:500;}
+  .drawtools{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--faint);}
+  .drawtools button{background:transparent;border:1px solid var(--line-2);color:var(--muted);border-radius:8px;padding:6px 10px;font-family:var(--mono);font-size:12px;cursor:pointer;}
+  .hidden{display:none!important;}
+  .note{font-family:var(--mono);font-size:11.5px;color:var(--faint);padding:0 18px 16px;}
+  #unsupported{margin:18px;padding:16px 18px;border:1px solid rgba(255,120,90,.4);background:rgba(255,120,90,.08);border-radius:14px;color:#ffd9cf;font-size:14px;}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:760px;}
+  .faq{border-top:1px solid var(--line);margin-top:14px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Sonify — turn an image into sound</h1>
+    <p class="sub">Build a sound whose spectrogram <em>is</em> your picture. Drop an image, type a word, or draw one, hit play, and watch a live FFT pull your image back out of the noise. Download the WAV and open it in any spectrogram viewer to find it hiding there.</p>
+    <span class="priv">&#128274; 100% private — your image never leaves your device</span>
+  </header>
+
+  <div class="panel">
+    <div id="unsupported" class="hidden">Your browser doesn&rsquo;t support the Web Audio API this tool needs. Try the latest Chrome, Edge, Firefox, or Safari on a desktop.</div>
+
+    <div class="inputs">
+      <div class="seg" id="mode">
+        <button data-m="upload" class="on">Upload</button>
+        <button data-m="text">Text</button>
+        <button data-m="draw">Draw</button>
+      </div>
+      <div class="field" id="f-upload">
+        <label class="drop" id="drop" for="file" style="min-width:220px;">Drop an image or click &mdash; PNG, JPG, WebP<input type="file" id="file" accept="image/*" hidden /></label>
+      </div>
+      <div class="field hidden" id="f-text">
+        <input type="text" id="txt" value="HELLO" maxlength="18" placeholder="Type a word" />
+        <button class="btn btn-out" id="txtgo" style="padding:9px 16px;">Use text</button>
+      </div>
+      <div class="field hidden" id="f-draw">
+        <span style="font-family:var(--mono);font-size:12.5px;color:var(--muted);">Draw below with your mouse, then Sonify.</span>
+      </div>
+      <button class="btn btn-out" id="example" style="padding:9px 16px;">Load example</button>
+    </div>
+
+    <div class="stage">
+      <div class="card">
+        <h3><span>Your image &mdash; what goes in</span><span id="drawpad-tools" class="hidden"></span></h3>
+        <canvas id="src" class="cvs" width="600" height="300" aria-label="Source image preview"></canvas>
+        <div class="drawtools hidden" id="drawtools">
+          <span>Brush</span>
+          <input type="range" id="brush" min="4" max="40" value="16" style="width:90px;" />
+          <button id="clearpad" type="button">Clear</button>
+          <span id="drawhint">tip: thick strokes read best</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3><span>Live spectrogram &mdash; what comes out</span><span id="specstate" style="color:var(--accent);">press play</span></h3>
+        <canvas id="spec" class="cvs" width="600" height="300" aria-label="Live spectrogram of the generated sound"></canvas>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="ctl"><label>Duration</label>
+        <div style="display:flex;align-items:center;gap:10px;"><input type="range" id="dur" min="1" max="10" step="0.5" value="4" /><span class="qval" id="durv">4.0 s</span></div>
+      </div>
+      <div class="ctl"><label>Detail (frequency lines)</label>
+        <div style="display:flex;align-items:center;gap:10px;"><input type="range" id="rows" min="60" max="320" step="10" value="200" /><span class="qval" id="rowsv">200</span></div>
+      </div>
+      <div class="ctl"><label>Low freq (Hz)</label>
+        <input type="number" id="fmin" value="200" min="40" max="4000" step="10" />
+      </div>
+      <div class="ctl"><label>High freq (Hz)</label>
+        <input type="number" id="fmax" value="8000" min="1000" max="20000" step="100" />
+      </div>
+      <div class="ctl"><label>Frequency scale</label>
+        <div class="seg" id="scale">
+          <button data-s="linear" class="on">Linear</button>
+          <button data-s="log">Log</button>
+        </div>
+      </div>
+      <div class="ctl"><label>Contrast</label>
+        <div style="display:flex;align-items:center;gap:10px;"><input type="range" id="gamma" min="0.4" max="3" step="0.1" value="1.4" /><span class="qval" id="gammav">1.4</span></div>
+      </div>
+      <div class="ctl"><label>&nbsp;</label>
+        <label class="chk"><input type="checkbox" id="invert" /> Invert (dark = loud)</label>
+      </div>
+    </div>
+
+    <div class="bar">
+      <button class="btn" id="gen">Sonify &#9835;</button>
+      <button class="btn" id="play" disabled>&#9654; Play</button>
+      <button class="btn btn-out" id="dl" disabled>Download WAV</button>
+      <span class="summary" id="sum">Ready.</span>
+    </div>
+    <div class="note">Tip: bold, high-contrast shapes and short words read clearest. Hundreds of tones stacked together sound like textured noise &mdash; the picture lives in the frequencies, not the melody.</div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>A spectrogram is a picture of a sound: time runs left to right, pitch runs bottom to top, and brightness is how loud each pitch is at each moment. Sonify runs that idea backwards. It takes your image and treats every row of pixels as one pitch, spread across the frequency range you choose. As it sweeps across the image column by column, the brightness of each pixel becomes the loudness of its tone right then. Stack a couple hundred of these tones and play them together, and the combined sound, viewed as a spectrogram, redraws your original picture.</p>
+    <h2>How does this run in a browser?</h2>
+    <p>The whole thing is additive synthesis built on the Web Audio API. Sonify creates one sine oscillator per frequency line and automates each one&rsquo;s volume over time from a row of your image, then renders the mix offline with an <span style="font-family:var(--mono);font-size:.85em;">OfflineAudioContext</span> so it computes faster than real time and never stutters. The result is normalized and encoded to a 16-bit WAV in JavaScript. When you press play, the sound is routed through an <span style="font-family:var(--mono);font-size:.85em;">AnalyserNode</span>, which runs a real FFT many times a second, and the frequencies it reports are painted onto the right-hand canvas &mdash; so you literally watch your image reappear out of the audio. Because every step happens on your machine, your image is never uploaded, and it all keeps working with your internet off.</p>
+    <h2>Good for</h2>
+    <p>Hiding a face or a message in a track the way Aphex Twin famously did, making a secret a friend can only read with a spectrogram app, sound-design textures with real spectral shape, and showing students what the Fourier view of sound actually looks like. Download the WAV and open it in Audacity (Spectrogram view), Spek, or Sonic Visualiser to reveal the picture anywhere.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my image uploaded anywhere?</summary><p>No. Every step, from reading pixels to rendering audio, runs locally in your browser with the Web Audio API. Your image never touches a server, which is why it is instant, private, and works offline.</p></details>
+    <details><summary>Why does the sound resemble noise?</summary><p>Hundreds of pure tones playing at once average out to a dense, hiss-like texture for your ears. The structure is still there &mdash; it only becomes visible when you look at the frequencies over time in a spectrogram.</p></details>
+    <details><summary>How do I reveal the image again?</summary><p>Press play here to watch the built-in live spectrogram redraw it, or download the WAV and open it in any spectrogram viewer such as Audacity, Spek, or Sonic Visualiser.</p></details>
+    <details><summary>Which settings read best?</summary><p>Short words and bold, high-contrast shapes. Linear scale keeps the picture&rsquo;s proportions faithful; log scale spreads out the low frequencies. A wider frequency range and more detail lines sharpen the image at the cost of a longer render.</p></details>
+    <details><summary>Is it really free?</summary><p>Yes, completely free, no sign-up, no watermark, and no limits.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build a tool like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- Polar.sh / AdSense slot (left intentionally empty for later) -->
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<script>
+/*__SFY_HELPERS_START__*/
+var SFY = {
+  clamp01: function(v){ return v<0?0:(v>1?1:v); },
+  clamp: function(v,lo,hi){ return v<lo?lo:(v>hi?hi:v); },
+  // idx 0 -> fMin, idx H-1 -> fMax
+  freqForRow: function(idx, H, fMin, fMax, scale){
+    if(H<=1) return fMin;
+    var t = idx/(H-1);
+    if(scale==="log"){
+      var lo = Math.max(1, fMin);
+      return lo * Math.pow(fMax/lo, t);
+    }
+    return fMin + (fMax-fMin)*t;
+  },
+  binForFreq: function(f, sr, fftSize){
+    var b = Math.round(f*fftSize/sr);
+    var maxBin = fftSize/2;
+    return b<0?0:(b>maxBin?maxBin:b);
+  },
+  ampFromBrightness: function(b, gamma, invert){
+    var v = invert ? (1-b) : b;
+    v = v<0?0:(v>1?1:v);
+    return Math.pow(v, gamma);
+  },
+  // contain-fit a src rect into a dst rect, centered
+  fitContain: function(sw, sh, dw, dh){
+    if(sw<=0||sh<=0) return {w:dw,h:dh,x:0,y:0};
+    var s = Math.min(dw/sw, dh/sh);
+    var w = Math.round(sw*s), h = Math.round(sh*s);
+    return { w:w, h:h, x:Math.round((dw-w)/2), y:Math.round((dh-h)/2) };
+  },
+  // peak scale factor to reach target peak (returns 1 if silent)
+  peakScale: function(arr, target){
+    var mx=0; for(var i=0;i<arr.length;i++){ var a=arr[i]<0?-arr[i]:arr[i]; if(a>mx)mx=a; }
+    return mx>1e-6 ? (target/mx) : 1;
+  },
+  // 16-bit PCM mono WAV. returns ArrayBuffer.
+  encodeWAV: function(samples, sr){
+    var n=samples.length, buf=new ArrayBuffer(44+n*2), v=new DataView(buf), o=0;
+    function s(str){ for(var i=0;i<str.length;i++) v.setUint8(o++, str.charCodeAt(i)); }
+    function u32(x){ v.setUint32(o, x, true); o+=4; }
+    function u16(x){ v.setUint16(o, x, true); o+=2; }
+    s("RIFF"); u32(36+n*2); s("WAVE"); s("fmt "); u32(16); u16(1); u16(1);
+    u32(sr); u32(sr*2); u16(2); u16(16); s("data"); u32(n*2);
+    for(var i=0;i<n;i++){ var x=samples[i]; x=x<-1?-1:(x>1?1:x); v.setInt16(o, x<0?x*0x8000:x*0x7FFF, true); o+=2; }
+    return buf;
+  }
+};
+if(typeof module!=="undefined" && module.exports){ module.exports = SFY; }
+/*__SFY_HELPERS_END__*/
+
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var AC = window.AudioContext || window.webkitAudioContext;
+  var OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  if(!AC || !OAC){ $("unsupported").classList.remove("hidden"); return; }
+
+  var SR = 44100, TARGET_PEAK = 0.92;
+  var srcCanvas = document.createElement("canvas"); // holds current source picture (grayscale-ready)
+  var srcHasImage = false;
+  var renderedBuffer = null, wavBlob = null, wavUrl = null;
+  var playCtx = null, playSource = null, raf = 0;
+
+  var els = {
+    src: $("src"), spec: $("spec"), sum: $("sum"), specstate: $("specstate"),
+    gen: $("gen"), play: $("play"), dl: $("dl"),
+    dur: $("dur"), durv: $("durv"), rows: $("rows"), rowsv: $("rowsv"),
+    fmin: $("fmin"), fmax: $("fmax"), gamma: $("gamma"), gammav: $("gammav"),
+    invert: $("invert"), file: $("file"), drop: $("drop"), txt: $("txt")
+  };
+  var srcCtx = els.src.getContext("2d");
+  var specCtx = els.spec.getContext("2d");
+  var scale = "linear";
+
+  function params(){
+    return {
+      dur: parseFloat(els.dur.value),
+      rows: parseInt(els.rows.value,10),
+      fmin: SFY.clamp(parseFloat(els.fmin.value)||200, 20, 20000),
+      fmax: SFY.clamp(parseFloat(els.fmax.value)||8000, 100, 20000),
+      gamma: parseFloat(els.gamma.value),
+      invert: els.invert.checked,
+      scale: scale
+    };
+  }
+
+  /* ---------- source handling ---------- */
+  function setSourceFromDrawable(img, w, h){
+    // draw into srcCanvas at a bounded resolution, contain on black
+    var MAX = 900;
+    var f = SFY.fitContain(w, h, MAX, Math.round(MAX/2));
+    srcCanvas.width = MAX; srcCanvas.height = Math.round(MAX/2);
+    var c = srcCanvas.getContext("2d");
+    c.fillStyle = "#000"; c.fillRect(0,0,srcCanvas.width,srcCanvas.height);
+    c.imageSmoothingEnabled = true;
+    c.drawImage(img, f.x, f.y, f.w, f.h);
+    srcHasImage = true;
+    drawSourcePreview();
+    els.sum.textContent = "Image loaded. Press Sonify.";
+  }
+
+  function drawSourcePreview(){
+    // render srcCanvas into the visible preview (grayscale, gamma/invert applied) so it matches what will be encoded
+    var p = params();
+    var W = els.src.width, H = els.src.height;
+    srcCtx.fillStyle = "#050b09"; srcCtx.fillRect(0,0,W,H);
+    if(!srcHasImage) return;
+    // downscale source to preview then apply gamma/invert grayscale
+    var tmp = document.createElement("canvas"); tmp.width=W; tmp.height=H;
+    var tc = tmp.getContext("2d");
+    tc.fillStyle="#000"; tc.fillRect(0,0,W,H);
+    tc.drawImage(srcCanvas, 0,0, W, H);
+    var d = tc.getImageData(0,0,W,H), a=d.data;
+    for(var i=0;i<a.length;i+=4){
+      var b = (0.299*a[i]+0.587*a[i+1]+0.114*a[i+2])/255;
+      var amp = SFY.ampFromBrightness(b, p.gamma, p.invert);
+      var g = Math.round(amp*255);
+      // tint toward accent for on-brand look
+      a[i]=Math.round(g*0.45); a[i+1]=g; a[i+2]=Math.round(g*0.80); a[i+3]=255;
+    }
+    srcCtx.putImageData(d,0,0);
+  }
+
+  function textToSource(text){
+    text = (text||"").trim() || "HELLO";
+    var w=900, h=450;
+    var cv=document.createElement("canvas"); cv.width=w; cv.height=h;
+    var c=cv.getContext("2d");
+    c.fillStyle="#000"; c.fillRect(0,0,w,h);
+    c.fillStyle="#fff"; c.textAlign="center"; c.textBaseline="middle";
+    var size=200;
+    c.font="800 "+size+"px "+"'Clash Display', Arial, sans-serif";
+    while(size>28 && c.measureText(text).width > w*0.9){ size-=8; c.font="800 "+size+"px 'Clash Display', Arial, sans-serif"; }
+    c.fillText(text, w/2, h/2);
+    setSourceFromDrawable(cv, w, h);
+  }
+
+  function loadImageFile(file){
+    if(!file || file.type.indexOf("image/")!==0){ els.sum.textContent="Please choose an image file."; return; }
+    var url=URL.createObjectURL(file), img=new Image();
+    img.onload=function(){ setSourceFromDrawable(img, img.naturalWidth, img.naturalHeight); URL.revokeObjectURL(url); };
+    img.onerror=function(){ els.sum.textContent="Could not read that image."; URL.revokeObjectURL(url); };
+    img.src=url;
+  }
+
+  /* ---------- input mode switching ---------- */
+  var drawPad=null;
+  document.querySelectorAll("#mode button").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll("#mode button").forEach(function(x){x.classList.remove("on");});
+      b.classList.add("on");
+      var m=b.getAttribute("data-m");
+      $("f-upload").classList.toggle("hidden", m!=="upload");
+      $("f-text").classList.toggle("hidden", m!=="text");
+      $("f-draw").classList.toggle("hidden", m!=="draw");
+      $("drawtools").classList.toggle("hidden", m!=="draw");
+      if(m==="draw") enableDrawPad();
+      else if(m==="text") textToSource(els.txt.value);
+    });
+  });
+
+  document.querySelectorAll("#scale button").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll("#scale button").forEach(function(x){x.classList.remove("on");});
+      b.classList.add("on"); scale=b.getAttribute("data-s");
+    });
+  });
+
+  /* ---------- draw pad ---------- */
+  function enableDrawPad(){
+    // repurpose the source preview canvas as a paintable pad
+    if(drawPad) return;
+    drawPad = { on:false, last:null };
+    srcCanvas.width=900; srcCanvas.height=450;
+    var c=srcCanvas.getContext("2d"); c.fillStyle="#000"; c.fillRect(0,0,900,450);
+    srcHasImage=true; drawSourcePreview();
+    els.sum.textContent="Draw on the left canvas, then press Sonify.";
+    function pos(e){
+      var r=els.src.getBoundingClientRect();
+      var cx=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+      var cy=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
+      return { x: cx/r.width*srcCanvas.width, y: cy/r.height*srcCanvas.height };
+    }
+    function stroke(a,b){
+      var c=srcCanvas.getContext("2d");
+      c.strokeStyle="#fff"; c.lineCap="round"; c.lineJoin="round";
+      c.lineWidth = parseInt($("brush").value,10)*(srcCanvas.width/els.src.width);
+      c.beginPath(); c.moveTo(a.x,a.y); c.lineTo(b.x,b.y); c.stroke();
+      drawSourcePreview();
+    }
+    function down(e){ e.preventDefault(); drawPad.on=true; drawPad.last=pos(e); stroke(drawPad.last,drawPad.last); }
+    function move(e){ if(!drawPad.on) return; e.preventDefault(); var p=pos(e); stroke(drawPad.last,p); drawPad.last=p; }
+    function up(){ drawPad.on=false; }
+    els.src.addEventListener("mousedown",down); window.addEventListener("mousemove",move); window.addEventListener("mouseup",up);
+    els.src.addEventListener("touchstart",down,{passive:false}); els.src.addEventListener("touchmove",move,{passive:false}); window.addEventListener("touchend",up);
+    $("clearpad").addEventListener("click",function(){ var c=srcCanvas.getContext("2d"); c.fillStyle="#000"; c.fillRect(0,0,srcCanvas.width,srcCanvas.height); drawSourcePreview(); });
+  }
+
+  /* ---------- build amplitude grid from source ---------- */
+  function buildGrid(p){
+    var W = SFY.clamp(Math.round(p.dur*160), 200, 900);
+    var H = p.rows;
+    var cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+    var c=cv.getContext("2d");
+    c.fillStyle="#000"; c.fillRect(0,0,W,H);
+    c.imageSmoothingEnabled=true;
+    c.drawImage(srcCanvas, 0,0, W, H);
+    var data=c.getImageData(0,0,W,H).data;
+    var amp=new Float32Array(W*H);
+    for(var y=0;y<H;y++){
+      for(var x=0;x<W;x++){
+        var i=(y*W+x)*4;
+        var b=(0.299*data[i]+0.587*data[i+1]+0.114*data[i+2])/255;
+        amp[y*W+x]=SFY.ampFromBrightness(b, p.gamma, p.invert);
+      }
+    }
+    return { W:W, H:H, amp:amp };
+  }
+
+  /* ---------- render audio offline ---------- */
+  function render(){
+    if(!srcHasImage){ els.sum.textContent="Add an image, text, or drawing first."; return; }
+    stopPlayback();
+    var p=params();
+    if(p.fmax<=p.fmin+50){ els.sum.textContent="High frequency must be above low frequency."; return; }
+    els.gen.disabled=true; els.sum.textContent="Rendering "+p.rows+" tones…";
+    // let the UI paint the disabled state before the heavy synchronous graph build
+    setTimeout(function(){
+      try{
+        var g=buildGrid(p);
+        var len=Math.ceil(SR*p.dur);
+        var octx=new OAC(1, len, SR);
+        var master=octx.createGain(); master.gain.value=1; master.connect(octx.destination);
+        var nyq=SR/2, made=0;
+        for(var r=0;r<g.H;r++){
+          // row r (0 = top of image) -> high frequency
+          var f=SFY.freqForRow(g.H-1-r, g.H, p.fmin, p.fmax, p.scale);
+          if(f<=0 || f>=nyq) continue;
+          // amplitude curve across time for this row
+          var curve=new Float32Array(g.W), rowMax=0;
+          for(var x=0;x<g.W;x++){ var a=g.amp[r*g.W+x]; curve[x]=a; if(a>rowMax)rowMax=a; }
+          if(rowMax<0.01) continue; // skip effectively-silent rows
+          var osc=octx.createOscillator(); osc.type="sine"; osc.frequency.value=f;
+          var gain=octx.createGain(); gain.gain.value=0;
+          try{ gain.gain.setValueCurveAtTime(curve, 0, p.dur); }
+          catch(e){ gain.gain.value=rowMax; }
+          osc.connect(gain); gain.connect(master);
+          osc.start(0); osc.stop(p.dur); made++;
+        }
+        if(made===0){ els.sum.textContent="That image is all one tone. Try more contrast or Invert."; els.gen.disabled=false; return; }
+        octx.startRendering().then(function(buf){
+          var ch=buf.getChannelData(0);
+          var sc=SFY.peakScale(ch, TARGET_PEAK);
+          if(sc!==1){ for(var i=0;i<ch.length;i++) ch[i]*=sc; }
+          renderedBuffer=buf;
+          // encode WAV
+          var ab=SFY.encodeWAV(ch, SR);
+          if(wavUrl) URL.revokeObjectURL(wavUrl);
+          wavBlob=new Blob([ab], {type:"audio/wav"}); wavUrl=URL.createObjectURL(wavBlob);
+          els.play.disabled=false; els.dl.disabled=false; els.gen.disabled=false;
+          els.sum.innerHTML="Done &mdash; <b>"+made+"</b> tones, <b>"+p.dur.toFixed(1)+"s</b>, "+(wavBlob.size/1024).toFixed(0)+" KB. Press Play.";
+          clearSpec();
+        }).catch(function(err){
+          els.gen.disabled=false; els.sum.textContent="Render failed: "+(err&&err.message?err.message:err);
+        });
+      }catch(err){
+        els.gen.disabled=false; els.sum.textContent="Render error: "+(err&&err.message?err.message:err);
+      }
+    }, 30);
+  }
+
+  /* ---------- playback + live spectrogram ---------- */
+  var accentRGB=[43,227,176];
+  function readAccent(){
+    try{ var v=getComputedStyle(document.documentElement).getPropertyValue("--accentRGB").trim();
+      if(v){ var parts=v.split(",").map(function(n){return parseInt(n,10);}); if(parts.length===3&&!isNaN(parts[0])) accentRGB=parts; } }catch(e){}
+  }
+  function colorFor(v){
+    // v in 0..1 -> dark -> accent -> white
+    var ar=accentRGB[0],ag=accentRGB[1],ab=accentRGB[2];
+    var r,g,b;
+    if(v<0.6){ var t=v/0.6; r=6+(ar-6)*t; g=14+(ag-14)*t; b=12+(ab-12)*t; }
+    else{ var u=(v-0.6)/0.4; r=ar+(255-ar)*u; g=ag+(255-ag)*u; b=ab+(255-ab)*u; }
+    return "rgb("+(r|0)+","+(g|0)+","+(b|0)+")";
+  }
+  function clearSpec(){ specCtx.fillStyle="#050b09"; specCtx.fillRect(0,0,els.spec.width,els.spec.height); els.specstate.textContent="press play"; }
+
+  function stopPlayback(){
+    if(raf){ cancelAnimationFrame(raf); raf=0; }
+    if(playSource){ try{playSource.onended=null; playSource.stop();}catch(e){} playSource=null; }
+    if(playCtx){ try{playCtx.close();}catch(e){} playCtx=null; }
+    els.play.innerHTML="&#9654; Play";
+  }
+
+  function play(){
+    if(!renderedBuffer) return;
+    if(playSource){ stopPlayback(); return; }
+    readAccent();
+    var p=params();
+    playCtx=new AC();
+    var src=playCtx.createBufferSource(); src.buffer=renderedBuffer;
+    var an=playCtx.createAnalyser(); an.fftSize=2048; an.smoothingTimeConstant=0.0;
+    src.connect(an); an.connect(playCtx.destination);
+    var bins=an.frequencyBinCount, freqData=new Uint8Array(bins);
+    var W=els.spec.width, H=els.spec.height, fftSize=an.fftSize, sr=playCtx.sampleRate;
+    // precompute display-row -> bin
+    var rowBin=new Int32Array(H);
+    for(var y=0;y<H;y++){ var idx=H-1-y; var f=SFY.freqForRow(idx,H,p.fmin,p.fmax,p.scale); rowBin[y]=SFY.binForFreq(f,sr,fftSize); }
+    clearSpec();
+    var start=playCtx.currentTime, lastX=-1;
+    els.play.innerHTML="&#10073;&#10073; Stop"; els.specstate.textContent="listening…";
+    src.onended=function(){ els.specstate.textContent="done — your image, out of the sound"; stopPlayback(); };
+    src.start();
+    function frame(){
+      an.getByteFrequencyData(freqData);
+      var t=(playCtx.currentTime-start)/p.dur; if(t>1)t=1;
+      var x=Math.floor(t*(W-1));
+      for(var xx=(lastX<0?x:lastX+1); xx<=x; xx++){
+        for(var y=0;y<H;y++){
+          var val=freqData[rowBin[y]]/255;
+          specCtx.fillStyle=colorFor(val);
+          specCtx.fillRect(xx,y,1,1);
+        }
+      }
+      lastX=x;
+      if(playSource) raf=requestAnimationFrame(frame);
+    }
+    playSource=src;
+    raf=requestAnimationFrame(frame);
+  }
+
+  /* ---------- wire controls ---------- */
+  els.dur.addEventListener("input",function(){ els.durv.textContent=parseFloat(els.dur.value).toFixed(1)+" s"; });
+  els.rows.addEventListener("input",function(){ els.rowsv.textContent=els.rows.value; });
+  els.gamma.addEventListener("input",function(){ els.gammav.textContent=parseFloat(els.gamma.value).toFixed(1); drawSourcePreview(); });
+  els.invert.addEventListener("change",drawSourcePreview);
+  els.gen.addEventListener("click",render);
+  els.play.addEventListener("click",play);
+  els.dl.addEventListener("click",function(){ if(!wavUrl) return; var a=document.createElement("a"); a.href=wavUrl; a.download="sonify.wav"; document.body.appendChild(a); a.click(); a.remove(); });
+
+  els.drop.addEventListener("click",function(){ els.file.click(); });
+  ["dragover","dragenter"].forEach(function(ev){ els.drop.addEventListener(ev,function(e){ e.preventDefault(); els.drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ els.drop.addEventListener(ev,function(e){ e.preventDefault(); els.drop.classList.remove("over"); }); });
+  els.drop.addEventListener("drop",function(e){ if(e.dataTransfer.files[0]) loadImageFile(e.dataTransfer.files[0]); });
+  els.file.addEventListener("change",function(){ if(els.file.files[0]) loadImageFile(els.file.files[0]); });
+  $("txtgo").addEventListener("click",function(){ textToSource(els.txt.value); });
+  els.txt.addEventListener("keydown",function(e){ if(e.key==="Enter") textToSource(els.txt.value); });
+  $("example").addEventListener("click",function(){
+    // switch to text mode showing the example word
+    document.querySelectorAll("#mode button").forEach(function(x){x.classList.toggle("on", x.getAttribute("data-m")==="text");});
+    $("f-upload").classList.add("hidden"); $("f-text").classList.remove("hidden"); $("f-draw").classList.add("hidden"); $("drawtools").classList.add("hidden");
+    els.txt.value="HELLO"; textToSource("HELLO");
+    setTimeout(render, 40);
+  });
+
+  // first-run: a ready-to-play sample so the magic is one press away
+  textToSource("HELLO");
+  setTimeout(render, 120);
+})();
+</script>
+<script src="enhance.js" defer></script>
+</body>
+</html>

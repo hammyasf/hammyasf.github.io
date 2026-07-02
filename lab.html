@@ -67,6 +67,20 @@
   </div></header>
   <section><div class="wrap">
     <div class="grid">
+      <a class="tool" href="sonify.html">
+        <div class="cat">Audio · Image to sound</div>
+        <h2>Sonify</h2>
+        <p>Turn any image, word, or doodle into a sound whose spectrogram <em>is</em> that picture &mdash; the trick Aphex Twin used to hide a face in a track. Sonify reads your image row by row, turns each row into a pure tone and each pixel&rsquo;s brightness into how loud that tone is, then renders the whole stack offline with the browser&rsquo;s own Web Audio engine. Press play and a live FFT redraws your image out of what sounds like noise; download the WAV and open it in any spectrogram viewer to find it hiding there. Nothing is uploaded.</p>
+        <div class="tags"><span>Web Audio</span><span>Additive synthesis</span><span>Live FFT</span><span>No upload</span></div>
+        <span class="use">Use tool &rarr;</span>
+      </a>
+      <a class="tool" href="distill.html">
+        <div class="cat">On-device AI · Summarization</div>
+        <h2>Distill</h2>
+        <p>Summarize an article, a transcript, or a whole PDF &mdash; any length &mdash; with a real AI model that runs entirely in your browser. A summarization model only reads about a thousand words at a time, so Distill splits long text into sections, summarizes each one, then summarizes those together, letting it handle documents far longer than the model&rsquo;s own limit. It also highlights the sentences your summary drew from most. Your text is never uploaded, and once the model caches it works offline.</p>
+        <div class="tags"><span>Transformers.js</span><span>DistilBART</span><span>Map-reduce</span><span>No upload</span></div>
+        <span class="use">Use tool &rarr;</span>
+      </a>
       <a class="tool" href="framewise.html">
         <div class="cat">Media · Frame-accurate video</div>
         <h2>Framewise</h2>
