@@ -521,6 +521,7 @@ if(typeof module!=="undefined" && module.exports){ module.exports = SFY; }
     readAccent();
     var p=params();
     playCtx=new AC();
+    if(playCtx.state==="suspended"){ try{ playCtx.resume(); }catch(e){} }
     var src=playCtx.createBufferSource(); src.buffer=renderedBuffer;
     var an=playCtx.createAnalyser(); an.fftSize=2048; an.smoothingTimeConstant=0.0;
     src.connect(an); an.connect(playCtx.destination);
