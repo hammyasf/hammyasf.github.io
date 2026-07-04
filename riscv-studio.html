@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RISC-V Studio — a real RISC-V CPU and assembler in your browser</title>
+<meta name="description" content="Write RISC-V assembly, assemble it, and single-step a real RV32I processor right in your browser. Watch all 32 registers, memory, and the machine-code encoding update live. No install, nothing uploaded." />
+<meta name="keywords" content="risc-v emulator online, risc-v simulator, rv32i emulator, risc-v assembler, learn risc-v, risc-v ide, assembly emulator browser, risc-v playground, online cpu simulator, risc-v online, riscv interpreter, single step assembly" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="RISC-V Studio — a real RISC-V CPU in your browser" />
+<meta property="og:description" content="Write RISC-V assembly and single-step a real RV32I core in your browser. See every register, memory byte, and the machine-code encoding, live." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/riscv-studio.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="RISC-V Studio — a real RISC-V CPU in your browser" />
+<meta name="twitter:description" content="Assemble and single-step real RV32I assembly in your browser. Live registers, memory, and machine-code decode." />
+<link rel="canonical" href="https://hammyasf.github.io/riscv-studio.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"RISC-V Studio","url":"https://hammyasf.github.io/riscv-studio.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A from-scratch RV32I assembler and CPU simulator that runs entirely in the browser. Write RISC-V assembly, assemble it to real machine code, and single-step the processor while watching registers, memory and the instruction encoding.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does this run on a server?","acceptedAnswer":{"@type":"Answer","text":"No. The assembler and the RV32I CPU are written in JavaScript and run entirely in your browser tab. Nothing you type is uploaded, and it works offline once the page loads."}},{"@type":"Question","name":"Which RISC-V instructions are supported?","acceptedAnswer":{"@type":"Answer","text":"The full RV32I base integer instruction set: arithmetic and logic (add, sub, and, or, xor, shifts, slt), immediates, loads and stores of bytes/halfwords/words, branches, jal and jalr, lui and auipc, and ecall. Common pseudo-instructions like li, la, mv, j, call, ret, nop and the branch-with-zero forms are expanded automatically."}},{"@type":"Question","name":"Is it a real emulator or just a script?","acceptedAnswer":{"@type":"Answer","text":"It is a real fetch-decode-execute cycle. Your assembly is turned into actual 32-bit RV32I machine code that is placed in a simulated memory, and the CPU fetches each word from memory, decodes the opcode and register fields, and executes it. The tool shows you the exact binary encoding of each instruction."}},{"@type":"Question","name":"How do the system calls work?","acceptedAnswer":{"@type":"Answer","text":"ecall uses the RARS/venus convention: put a service number in a7 and arguments in a0. Service 1 prints an integer, 4 prints a string, 11 prints a character, 34 prints hex, and 10 or 93 exits the program."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, no limits. It is one of a series of tools I build and share."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);
+    --c-op:#ff6a3d;--c-rd:#2be3b0;--c-f3:#b07cff;--c-rs1:#3da5ff;--c-rs2:#ffcf4d;--c-f7:#ff7fb0;--c-imm:#57d9c9;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1160px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,50px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:720px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  /* IDE layout */
+  .ide{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;margin:24px 0;}
+  @media(max-width:900px){.ide{grid-template-columns:1fr;}}
+  .panel{border:1px solid var(--line);border-radius:16px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .ph{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+  .ph .r{display:flex;gap:8px;align-items:center;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);}
+  select,.mini{background:rgba(var(--surfaceRGB),.7);border:1px solid var(--line-2);color:var(--ink);border-radius:9px;padding:8px 10px;font-family:var(--mono);font-size:12.5px;cursor:pointer;}
+  .btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 15px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .12s,opacity .12s;}
+  .btn:hover{transform:translateY(-1px);}
+  .btn[disabled]{opacity:.35;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .btn-out:hover{border-color:var(--accent);}
+  .grow{flex:1;}
+  .speedwrap{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--faint);}
+  input[type=range]{accent-color:var(--accent);width:96px;}
+
+  .editor-wrap{display:flex;height:432px;background:rgba(4,10,8,.5);}
+  #gutter{width:46px;flex:none;overflow:hidden;font-family:var(--mono);font-size:13px;line-height:21px;padding:14px 8px 14px 0;text-align:right;color:var(--faint);white-space:pre;user-select:none;background:rgba(0,0,0,.18);}
+  .code-scroll{position:relative;flex:1;overflow:hidden;}
+  #hl{position:absolute;left:0;right:0;height:21px;top:14px;background:rgba(var(--accentRGB),.16);border-left:3px solid var(--accent);display:none;pointer-events:none;z-index:0;}
+  #code{position:relative;z-index:1;width:100%;height:100%;background:transparent;color:var(--ink);font-family:var(--mono);font-size:13px;line-height:21px;padding:14px 14px 14px 12px;resize:none;border:none;outline:none;white-space:pre;overflow:auto;caret-color:var(--accent);}
+  .status{padding:10px 14px;font-family:var(--mono);font-size:12px;border-top:1px solid var(--line);color:var(--muted);min-height:38px;}
+  .status.err{color:#ff7d63;}
+  .status.ok{color:var(--accent);}
+
+  /* registers */
+  .regwrap{padding:10px;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+  @media(max-width:520px){.regwrap{grid-template-columns:repeat(2,1fr);}}
+  .reg{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:rgba(0,0,0,.14);transition:background .3s,border-color .3s;}
+  .reg .rn{font-family:var(--mono);font-size:10px;color:var(--faint);display:flex;justify-content:space-between;}
+  .reg .rn b{color:var(--muted);font-weight:500;}
+  .reg .rv{font-family:var(--mono);font-size:12.5px;color:var(--ink);margin-top:2px;overflow:hidden;text-overflow:ellipsis;}
+  .reg.hot{background:rgba(var(--accentRGB),.16);border-color:var(--accent);}
+  .reg.zero .rv{color:var(--faint);}
+  .pcbar{display:flex;gap:16px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .pcbar b{color:var(--accent);}
+
+  /* current instruction decode */
+  .cur{padding:12px 14px;font-family:var(--mono);font-size:12.5px;}
+  .cur .line1{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;}
+  .cur .mnem{color:var(--accent);font-size:15px;font-weight:500;}
+  .cur .addr{color:var(--faint);}
+  .bits{display:flex;flex-wrap:wrap;gap:3px;margin:12px 0 4px;}
+  .bf{border-radius:6px;padding:4px 6px 3px;text-align:center;min-width:26px;}
+  .bf .bb{font-size:11px;letter-spacing:.5px;color:#04100c;font-weight:600;}
+  .bf .bl{font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;color:rgba(4,16,12,.72);margin-top:1px;}
+  .decode-note{color:var(--muted);margin-top:8px;}
+  .decode-note em{color:var(--ink);font-style:normal;}
+
+  /* console + memory */
+  .console{height:150px;overflow:auto;padding:12px 14px;font-family:var(--mono);font-size:13px;white-space:pre-wrap;word-break:break-word;color:#d9f5ec;}
+  .console .cempty{color:var(--faint);}
+  .memwrap{padding:10px 12px 14px;overflow:auto;max-height:230px;}
+  .memrow{font-family:var(--mono);font-size:12px;white-space:pre;line-height:1.55;color:var(--muted);}
+  .memrow .ma{color:var(--faint);}
+  .memrow .mb{color:var(--ink);}
+  .memrow .hotb{background:rgba(var(--accentRGB),.28);color:#04100c;border-radius:3px;}
+  .memrow .asc{color:var(--faint);}
+
+  /* copy */
+  section.copy{padding:26px 0 6px;max-width:820px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,3vw,29px);margin:30px 0 8px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:11px 0;}
+  section.copy code{font-family:var(--mono);font-size:14px;background:rgba(var(--accentRGB),.1);padding:2px 6px;border-radius:5px;color:var(--accent);}
+  .faq{border-top:1px solid var(--line);margin-top:12px;max-width:820px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:28px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));max-width:820px;}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:23px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>RISC-V Studio</h1>
+    <p class="sub">Write RISC-V assembly, assemble it to real machine code, and single-step a genuine RV32I processor — all in this tab. Watch every register, every byte of memory, and the exact instruction encoding change as your program runs.</p>
+    <span class="priv">&#9889; Real fetch-decode-execute, 100% in your browser. Nothing is uploaded.</span>
+  </header>
+
+  <div class="ide">
+    <!-- LEFT: editor -->
+    <div class="panel">
+      <div class="toolbar">
+        <select id="samples" title="Load a sample program"></select>
+        <button class="btn" id="bAsm">Assemble</button>
+        <button class="btn btn-out" id="bStep" disabled>Step &#9654;</button>
+        <button class="btn btn-out" id="bAuto" disabled>Auto &#9199;</button>
+        <button class="btn btn-out" id="bRun" disabled>Run to end</button>
+        <button class="btn btn-out" id="bReset" disabled>Reset &#8635;</button>
+        <span class="grow"></span>
+        <span class="speedwrap">slow<input type="range" id="speed" min="0" max="100" value="55" />fast</span>
+      </div>
+      <div class="editor-wrap">
+        <div id="gutter">1</div>
+        <div class="code-scroll">
+          <div id="hl"></div>
+          <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off"></textarea>
+        </div>
+      </div>
+      <div class="status" id="status">Edit the assembly, then press <b>Assemble</b>.</div>
+    </div>
+
+    <!-- RIGHT: state -->
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0;">
+      <div class="panel">
+        <div class="ph"><span>Registers</span><div class="r"><button class="mini" id="fmtBtn">hex</button></div></div>
+        <div class="regwrap" id="regGrid"></div>
+        <div class="pcbar"><span>pc <b id="pcVal">0x00000000</b></span><span id="retVal">0 instructions</span><span id="haltVal"></span></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span>Current instruction</span><span id="curType" class="r"></span></div>
+        <div class="cur" id="cur"><div class="decode-note">Assemble a program to see the machine-code decode of the instruction under the program counter.</div></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span>Console output</span></div>
+        <div class="console" id="console"><span class="cempty">Program output from <code>ecall</code> appears here.</span></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><span>Memory</span><div class="r"><select class="mini" id="memSel"><option value="data">Data segment</option><option value="stack">Stack</option><option value="text">Text (code)</option></select></div></div>
+        <div class="memwrap" id="memDump"></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>What this actually is</h2>
+    <p>RISC-V Studio is a small computer, built from scratch in JavaScript, living inside your browser tab. When you press Assemble, a two-pass assembler turns your text into real 32-bit RV32I machine code and lays it out in a simulated 128&nbsp;KB memory, exactly the way a linker would. Then the CPU does what a real core does: it fetches the word at the program counter, decodes the opcode and register fields out of the raw bits, executes it, and moves on. There is no interpreter shortcut and no server call. What you watch stepping across the registers is the genuine RV32I instruction set doing its thing.</p>
+    <h2>How to drive it</h2>
+    <p>Pick a sample from the dropdown or write your own, then Assemble. <code>Step</code> runs one instruction and highlights the line under the program counter. <code>Auto</code> runs it slowly so you can watch registers and memory update, and the speed slider controls how fast. <code>Run to end</code> executes the whole program at once. The Current instruction panel shows the exact binary encoding, split into its real fields — opcode, <code>rd</code>, <code>funct3</code>, <code>rs1</code>, <code>rs2</code>, immediate — so you can see how an <code>add</code> becomes <code>0x00C58533</code>.</p>
+    <h2>The instruction set</h2>
+    <p>It supports the full RV32I base: the register-register ALU ops (<code>add</code>, <code>sub</code>, <code>and</code>, <code>or</code>, <code>xor</code>, <code>sll</code>, <code>srl</code>, <code>sra</code>, <code>slt</code>, <code>sltu</code>), their immediate forms, byte/half/word loads and stores, all six branches, <code>jal</code> and <code>jalr</code>, <code>lui</code> and <code>auipc</code>, and <code>ecall</code>. Friendly pseudo-instructions are expanded for you: <code>li</code> loads any 32-bit constant (splitting into <code>lui</code>+<code>addi</code> when needed), <code>la</code> loads a label address, plus <code>mv</code>, <code>j</code>, <code>call</code>, <code>ret</code>, <code>nop</code>, <code>neg</code>, <code>not</code>, and the branch-if-zero and compare-and-branch forms. System calls follow the familiar RARS convention: a service number in <code>a7</code>, arguments in <code>a0</code>.</p>
+    <h2>Why build it in the browser</h2>
+    <p>Learning assembly usually means installing a toolchain or a Java simulator before you can run a single instruction. This removes all of that. It is a genuinely useful way to see what a CPU does at the bottom, and because everything runs locally it is instant and private — your code never leaves your machine.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is this a real emulator or a trick?</summary><p>Real. Your assembly is encoded to actual RV32I machine-code words that are stored in memory, and the CPU fetches, decodes and executes them one at a time. The tool shows you the exact 32-bit encoding of each instruction, split into its hardware fields.</p></details>
+    <details><summary>Which instructions and pseudo-instructions work?</summary><p>All of RV32I, plus common pseudo-instructions: li, la, mv, j, jr, call, ret, nop, neg, not, seqz, snez, and the beqz/bnez/blez/bgez/bltz/bgtz/bgt/ble family. Multiply and divide (the M extension) and floating point are not included.</p></details>
+    <details><summary>How do I print output?</summary><p>Use ecall. Put a service number in register a7 and your value in a0: 1 prints an integer, 4 prints a null-terminated string at the address in a0, 11 prints a character, 34 prints a hex number, and 10 or 93 exits.</p></details>
+    <details><summary>Does it work offline?</summary><p>Yes. Once the page has loaded, the assembler and CPU are just JavaScript in your tab, so it keeps working with no connection.</p></details>
+    <details><summary>Is it free?</summary><p>Completely free, no sign-up, no limits. It is one of a series of tools I build and share.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- match the portfolio's saved theme (runs before paint) -->
+<script>
+(function(){
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<!-- ===================== RV32I ENGINE (inlined, node-tested) ===================== -->
+<script>
+/* ============================================================================
+   RISC-V Studio engine — a from-scratch RV32I assembler + CPU.
+   Pure, dependency-free JS. Runs identically in Node (for tests) and the browser.
+   The SAME source is inlined into riscv-studio.html between the ENGINE markers.
+   ============================================================================ */
+(function (root) {
+  "use strict";
+
+  // ---- Memory layout -------------------------------------------------------
+  var MEM_SIZE  = 0x20000;      // 128 KB
+  var TEXT_BASE = 0x00000000;
+  var DATA_BASE = 0x00010000;   // 64 KB
+  var STACK_TOP = 0x0001FFF0;   // sp init (16-byte aligned, in-bounds)
+
+  // ---- Register ABI names --------------------------------------------------
+  var ABI = ["zero","ra","sp","gp","tp","t0","t1","t2","s0","s1","a0","a1",
+    "a2","a3","a4","a5","a6","a7","s2","s3","s4","s5","s6","s7","s8","s9",
+    "s10","s11","t3","t4","t5","t6"];
+  var REGMAP = {};
+  for (var i = 0; i < 32; i++) { REGMAP["x" + i] = i; REGMAP[ABI[i]] = i; }
+  REGMAP["fp"] = 8; // fp alias for s0
+
+  // ---- helpers -------------------------------------------------------------
+  function signExtend(v, bits) {
+    var m = 1 << (bits - 1);
+    v = v & ((bits === 32) ? 0xFFFFFFFF : ((1 << bits) - 1));
+    return (v ^ m) - m;
+  }
+  function u32(x) { return x >>> 0; }
+  function s32(x) { return x | 0; }
+
+  function AsmError(msg, line) { this.message = msg; this.line = line; }
+
+  // ---- immediate / operand parsing ----------------------------------------
+  function parseImm(tok, labels, line) {
+    tok = tok.trim();
+    if (tok === "") throw new AsmError("missing value", line);
+    // char literal 'c'
+    if (tok.length >= 3 && tok[0] === "'" && tok[tok.length - 1] === "'") {
+      var inner = tok.slice(1, -1);
+      var esc = { "\\n": 10, "\\t": 9, "\\r": 13, "\\0": 0, "\\\\": 92, "\\'": 39, "\\\"": 34 };
+      if (inner.length === 1) return inner.charCodeAt(0);
+      if (esc[inner] !== undefined) return esc[inner];
+      throw new AsmError("bad character literal " + tok, line);
+    }
+    // label reference (used by .word and by la/branch resolution paths)
+    if (labels && Object.prototype.hasOwnProperty.call(labels, tok)) return labels[tok] | 0;
+    var neg = false, t = tok;
+    if (t[0] === "-") { neg = true; t = t.slice(1); }
+    else if (t[0] === "+") { t = t.slice(1); }
+    var val;
+    if (/^0x[0-9a-fA-F]+$/.test(t)) val = parseInt(t, 16);
+    else if (/^0b[01]+$/.test(t)) val = parseInt(t.slice(2), 2);
+    else if (/^[0-9]+$/.test(t)) val = parseInt(t, 10);
+    else if (labels === null) { // resolution phase but symbol unknown
+      throw new AsmError("unknown symbol or bad number: " + tok, line);
+    } else {
+      throw new AsmError("expected a number, got: " + tok, line);
+    }
+    if (isNaN(val)) throw new AsmError("bad number: " + tok, line);
+    return neg ? -val : val;
+  }
+
+  function parseReg(tok, line) {
+    tok = tok.trim().toLowerCase();
+    if (Object.prototype.hasOwnProperty.call(REGMAP, tok)) return REGMAP[tok];
+    throw new AsmError("not a register: " + tok, line);
+  }
+
+  // split "off(reg)" -> {off, reg}; supports "(reg)" and bare numbers via caller
+  function parseMem(tok, line) {
+    var m = /^\s*(.*?)\s*\(\s*([a-zA-Z0-9]+)\s*\)\s*$/.exec(tok);
+    if (!m) throw new AsmError("expected offset(register), got: " + tok, line);
+    return { off: m[1] === "" ? "0" : m[1], reg: m[2] };
+  }
+
+  // ---- encoders (return uint32) -------------------------------------------
+  function encR(f7, rs2, rs1, f3, rd, op) {
+    return u32(((f7 & 0x7f) << 25) | ((rs2 & 31) << 20) | ((rs1 & 31) << 15) | ((f3 & 7) << 12) | ((rd & 31) << 7) | (op & 0x7f));
+  }
+  function encI(imm, rs1, f3, rd, op) {
+    return u32(((imm & 0xfff) << 20) | ((rs1 & 31) << 15) | ((f3 & 7) << 12) | ((rd & 31) << 7) | (op & 0x7f));
+  }
+  function encS(imm, rs2, rs1, f3, op) {
+    var i11_5 = (imm >> 5) & 0x7f, i4_0 = imm & 0x1f;
+    return u32((i11_5 << 25) | ((rs2 & 31) << 20) | ((rs1 & 31) << 15) | ((f3 & 7) << 12) | (i4_0 << 7) | (op & 0x7f));
+  }
+  function encB(imm, rs2, rs1, f3, op) {
+    var b12 = (imm >> 12) & 1, b10_5 = (imm >> 5) & 0x3f, b4_1 = (imm >> 1) & 0xf, b11 = (imm >> 11) & 1;
+    return u32((b12 << 31) | (b10_5 << 25) | ((rs2 & 31) << 20) | ((rs1 & 31) << 15) | ((f3 & 7) << 12) | (b4_1 << 8) | (b11 << 7) | (op & 0x7f));
+  }
+  function encU(imm, rd, op) { return u32(((imm & 0xfffff) << 12) | ((rd & 31) << 7) | (op & 0x7f)); }
+  function encJ(imm, rd, op) {
+    var b20 = (imm >> 20) & 1, b10_1 = (imm >> 1) & 0x3ff, b11 = (imm >> 11) & 1, b19_12 = (imm >> 12) & 0xff;
+    return u32((b20 << 31) | (b10_1 << 21) | (b11 << 20) | (b19_12 << 12) | ((rd & 31) << 7) | (op & 0x7f));
+  }
+
+  // ---- instruction spec table ---------------------------------------------
+  // type: R,I,IS(shift),L(load I),S,B,U,J,JR(jalr),SYS
+  var OPS = {
+    add:{t:"R",f3:0,f7:0x00,op:0x33}, sub:{t:"R",f3:0,f7:0x20,op:0x33},
+    sll:{t:"R",f3:1,f7:0x00,op:0x33}, slt:{t:"R",f3:2,f7:0x00,op:0x33},
+    sltu:{t:"R",f3:3,f7:0x00,op:0x33}, xor:{t:"R",f3:4,f7:0x00,op:0x33},
+    srl:{t:"R",f3:5,f7:0x00,op:0x33}, sra:{t:"R",f3:5,f7:0x20,op:0x33},
+    or:{t:"R",f3:6,f7:0x00,op:0x33}, and:{t:"R",f3:7,f7:0x00,op:0x33},
+    addi:{t:"I",f3:0,op:0x13}, slti:{t:"I",f3:2,op:0x13}, sltiu:{t:"I",f3:3,op:0x13},
+    xori:{t:"I",f3:4,op:0x13}, ori:{t:"I",f3:6,op:0x13}, andi:{t:"I",f3:7,op:0x13},
+    slli:{t:"IS",f3:1,f7:0x00,op:0x13}, srli:{t:"IS",f3:5,f7:0x00,op:0x13}, srai:{t:"IS",f3:5,f7:0x20,op:0x13},
+    lb:{t:"L",f3:0,op:0x03}, lh:{t:"L",f3:1,op:0x03}, lw:{t:"L",f3:2,op:0x03},
+    lbu:{t:"L",f3:4,op:0x03}, lhu:{t:"L",f3:5,op:0x03},
+    sb:{t:"S",f3:0,op:0x23}, sh:{t:"S",f3:1,op:0x23}, sw:{t:"S",f3:2,op:0x23},
+    beq:{t:"B",f3:0,op:0x63}, bne:{t:"B",f3:1,op:0x63}, blt:{t:"B",f3:4,op:0x63},
+    bge:{t:"B",f3:5,op:0x63}, bltu:{t:"B",f3:6,op:0x63}, bgeu:{t:"B",f3:7,op:0x63},
+    lui:{t:"U",op:0x37}, auipc:{t:"U",op:0x17},
+    jal:{t:"J",op:0x6f}, jalr:{t:"JR",f3:0,op:0x67},
+    ecall:{t:"SYS",op:0x73}
+  };
+
+  // ---- pseudo-instruction expansion ---------------------------------------
+  // returns array of base instructions [{mn, ops:[...]}], ops still string tokens
+  function expandPseudo(mn, ops, line, labels) {
+    switch (mn) {
+      case "nop": return [{ mn: "addi", ops: ["x0", "x0", "0"] }];
+      case "mv":  return [{ mn: "addi", ops: [ops[0], ops[1], "0"] }];
+      case "not": return [{ mn: "xori", ops: [ops[0], ops[1], "-1"] }];
+      case "neg": return [{ mn: "sub", ops: [ops[0], "x0", ops[1]] }];
+      case "seqz":return [{ mn: "sltiu", ops: [ops[0], ops[1], "1"] }];
+      case "snez":return [{ mn: "sltu", ops: [ops[0], "x0", ops[1]] }];
+      case "sltz":return [{ mn: "slt", ops: [ops[0], ops[1], "x0"] }];
+      case "sgtz":return [{ mn: "slt", ops: [ops[0], "x0", ops[1]] }];
+      case "j":   return [{ mn: "jal", ops: ["x0", ops[0]] }];
+      case "jr":  return [{ mn: "jalr", ops: ["x0", ops[0], "0"] }];
+      case "ret": return [{ mn: "jalr", ops: ["x0", "ra", "0"] }];
+      case "call":return [{ mn: "jal", ops: ["ra", ops[0]] }];
+      case "beqz":return [{ mn: "beq", ops: [ops[0], "x0", ops[1]] }];
+      case "bnez":return [{ mn: "bne", ops: [ops[0], "x0", ops[1]] }];
+      case "blez":return [{ mn: "bge", ops: ["x0", ops[0], ops[1]] }];
+      case "bgez":return [{ mn: "bge", ops: [ops[0], "x0", ops[1]] }];
+      case "bltz":return [{ mn: "blt", ops: [ops[0], "x0", ops[1]] }];
+      case "bgtz":return [{ mn: "blt", ops: ["x0", ops[0], ops[1]] }];
+      case "bgt": return [{ mn: "blt", ops: [ops[1], ops[0], ops[2]] }];
+      case "ble": return [{ mn: "bge", ops: [ops[1], ops[0], ops[2]] }];
+      case "bgtu":return [{ mn: "bltu", ops: [ops[1], ops[0], ops[2]] }];
+      case "bleu":return [{ mn: "bgeu", ops: [ops[1], ops[0], ops[2]] }];
+      case "li": {
+        var v = parseImm(ops[1], labels && labels.__consts__ ? labels.__consts__ : {}, line) | 0;
+        if (v >= -2048 && v <= 2047) return [{ mn: "addi", ops: [ops[0], "x0", String(v)] }];
+        var lo = v & 0xfff; var hi;
+        if (lo & 0x800) { lo = lo - 0x1000; hi = ((v >>> 12) + 1) & 0xfffff; }
+        else hi = (v >>> 12) & 0xfffff;
+        return [{ mn: "lui", ops: [ops[0], String(hi)] },
+                { mn: "addi", ops: [ops[0], ops[0], String(lo)] }];
+      }
+      case "la": // resolved in pass2 (label addr unknown yet); mark hi/lo
+        return [{ mn: "lui", ops: [ops[0], "%hi(" + ops[1] + ")"] },
+                { mn: "addi", ops: [ops[0], ops[0], "%lo(" + ops[1] + ")"] }];
+      default:
+        return null; // not a pseudo
+    }
+  }
+
+  // ---- string escape decode for .ascii etc --------------------------------
+  function decodeString(raw, line) {
+    var out = [], i = 0;
+    for (i = 0; i < raw.length; i++) {
+      var c = raw[i];
+      if (c === "\\") {
+        var n = raw[++i];
+        if (n === "n") out.push(10); else if (n === "t") out.push(9);
+        else if (n === "r") out.push(13); else if (n === "0") out.push(0);
+        else if (n === "\\") out.push(92); else if (n === "\"") out.push(34);
+        else if (n === "'") out.push(39);
+        else out.push(n ? n.charCodeAt(0) : 92);
+      } else out.push(c.charCodeAt(0) & 0xff);
+    }
+    return out;
+  }
+
+  // split operands on commas but not inside quotes or parens
+  function splitOperands(s) {
+    var res = [], depth = 0, q = false, cur = "";
+    for (var i = 0; i < s.length; i++) {
+      var c = s[i];
+      if (q) { cur += c; if (c === "\"") q = false; continue; }
+      if (c === "\"") { q = true; cur += c; }
+      else if (c === "(") { depth++; cur += c; }
+      else if (c === ")") { depth--; cur += c; }
+      else if (c === "," && depth === 0) { res.push(cur.trim()); cur = ""; }
+      else cur += c;
+    }
+    if (cur.trim() !== "") res.push(cur.trim());
+    return res;
+  }
+
+  // ---- ASSEMBLER -----------------------------------------------------------
+  function assemble(source) {
+    var lines = source.split(/\r?\n/);
+    var labels = {};              // name -> address
+    var consts = {};              // .equ constants (used by li)
+    var proto = [];               // {mn, ops, srcLine, addr}
+    var dataWrites = [];          // {addr, bytes:[...] } or {addr, wordLabel, srcLine}
+    var section = "text";
+    var textIdx = 0;              // instruction count
+    var dataLoc = DATA_BASE;
+
+    function align(n) { var a = 1 << n; if (dataLoc % a) dataLoc += a - (dataLoc % a); }
+
+    // pending labels that precede an item on later lines
+    var pendingLabels = [];
+
+    try {
+      for (var ln = 0; ln < lines.length; ln++) {
+        var raw = lines[ln];
+        // strip comments (# ; //) but not inside quotes
+        var code = "", inq = false;
+        for (var k = 0; k < raw.length; k++) {
+          var ch = raw[k];
+          if (inq) { code += ch; if (ch === "\"") inq = false; continue; }
+          if (ch === "\"") { inq = true; code += ch; continue; }
+          if (ch === "#" || ch === ";") break;
+          if (ch === "/" && raw[k + 1] === "/") break;
+          code += ch;
+        }
+        code = code.trim();
+        if (code === "") continue;
+
+        // leading labels (possibly multiple: "a: b: instr")
+        var lm;
+        while ((lm = /^([A-Za-z_.$][\w.$]*)\s*:/.exec(code))) {
+          var lname = lm[1];
+          var laddr = (section === "text") ? (TEXT_BASE + textIdx * 4) : dataLoc;
+          if (Object.prototype.hasOwnProperty.call(labels, lname))
+            throw new AsmError("duplicate label: " + lname, ln);
+          labels[lname] = laddr;
+          code = code.slice(lm[0].length).trim();
+        }
+        if (code === "") continue;
+
+        // directive?
+        if (code[0] === ".") {
+          var sp = code.indexOf(" ");
+          var dir = (sp < 0 ? code : code.slice(0, sp)).toLowerCase();
+          var rest = (sp < 0 ? "" : code.slice(sp + 1)).trim();
+          if (dir === ".text") { section = "text"; }
+          else if (dir === ".data") { section = "data"; }
+          else if (dir === ".globl" || dir === ".global" || dir === ".align" && false) { /* ignore globl */ }
+          else if (dir === ".align") { align(parseImm(rest, null, ln) | 0); }
+          else if (dir === ".equ" || dir === ".set") {
+            var parts = splitOperands(rest);
+            consts[parts[0]] = parseImm(parts[1], consts, ln) | 0;
+          }
+          else if (dir === ".word" || dir === ".half" || dir === ".byte") {
+            var sz = dir === ".word" ? 4 : dir === ".half" ? 2 : 1;
+            if (section !== "data") throw new AsmError(dir + " must be in .data", ln);
+            var vals = splitOperands(rest);
+            for (var vi = 0; vi < vals.length; vi++) {
+              var tok = vals[vi];
+              // label operand allowed in .word -> resolve in pass2
+              if (sz === 4 && /^[A-Za-z_.$][\w.$]*$/.test(tok) && !Object.prototype.hasOwnProperty.call(consts, tok)) {
+                dataWrites.push({ addr: dataLoc, wordLabel: tok, srcLine: ln });
+              } else {
+                var val = parseImm(tok, consts, ln) | 0;
+                var bytes = [];
+                for (var b = 0; b < sz; b++) bytes.push((val >>> (8 * b)) & 0xff);
+                dataWrites.push({ addr: dataLoc, bytes: bytes });
+              }
+              dataLoc += sz;
+            }
+          }
+          else if (dir === ".ascii" || dir === ".asciz" || dir === ".asciiz" || dir === ".string") {
+            if (section !== "data") throw new AsmError(dir + " must be in .data", ln);
+            var qm = /^"((?:[^"\\]|\\.)*)"$/.exec(rest);
+            if (!qm) throw new AsmError("expected a quoted string after " + dir, ln);
+            var by = decodeString(qm[1], ln);
+            if (dir !== ".ascii") by.push(0);
+            dataWrites.push({ addr: dataLoc, bytes: by });
+            dataLoc += by.length;
+          }
+          else if (dir === ".space" || dir === ".zero") {
+            var n = parseImm(rest, consts, ln) | 0;
+            var zb = []; for (var z = 0; z < n; z++) zb.push(0);
+            dataWrites.push({ addr: dataLoc, bytes: zb });
+            dataLoc += n;
+          }
+          else throw new AsmError("unknown directive: " + dir, ln);
+          continue;
+        }
+
+        // instruction
+        if (section !== "text") throw new AsmError("instruction outside .text section", ln);
+        var mIdx = code.search(/\s/);
+        var mn = (mIdx < 0 ? code : code.slice(0, mIdx)).toLowerCase();
+        var opstr = (mIdx < 0 ? "" : code.slice(mIdx + 1)).trim();
+        var ops = splitOperands(opstr);
+
+        var lblForConst = {};
+        lblForConst.__consts__ = consts;
+        // merge consts so li can see them
+        for (var ck in consts) lblForConst[ck] = consts[ck];
+
+        var expanded = expandPseudo(mn, ops, ln, lblForConst);
+        // load-from-symbol pseudo:  lw rd, symbol  ->  lui rd,%hi(sym) ; lw rd,%lo(sym)(rd)
+        var LOADS = { lb: 1, lh: 1, lw: 1, lbu: 1, lhu: 1 };
+        if (expanded === null && LOADS[mn] && ops.length === 2 &&
+            /^[A-Za-z_.$][\w.$]*$/.test(ops[1]) && !/[()]/.test(ops[1])) {
+          expanded = [{ mn: "lui", ops: [ops[0], "%hi(" + ops[1] + ")"] },
+                      { mn: mn, ops: [ops[0], "%lo(" + ops[1] + ")(" + ops[0] + ")"] }];
+        }
+        if (expanded === null) {
+          if (!OPS[mn]) throw new AsmError("unknown instruction: " + mn, ln);
+          expanded = [{ mn: mn, ops: ops }];
+        }
+        for (var ei = 0; ei < expanded.length; ei++) {
+          proto.push({ mn: expanded[ei].mn, ops: expanded[ei].ops, srcLine: ln, addr: TEXT_BASE + textIdx * 4 });
+          textIdx++;
+        }
+      }
+
+      // ---- PASS 2: encode ----
+      var symtab = {};
+      for (var kn in labels) symtab[kn] = labels[kn];
+      for (var kc in consts) if (!(kc in symtab)) symtab[kc] = consts[kc];
+
+      function hilo(addr) {
+        var lo = addr & 0xfff, hi;
+        if (lo & 0x800) { lo = lo - 0x1000; hi = ((addr >>> 12) + 1) & 0xfffff; }
+        else hi = (addr >>> 12) & 0xfffff;
+        return { hi: hi, lo: lo };
+      }
+      function resolveSym(tok, ln) {
+        if (Object.prototype.hasOwnProperty.call(symtab, tok)) return symtab[tok] | 0;
+        return parseImm(tok, null, ln) | 0; // numeric or throw
+      }
+      function resolveOff(tok, ln) {
+        var lm = /^%lo\((.+)\)$/.exec(tok);
+        if (lm) return hilo(resolveSym(lm[1], ln)).lo;
+        return resolveSym(tok, ln);
+      }
+
+      var instructions = [];
+      for (var pi = 0; pi < proto.length; pi++) {
+        var p = proto[pi], spec = OPS[p.mn], word = 0, o = p.ops, L = p.srcLine;
+        if (!spec) throw new AsmError("internal: unknown op " + p.mn, L);
+        var rd, rs1, rs2, imm, mem, target, off;
+        switch (spec.t) {
+          case "R":
+            word = encR(spec.f7, parseReg(o[2], L), parseReg(o[1], L), spec.f3, parseReg(o[0], L), spec.op); break;
+          case "I":
+            var loM = /^%lo\((.+)\)$/.exec(o[2]);
+            if (loM) imm = hilo(resolveSym(loM[1], L)).lo;
+            else imm = resolveSym(o[2], L);
+            if (imm < -2048 || imm > 2047) throw new AsmError("immediate out of range [-2048,2047]: " + imm, L);
+            word = encI(imm & 0xfff, parseReg(o[1], L), spec.f3, parseReg(o[0], L), spec.op); break;
+          case "IS":
+            var sh = resolveSym(o[2], L);
+            if (sh < 0 || sh > 31) throw new AsmError("shift amount must be 0..31", L);
+            word = encI(((spec.f7 << 5) | (sh & 31)) & 0xfff, parseReg(o[1], L), spec.f3, parseReg(o[0], L), spec.op); break;
+          case "L":
+            mem = parseMem(o[1], L); off = resolveOff(mem.off, L);
+            if (off < -2048 || off > 2047) throw new AsmError("load offset out of range", L);
+            word = encI(off & 0xfff, parseReg(mem.reg, L), spec.f3, parseReg(o[0], L), spec.op); break;
+          case "S":
+            mem = parseMem(o[1], L); off = resolveOff(mem.off, L);
+            if (off < -2048 || off > 2047) throw new AsmError("store offset out of range", L);
+            word = encS(off & 0xfff, parseReg(o[0], L), parseReg(mem.reg, L), spec.f3, spec.op); break;
+          case "B":
+            target = resolveSym(o[2], L); off = target - p.addr;
+            if (off < -4096 || off > 4094 || (off & 1)) throw new AsmError("branch target out of range", L);
+            word = encB(off, parseReg(o[1], L), parseReg(o[0], L), spec.f3, spec.op); break;
+          case "U":
+            // %hi(sym) marker or numeric
+            var uarg = o[1];
+            var hm = /^%hi\((.+)\)$/.exec(uarg);
+            if (hm) imm = hilo(resolveSym(hm[1], L)).hi;
+            else { imm = resolveSym(uarg, L); }
+            word = encU(imm & 0xfffff, parseReg(o[0], L), spec.op); break;
+          case "J":
+            target = resolveSym(o[1], L); off = target - p.addr;
+            if (off < -1048576 || off > 1048574 || (off & 1)) throw new AsmError("jump target out of range", L);
+            word = encJ(off, parseReg(o[0], L), spec.op); break;
+          case "JR":
+            var jm = parseReg; // jalr rd, rs1, imm  OR  jalr rd, imm(rs1)
+            if (o.length === 2 && /\(/.test(o[1])) { mem = parseMem(o[1], L); imm = resolveSym(mem.off, L); rs1 = parseReg(mem.reg, L); }
+            else { rs1 = parseReg(o[1], L); imm = o[2] ? resolveSym2(o[2], L, symtab) : 0; }
+            word = encI(imm & 0xfff, rs1, spec.f3, parseReg(o[0], L), spec.op); break;
+          case "SYS":
+            word = encI(0, 0, 0, 0, spec.op); break;
+        }
+        instructions.push({ addr: p.addr, word: u32(word), srcLine: p.srcLine, asm: p.mn + (o.length ? " " + o.join(", ") : "") });
+      }
+
+      // resolve .word label writes
+      var finalData = [];
+      for (var di = 0; di < dataWrites.length; di++) {
+        var dw = dataWrites[di];
+        if (dw.wordLabel) {
+          if (!Object.prototype.hasOwnProperty.call(symtab, dw.wordLabel))
+            throw new AsmError("unknown label in .word: " + dw.wordLabel, dw.srcLine);
+          var av = symtab[dw.wordLabel] | 0, bb = [];
+          for (var q = 0; q < 4; q++) bb.push((av >>> (8 * q)) & 0xff);
+          finalData.push({ addr: dw.addr, bytes: bb });
+        } else finalData.push({ addr: dw.addr, bytes: dw.bytes });
+      }
+
+      return { ok: true, error: null, errorLine: -1, instructions: instructions,
+        data: finalData, labels: labels, textBase: TEXT_BASE, dataBase: DATA_BASE,
+        textEnd: TEXT_BASE + textIdx * 4, dataEnd: dataLoc };
+    } catch (e) {
+      if (e instanceof AsmError) return { ok: false, error: e.message, errorLine: e.line };
+      return { ok: false, error: "assembler error: " + (e && e.message ? e.message : e), errorLine: -1 };
+    }
+  }
+  // helper referenced above (kept separate to avoid closure confusion)
+  function resolveSym2(tok, ln, symtab) {
+    if (Object.prototype.hasOwnProperty.call(symtab, tok)) return symtab[tok] | 0;
+    return parseImm(tok, null, ln) | 0;
+  }
+
+  // ---- CPU -----------------------------------------------------------------
+  function CPU() {
+    this.mem = new Uint8Array(MEM_SIZE);
+    this.regs = new Int32Array(32);
+    this.pc = TEXT_BASE;
+    this.halted = false; this.haltReason = "";
+    this.output = "";
+    this.lastReg = -1; this.lastMem = -1;
+    this.retired = 0;
+    this.textEnd = TEXT_BASE;
+  }
+  CPU.prototype.reset = function () {
+    this.regs = new Int32Array(32);
+    this.regs[2] = STACK_TOP | 0;   // sp
+    this.regs[3] = DATA_BASE | 0;   // gp
+    this.pc = TEXT_BASE;
+    this.halted = false; this.haltReason = "";
+    this.output = ""; this.lastReg = -1; this.lastMem = -1; this.retired = 0;
+  };
+  CPU.prototype.load = function (asm) {
+    this.mem = new Uint8Array(MEM_SIZE);
+    for (var i = 0; i < asm.instructions.length; i++) {
+      var w = asm.instructions[i].word, a = asm.instructions[i].addr;
+      this.mem[a] = w & 0xff; this.mem[a + 1] = (w >>> 8) & 0xff;
+      this.mem[a + 2] = (w >>> 16) & 0xff; this.mem[a + 3] = (w >>> 24) & 0xff;
+    }
+    for (var d = 0; d < asm.data.length; d++) {
+      var dw = asm.data[d];
+      for (var b = 0; b < dw.bytes.length; b++) this.mem[(dw.addr + b) & (MEM_SIZE - 1)] = dw.bytes[b] & 0xff;
+    }
+    this.textEnd = asm.textEnd;
+    this.reset();
+  };
+  CPU.prototype.rB = function (a) { return this.mem[a & (MEM_SIZE - 1)]; };
+  CPU.prototype.rW = function (a) { a &= (MEM_SIZE - 1); return u32(this.mem[a] | (this.mem[a + 1] << 8) | (this.mem[a + 2] << 16) | (this.mem[a + 3] << 24)); };
+  CPU.prototype.rH = function (a) { a &= (MEM_SIZE - 1); return (this.mem[a] | (this.mem[a + 1] << 8)) & 0xffff; };
+  CPU.prototype.wB = function (a, v) { a &= (MEM_SIZE - 1); this.mem[a] = v & 0xff; this.lastMem = a; };
+  CPU.prototype.wH = function (a, v) { a &= (MEM_SIZE - 1); this.mem[a] = v & 0xff; this.mem[a + 1] = (v >>> 8) & 0xff; this.lastMem = a; };
+  CPU.prototype.wW = function (a, v) { a &= (MEM_SIZE - 1); this.mem[a] = v & 0xff; this.mem[a + 1] = (v >>> 8) & 0xff; this.mem[a + 2] = (v >>> 16) & 0xff; this.mem[a + 3] = (v >>> 24) & 0xff; this.lastMem = a; };
+
+  function decode(w) {
+    w = u32(w);
+    var op = w & 0x7f, rd = (w >>> 7) & 31, f3 = (w >>> 12) & 7, rs1 = (w >>> 15) & 31,
+        rs2 = (w >>> 20) & 31, f7 = (w >>> 25) & 0x7f;
+    var d = { word: w, op: op, rd: rd, f3: f3, rs1: rs1, rs2: rs2, f7: f7, imm: 0, mn: "?", type: "?" };
+    switch (op) {
+      case 0x33: d.type = "R";
+        d.mn = ({ "0.0": "add", "0.32": "sub", "1.0": "sll", "2.0": "slt", "3.0": "sltu", "4.0": "xor", "5.0": "srl", "5.32": "sra", "6.0": "or", "7.0": "and" })[f3 + "." + f7] || "?"; break;
+      case 0x13: d.type = "I"; d.imm = signExtend(w >>> 20, 12);
+        d.mn = ({ 0: "addi", 2: "slti", 3: "sltiu", 4: "xori", 6: "ori", 7: "andi", 1: "slli", 5: (f7 === 0x20 ? "srai" : "srli") })[f3];
+        if (f3 === 1 || f3 === 5) d.imm = (w >>> 20) & 31; break;
+      case 0x03: d.type = "I"; d.imm = signExtend(w >>> 20, 12);
+        d.mn = ({ 0: "lb", 1: "lh", 2: "lw", 4: "lbu", 5: "lhu" })[f3]; break;
+      case 0x23: d.type = "S"; d.imm = signExtend((((w >>> 25) & 0x7f) << 5) | ((w >>> 7) & 0x1f), 12);
+        d.mn = ({ 0: "sb", 1: "sh", 2: "sw" })[f3]; break;
+      case 0x63: d.type = "B";
+        d.imm = signExtend((((w >>> 31) & 1) << 12) | (((w >>> 25) & 0x3f) << 5) | (((w >>> 8) & 0xf) << 1) | (((w >>> 7) & 1) << 11), 13);
+        d.mn = ({ 0: "beq", 1: "bne", 4: "blt", 5: "bge", 6: "bltu", 7: "bgeu" })[f3]; break;
+      case 0x37: d.type = "U"; d.imm = w & 0xfffff000; d.mn = "lui"; break;
+      case 0x17: d.type = "U"; d.imm = w & 0xfffff000; d.mn = "auipc"; break;
+      case 0x6f: d.type = "J";
+        d.imm = signExtend((((w >>> 31) & 1) << 20) | (((w >>> 12) & 0xff) << 12) | (((w >>> 20) & 1) << 11) | (((w >>> 21) & 0x3ff) << 1), 21);
+        d.mn = "jal"; break;
+      case 0x67: d.type = "I"; d.imm = signExtend(w >>> 20, 12); d.mn = "jalr"; break;
+      case 0x73: d.type = "SYS"; d.mn = (w & 0x100000) ? "ebreak" : "ecall"; break;
+      default: d.mn = "?"; d.type = "?";
+    }
+    return d;
+  }
+
+  // execute one instruction. onOutput(str) optional. returns decoded instr.
+  CPU.prototype.step = function () {
+    if (this.halted) return null;
+    if ((this.pc >>> 0) >= (this.textEnd >>> 0)) { this.halted = true; this.haltReason = "reached end of program"; return null; }
+    var w = this.rW(this.pc);
+    if (w === 0) { this.halted = true; this.haltReason = "reached end of program"; return null; }
+    var d = decode(w);
+    var R = this.regs, npc = (this.pc + 4) | 0;
+    this.lastReg = -1;
+    var a, v;
+    function set(reg, val) { if (reg !== 0) { R[reg] = val | 0; } }
+    switch (d.mn) {
+      case "add": set(d.rd, R[d.rs1] + R[d.rs2]); this.lastReg = d.rd; break;
+      case "sub": set(d.rd, R[d.rs1] - R[d.rs2]); this.lastReg = d.rd; break;
+      case "sll": set(d.rd, R[d.rs1] << (R[d.rs2] & 31)); this.lastReg = d.rd; break;
+      case "srl": set(d.rd, R[d.rs1] >>> (R[d.rs2] & 31)); this.lastReg = d.rd; break;
+      case "sra": set(d.rd, R[d.rs1] >> (R[d.rs2] & 31)); this.lastReg = d.rd; break;
+      case "slt": set(d.rd, (R[d.rs1] < R[d.rs2]) ? 1 : 0); this.lastReg = d.rd; break;
+      case "sltu": set(d.rd, (u32(R[d.rs1]) < u32(R[d.rs2])) ? 1 : 0); this.lastReg = d.rd; break;
+      case "xor": set(d.rd, R[d.rs1] ^ R[d.rs2]); this.lastReg = d.rd; break;
+      case "or": set(d.rd, R[d.rs1] | R[d.rs2]); this.lastReg = d.rd; break;
+      case "and": set(d.rd, R[d.rs1] & R[d.rs2]); this.lastReg = d.rd; break;
+      case "addi": set(d.rd, R[d.rs1] + d.imm); this.lastReg = d.rd; break;
+      case "slti": set(d.rd, (R[d.rs1] < d.imm) ? 1 : 0); this.lastReg = d.rd; break;
+      case "sltiu": set(d.rd, (u32(R[d.rs1]) < u32(d.imm)) ? 1 : 0); this.lastReg = d.rd; break;
+      case "xori": set(d.rd, R[d.rs1] ^ d.imm); this.lastReg = d.rd; break;
+      case "ori": set(d.rd, R[d.rs1] | d.imm); this.lastReg = d.rd; break;
+      case "andi": set(d.rd, R[d.rs1] & d.imm); this.lastReg = d.rd; break;
+      case "slli": set(d.rd, R[d.rs1] << d.imm); this.lastReg = d.rd; break;
+      case "srli": set(d.rd, R[d.rs1] >>> d.imm); this.lastReg = d.rd; break;
+      case "srai": set(d.rd, R[d.rs1] >> d.imm); this.lastReg = d.rd; break;
+      case "lb": set(d.rd, signExtend(this.rB((R[d.rs1] + d.imm) | 0), 8)); this.lastReg = d.rd; break;
+      case "lh": set(d.rd, signExtend(this.rH((R[d.rs1] + d.imm) | 0), 16)); this.lastReg = d.rd; break;
+      case "lw": set(d.rd, this.rW((R[d.rs1] + d.imm) | 0) | 0); this.lastReg = d.rd; break;
+      case "lbu": set(d.rd, this.rB((R[d.rs1] + d.imm) | 0)); this.lastReg = d.rd; break;
+      case "lhu": set(d.rd, this.rH((R[d.rs1] + d.imm) | 0)); this.lastReg = d.rd; break;
+      case "sb": this.wB((R[d.rs1] + d.imm) | 0, R[d.rs2]); break;
+      case "sh": this.wH((R[d.rs1] + d.imm) | 0, R[d.rs2]); break;
+      case "sw": this.wW((R[d.rs1] + d.imm) | 0, R[d.rs2]); break;
+      case "beq": if (R[d.rs1] === R[d.rs2]) npc = (this.pc + d.imm) | 0; break;
+      case "bne": if (R[d.rs1] !== R[d.rs2]) npc = (this.pc + d.imm) | 0; break;
+      case "blt": if (R[d.rs1] < R[d.rs2]) npc = (this.pc + d.imm) | 0; break;
+      case "bge": if (R[d.rs1] >= R[d.rs2]) npc = (this.pc + d.imm) | 0; break;
+      case "bltu": if (u32(R[d.rs1]) < u32(R[d.rs2])) npc = (this.pc + d.imm) | 0; break;
+      case "bgeu": if (u32(R[d.rs1]) >= u32(R[d.rs2])) npc = (this.pc + d.imm) | 0; break;
+      case "lui": set(d.rd, d.imm | 0); this.lastReg = d.rd; break;
+      case "auipc": set(d.rd, (this.pc + d.imm) | 0); this.lastReg = d.rd; break;
+      case "jal": set(d.rd, npc); this.lastReg = d.rd; npc = (this.pc + d.imm) | 0; break;
+      case "jalr": v = (R[d.rs1] + d.imm) & ~1; set(d.rd, npc); this.lastReg = d.rd; npc = v | 0; break;
+      case "ecall": this.syscall(); if (this.halted) return d; break;
+      case "ebreak": this.halted = true; this.haltReason = "ebreak"; return d;
+      default: this.halted = true; this.haltReason = "illegal instruction 0x" + u32(w).toString(16); return d;
+    }
+    R[0] = 0;
+    this.pc = npc | 0;
+    this.retired++;
+    return d;
+  };
+  CPU.prototype.syscall = function () {
+    var svc = this.regs[17] | 0, a0 = this.regs[10] | 0; // a7, a0
+    if (svc === 1) this.output += String(a0 | 0);                         // print int
+    else if (svc === 34) this.output += "0x" + u32(a0).toString(16);      // print hex
+    else if (svc === 35) this.output += u32(a0).toString(2);              // print binary
+    else if (svc === 11) this.output += String.fromCharCode(a0 & 0xff);   // print char
+    else if (svc === 4) {                                                 // print string
+      var s = "", p = u32(a0), guard = 0;
+      while (guard++ < 65536) { var c = this.rB(p++); if (c === 0) break; s += String.fromCharCode(c); }
+      this.output += s;
+    }
+    else if (svc === 10 || svc === 93) { this.halted = true; this.haltReason = "program exited"; }
+    else { /* unsupported service: ignore */ }
+  };
+
+  // run until halt or step budget. onStep optional.
+  CPU.prototype.run = function (maxSteps) {
+    var budget = maxSteps || 5000000, n = 0;
+    while (!this.halted && n < budget) { this.step(); n++; }
+    if (!this.halted && n >= budget) { this.halted = true; this.haltReason = "step limit reached (possible infinite loop)"; }
+    return n;
+  };
+
+  var API = { assemble: assemble, CPU: CPU, decode: decode, signExtend: signExtend,
+    ABI: ABI, REGMAP: REGMAP, MEM_SIZE: MEM_SIZE, TEXT_BASE: TEXT_BASE,
+    DATA_BASE: DATA_BASE, STACK_TOP: STACK_TOP, encR: encR, encI: encI, encS: encS,
+    encB: encB, encU: encU, encJ: encJ, parseImm: parseImm };
+
+  if (typeof module !== "undefined" && module.exports) module.exports = API;
+  else root.RV = API;
+})(typeof self !== "undefined" ? self : this);
+
+</script>
+
+<!-- ===================== UI ===================== -->
+<script>
+(function(){
+  var RV = window.RV;
+  var $ = function(id){ return document.getElementById(id); };
+  var code=$("code"), gutter=$("gutter"), hl=$("hl"), status=$("status"),
+      bAsm=$("bAsm"), bStep=$("bStep"), bAuto=$("bAuto"), bRun=$("bRun"), bReset=$("bReset"),
+      speed=$("speed"), regGrid=$("regGrid"), pcVal=$("pcVal"), retVal=$("retVal"), haltVal=$("haltVal"),
+      curEl=$("cur"), curType=$("curType"), consoleEl=$("console"), memDump=$("memDump"), memSel=$("memSel"),
+      fmtBtn=$("fmtBtn"), samplesSel=$("samples");
+
+  var cpu=new RV.CPU(), asm=null, addr2line={}, hexFmt=true, autoTimer=null;
+  var LINE_H=21, PAD_T=14;
+
+  // ---- SAMPLE PROGRAMS ----
+  var SAMPLES = {
+    "Hello, RISC-V":
+`# Print a string, then exit.
+# ecall: a7 = service number, a0 = argument.
+.data
+msg: .asciz "Hello, RISC-V!\\n"
+
+.text
+    la   a0, msg     # a0 = address of the string
+    li   a7, 4       # service 4 = print string
+    ecall
+    li   a7, 10      # service 10 = exit
+    ecall`,
+
+    "Fibonacci (print fib 10)":
+`# Compute the 10th Fibonacci number in a loop.
+.text
+    li   t0, 10      # n
+    li   t1, 0       # a = fib(0)
+    li   t2, 1       # b = fib(1)
+loop:
+    add  t3, t1, t2  # next = a + b
+    mv   t1, t2      # a = b
+    mv   t2, t3      # b = next
+    addi t0, t0, -1  # n = n - 1
+    bnez t0, loop    # repeat while n != 0
+    mv   a0, t1      # print a
+    li   a7, 1
+    ecall
+    li   a7, 10
+    ecall`,
+
+    "Sum 1..100":
+`# Add up every number from 1 to 100.
+.text
+    li   t0, 0       # sum
+    li   t1, 1       # i
+    li   t2, 100     # limit
+loop:
+    add  t0, t0, t1  # sum += i
+    addi t1, t1, 1   # i++
+    ble  t1, t2, loop
+    mv   a0, t0
+    li   a7, 1       # print the sum (5050)
+    ecall
+    li   a7, 10
+    ecall`,
+
+    "Bubble sort an array":
+`# Sort an array in memory, then print it.
+.data
+arr: .word 5, 2, 9, 1, 7, 3
+n:   .word 6
+
+.text
+    la   s0, arr
+    lw   s1, n
+    addi s2, s1, -1      # passes remaining
+outer:
+    li   t0, 0           # i = 0
+inner:
+    slli t1, t0, 2       # byte offset i*4
+    add  t2, s0, t1
+    lw   t3, 0(t2)       # arr[i]
+    lw   t4, 4(t2)       # arr[i+1]
+    ble  t3, t4, noswap
+    sw   t4, 0(t2)       # swap
+    sw   t3, 4(t2)
+noswap:
+    addi t0, t0, 1
+    blt  t0, s2, inner
+    addi s2, s2, -1
+    bnez s2, outer
+    # print the sorted array, space separated
+    la   s0, arr
+    lw   s1, n
+    li   s3, 0
+print:
+    slli t1, s3, 2
+    add  t2, s0, t1
+    lw   a0, 0(t2)
+    li   a7, 1
+    ecall
+    li   a0, 32          # space
+    li   a7, 11
+    ecall
+    addi s3, s3, 1
+    blt  s3, s1, print
+    li   a7, 10
+    ecall`,
+
+    "Recursive factorial":
+`# factorial(5) using the call stack.
+.text
+    li   a0, 5
+    call fact
+    li   a7, 1        # print result (120)
+    ecall
+    li   a7, 10
+    ecall
+
+# a0 = n -> returns n! in a0
+fact:
+    addi sp, sp, -8   # make a stack frame
+    sw   ra, 4(sp)    # save return address
+    sw   a0, 0(sp)    # save n
+    li   t0, 2
+    blt  a0, t0, base # if n < 2, return 1
+    addi a0, a0, -1
+    call fact         # a0 = (n-1)!
+    lw   t1, 0(sp)    # reload n
+    mv   t2, a0       # (n-1)!
+    li   a0, 0        # multiply n * (n-1)! by adding
+    mv   t3, t1
+mul:
+    add  a0, a0, t2
+    addi t3, t3, -1
+    bnez t3, mul
+    j    done
+base:
+    li   a0, 1
+done:
+    lw   ra, 4(sp)    # restore frame
+    addi sp, sp, 8
+    ret`
+  };
+
+  // ---- editor gutter / highlight ----
+  function renderGutter(){
+    var n=code.value.split("\n").length, s="";
+    for(var i=1;i<=n;i++) s+=i+(i<n?"\n":"");
+    gutter.textContent=s;
+    gutter.scrollTop=code.scrollTop;
+  }
+  function setHighlight(lineIdx){
+    if(lineIdx==null||lineIdx<0){ hl.style.display="none"; return; }
+    hl.style.display="block";
+    hl.style.top=(PAD_T + lineIdx*LINE_H - code.scrollTop)+"px";
+    // ensure visible
+    var top=lineIdx*LINE_H, bottom=top+LINE_H, view=code.clientHeight;
+    if(top<code.scrollTop) code.scrollTop=top;
+    else if(bottom>code.scrollTop+view) code.scrollTop=bottom-view;
+    gutter.scrollTop=code.scrollTop;
+  }
+  code.addEventListener("input", function(){ renderGutter(); });
+  code.addEventListener("scroll", function(){
+    gutter.scrollTop=code.scrollTop;
+    if(hl.style.display==="block" && curLine!=null) hl.style.top=(PAD_T + curLine*LINE_H - code.scrollTop)+"px";
+  });
+  // Tab inserts spaces
+  code.addEventListener("keydown", function(e){
+    if(e.key==="Tab"){ e.preventDefault(); var s=code.selectionStart,en=code.selectionEnd;
+      code.value=code.value.slice(0,s)+"    "+code.value.slice(en); code.selectionStart=code.selectionEnd=s+4; renderGutter(); }
+  });
+
+  var curLine=null;
+
+  // ---- registers ----
+  function buildRegs(){
+    var h="";
+    for(var i=0;i<32;i++){
+      h+='<div class="reg" id="reg'+i+'"><div class="rn"><span>'+RV.ABI[i]+'</span><b>x'+i+'</b></div><div class="rv" id="rv'+i+'">0</div></div>';
+    }
+    regGrid.innerHTML=h;
+  }
+  function fmtVal(v){
+    if(hexFmt){ var u=v>>>0; return "0x"+("00000000"+u.toString(16)).slice(-8); }
+    return String(v|0);
+  }
+  function renderRegs(){
+    for(var i=0;i<32;i++){
+      var el=$("rv"+i), cell=$("reg"+i), v=cpu.regs[i]|0;
+      el.textContent=fmtVal(v);
+      cell.classList.toggle("zero", v===0);
+      cell.classList.toggle("hot", i===cpu.lastReg && i!==0);
+    }
+    pcVal.textContent="0x"+("00000000"+(cpu.pc>>>0).toString(16)).slice(-8);
+    retVal.textContent=cpu.retired+" instruction"+(cpu.retired===1?"":"s");
+    haltVal.textContent=cpu.halted?("• "+cpu.haltReason):"";
+    haltVal.style.color=cpu.halted?"var(--accent)":"var(--faint)";
+  }
+
+  // ---- current instruction decode ----
+  var FIELD_LAYOUT={
+    R:[["funct7",7,"f7"],["rs2",5,"rs2"],["rs1",5,"rs1"],["funct3",3,"f3"],["rd",5,"rd"],["opcode",7,"op"]],
+    I:[["imm[11:0]",12,"imm"],["rs1",5,"rs1"],["funct3",3,"f3"],["rd",5,"rd"],["opcode",7,"op"]],
+    S:[["imm[11:5]",7,"imm"],["rs2",5,"rs2"],["rs1",5,"rs1"],["funct3",3,"f3"],["imm[4:0]",5,"imm"],["opcode",7,"op"]],
+    B:[["imm[12|10:5]",7,"imm"],["rs2",5,"rs2"],["rs1",5,"rs1"],["funct3",3,"f3"],["imm[4:1|11]",5,"imm"],["opcode",7,"op"]],
+    U:[["imm[31:12]",20,"imm"],["rd",5,"rd"],["opcode",7,"op"]],
+    J:[["imm[20|10:1|11|19:12]",20,"imm"],["rd",5,"rd"],["opcode",7,"op"]],
+    SYS:[["funct12",12,"imm"],["rs1",5,"rs1"],["funct3",3,"f3"],["rd",5,"rd"],["opcode",7,"op"]]
+  };
+  var COLOR={op:"var(--c-op)",rd:"var(--c-rd)",f3:"var(--c-f3)",rs1:"var(--c-rs1)",rs2:"var(--c-rs2)",f7:"var(--c-f7)",imm:"var(--c-imm)"};
+  function disasm(d){
+    var A=RV.ABI, t=d.type, m=d.mn;
+    if(t==="R") return m+" "+A[d.rd]+", "+A[d.rs1]+", "+A[d.rs2];
+    if(m==="jalr") return m+" "+A[d.rd]+", "+d.imm+"("+A[d.rs1]+")";
+    if(t==="I"&&d.op===0x03) return m+" "+A[d.rd]+", "+d.imm+"("+A[d.rs1]+")";
+    if(t==="I") return m+" "+A[d.rd]+", "+A[d.rs1]+", "+d.imm;
+    if(t==="S") return m+" "+A[d.rs2]+", "+d.imm+"("+A[d.rs1]+")";
+    if(t==="B") return m+" "+A[d.rs1]+", "+A[d.rs2]+", pc"+(d.imm>=0?"+":"")+d.imm;
+    if(t==="U") return m+" "+A[d.rd]+", 0x"+((d.imm>>>12)&0xfffff).toString(16);
+    if(t==="J") return m+" "+A[d.rd]+", pc"+(d.imm>=0?"+":"")+d.imm;
+    if(t==="SYS") return m;
+    return m;
+  }
+  function renderCur(){
+    var pc=cpu.pc>>>0;
+    if(cpu.halted || pc>=(cpu.textEnd>>>0)){
+      curType.textContent="";
+      curEl.innerHTML='<div class="decode-note">'+(cpu.halted?("Halted — <em>"+cpu.haltReason+"</em>."):"No instruction under the program counter.")+'</div>';
+      return;
+    }
+    var w=cpu.rW(pc), d=RV.decode(w);
+    curType.textContent=d.type+"-type";
+    var bin=("00000000000000000000000000000000"+(w>>>0).toString(2)).slice(-32);
+    var layout=FIELD_LAYOUT[d.type]||FIELD_LAYOUT.I, idx=0, bitsHtml="";
+    for(var i=0;i<layout.length;i++){
+      var name=layout[i][0], width=layout[i][1], cls=layout[i][2];
+      var seg=bin.slice(idx,idx+width); idx+=width;
+      bitsHtml+='<div class="bf" style="background:'+COLOR[cls]+'"><div class="bb">'+seg+'</div><div class="bl">'+name+'</div></div>';
+    }
+    var hex="0x"+("00000000"+(w>>>0).toString(16)).slice(-8);
+    var srcTxt = (addr2line[pc]!=null && asm)? (" &nbsp;·&nbsp; line "+(addr2line[pc]+1)) : "";
+    curEl.innerHTML=
+      '<div class="line1"><span class="mnem">'+esc(disasm(d))+'</span><span class="addr">@ 0x'+("00000000"+pc.toString(16)).slice(-8)+srcTxt+'</span></div>'+
+      '<div class="bits">'+bitsHtml+'</div>'+
+      '<div class="decode-note">encoding <em>'+hex+'</em> &nbsp;·&nbsp; opcode <em>0b'+bin.slice(25)+'</em> = <em>'+d.mn+'</em></div>';
+  }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  // ---- console ----
+  function renderConsole(){
+    if(cpu.output===""){ consoleEl.innerHTML='<span class="cempty">Program output from <code>ecall</code> appears here.</span>'; }
+    else { consoleEl.textContent=cpu.output; consoleEl.scrollTop=consoleEl.scrollHeight; }
+  }
+
+  // ---- memory ----
+  function renderMem(){
+    var start, rows=8;
+    var mode=memSel.value;
+    if(mode==="data") start=RV.DATA_BASE;
+    else if(mode==="stack"){ start=((cpu.regs[2]>>>0)&~0xf)-0x30; if(start<0)start=0; }
+    else start=RV.TEXT_BASE;
+    var h="";
+    for(var r=0;r<rows;r++){
+      var base=(start+r*16)>>>0;
+      var hexPart="", asc="";
+      for(var c=0;c<16;c++){
+        var a=(base+c)>>>0, b=cpu.mem[a & (RV.MEM_SIZE-1)];
+        var bh=("0"+b.toString(16)).slice(-2);
+        var hotcls=(a===cpu.lastMem)?' class="hotb"':"";
+        hexPart+='<span'+(hotcls||' class="mb"')+'>'+bh+'</span>'+(c===7?"  ":" ");
+        asc+=(b>=32&&b<127)?String.fromCharCode(b):".";
+      }
+      h+='<div class="memrow"><span class="ma">0x'+("00000000"+base.toString(16)).slice(-8)+'</span>  '+hexPart+' <span class="asc">'+esc(asc)+'</span></div>';
+    }
+    memDump.innerHTML=h;
+  }
+
+  // ---- full render ----
+  function renderAll(){
+    renderRegs(); renderCur(); renderConsole(); renderMem();
+    curLine = (asm && addr2line[cpu.pc>>>0]!=null && !cpu.halted && (cpu.pc>>>0)<(cpu.textEnd>>>0)) ? addr2line[cpu.pc>>>0] : null;
+    setHighlight(curLine);
+  }
+
+  // ---- actions ----
+  function doAssemble(){
+    stopAuto();
+    var res=RV.assemble(code.value);
+    if(!res.ok){
+      asm=null;
+      status.className="status err";
+      status.innerHTML="Assemble error"+(res.errorLine>=0?(" on line "+(res.errorLine+1)):"")+": "+esc(res.error);
+      if(res.errorLine>=0) setHighlight(res.errorLine);
+      enable(false);
+      return;
+    }
+    asm=res; addr2line={};
+    for(var i=0;i<res.instructions.length;i++) addr2line[res.instructions[i].addr>>>0]=res.instructions[i].srcLine;
+    cpu.load(res);
+    status.className="status ok";
+    status.innerHTML="Assembled "+res.instructions.length+" instruction"+(res.instructions.length===1?"":"s")+
+      " into "+((res.textEnd-res.textBase))+" bytes of code. Ready — press <b>Step</b> or <b>Run</b>.";
+    enable(true);
+    renderAll();
+  }
+  function enable(on){
+    bStep.disabled=!on; bAuto.disabled=!on; bRun.disabled=!on; bReset.disabled=!on;
+  }
+  function doStep(){
+    if(!asm) return;
+    if(cpu.halted){ status.innerHTML="Program has halted — <b>Reset</b> to run again."; status.className="status"; return; }
+    cpu.step();
+    renderAll();
+    if(cpu.halted){ stopAuto(); }
+  }
+  function doRun(){
+    if(!asm) return; stopAuto();
+    if(cpu.halted) doReset();
+    cpu.run(5000000);
+    renderAll();
+  }
+  function doReset(){
+    if(!asm) return; stopAuto();
+    cpu.reset();
+    status.className="status ok"; status.innerHTML="Reset. Program counter is back at the start.";
+    renderAll();
+  }
+  function delayFromSpeed(){ // slider 0..100 -> 320ms..4ms
+    var s=+speed.value; return Math.round(320 - (s/100)*(320-4));
+  }
+  function startAuto(){
+    if(!asm||cpu.halted) return;
+    bAuto.textContent="Pause ⏸";
+    tickAuto();
+  }
+  function tickAuto(){
+    if(cpu.halted){ stopAuto(); return; }
+    cpu.step(); renderAll();
+    if(cpu.halted){ stopAuto(); return; }
+    autoTimer=setTimeout(tickAuto, delayFromSpeed());
+  }
+  function stopAuto(){ if(autoTimer){ clearTimeout(autoTimer); autoTimer=null; } bAuto.innerHTML="Auto &#9199;"; }
+  function toggleAuto(){ if(autoTimer) stopAuto(); else startAuto(); }
+
+  bAsm.addEventListener("click", doAssemble);
+  bStep.addEventListener("click", doStep);
+  bRun.addEventListener("click", doRun);
+  bReset.addEventListener("click", doReset);
+  bAuto.addEventListener("click", toggleAuto);
+  memSel.addEventListener("change", renderMem);
+  fmtBtn.addEventListener("click", function(){ hexFmt=!hexFmt; fmtBtn.textContent=hexFmt?"hex":"dec"; renderRegs(); });
+  // keyboard: Ctrl/Cmd+Enter = assemble, F10/. = step
+  document.addEventListener("keydown", function(e){
+    if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){ e.preventDefault(); doAssemble(); }
+  });
+
+  // samples
+  var names=Object.keys(SAMPLES), so="";
+  for(var i=0;i<names.length;i++) so+='<option value="'+i+'">'+names[i]+'</option>';
+  samplesSel.innerHTML=so;
+  samplesSel.addEventListener("change", function(){
+    code.value=SAMPLES[names[+samplesSel.value]]; renderGutter(); setHighlight(null);
+    status.className="status"; status.innerHTML="Loaded sample — press <b>Assemble</b>.";
+    enable(false); asm=null;
+  });
+
+  // ---- init ----
+  buildRegs();
+  code.value=SAMPLES[names[1]]; // Fibonacci
+  samplesSel.value="1";
+  renderGutter();
+  doAssemble();   // first-run magic: assembled and ready
+})();
+</script>
+
+<!-- shared site enhancer: command palette, theme, analytics beacon -->
+<script src="enhance.js" defer></script>
+<!-- Analytics: Cloudflare Web Analytics beacon (also injected by enhance.js; direct tag kept as fallback). -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
