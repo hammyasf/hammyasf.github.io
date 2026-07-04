@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Giving an AI agent on-chain data? Do not start with raw RPC — Harman Kamboj</title>
+<meta name="description" content="Giving an AI agent on-chain data through raw RPC is a trap. Why I put an indexer between the agent and the chain, and what that actually fixes." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Giving an AI agent on-chain data? Do not start with raw RPC — Harman Kamboj" />
+<meta property="og:description" content="Giving an AI agent on-chain data through raw RPC is a trap. Why I put an indexer between the agent and the chain, and what that actually fixes." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/ai-agent-onchain-data.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Giving an AI agent on-chain data? Do not start with raw RPC — Harman Kamboj" />
+<meta name="twitter:description" content="Giving an AI agent on-chain data through raw RPC is a trap. Why I put an indexer between the agent and the chain, and what that actually fixes." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/ai-agent-onchain-data.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Giving an AI agent on-chain data? Do not start with raw RPC","description":"Giving an AI agent on-chain data through raw RPC is a trap. Why I put an indexer between the agent and the chain, and what that actually fixes.","datePublished":"2026-07-04","dateModified":"2026-07-04","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/ai-agent-onchain-data.html","url":"https://hammyasf.github.io/ai-agent-onchain-data.html","keywords":"AI, Agents, Web3, Indexers, On-chain data","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  .rel{margin:40px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin-bottom:6px;}
+  .rel a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Giving an AI agent on-chain data? Do not start with raw RPC</h1>
+   <div class="pmeta"><span>July 4, 2026</span><span>6 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>AI</span><span>Agents</span><span>Web3</span><span>Indexers</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>A while back I watched an agent try to answer a plain question about one wallet's trading history by reading the chain itself. It fired off a pile of RPC calls, pulled thousands of raw logs, burned a fortune in tokens trying to decode them by hand, and still got the answer partly wrong, because two of the blocks it had trusted got reorged out from under it a minute later. That was the run that settled my opinion on how to give an AI agent on-chain data. Not through raw RPC. Put an indexer in between and let the agent ask a real question instead of doing data engineering it is bad at.</p>
+<p>I say this as someone who has spent a lot of years on both ends of this. I have built the indexers, for a top-10 crypto's web platform and for a DeFi exchange, and lately I have been building the agents that want to read what those indexers produce. The mistake I keep seeing is people wiring a shiny new agent straight to an RPC endpoint because that is the first thing the docs show you. It works in a demo. It falls apart the moment the question gets real.</p>
+<h2>Raw chain data is not a data source, it is a receipt pile</h2>
+<p>Here is the thing nobody tells you when you are new to this. The blockchain does not store your app's data. It stores a ledger of what happened, in a shape optimized for consensus, not for questions. A swap is not a row that says who traded what. It is a log entry with a topic hash and a blob of hex you have to decode against an ABI you had better have on hand. To reconstruct one wallet's history you walk a range of blocks, pull the logs, decode each one, join them to token metadata, and sort them into an order the chain never actually promised you. That is a real engineering job. Handing it to a language model token by token is the most expensive and least reliable way to do it I can think of.</p>
+<p>And the model is genuinely bad at the parts that matter here. It will happily hallucinate a decoded value, mix up token decimals, or invent an ordering that looks plausible and is wrong. None of that is the model being dumb. It is the model being asked to be a deterministic parser, which is not what it is for.</p>
+<h2>The recent stuff is a moving target</h2>
+<p>Even if the agent decodes everything perfectly, the newest blocks are not safe to trust yet. Chains reorg. The block your agent read ten seconds ago can get replaced, and with it the transaction it just told the user about. I have written a whole piece on <a href="handling-chain-reorgs-indexer.html">handling chain reorgs without corrupting your indexer</a>, and the short version is that you need confirmations, rollbacks, and writes that survive being undone and redone. An indexer does that work once, carefully, in one place. If every agent has to relearn reorg safety on its own, most of them just will not, and they will confidently report state that no longer exists.</p>
+<p>There is a related trap in ordering. <a href="event-ordering-evm-logs.html">Event ordering on EVM is not what most people assume</a>, and an agent stitching logs together in the order an RPC node happened to return them will get transaction sequences subtly wrong. Subtly wrong is the worst kind when money is involved.</p>
+<h2>RPC nodes were not built for a chatty agent</h2>
+<p>Agents are loops. They retry, they branch, they ask again with a slightly different plan. Point that behavior at a public RPC endpoint and you hit rate limits fast, then you are debugging flaky failures inside an already non-deterministic system. I spend real effort on <a href="rpc-reliability-web3.html">RPC reliability for apps that cannot go down</a>, with failover and fallbacks, precisely because raw nodes are the shakiest link in the stack. An agent multiplies every one of those weak spots. An indexer collapses a hundred noisy chain reads into one clean query against a database that was built to be queried.</p>
+<h2>What I actually put between the agent and the chain</h2>
+<p>My default setup is boring on purpose. An indexer, a subgraph or a Subsquid processor depending on the job, ingests the events once, decodes them, models them into tables that match how people ask questions, and serves them over a typed query interface. If you want to see how that machinery really works under the hood, I wrote up <a href="how-subgraphs-actually-work.html">how subgraphs actually work from someone who ships them</a>. The agent never touches a block number. It asks for a wallet's swaps in a date range and gets back rows it can reason about.</p>
+<p>Then I give the agent a small, sharp set of tools over that indexer rather than a raw query firehose. A handful of named queries with clear inputs beats an open SQL box the model can hurt itself with. And every tool that changes anything stays idempotent, for the same reason I argued in <a href="idempotent-tool-calls-agents.html">idempotent tool calls: do this before you let an agent retry</a>. The agent will retry. Plan for it, so a retry lands in the same place as the first call instead of doubling something real.</p>
+<h2>When reading the chain directly is fine</h2>
+<p>I am not saying never touch RPC. If the agent needs a single current value, like a balance or the result of one contract read at head, a direct call is fine and an indexer would be overkill. The line I draw is history and aggregation. The moment the question is about what happened over time, across many events, or in any shape the chain does not hand you for free, that belongs behind an indexer. Point queries can go direct. Anything you would call analytics should not.</p>
+<p>The pattern I keep coming back to is simple. Let the chain be the source of truth, let an indexer be the source of answers, and let the agent be the thing that asks good questions and explains them. Keep those three jobs separate and the whole system gets calmer. If you want more of how I think about the data layer, I keep writing about it in my <a href="web3.html">Web3 notes</a> and my <a href="ai.html">AI notes</a>, and the rest of the work is on the <a href="index.html">homepage</a>.</p>
+   <div class="rel">
+     <h2>Related in Web3</h2>
+     <ul>
+       <li><a href="how-subgraphs-actually-work.html">How subgraphs actually work, from someone who ships them</a></li>
+       <li><a href="handling-chain-reorgs-indexer.html">Handling chain reorgs without corrupting your indexer</a></li>
+       <li><a href="rpc-reliability-web3.html">RPC reliability for Web3 apps that cannot go down</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If your agent or the hard part of your product is fighting you, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="durable-execution-ai-agents.html">Durable execution: how I make an AI agent survive a crash mid-run →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>
