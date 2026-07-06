@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ripple — Wave &amp; Interference Lab | double-slit, diffraction, refraction in your browser</title>
+<meta name="description" content="A real 2D wave simulation running on your GPU. Watch the double-slit experiment, diffraction, refraction and interference happen live. Paint walls, drop ripples, place slits. 100% in your browser, nothing uploaded." />
+<meta name="keywords" content="ripple tank simulator, wave interference simulator, double slit experiment simulator, diffraction simulator, wave simulation online, interference pattern, physics simulation browser, webgl wave equation, refraction simulator, two slit interference" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Ripple — Wave &amp; Interference Lab" />
+<meta property="og:description" content="A real 2D wave equation solved on your GPU. Double-slit, diffraction, refraction and interference, live in your browser. Nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/ripple.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Ripple — Wave &amp; Interference Lab" />
+<meta name="twitter:description" content="A real wave equation on your GPU. Double-slit, diffraction, interference, live in your browser." />
+<link rel="canonical" href="https://hammyasf.github.io/ripple.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Ripple — Wave & Interference Lab","url":"https://hammyasf.github.io/ripple.html","applicationCategory":"EducationalApplication","operatingSystem":"Any (modern web browser with WebGL2)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"An interactive 2D wave-equation simulation solved on the GPU. Shows the double-slit experiment, diffraction, refraction and interference in real time, entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this a real physics simulation or a canned animation?","acceptedAnswer":{"@type":"Answer","text":"It is a real simulation. Ripple numerically solves the 2D wave equation on a grid every frame using a finite-difference scheme running in a WebGL2 fragment shader on your GPU. The interference fringes emerge from the physics, they are not drawn in."}},{"@type":"Question","name":"How does the double-slit experiment work here?","acceptedAnswer":{"@type":"Answer","text":"A straight plane wave travels toward a barrier with two narrow gaps. Each gap acts as a new source, and the two spreading waves overlap. Where crests meet crests you get bright bands, where crest meets trough they cancel. That striped pattern is interference, the signature of wave behaviour."}},{"@type":"Question","name":"Does anything get uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. The entire simulation runs locally on your GPU through WebGL2. Nothing leaves your device and there is no sign-up."}},{"@type":"Question","name":"What do I need to run it?","acceptedAnswer":{"@type":"Answer","text":"Any modern browser with WebGL2 and floating-point render targets, which covers current Chrome, Edge, Firefox and Safari on desktop and most recent phones. If your browser cannot do it, Ripple tells you instead of showing a broken page."}},{"@type":"Question","name":"Can I make my own setups?","acceptedAnswer":{"@type":"Answer","text":"Yes. Paint walls, carve your own slits, drop single ripples, place a slow lens region to bend waves, or add point sources. Every change is live."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .stage{margin:22px 0 8px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;position:relative;}
+  .canvaswrap{position:relative;width:100%;aspect-ratio:16/9;background:#050c0a;}
+  #sim{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair;}
+  #hud{position:absolute;top:12px;left:14px;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(5,12,10,.55);border:1px solid var(--line);padding:6px 10px;border-radius:8px;pointer-events:none;backdrop-filter:blur(4px);}
+  #fail{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;flex-direction:column;gap:10px;background:rgba(5,12,10,.9);}
+  #fail h3{font-family:var(--display);font-size:22px;}
+  #fail p{color:var(--muted);font-size:14px;max-width:420px;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:16px 22px;padding:16px 18px;align-items:flex-end;border-top:1px solid var(--line);}
+  .grp{display:flex;flex-direction:column;gap:7px;}
+  .grp label{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;flex-wrap:wrap;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 13px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
+  .seg button:hover{color:var(--ink);}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  input[type=range]{accent-color:var(--accent);width:130px;}
+  .rowval{display:flex;align-items:center;gap:9px;}
+  .rowval span{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:30px;}
+  .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line-2);font-weight:500;}
+  .presets{display:flex;flex-wrap:wrap;gap:9px;padding:0 18px 16px;}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.5);padding:8px 13px;border-radius:100px;cursor:pointer;transition:.15s;}
+  .chip:hover{border-color:rgba(var(--accentRGB),.5);color:var(--ink);}
+  .chip.on{border-color:var(--accent);color:var(--accent);background:rgba(var(--accentRGB),.08);}
+  .hint{font-family:var(--mono);font-size:11.5px;color:var(--faint);padding:0 18px 16px;}
+  section.copy{margin:44px 0 0;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:24px;margin:26px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#c4d1cb;max-width:720px;margin-bottom:8px;}
+  .faq{margin-top:26px;}
+  .faq details{border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px;background:rgba(var(--surfaceRGB),.4);}
+  .faq summary{font-family:var(--display);font-weight:500;font-size:16px;cursor:pointer;}
+  .faq p{margin-top:8px;color:var(--muted);font-size:15px;}
+  .cta{margin:40px 0;padding:28px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--accentRGB),.05);}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:22px;}
+  .cta p{color:var(--muted);margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){input[type=range]{width:108px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Physics · runs on your GPU</div>
+    <h1>Ripple — Wave &amp; Interference Lab</h1>
+    <p class="sub">A real 2D wave equation, solved on your graphics card every frame. Watch the double-slit experiment, diffraction, and refraction happen live. Paint walls, carve slits, drop ripples.</p>
+    <span class="priv">&#9889; 100% in your browser — the whole simulation runs on your GPU, nothing uploaded</span>
+  </header>
+
+  <div class="stage">
+    <div class="canvaswrap">
+      <canvas id="sim"></canvas>
+      <div id="hud">booting…</div>
+      <div id="fail">
+        <h3>This browser can't run Ripple</h3>
+        <p id="failmsg">Ripple needs WebGL2 with floating-point render targets. Try the latest Chrome, Edge, Firefox, or Safari on a desktop or a recent phone.</p>
+      </div>
+    </div>
+    <div class="presets" id="presets">
+      <button class="chip on" data-preset="double">Double slit</button>
+      <button class="chip" data-preset="single">Single slit</button>
+      <button class="chip" data-preset="two">Two sources</button>
+      <button class="chip" data-preset="lens">Lens (refraction)</button>
+      <button class="chip" data-preset="guide">Waveguide</button>
+      <button class="chip" data-preset="tank">Open ripple tank</button>
+    </div>
+    <div class="toolbar">
+      <div class="grp"><label>Click on the wave to…</label>
+        <div class="seg" id="tool">
+          <button data-tool="drip" class="on">Drop ripple</button>
+          <button data-tool="wall">Draw wall</button>
+          <button data-tool="lens">Paint lens</button>
+          <button data-tool="erase">Erase</button>
+        </div>
+      </div>
+      <div class="grp"><label>Frequency</label>
+        <div class="rowval"><input type="range" id="freq" min="6" max="80" value="30" /><span id="freqv">30</span></div>
+      </div>
+      <div class="grp"><label>Damping</label>
+        <div class="rowval"><input type="range" id="damp" min="80" max="100" value="98" /><span id="dampv">.98</span></div>
+      </div>
+      <div class="grp"><label>Contrast</label>
+        <div class="rowval"><input type="range" id="gain" min="10" max="220" value="90" /><span id="gainv">90</span></div>
+      </div>
+      <div class="grp"><label>&nbsp;</label>
+        <div style="display:flex;gap:9px;">
+          <button class="btn" id="srcbtn">Source: on</button>
+          <button class="btn ghost" id="pause">Pause</button>
+          <button class="btn ghost" id="clear">Clear waves</button>
+        </div>
+      </div>
+    </div>
+    <div class="hint" id="hint">Tip: the double-slit is loaded and running. Try switching the tool to <b>Draw wall</b> and carving your own slit, or drop single ripples in an empty tank.</div>
+  </div>
+
+  <section class="copy">
+    <h2>What you're looking at</h2>
+    <p>Most animations of waves are just drawings that loop. This one is not. Every frame, Ripple solves the real 2D wave equation on a grid of hundreds of thousands of cells, entirely on your GPU. Each cell looks at its neighbours, works out how the surface should move next, and passes that on. The striped interference pattern behind the two slits is not painted in. It falls out of the physics, the same way it does in a water tank or a laser lab.</p>
+    <h2>How it runs in a browser</h2>
+    <p>The wave height is stored in a floating-point texture. A WebGL2 fragment shader is run once per cell per step and applies a finite-difference version of the wave equation: the new height is twice the current height, minus the previous height, plus a term proportional to how much the neighbours differ. That is a discrete second derivative in both space and time. Two textures are swapped back and forth so each step reads the last state and writes the next one, and the grid is stepped several times between frames so the waves move at a satisfying speed. Walls are cells pinned to zero, so they reflect. A lens is a region where the wave travels slower, which bends the wavefront exactly like glass bends light.</p>
+    <h2>Things to try</h2>
+    <p>Switch to <b>Two sources</b> and watch the checkerboard of interference between them. Load the <b>Lens</b> preset and see a flat wave get focused to a point. Open the plain <b>ripple tank</b>, set the tool to <b>Drop ripple</b>, and tap two spots quickly to make two ring patterns collide. Paint a <b>wall</b> with a single narrow gap to see one slit spray a wave in every direction, which is diffraction. Turn <b>damping</b> down and the tank rings for longer; turn it up and it settles fast.</p>
+  </section>
+
+  <div class="faq">
+    <h2 style="font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:14px;">Questions</h2>
+    <details open><summary>Is this a real simulation or a canned animation?</summary><p>Real. Ripple integrates the 2D wave equation numerically on a grid every frame, in a GPU shader. The interference and diffraction come out of the maths, they are not hand-drawn.</p></details>
+    <details><summary>Why does the double-slit make stripes?</summary><p>Each slit becomes a new source of circular waves. Where a crest from one slit lines up with a crest from the other they add up (a bright band); where a crest meets a trough they cancel (a dark band). Those alternating bands are interference.</p></details>
+    <details><summary>Is anything uploaded?</summary><p>No. The whole thing runs on your GPU locally through WebGL2. Nothing leaves your device, and there is no sign-up.</p></details>
+    <details><summary>It says my browser can't run it. Why?</summary><p>Ripple needs WebGL2 and the ability to render into floating-point textures. Most current browsers support this, but some older phones and locked-down setups do not. Ripple detects that and tells you rather than showing a broken canvas.</p></details>
+    <details><summary>Can I build my own setup?</summary><p>Yes. Every tool is live: paint walls, carve slits, paint a slow lens region, erase, and drop single ripples anywhere. Change frequency, damping and contrast on the fly.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build things like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- theme bootstrap (match the portfolio's saved theme) -->
+<script>
+(function(){
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<!-- pure helpers (also exported for tests) -->
+<script>
+/*__RP_HELPERS_START__*/
+(function(root){
+  "use strict";
+  function clamp(x,a,b){ return x<a?a:(x>b?b:x); }
+  // slider (6..80) -> radians of source phase advanced per sub-step
+  function freqToOmega(f){ return clamp(f,1,400)*0.0125; }
+  // damping slider (80..100) -> multiplier (.80..1.00)
+  function dampFromSlider(s){ return clamp(s,0,100)/100; }
+  // map a pointer position over the canvas rect to a sim cell {cx,cy} with y=0 at BOTTOM
+  function coordToCell(px,py,rect,W,H){
+    var u=(px-rect.left)/rect.width, v=(py-rect.top)/rect.height;
+    var cx=Math.round(clamp(u,0,1)*(W-1));
+    var cy=Math.round(clamp(1-v,0,1)*(H-1)); // flip y
+    return {cx:cx,cy:cy};
+  }
+  var IDX_WALL=0, IDX_SPEED=1, IDX_SRC=2, IDX_A=3;
+  // fresh material: everywhere speed=255 (fast, index 1), no walls, no source
+  function makeMaterial(W,H){
+    var m=new Uint8Array(W*H*4);
+    for(var i=0;i<W*H;i++){ m[i*4+IDX_SPEED]=255; m[i*4+IDX_A]=255; }
+    return m;
+  }
+  function setCell(m,W,cx,cy,wall,speed,src){
+    var i=(cy*W+cx)*4;
+    if(wall!=null) m[i+IDX_WALL]=wall;
+    if(speed!=null) m[i+IDX_SPEED]=speed;
+    if(src!=null) m[i+IDX_SRC]=src;
+  }
+  // vertical plane-wave line source near the left edge
+  function addPlaneSource(m,W,H,col){
+    for(var y=0;y<H;y++){ for(var x=col;x<col+2;x++){ setCell(m,W,x,y,0,255,255); } }
+  }
+  // a vertical barrier wall at column bx, spanning full height, with `gaps` openings
+  // gaps: array of {center, half} in cell units (y). thickness = wall columns.
+  function addBarrier(m,W,H,bx,gaps,thickness){
+    thickness=thickness||3;
+    for(var y=0;y<H;y++){
+      var open=false;
+      for(var g=0;g<gaps.length;g++){ if(Math.abs(y-gaps[g].center)<=gaps[g].half){ open=true; break; } }
+      if(open) continue;
+      for(var t=0;t<thickness;t++){ setCell(m,W,bx+t,y,255,0,0); }
+    }
+  }
+  // circular slow-medium lens centered (cx,cy) radius r, speedFactor 0..1 (lower=slower/denser)
+  function addLens(m,W,H,cx,cy,r,speedFactor){
+    var sv=Math.round(clamp(speedFactor,0.05,1)*255);
+    for(var y=Math.max(0,cy-r);y<Math.min(H,cy+r+1);y++){
+      for(var x=Math.max(0,cx-r);x<Math.min(W,cx+r+1);x++){
+        var dx=x-cx, dy=y-cy;
+        if(dx*dx+dy*dy<=r*r){ var i=(y*W+x)*4; if(m[i+IDX_WALL]<128) m[i+IDX_SPEED]=sv; }
+      }
+    }
+  }
+  // build a named preset -> {mat, source:'plane'|'point'|'none', points:[{cx,cy}]}
+  function buildPreset(name,W,H){
+    var m=makeMaterial(W,H), out={mat:m,source:'none',points:[]};
+    var midY=Math.floor(H/2), bx=Math.floor(W*0.42);
+    if(name==='double'){
+      addPlaneSource(m,W,H,3); out.source='plane';
+      var sep=Math.round(H*0.13), half=Math.max(1,Math.round(H*0.018));
+      addBarrier(m,W,H,bx,[{center:midY-sep,half:half},{center:midY+sep,half:half}],3);
+    } else if(name==='single'){
+      addPlaneSource(m,W,H,3); out.source='plane';
+      addBarrier(m,W,H,bx,[{center:midY,half:Math.max(1,Math.round(H*0.02))}],3);
+    } else if(name==='two'){
+      out.source='point';
+      out.points=[{cx:Math.floor(W*0.5),cy:Math.floor(H*0.34)},{cx:Math.floor(W*0.5),cy:Math.floor(H*0.66)}];
+      for(var p=0;p<out.points.length;p++){ setCell(m,W,out.points[p].cx,out.points[p].cy,0,255,255); }
+    } else if(name==='lens'){
+      addPlaneSource(m,W,H,3); out.source='plane';
+      addLens(m,W,H,Math.floor(W*0.55),midY,Math.round(H*0.30),0.55);
+    } else if(name==='guide'){
+      out.source='point'; out.points=[{cx:Math.floor(W*0.12),cy:midY}];
+      setCell(m,W,out.points[0].cx,out.points[0].cy,0,255,255);
+      var gh=Math.round(H*0.11), gx0=Math.floor(W*0.18), gx1=Math.floor(W*0.72);
+      for(var x=gx0;x<gx1;x++){ setCell(m,W,x,midY-gh,255,0,0); setCell(m,W,x,midY+gh,255,0,0); }
+    } else if(name==='tank'){
+      out.source='point'; out.points=[{cx:Math.floor(W*0.5),cy:midY}];
+      setCell(m,W,out.points[0].cx,out.points[0].cy,0,255,255);
+    }
+    return out;
+  }
+  // CPU reference of the GPU finite-difference step (no walls/source), for tests.
+  // state: Float32Array length W*H (u_now), prev: u_prev. returns {u,uprev} next.
+  function cpuStep(u,prev,W,H,c2,damp){
+    var un=new Float32Array(W*H);
+    for(var y=0;y<H;y++){
+      for(var x=0;x<W;x++){
+        var i=y*W+x;
+        var l=x>0?u[i-1]:u[i], r=x<W-1?u[i+1]:u[i];
+        var d=y>0?u[i-W]:u[i], t=y<H-1?u[i+W]:u[i];
+        var lap=l+r+d+t-4*u[i];
+        un[i]=(2*u[i]-prev[i]+c2*lap)*damp;
+      }
+    }
+    return {u:un,uprev:u};
+  }
+  var api={clamp:clamp,freqToOmega:freqToOmega,dampFromSlider:dampFromSlider,coordToCell:coordToCell,
+    makeMaterial:makeMaterial,setCell:setCell,addPlaneSource:addPlaneSource,addBarrier:addBarrier,
+    addLens:addLens,buildPreset:buildPreset,cpuStep:cpuStep,IDX_WALL:IDX_WALL,IDX_SPEED:IDX_SPEED,IDX_SRC:IDX_SRC};
+  if(typeof module!=='undefined'&&module.exports){ module.exports=api; }
+  root.RippleCore=api;
+})(typeof window!=='undefined'?window:globalThis);
+/*__RP_HELPERS_END__*/
+</script>
+
+<!-- app -->
+<script>
+(function(){
+  "use strict";
+  var C=window.RippleCore;
+  var W=640, H=360;                 // simulation grid (16:9)
+  var SUBSTEPS=4;                   // physics steps per animation frame
+  var cv=document.getElementById("sim"), hud=document.getElementById("hud"),
+      fail=document.getElementById("fail"), failmsg=document.getElementById("failmsg");
+  var gl=null;
+  try{ gl=cv.getContext("webgl2",{antialias:false,preserveDrawingBuffer:false,alpha:false}); }catch(e){}
+  function die(msg){ if(msg)failmsg.textContent=msg; fail.style.display="flex"; hud.style.display="none"; }
+  if(!gl){ die("Ripple needs WebGL2, which this browser did not provide."); return; }
+  var extCBF = gl.getExtension("EXT_color_buffer_float");
+  var useFloat = !!extCBF;
+  // state texture format: prefer RGBA32F; fall back to RGBA16F if 32F not renderable
+  var stateType = gl.FLOAT, stateIF = gl.RGBA32F;
+  if(!useFloat){ die("Ripple needs floating-point render targets (EXT_color_buffer_float), which this browser did not provide."); return; }
+
+  // ---- shader helpers ----
+  function sh(type,src){ var s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){ var log=gl.getShaderInfoLog(s); gl.deleteShader(s); throw new Error("shader: "+log); } return s; }
+  function prog(vs,fs){ var p=gl.createProgram(); gl.attachShader(p,sh(gl.VERTEX_SHADER,vs)); gl.attachShader(p,sh(gl.FRAGMENT_SHADER,fs)); gl.linkProgram(p);
+    if(!gl.getProgramParameter(p,gl.LINK_STATUS)){ throw new Error("link: "+gl.getProgramInfoLog(p)); } return p; }
+
+  var VS="#version 300 es\nin vec2 p; out vec2 uv; void main(){ uv=p*0.5+0.5; gl_Position=vec4(p,0.,1.); }";
+
+  var SIM="#version 300 es\nprecision highp float;\n"+
+    "in vec2 uv; out vec4 o;\n"+
+    "uniform sampler2D uState; uniform sampler2D uMat; uniform vec2 uTexel;\n"+
+    "uniform float uPhase, uAmp, uDamp, uC2;\n"+
+    "void main(){\n"+
+    "  vec4 m=texture(uMat,uv);\n"+
+    "  if(m.r>0.5){ o=vec4(0.0,0.0,0.0,1.0); return; }\n"+
+    "  float u=texture(uState,uv).r;\n"+
+    "  float up=texture(uState,uv).g;\n"+
+    "  float l=texture(uState,uv-vec2(uTexel.x,0.)).r;\n"+
+    "  float r=texture(uState,uv+vec2(uTexel.x,0.)).r;\n"+
+    "  float d=texture(uState,uv-vec2(0.,uTexel.y)).r;\n"+
+    "  float t=texture(uState,uv+vec2(0.,uTexel.y)).r;\n"+
+    "  float lap=l+r+d+t-4.0*u;\n"+
+    "  float sp=m.g;\n"+                       // speed factor 0..1
+    "  float c2=uC2*sp*sp;\n"+
+    "  float un=2.0*u-up+c2*lap;\n"+
+    "  float edge=min(min(uv.x,1.0-uv.x),min(uv.y,1.0-uv.y));\n"+
+    "  float ed=smoothstep(0.0,0.06,edge);\n"+ // absorbing border layer
+    "  float damp=mix(0.82,uDamp,ed);\n"+
+    "  un*=damp;\n"+
+    "  if(m.b>0.5){ un=uAmp*sin(uPhase); }\n"+ // hard-driven source
+    "  o=vec4(un,u,0.0,1.0);\n"+
+    "}";
+
+  var SPLAT="#version 300 es\nprecision highp float;\n"+
+    "in vec2 uv; out vec4 o;\n"+
+    "uniform sampler2D uState; uniform vec2 uCenter; uniform float uRad, uAmp; uniform vec2 uAspect;\n"+
+    "void main(){\n"+
+    "  vec4 s=texture(uState,uv);\n"+
+    "  vec2 dd=(uv-uCenter)*uAspect;\n"+
+    "  float g=uAmp*exp(-dot(dd,dd)/(uRad*uRad));\n"+
+    "  o=vec4(s.r+g, s.g+g, 0.0, 1.0);\n"+     // add displacement w/ zero initial velocity
+    "}";
+
+  var REN="#version 300 es\nprecision highp float;\n"+
+    "in vec2 uv; out vec4 o;\n"+
+    "uniform sampler2D uState; uniform sampler2D uMat; uniform float uGain;\n"+
+    "uniform vec3 uPos,uNeg,uBg,uWall;\n"+
+    "void main(){\n"+
+    "  vec4 m=texture(uMat,uv);\n"+
+    "  float u=texture(uState,uv).r;\n"+
+    "  float v=clamp(u*uGain,-1.0,1.0);\n"+
+    "  vec3 col = v>=0.0 ? mix(uBg,uPos,v) : mix(uBg,uNeg,-v);\n"+
+    "  float slow=clamp(1.0-m.g,0.0,1.0)*(1.0-m.r);\n"+
+    "  col=mix(col, col*0.55+vec3(0.04,0.06,0.06), slow*0.6);\n"+
+    "  col=mix(col,uWall,m.r);\n"+
+    "  o=vec4(col,1.0);\n"+
+    "}";
+
+  var simProg,splatProg,renProg;
+  try{ simProg=prog(VS,SIM); splatProg=prog(VS,SPLAT); renProg=prog(VS,REN); }
+  catch(err){ die("A GPU shader failed to compile on this device. "+(err&&err.message?err.message.slice(0,120):"")); return; }
+
+  // fullscreen triangle
+  var quad=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,quad);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  function bindQuad(p){ var loc=gl.getAttribLocation(p,"p"); gl.enableVertexAttribArray(loc); gl.bindBuffer(gl.ARRAY_BUFFER,quad); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0); }
+
+  // state textures + fbos
+  function makeStateTex(){ var t=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    gl.texImage2D(gl.TEXTURE_2D,0,stateIF,W,H,0,gl.RGBA,stateType,null); return t; }
+  function makeFbo(tex){ var f=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,f); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0); return f; }
+  var texA=makeStateTex(), texB=makeStateTex(), fboA=makeFbo(texA), fboB=makeFbo(texB);
+  if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE){ die("Floating-point render target is not usable on this device."); return; }
+  var cur={tex:texA,fbo:fboA}, nxt={tex:texB,fbo:fboB};
+  function swap(){ var tmp=cur; cur=nxt; nxt=tmp; }
+
+  // clear both state textures to 0
+  function clearState(){ [fboA,fboB].forEach(function(f){ gl.bindFramebuffer(gl.FRAMEBUFFER,f); gl.viewport(0,0,W,H); gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT); }); }
+
+  // material texture (RGBA8)
+  var matTex=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,matTex);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  var matArr=C.makeMaterial(W,H);
+  function uploadMat(){ gl.bindTexture(gl.TEXTURE_2D,matTex); gl.pixelStorei(gl.UNPACK_ALIGNMENT,1); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,W,H,0,gl.RGBA,gl.UNSIGNED_BYTE,matArr); }
+
+  // ---- theme colors from CSS vars ----
+  function cssRGB(v,fallback){ var s=getComputedStyle(document.documentElement).getPropertyValue(v).trim(); if(!s)return fallback;
+    if(s[0]==='#'){ var n=parseInt(s.slice(1),16); return [((n>>16)&255)/255,((n>>8)&255)/255,(n&255)/255]; }
+    var m=s.split(",").map(Number); if(m.length===3&&m.every(function(x){return !isNaN(x);})) return [m[0]/255,m[1]/255,m[2]/255]; return fallback; }
+  var COL={pos:cssRGB("--accent",[.17,.89,.69]), neg:[1,.42,.24], bg:[.02,.05,.04], wall:[.42,.55,.5]};
+  // negative color = accent-2 for a nice diverging look
+  COL.neg=cssRGB("--accent-2",[.08,.76,.79]);
+  COL.neg=[Math.min(1,COL.pos[0]*0.3+0.85),Math.min(1,COL.pos[1]*0.2+0.35),Math.min(1,COL.pos[2]*0.2+0.28)];
+
+  // ---- state / controls ----
+  var phase=0, running=true, sourceOn=true, tool="drip", preset="double";
+  var el=function(id){return document.getElementById(id);};
+  var freq=el("freq"),dampS=el("damp"),gainS=el("gain");
+  function omega(){ return C.freqToOmega(+freq.value); }
+  function damp(){ return C.dampFromSlider(+dampS.value); }
+  function gain(){ return +gainS.value/100; }
+
+  var splats=[]; // {cx,cy,r,amp}
+  function queueSplat(cx,cy,amp){ splats.push({cx:cx,cy:cy,r:Math.max(3,Math.round(H*0.02)),amp:amp}); }
+
+  function applyPreset(name){
+    preset=name;
+    var res=C.buildPreset(name,W,H);
+    matArr=res.mat; uploadMat(); clearState(); phase=0;
+    // point-source presets don't have a plane line; sources already marked in mat via IDX_SRC
+    Array.prototype.forEach.call(document.querySelectorAll("#presets .chip"),function(c){ c.classList.toggle("on",c.getAttribute("data-preset")===name); });
+    // tank preset: turn source into a gentle repeated drip feel by keeping oscillating point source ON
+    hint(name);
+  }
+  function hint(name){
+    var H1=el("hint"); var msg={
+      double:"The double-slit is loaded and running. Switch the tool to <b>Draw wall</b> and carve your own slits, or open the plain ripple tank and drop ripples.",
+      single:"One narrow slit sprays the wave outward in every direction — that spreading is <b>diffraction</b>.",
+      two:"Two point sources. The checkerboard where they overlap is an <b>interference</b> pattern.",
+      lens:"A flat wave enters a slow circular region and gets <b>focused</b> to a point, just like light through a lens.",
+      guide:"A wave funnelled down a channel and spilling out the open end — a <b>waveguide</b>.",
+      tank:"An open tank with one oscillating source. Set the tool to <b>Drop ripple</b> and tap two spots to collide two ring waves."
+    };
+    H1.innerHTML="Tip: "+(msg[name]||msg.double);
+  }
+
+  // ---- pointer ----
+  var painting=false;
+  function paintAt(px,py){
+    var rect=cv.getBoundingClientRect();
+    var c=C.coordToCell(px,py,rect,W,H);
+    if(tool==="drip"){ queueSplat(c.cx,c.cy,1.4); return; }
+    var rad=Math.max(2,Math.round(H*0.015));
+    for(var y=Math.max(0,c.cy-rad);y<Math.min(H,c.cy+rad+1);y++){
+      for(var x=Math.max(0,c.cx-rad);x<Math.min(W,c.cx+rad+1);x++){
+        var dx=x-c.cx,dy=y-c.cy; if(dx*dx+dy*dy>rad*rad)continue;
+        var i=(y*W+x)*4;
+        if(tool==="wall"){ matArr[i+C.IDX_WALL]=255; matArr[i+C.IDX_SPEED]=0; matArr[i+C.IDX_SRC]=0; }
+        else if(tool==="erase"){ matArr[i+C.IDX_WALL]=0; matArr[i+C.IDX_SPEED]=255; matArr[i+C.IDX_SRC]=0; }
+        else if(tool==="lens"){ if(matArr[i+C.IDX_WALL]<128) matArr[i+C.IDX_SPEED]=Math.round(0.5*255); }
+      }
+    }
+    uploadMat();
+  }
+  function evtXY(e){ return e.touches&&e.touches[0]?[e.touches[0].clientX,e.touches[0].clientY]:[e.clientX,e.clientY]; }
+  cv.addEventListener("pointerdown",function(e){ painting=true; cv.setPointerCapture&&cv.setPointerCapture(e.pointerId); var p=evtXY(e); paintAt(p[0],p[1]); });
+  cv.addEventListener("pointermove",function(e){ if(!painting)return; var p=evtXY(e); paintAt(p[0],p[1]); });
+  window.addEventListener("pointerup",function(){ painting=false; });
+
+  // ---- UI wiring ----
+  Array.prototype.forEach.call(document.querySelectorAll("#tool button"),function(b){ b.addEventListener("click",function(){
+    document.querySelectorAll("#tool button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); tool=b.getAttribute("data-tool"); }); });
+  Array.prototype.forEach.call(document.querySelectorAll("#presets .chip"),function(c){ c.addEventListener("click",function(){ applyPreset(c.getAttribute("data-preset")); }); });
+  freq.addEventListener("input",function(){ el("freqv").textContent=freq.value; });
+  dampS.addEventListener("input",function(){ el("dampv").textContent=(+dampS.value/100).toFixed(2).replace(/^0/,""); });
+  gainS.addEventListener("input",function(){ el("gainv").textContent=gainS.value; });
+  el("srcbtn").addEventListener("click",function(){ sourceOn=!sourceOn; el("srcbtn").textContent="Source: "+(sourceOn?"on":"off"); });
+  el("pause").addEventListener("click",function(){ running=!running; el("pause").textContent=running?"Pause":"Play"; });
+  el("clear").addEventListener("click",function(){ clearState(); phase=0; });
+
+  // ---- passes ----
+  function doSplat(sp){
+    gl.useProgram(splatProg); bindQuad(splatProg);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,nxt.fbo); gl.viewport(0,0,W,H);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,cur.tex);
+    gl.uniform1i(gl.getUniformLocation(splatProg,"uState"),0);
+    gl.uniform2f(gl.getUniformLocation(splatProg,"uCenter"),(sp.cx+0.5)/W,(sp.cy+0.5)/H);
+    gl.uniform1f(gl.getUniformLocation(splatProg,"uRad"),sp.r/H);
+    gl.uniform1f(gl.getUniformLocation(splatProg,"uAmp"),sp.amp);
+    gl.uniform2f(gl.getUniformLocation(splatProg,"uAspect"),W/H,1.0);
+    gl.drawArrays(gl.TRIANGLES,0,3); swap();
+  }
+  function doStep(){
+    gl.useProgram(simProg); bindQuad(simProg);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,nxt.fbo); gl.viewport(0,0,W,H);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,cur.tex); gl.uniform1i(gl.getUniformLocation(simProg,"uState"),0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,matTex); gl.uniform1i(gl.getUniformLocation(simProg,"uMat"),1);
+    gl.uniform2f(gl.getUniformLocation(simProg,"uTexel"),1/W,1/H);
+    gl.uniform1f(gl.getUniformLocation(simProg,"uPhase"),phase);
+    gl.uniform1f(gl.getUniformLocation(simProg,"uAmp"),sourceOn?0.9:0.0);
+    gl.uniform1f(gl.getUniformLocation(simProg,"uDamp"),damp());
+    gl.uniform1f(gl.getUniformLocation(simProg,"uC2"),0.5);
+    gl.drawArrays(gl.TRIANGLES,0,3); swap();
+    phase+=omega();
+  }
+  function doRender(){
+    gl.useProgram(renProg); bindQuad(renProg);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.viewport(0,0,cv.width,cv.height);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,cur.tex); gl.uniform1i(gl.getUniformLocation(renProg,"uState"),0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,matTex); gl.uniform1i(gl.getUniformLocation(renProg,"uMat"),1);
+    gl.uniform1f(gl.getUniformLocation(renProg,"uGain"),gain());
+    gl.uniform3fv(gl.getUniformLocation(renProg,"uPos"),COL.pos);
+    gl.uniform3fv(gl.getUniformLocation(renProg,"uNeg"),COL.neg);
+    gl.uniform3fv(gl.getUniformLocation(renProg,"uBg"),COL.bg);
+    gl.uniform3fv(gl.getUniformLocation(renProg,"uWall"),COL.wall);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+  }
+
+  // ---- sizing ----
+  function resize(){ var wrap=cv.parentElement, dpr=Math.min(window.devicePixelRatio||1,2);
+    var w=wrap.clientWidth, h=wrap.clientHeight; cv.width=Math.max(2,Math.round(w*dpr)); cv.height=Math.max(2,Math.round(h*dpr)); }
+  window.addEventListener("resize",resize); resize();
+
+  // ---- boot ----
+  clearState(); applyPreset("double");
+  window.__ripBoot=true; window.__ripPure=C;
+  var frames=0;
+  function loop(){
+    if(running){
+      // apply queued splats first
+      while(splats.length){ doSplat(splats.shift()); }
+      for(var i=0;i<SUBSTEPS;i++){ doStep(); }
+    } else {
+      while(splats.length){ doSplat(splats.shift()); }
+    }
+    doRender();
+    frames++;
+    if(frames%12===0){ hud.textContent=W+"×"+H+" grid · "+(running?"live":"paused")+" · "+SUBSTEPS+" steps/frame · "+preset; }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+<!-- AdSense slot (left intentionally empty for later): <ins class="adsbygoogle" ...></ins> -->
+<!-- Polar.sh support slot (left intentionally empty for later) -->
+</body>
+</html>
