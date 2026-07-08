@@ -210,7 +210,8 @@ const ytext=doc.getText("content");
 
 // ---- Supabase realtime provider ----
 const sb=createClient(SUPABASE_URL,SUPABASE_KEY,{ realtime:{ params:{ eventsPerSecond:60 } } });
-let ch=null;
+let ch=null, live=false, retries=0, retryTimer=null;
+function setConn(text,color){ const c=$("conn"); c.textContent=text; c.style.color=color; }
 function b64(u){ let s=""; for(let i=0;i<u.length;i++) s+=String.fromCharCode(u[i]); return btoa(s); }
 function unb64(b){ const s=atob(b); const u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
 
@@ -221,18 +222,24 @@ function joinRoom(){
   ch=sb.channel("cowrite-"+room,{ config:{ broadcast:{ self:false }, presence:{ key:myId } } });
   ch.on("broadcast",{event:"y"},({payload})=>{ try{ Y.applyUpdate(doc,unb64(payload.u),"remote"); }catch(e){} });
   ch.on("broadcast",{event:"sync"},({payload})=>{ try{ Y.applyUpdate(doc,unb64(payload.s),"remote"); }catch(e){} });
-  ch.on("broadcast",{event:"hello"},()=>{ try{ ch.send({type:"broadcast",event:"sync",payload:{s:b64(Y.encodeStateAsUpdate(doc))}}); }catch(e){} });
+  ch.on("broadcast",{event:"hello"},()=>{ if(!live) return; try{ ch.send({type:"broadcast",event:"sync",payload:{s:b64(Y.encodeStateAsUpdate(doc))}}); }catch(e){} });
   ch.on("broadcast",{event:"caret"},({payload})=>{ const p=peers.get(payload.id)||{}; p.name=payload.name; p.color=payload.color; p.pos=payload.pos; p.t=Date.now(); peers.set(payload.id,p); drawCarets(); });
   ch.on("presence",{event:"sync"},()=>{ const st=ch.presenceState(); const ids=new Set(Object.keys(st));
       for(const id of Object.keys(st)){ if(id===myId) continue; const meta=st[id][0]||{}; const p=peers.get(id)||{}; p.name=meta.name; p.color=meta.color; peers.set(id,p); }
       for(const id of [...peers.keys()]){ if(!ids.has(id)) peers.delete(id); }
       renderPeers(); drawCarets(); });
+  setConn("connecting…","var(--faint)");
   ch.subscribe((status)=>{
-    if(status==="SUBSCRIBED"){ $("conn").textContent="live"; $("conn").style.color="var(--accent)";
+    if(status==="SUBSCRIBED"){ live=true; retries=0; setConn("● live","var(--accent)");
       ch.track({ name:myName, color:myColor });
       ch.send({type:"broadcast",event:"hello",payload:{}});
       sendCaret();
-    } else if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"){ $("conn").textContent="reconnecting…"; $("conn").style.color="var(--faint)"; }
+    } else if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"||status==="CLOSED"){
+      live=false;
+      // The editor stays fully usable on its own; keep trying to bring collaboration online.
+      setConn("editing solo · sync offline","var(--faint)");
+      if(!retryTimer){ retryTimer=setTimeout(()=>{ retryTimer=null; retries++; joinRoom(); }, Math.min(20000, 3000*Math.max(1,retries))); }
+    }
   });
 }
 
@@ -240,7 +247,7 @@ function joinRoom(){
 doc.on("update",(update,origin)=>{
   scheduleRender();
   if(origin==="remote") return;
-  if(ch){ try{ ch.send({type:"broadcast",event:"y",payload:{u:b64(update)}}); }catch(e){} }
+  if(ch && live){ try{ ch.send({type:"broadcast",event:"y",payload:{u:b64(update)}}); }catch(e){} }
 });
 
 // ---- textarea <-> Y.Text binding ----
@@ -290,7 +297,7 @@ let caretTick=null;
 function sendCaret(){
   if(caretTick) return;
   caretTick=setTimeout(()=>{ caretTick=null;
-    if(ch){ try{ ch.send({type:"broadcast",event:"caret",payload:{id:myId,name:myName,color:myColor,pos:ta.selectionStart}}); }catch(e){} }
+    if(ch && live){ try{ ch.send({type:"broadcast",event:"caret",payload:{id:myId,name:myName,color:myColor,pos:ta.selectionStart}}); }catch(e){} }
   },70);
 }
 // measure pixel position of a character index using a mirror div
@@ -347,7 +354,7 @@ $("link").value=shareLink();
 $("name").value=myName;
 $("copy").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(shareLink()); $("copy").textContent="Copied"; setTimeout(()=>$("copy").textContent="Copy link",1400);}catch(e){ $("link").select(); } });
 $("newroom").addEventListener("click",()=>{ location.hash="room="+makeCode(); location.reload(); });
-$("name").addEventListener("input",()=>{ myName=$("name").value.trim()||myName; try{localStorage.setItem("cowriteName",myName);}catch(e){} if(ch){ ch.track({name:myName,color:myColor}); sendCaret(); } renderPeers(); });
+$("name").addEventListener("input",()=>{ myName=$("name").value.trim()||myName; try{localStorage.setItem("cowriteName",myName);}catch(e){} if(ch && live){ ch.track({name:myName,color:myColor}); sendCaret(); } renderPeers(); });
 $("tabEdit").addEventListener("click",()=>{ document.body.classList.remove("showprev"); $("tabEdit").classList.add("on"); $("tabPrev").classList.remove("on"); });
 $("tabPrev").addEventListener("click",()=>{ document.body.classList.add("showprev"); $("tabPrev").classList.add("on"); $("tabEdit").classList.remove("on"); render(); });
 window.addEventListener("resize",drawCarets);
