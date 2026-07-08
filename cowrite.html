@@ -228,7 +228,7 @@ function joinRoom(){
       for(const id of Object.keys(st)){ if(id===myId) continue; const meta=st[id][0]||{}; const p=peers.get(id)||{}; p.name=meta.name; p.color=meta.color; peers.set(id,p); }
       for(const id of [...peers.keys()]){ if(!ids.has(id)) peers.delete(id); }
       renderPeers(); drawCarets(); });
-  setConn("connecting…","var(--faint)");
+  if(retries===0) setConn("connecting…","var(--faint)");
   ch.subscribe((status)=>{
     if(status==="SUBSCRIBED"){ live=true; retries=0; setConn("● live","var(--accent)");
       ch.track({ name:myName, color:myColor });
