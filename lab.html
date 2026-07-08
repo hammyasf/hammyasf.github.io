@@ -67,6 +67,13 @@
   </div></header>
   <section><div class="wrap">
     <div class="grid">
+      <a class="tool" href="cowrite.html">
+        <div class="cat">Realtime · Collaborative editor</div>
+        <h2>Cowrite</h2>
+        <p>A shared Markdown document that any number of people can edit at the same time &mdash; share a link and watch each other's cursors move as the words appear. Getting that right is harder than it looks: when two people type in the same spot at once, naive syncing loses edits. Cowrite uses a CRDT (Yjs) so every keystroke carries enough identity that all the edits merge deterministically into the exact same document on every screen, with nothing lost and no editing lock. Keystrokes become tiny binary deltas relayed over a realtime channel; the relay never sees a stored copy of your text. Markdown renders to a safe, sanitized live preview on the right as everyone types. No sign-up, no database &mdash; the note lives only in the browsers open right now.</p>
+        <div class="tags"><span>CRDT / Yjs</span><span>Live cursors</span><span>Supabase Realtime</span><span>No login</span></div>
+        <span class="use">Use tool &rarr;</span>
+      </a>
       <a class="tool" href="splat-studio.html">
         <div class="cat">3D · Gaussian Splatting</div>
         <h2>Splat Studio</h2>

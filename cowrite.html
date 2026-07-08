@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cowrite — Real-Time Collaborative Markdown Editor (no login)</title>
+<meta name="description" content="Write Markdown together in real time. Share a link and edit the same document with anyone, with live cursors and instant sync. No sign-up, nothing stored, conflict-free CRDT merging." />
+<meta name="keywords" content="collaborative markdown editor, real time collaborative editor, shared notepad online, collaborative text editor no login, edit document together online, markdown editor online, live collaborative notepad, crdt editor, write together online, shared markdown" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Cowrite — Real-Time Collaborative Markdown Editor" />
+<meta property="og:description" content="Write Markdown together in real time. Share a link, edit the same doc with live cursors and instant sync. No sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/cowrite.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Cowrite — Real-Time Collaborative Markdown Editor" />
+<meta name="twitter:description" content="Edit the same Markdown doc with anyone in real time. Live cursors, instant sync, no login." />
+<link rel="canonical" href="https://hammyasf.github.io/cowrite.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Cowrite — Collaborative Markdown Editor","url":"https://hammyasf.github.io/cowrite.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Write Markdown together in real time. Share a link and edit the same document with live cursors and conflict-free CRDT sync. No sign-up.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an account to use it?","acceptedAnswer":{"@type":"Answer","text":"No. There is no sign-up and no login. Open the page, share the link, and start writing together immediately."}},{"@type":"Question","name":"How does it stay in sync without conflicts?","acceptedAnswer":{"@type":"Answer","text":"Cowrite uses a CRDT (a conflict-free replicated data type, via Yjs). Every keystroke from every person is merged deterministically, so two people can type in the same spot at the same time and no edits are lost."}},{"@type":"Question","name":"Is my document stored on a server?","acceptedAnswer":{"@type":"Answer","text":"No. The document only lives in the browsers of the people currently in the room. The server is used purely to relay edits between browsers. When everyone closes the tab, the note is gone."}},{"@type":"Question","name":"Does it support Markdown?","acceptedAnswer":{"@type":"Answer","text":"Yes. You write Markdown on the left and see a live, safe HTML preview on the right, updated as everyone types."}},{"@type":"Question","name":"How many people can edit at once?","acceptedAnswer":{"@type":"Answer","text":"Several people can edit the same document at the same time. You will see everyone's presence and where their cursor is."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
+  .wrap-narrow{max-width:820px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1120px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 6px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:17.5px;color:#cdd8d3;max-width:660px;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:center;margin:22px 0 12px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
+  .linkbox{display:flex;gap:8px;align-items:center;border:1px solid var(--line-2);border-radius:100px;padding:5px 5px 5px 14px;background:rgba(var(--surfaceRGB),.6);min-width:0;flex:1;max-width:440px;}
+  .linkbox input{flex:1;min-width:0;background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:12.5px;outline:none;text-overflow:ellipsis;}
+  .peers{display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap;}
+  .who{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .avatars{display:flex;}
+  .av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:#06110d;border:2px solid var(--bg);margin-left:-7px;box-shadow:0 0 0 1px rgba(0,0,0,.2);}
+  .nameField{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:100px;padding:8px 13px;font-family:var(--mono);font-size:12.5px;outline:none;width:150px;}
+  .nameField:focus{border-color:var(--accent);}
+  .editor{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:6px 0 8px;}
+  .pane{border:1px solid var(--line);border-radius:18px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;display:flex;flex-direction:column;min-height:0;}
+  .pane .ph{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);}
+  .cvs{position:relative;flex:1;}
+  #ta{width:100%;height:62vh;min-height:380px;resize:vertical;background:transparent;border:none;outline:none;color:var(--ink);
+    font-family:var(--mono);font-size:14.5px;line-height:1.7;padding:18px;caret-color:var(--accent);}
+  #carets{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+  .rc{position:absolute;width:2px;height:22px;border-radius:2px;transition:transform .08s linear,opacity .3s;}
+  .rc b{position:absolute;top:-17px;left:-1px;font-family:var(--mono);font-size:10px;font-weight:700;color:#06110d;padding:1px 5px;border-radius:5px;white-space:nowrap;background:inherit;}
+  #prev{height:62vh;min-height:380px;overflow:auto;padding:18px 22px;}
+  #prev h1{font-size:26px;margin:6px 0 12px;border:0;}
+  #prev h2{font-family:var(--display);font-size:21px;margin:20px 0 8px;}
+  #prev h3{font-family:var(--display);font-size:17px;margin:16px 0 6px;}
+  #prev p{margin:10px 0;color:#d5ded9;font-family:var(--body);font-size:15.5px;}
+  #prev ul,#prev ol{margin:10px 0 10px 22px;color:#d5ded9;}
+  #prev li{margin:4px 0;}
+  #prev a{color:var(--accent);}
+  #prev code{font-family:var(--mono);font-size:13px;background:rgba(237,242,239,.08);padding:2px 6px;border-radius:6px;}
+  #prev pre{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:12px;padding:14px;overflow:auto;margin:12px 0;}
+  #prev pre code{background:none;padding:0;}
+  #prev blockquote{border-left:3px solid var(--accent);margin:12px 0;padding:4px 0 4px 16px;color:var(--muted);}
+  #prev table{border-collapse:collapse;margin:12px 0;width:100%;}
+  #prev th,#prev td{border:1px solid var(--line);padding:7px 11px;text-align:left;font-size:14px;}
+  #prev img{max-width:100%;border-radius:8px;}
+  #prev hr{border:0;border-top:1px solid var(--line);margin:18px 0;}
+  .tabs{display:none;gap:8px;margin:2px 0 10px;}
+  .tabs button{flex:1;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--muted);padding:9px;border-radius:10px;font-family:var(--mono);font-size:12.5px;cursor:pointer;}
+  .tabs button.on{background:var(--accent);color:#07100e;font-weight:700;}
+  .foot-note{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin:4px 0 2px;}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:820px){
+    .editor{grid-template-columns:1fr;}
+    .tabs{display:flex;}
+    .pane.prev-pane{display:none;}
+    body.showprev .pane.edit-pane{display:none;}
+    body.showprev .pane.prev-pane{display:flex;}
+    .peers{margin-left:0;width:100%;}
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · real-time collaboration</div>
+    <h1>Cowrite</h1>
+    <p class="sub">A shared Markdown document you and anyone else can edit at the same time. Send the link, watch each other's cursors, and see edits appear as they're typed. No sign-up, nothing stored.</p>
+  </header>
+
+  <div class="toolbar">
+    <div class="linkbox"><input id="link" readonly aria-label="Share link" /><button class="btn" id="copy" style="padding:8px 14px;">Copy link</button></div>
+    <button class="btn btn-out" id="newroom">New document</button>
+    <input class="nameField" id="name" maxlength="18" aria-label="Your name" placeholder="Your name" />
+    <div class="peers">
+      <div class="avatars" id="avatars"></div>
+      <span class="who" id="who">just you</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button id="tabEdit" class="on">Edit</button>
+    <button id="tabPrev">Preview</button>
+  </div>
+
+  <div class="editor">
+    <div class="pane edit-pane">
+      <div class="ph"><span>Markdown</span><span class="mono" id="conn" style="color:var(--faint)">connecting…</span></div>
+      <div class="cvs">
+        <textarea id="ta" spellcheck="true" placeholder="# Start typing…&#10;&#10;Share the link and write together in real time."></textarea>
+        <div id="carets"></div>
+      </div>
+    </div>
+    <div class="pane prev-pane">
+      <div class="ph"><span>Live preview</span></div>
+      <div id="prev"></div>
+    </div>
+  </div>
+  <div class="foot-note">Live and private — the document lives only in the browsers open right now. Nothing is saved on a server.</div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>Real-time collaboration sounds simple until two people type in the exact same place at the same time. Cowrite handles that with a <strong>CRDT</strong>, a conflict-free replicated data type. Every character each person inserts or deletes carries enough identity that all the edits can be merged in any order and every browser lands on exactly the same document, with nothing lost and no "someone else is editing" lock. Under the hood it's the Yjs library. Your keystrokes are turned into tiny binary updates, relayed to everyone else in the room over a realtime channel, and applied instantly. The relay only ever sees those opaque edit deltas, never a stored copy of your document.</p>
+    <h2>Write in Markdown, see it live</h2>
+    <p>You type Markdown on the left and get a rendered preview on the right that updates as anyone in the room types. Headings, lists, tables, code blocks, quotes, and links all work. The preview is sanitized before it's shown, so a shared document can't be used to slip a script into anyone's browser. On a phone the two panels become tabs so you can flip between writing and reading.</p>
+    <h2>No account, nothing stored</h2>
+    <p>There's no sign-up, no email, and no database. A document exists only in the browsers of the people currently in it. That means it's private and instant, and it also means the note is meant to be live rather than permanent: keep the tab open while you work, and copy the text out when you're done. Want a fresh, empty document? Hit "New document" for a brand-new private link.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Do I need an account?</summary><p>No sign-up and no login. Open the page, share the link, and start writing together right away.</p></details>
+    <details><summary>How does it avoid conflicts?</summary><p>It uses a CRDT (via Yjs). Every person's keystrokes are merged deterministically, so two people can type in the same spot at once and nothing is overwritten.</p></details>
+    <details><summary>Is my document stored anywhere?</summary><p>No. The document only lives in the browsers of the people currently in the room. The server just relays edits between them. When everyone leaves, it's gone.</p></details>
+    <details><summary>Can I write Markdown?</summary><p>Yes. You write Markdown on the left and see a safe, live HTML preview on the right, updated as everyone types.</p></details>
+    <details><summary>How many people can join?</summary><p>Several people can edit at the same time. You'll see everyone's presence and where their cursor is.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- Cowrite: Supabase URL + anon key are public/client-safe (realtime relay only, no data ever stored). -->
+<script type="module">
+import * as Y from 'https://esm.sh/yjs@13.6.20';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { marked } from 'https://esm.sh/marked@12.0.2';
+import DOMPurify from 'https://esm.sh/dompurify@3.1.6';
+
+// match the portfolio's saved theme
+try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+  var tt=T[localStorage.getItem("siteTheme")]; if(tt){var rr=document.documentElement.style; rr.setProperty("--accent",tt[0]);rr.setProperty("--accent-2",tt[1]);rr.setProperty("--accentRGB",tt[2]);rr.setProperty("--surfaceRGB",tt[3]);rr.setProperty("--bg",tt[4]);rr.setProperty("--bg-2",tt[5]);} }catch(e){}
+
+const SUPABASE_URL="https://cunynpmbjogrexkrxbwf.supabase.co";
+const SUPABASE_KEY="sb_publishable_cOG9I9Rh6NJNEUxM4MDT4A_KceeVBsQ";
+const $=(id)=>document.getElementById(id);
+
+// ---- identity ----
+const COLORS=["#2be3b0","#3da5ff","#ff8f3d","#b07cff","#ff6a9c","#ffd23d","#4ee0d0","#8bd450"];
+const ANIMALS=["Otter","Fox","Heron","Lynx","Wren","Ibis","Moth","Koi","Puma","Crane","Vole","Newt"];
+const myId=Math.random().toString(36).slice(2,10);
+const myColor=COLORS[Math.floor(Math.random()*COLORS.length)];
+let myName=(function(){ try{return localStorage.getItem("cowriteName")||"";}catch(e){return "";} })() || ("Anon "+ANIMALS[Math.floor(Math.random()*ANIMALS.length)]);
+
+// ---- room ----
+function makeCode(){ const a="abcdefghjkmnpqrstuvwxyz23456789"; let s=""; for(let i=0;i<8;i++) s+=a[Math.floor(Math.random()*a.length)]; return s; }
+let room=(location.hash.match(/room=([a-z0-9]{4,12})/i)||[])[1];
+if(!room){ room=makeCode(); history.replaceState(null,"",location.pathname+"#room="+room); }
+function shareLink(){ return location.origin+location.pathname+"#room="+room; }
+
+// ---- Yjs doc ----
+const doc=new Y.Doc();
+const ytext=doc.getText("content");
+
+// ---- Supabase realtime provider ----
+const sb=createClient(SUPABASE_URL,SUPABASE_KEY,{ realtime:{ params:{ eventsPerSecond:60 } } });
+let ch=null;
+function b64(u){ let s=""; for(let i=0;i<u.length;i++) s+=String.fromCharCode(u[i]); return btoa(s); }
+function unb64(b){ const s=atob(b); const u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
+
+const peers=new Map(); // id -> {name,color,pos}
+
+function joinRoom(){
+  if(ch){ sb.removeChannel(ch); ch=null; }
+  ch=sb.channel("cowrite-"+room,{ config:{ broadcast:{ self:false }, presence:{ key:myId } } });
+  ch.on("broadcast",{event:"y"},({payload})=>{ try{ Y.applyUpdate(doc,unb64(payload.u),"remote"); }catch(e){} });
+  ch.on("broadcast",{event:"sync"},({payload})=>{ try{ Y.applyUpdate(doc,unb64(payload.s),"remote"); }catch(e){} });
+  ch.on("broadcast",{event:"hello"},()=>{ try{ ch.send({type:"broadcast",event:"sync",payload:{s:b64(Y.encodeStateAsUpdate(doc))}}); }catch(e){} });
+  ch.on("broadcast",{event:"caret"},({payload})=>{ const p=peers.get(payload.id)||{}; p.name=payload.name; p.color=payload.color; p.pos=payload.pos; p.t=Date.now(); peers.set(payload.id,p); drawCarets(); });
+  ch.on("presence",{event:"sync"},()=>{ const st=ch.presenceState(); const ids=new Set(Object.keys(st));
+      for(const id of Object.keys(st)){ if(id===myId) continue; const meta=st[id][0]||{}; const p=peers.get(id)||{}; p.name=meta.name; p.color=meta.color; peers.set(id,p); }
+      for(const id of [...peers.keys()]){ if(!ids.has(id)) peers.delete(id); }
+      renderPeers(); drawCarets(); });
+  ch.subscribe((status)=>{
+    if(status==="SUBSCRIBED"){ $("conn").textContent="live"; $("conn").style.color="var(--accent)";
+      ch.track({ name:myName, color:myColor });
+      ch.send({type:"broadcast",event:"hello",payload:{}});
+      sendCaret();
+    } else if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"){ $("conn").textContent="reconnecting…"; $("conn").style.color="var(--faint)"; }
+  });
+}
+
+// broadcast local edits
+doc.on("update",(update,origin)=>{
+  scheduleRender();
+  if(origin==="remote") return;
+  if(ch){ try{ ch.send({type:"broadcast",event:"y",payload:{u:b64(update)}}); }catch(e){} }
+});
+
+// ---- textarea <-> Y.Text binding ----
+const ta=$("ta");
+let applyingRemote=false;
+
+ytext.observe(()=>{
+  const s=ytext.toString();
+  if(ta.value===s){ scheduleRender(); return; }
+  const old=ta.value, sel0=ta.selectionStart, sel1=ta.selectionEnd;
+  let p=0; const m=Math.min(old.length,s.length);
+  while(p<m && old.charCodeAt(p)===s.charCodeAt(p)) p++;
+  const delta=s.length-old.length;
+  const adj=(pos)=> pos<=p ? pos : Math.max(p,pos+delta);
+  applyingRemote=true;
+  ta.value=s;
+  try{ ta.selectionStart=adj(sel0); ta.selectionEnd=adj(sel1); }catch(e){}
+  applyingRemote=false;
+  scheduleRender();
+});
+
+ta.addEventListener("input",()=>{
+  if(applyingRemote) return;
+  const nv=ta.value, ov=ytext.toString();
+  if(nv===ov) return;
+  let start=0; const minL=Math.min(nv.length,ov.length);
+  while(start<minL && nv.charCodeAt(start)===ov.charCodeAt(start)) start++;
+  let en=nv.length, eo=ov.length;
+  while(en>start && eo>start && nv.charCodeAt(en-1)===ov.charCodeAt(eo-1)){ en--; eo--; }
+  doc.transact(()=>{
+    if(eo>start) ytext.delete(start,eo-start);
+    if(en>start) ytext.insert(start,nv.slice(start,en));
+  },"local");
+  sendCaret();
+});
+["keyup","click","select"].forEach(ev=>ta.addEventListener(ev,sendCaret));
+ta.addEventListener("scroll",drawCarets);
+
+// ---- live preview ----
+marked.setOptions({ breaks:true, gfm:true });
+let rt=null;
+function scheduleRender(){ if(rt) return; rt=setTimeout(render,60); }
+function render(){ rt=null; let html; try{ html=marked.parse(ytext.toString()||""); }catch(e){ html=""; } $("prev").innerHTML=DOMPurify.sanitize(html,{ADD_ATTR:['target']}); }
+
+// ---- carets ----
+let caretTick=null;
+function sendCaret(){
+  if(caretTick) return;
+  caretTick=setTimeout(()=>{ caretTick=null;
+    if(ch){ try{ ch.send({type:"broadcast",event:"caret",payload:{id:myId,name:myName,color:myColor,pos:ta.selectionStart}}); }catch(e){} }
+  },70);
+}
+// measure pixel position of a character index using a mirror div
+let mirror=null;
+function ensureMirror(){
+  if(mirror) return mirror;
+  mirror=document.createElement("div");
+  const cs=getComputedStyle(ta);
+  ["fontFamily","fontSize","lineHeight","paddingTop","paddingRight","paddingBottom","paddingLeft","letterSpacing","whiteSpace","wordWrap"].forEach(k=>mirror.style[k]=cs[k]);
+  mirror.style.position="absolute"; mirror.style.visibility="hidden"; mirror.style.whiteSpace="pre-wrap"; mirror.style.wordWrap="break-word";
+  mirror.style.top="0"; mirror.style.left="0"; mirror.style.boxSizing="border-box";
+  ta.parentElement.appendChild(mirror);
+  return mirror;
+}
+function coordsFor(pos){
+  const mv=ensureMirror();
+  mv.style.width=ta.clientWidth+"px";
+  const text=ta.value.slice(0,pos);
+  mv.textContent=text.length?text:"";
+  const marker=document.createElement("span"); marker.textContent="​"; mv.appendChild(marker);
+  const x=marker.offsetLeft, y=marker.offsetTop;
+  mv.removeChild(marker);
+  return { x, y:y-ta.scrollTop };
+}
+function drawCarets(){
+  const host=$("carets"); host.innerHTML="";
+  const now=Date.now();
+  for(const [id,p] of peers){
+    if(id===myId || typeof p.pos!=="number") continue;
+    if(p.t && now-p.t>15000) continue; // hide stale carets
+    const pos=Math.min(p.pos, ta.value.length);
+    const c=coordsFor(pos);
+    if(c.y<-20 || c.y>ta.clientHeight+20) continue;
+    const el=document.createElement("div"); el.className="rc";
+    el.style.background=p.color||"#2be3b0";
+    el.style.transform="translate("+c.x+"px,"+(c.y+16)+"px)";
+    const label=document.createElement("b"); label.textContent=p.name||"Anon"; label.style.background=p.color||"#2be3b0";
+    el.appendChild(label);
+    host.appendChild(el);
+  }
+}
+
+// ---- peers UI ----
+function renderPeers(){
+  const box=$("avatars"); box.innerHTML="";
+  const list=[{name:myName,color:myColor,me:true},...[...peers.values()].map(p=>({name:p.name||"Anon",color:p.color||"#2be3b0"}))];
+  list.slice(0,6).forEach(u=>{ const a=document.createElement("div"); a.className="av"; a.style.background=u.color; a.title=u.name+(u.me?" (you)":""); a.textContent=(u.name||"?").trim().charAt(0).toUpperCase(); box.appendChild(a); });
+  const n=peers.size+1;
+  $("who").textContent = n<=1 ? "just you" : (n+" people here");
+}
+
+// ---- toolbar ----
+$("link").value=shareLink();
+$("name").value=myName;
+$("copy").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(shareLink()); $("copy").textContent="Copied"; setTimeout(()=>$("copy").textContent="Copy link",1400);}catch(e){ $("link").select(); } });
+$("newroom").addEventListener("click",()=>{ location.hash="room="+makeCode(); location.reload(); });
+$("name").addEventListener("input",()=>{ myName=$("name").value.trim()||myName; try{localStorage.setItem("cowriteName",myName);}catch(e){} if(ch){ ch.track({name:myName,color:myColor}); sendCaret(); } renderPeers(); });
+$("tabEdit").addEventListener("click",()=>{ document.body.classList.remove("showprev"); $("tabEdit").classList.add("on"); $("tabPrev").classList.remove("on"); });
+$("tabPrev").addEventListener("click",()=>{ document.body.classList.add("showprev"); $("tabPrev").classList.add("on"); $("tabEdit").classList.remove("on"); render(); });
+window.addEventListener("resize",drawCarets);
+setInterval(drawCarets,4000); // clear stale carets
+
+// ---- go ----
+renderPeers();
+render();
+joinRoom();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+<!-- AdSense / Polar.sh monetization slot (left commented for later). -->
+</body>
+</html>
