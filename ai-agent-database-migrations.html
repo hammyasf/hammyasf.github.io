@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The one thing I still will not let an AI agent do: database migrations — Harman Kamboj</title>
+<meta name="description" content="AI agent database migrations sound fine in a demo and go quiet-wrong on real data. Why the agent can write the migration but does not get to run it in prod." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="The one thing I still will not let an AI agent do: database migrations — Harman Kamboj" />
+<meta property="og:description" content="AI agent database migrations sound fine in a demo and go quiet-wrong on real data. Why the agent can write the migration but does not get to run it in prod." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/ai-agent-database-migrations.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="The one thing I still will not let an AI agent do: database migrations — Harman Kamboj" />
+<meta name="twitter:description" content="AI agent database migrations sound fine in a demo and go quiet-wrong on real data. Why the agent can write the migration but does not get to run it in prod." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/ai-agent-database-migrations.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"The one thing I still will not let an AI agent do: database migrations","description":"AI agent database migrations sound fine in a demo and go quiet-wrong on real data. Why the agent can write the migration but does not get to run it in prod.","datePublished":"2026-07-09","dateModified":"2026-07-09","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/ai-agent-database-migrations.html","url":"https://hammyasf.github.io/ai-agent-database-migrations.html","keywords":"AI agents, Database migrations, Postgres, Backend, Full-stack","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  .rel{margin:40px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin-bottom:6px;}
+  .rel a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">The one thing I still will not let an AI agent do: database migrations</h1>
+   <div class="pmeta"><span>July 9, 2026</span><span>6 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>AI</span><span>Agents</span><span>Databases</span><span>Backend</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>I hand a lot of work to coding agents now. Scaffolding, test fixtures, the first pass at a refactor I have been avoiding, the tedious 200-line change that would have eaten my afternoon. I am not precious about it. But there is one job I still do with my own hands every single time, and I do not see that changing soon. AI agent database migrations sound fine in a demo, where the schema is empty and nobody is watching. Run the same thing against a table with four years of real rows in it and the failure is quiet, expensive, and sometimes not reversible. So the agent can write the migration. It does not get to run it.</p>
+<p>I have spent a lot of years on backends that had to stay up under real load, from a DeFi exchange to an e-commerce app doing serious numbers on the Play Store. The pattern that scares me is always the same. Everything an agent touches feels safe because you can undo it. A migration breaks that promise.</p>
+<h2>A migration changes data you cannot get back</h2>
+<p>Almost everything a coding agent writes is safe to be wrong, because you catch it before it matters. A bad function fails a test. A broken component shows up in review or gets reverted with one deploy. The blast radius is your code, and code is cheap to roll back. A migration is different in kind. When it drops a column, rewrites a type, or backfills a few million rows, it changes the data itself. Reverting the migration file does not bring the deleted rows back. You are into restoring from a backup, if you have a recent one, and hoping you did not lose the writes that landed in between.</p>
+<p>That is the line I care about. The agent operates in a world where mistakes are reversible, so it treats every step as reversible. Migrations live on the other side of that line, and nothing in the agent's training tells it which side it is standing on.</p>
+<h2>Where the agent actually goes wrong</h2>
+<p>This is not theory. These are the failure modes I have watched agents produce, all of which passed locally on a table with a dozen rows.</p>
+<ul>
+  <li><strong>Locking a big table without knowing it.</strong> An agent adds a column, sets a default, adds a NOT NULL, all in one step. On a small table that is instant. On a busy table that can hold a lock long enough to stall every write behind it, and the agent never feels the 40 seconds of stalled traffic that causes because there was no traffic in its sandbox.</li>
+  <li><strong>Backfilling inside the schema change.</strong> It does the column add and a full-table <code>UPDATE</code> in a single transaction, so the lock is held for the entire backfill instead of a moment. The bigger the table, the longer the whole app waits.</li>
+  <li><strong>A down migration that lies.</strong> It writes a tidy-looking rollback for a step that dropped data. The down migration runs without error and restores nothing, because the data it needed is already gone.</li>
+  <li><strong>Renaming a column the running app still reads.</strong> You ask it to rename <code>user_name</code> to <code>username</code>, it writes exactly that, and the second the migration lands the old app version throws on every request until the new deploy catches up.</li>
+</ul>
+<h2>The expand and contract habit an agent skips</h2>
+<p>The safe way to change a column that is in use has been known for years. You expand first: add the new column as nullable, deploy code that writes to both old and new, backfill the old rows in small batches so you never hold a long lock. Once the new column is fully populated and the app reads from it, you contract in a later deploy by dropping the old one. That is three or four deploys spread over days, done carefully, watching row counts as you go.</p>
+<p>Ask an agent to rename a column and you get a single rename statement, because that is literally what you asked for. It is not wrong so much as it answers a different question than the one that keeps you online. The gap between what you asked and what is safe under load is exactly the gap where an agent hurts you, and it hurts you silently, which is the part I hate. This is the same reasoning I used when I wrote about <a href="idempotent-tool-calls-agents.html">idempotent tool calls</a>: give an agent an action it can repeat or reverse, and it is fine, take that safety away and you need a human in the loop.</p>
+<h2>So what do I actually let the agent do</h2>
+<p>Plenty, as it turns out. I am not arguing to keep agents away from the database. I am arguing about who pulls the trigger.</p>
+<ul>
+  <li><strong>Draft the migration from a plain description.</strong> It is good at the boilerplate and the syntax I always forget.</li>
+  <li><strong>Write the batched backfill script.</strong> Fine, and I read every line before it runs anywhere near real data.</li>
+  <li><strong>Tell me, honestly, whether the down migration truly reverses the up.</strong> Asking it to reason about that out loud catches the fake rollbacks early.</li>
+</ul>
+<p>Then I run it. On a copy of production first, watching locks and timings, then on the real thing during a quiet window with a fresh backup behind me. The agent got me most of the way there and saved me the boring part. It just does not get to be the one standing at the one-way door when it opens. If you are letting agents write code that touches anything sensitive, the wider version of this argument is in my note on <a href="securing-ai-generated-code.html">securing AI-generated code</a>.</p>
+<h2>Match the autonomy to the blast radius</h2>
+<p>That is the whole rule I keep coming back to. A wrong React component costs you a redeploy. A wrong migration can cost you the data, and no amount of clever prompting changes the fact that some actions are cheap to undo and some are not. So I let agents run free on the reversible work and I keep my hands on the parts where the undo button is a lie. I learned this the durable way, keeping an e-commerce backend healthy through real spikes, which I wrote about in the <a href="aftertutor.html">Aftertutor case study</a>. If you want more of how I think about agents on real systems, the rest of it lives in my <a href="ai.html">AI and agents notes</a>, and the honest version of where these tools earn their keep is <a href="ai-coding-agents-where-they-earn-their-keep.html">here</a>.</p>
+   <div class="rel">
+     <h2>Related in AI</h2>
+     <ul>
+       <li><a href="ai-coding-agents-where-they-earn-their-keep.html">Where AI coding agents earn their keep, and where they do not</a></li>
+       <li><a href="securing-ai-generated-code.html">Securing AI-generated code before it ships</a></li>
+       <li><a href="idempotent-tool-calls-agents.html">Idempotent tool calls: do this before you let an agent retry</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Putting agents to work on a real codebase?</h3>
+  <p>I am open to senior full-stack, backend, or Web3 engineering roles, fully remote and any timezone. If the hard part is using these tools without breaking production, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="serverless-postgres-connection-pool.html">Why serverless keeps exhausting your Postgres connection pool →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>
