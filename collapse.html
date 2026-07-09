@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Collapse — Wave Function Collapse generator that learns from your drawing</title>
+<meta name="description" content="Paint a tiny example and watch a Wave Function Collapse solver learn its rules and generate an endless, coherent tilemap in real time. Runs 100% in your browser, no upload, no sign-up." />
+<meta name="keywords" content="wave function collapse, wfc, wfc generator, procedural generation, procedural tile generator, procedural texture generator, constraint solver, wfc online, tilemap generator, procedural map generator, generative art" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Collapse — Wave Function Collapse generator" />
+<meta property="og:description" content="Paint a tiny example, watch a WFC solver learn the rules and generate a coherent tilemap live. 100% in your browser, nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/collapse.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Collapse — Wave Function Collapse generator" />
+<meta name="twitter:description" content="Paint a tiny example, watch a WFC solver learn the rules and generate live. Runs in your browser." />
+<link rel="canonical" href="https://hammyasf.github.io/collapse.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Collapse — Wave Function Collapse Generator","url":"https://hammyasf.github.io/collapse.html","applicationCategory":"DesignApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Paint a small example and a Wave Function Collapse solver learns its local adjacency rules and generates a larger coherent tilemap in real time, entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Wave Function Collapse?","acceptedAnswer":{"@type":"Answer","text":"Wave Function Collapse (WFC) is a constraint-solving algorithm for procedural generation. It reads a small example image, learns which little patterns are allowed to sit next to which, then fills a blank grid so that every local neighbourhood matches the example. The result looks hand-made but is generated."}},{"@type":"Question","name":"Does this run on a server?","acceptedAnswer":{"@type":"Answer","text":"No. The whole solver runs in your browser in a Web Worker. Nothing you paint is ever uploaded, and it works offline once the page has loaded."}},{"@type":"Question","name":"How does it learn the rules from my drawing?","acceptedAnswer":{"@type":"Answer","text":"It slides an N by N window over your example and collects every distinct little tile it sees, counting how often each appears. Two tiles are allowed to be neighbours only if their overlapping pixels agree. Those learned adjacency rules are all the solver uses."}},{"@type":"Question","name":"Why does it sometimes restart?","acceptedAnswer":{"@type":"Answer","text":"WFC can paint itself into a corner where a cell has no legal tile left, a contradiction. When that happens the solver clears the grid and tries again with fresh randomness. Simpler examples and wrapping edges make contradictions rarer."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, no limits. You can export any result as a PNG."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1020px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:36px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .app{display:grid;grid-template-columns:300px 1fr;gap:20px;margin:26px 0;}
+  @media(max-width:820px){.app{grid-template-columns:1fr;}}
+  .panel{border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .pad{padding:18px;}
+  .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
+  .ex-wrap{display:flex;justify-content:center;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;padding:10px;}
+  #ex{image-rendering:pixelated;width:224px;height:224px;cursor:crosshair;touch-action:none;border-radius:6px;}
+  .swatches{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  .sw{width:30px;height:30px;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:transform .1s;}
+  .sw:hover{transform:scale(1.08);}
+  .sw.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--ink);}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 13px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .presel{width:100%;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:10px 12px;font-family:var(--body);font-size:14px;}
+  .chk{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12px;color:var(--muted);cursor:pointer;user-select:none;}
+  .chk input{accent-color:var(--accent);width:15px;height:15px;}
+  .out-wrap{display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,.28);min-height:340px;padding:14px;}
+  #out{image-rendering:pixelated;width:100%;max-width:520px;aspect-ratio:1/1;border-radius:8px;background:#0a0f0d;}
+  .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-top:1px solid var(--line);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
+  .icn{width:38px;height:38px;padding:0;justify-content:center;border-radius:10px;}
+  .stat{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-left:auto;}
+  .stat b{color:var(--accent);}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);}
+  input[type=range]{accent-color:var(--accent);width:130px;}
+  input[type=number]{width:78px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:7px 9px;font-family:var(--mono);font-size:13px;}
+  .setrow{display:flex;gap:16px;flex-wrap:wrap;padding:14px 18px 4px;align-items:flex-end;}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:760px;}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:18px 0;}
+  .step{border:1px solid var(--line);border-radius:14px;padding:16px;background:rgba(var(--surfaceRGB),.4);}
+  .step .n{font-family:var(--mono);font-size:12px;color:var(--accent);}
+  .step h3{font-family:var(--display);font-weight:600;font-size:16px;margin:6px 0;}
+  .step p{font-size:14px;color:var(--muted);margin:0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .note{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:10px;}
+  .warn{display:none;margin:16px 0;padding:14px 16px;border:1px solid rgba(255,140,80,.4);background:rgba(255,140,80,.08);border-radius:12px;color:#ffce9e;font-size:14px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Collapse</h1>
+    <p class="sub">Paint a tiny example, and a Wave Function Collapse solver learns which little patterns are allowed to touch and generates an endless, coherent tilemap &mdash; live, in front of you. No two runs are the same.</p>
+    <span class="priv">&#9889; Runs 100% in your browser &mdash; nothing is uploaded</span>
+  </header>
+
+  <div class="warn" id="warn">Your browser is missing Web Workers, which this tool needs. Try a current version of Chrome, Edge, Firefox, or Safari.</div>
+
+  <div class="app">
+    <div class="panel pad">
+      <div class="lbl">Example &mdash; draw or pick one</div>
+      <div class="ex-wrap"><canvas id="ex" width="16" height="16"></canvas></div>
+      <div class="swatches" id="sw"></div>
+      <div class="row">
+        <select class="presel" id="preset">
+          <option value="0">Islands</option>
+          <option value="1">Flowers</option>
+          <option value="2">Circuit</option>
+          <option value="3">Maze</option>
+          <option value="4">Dungeon rooms</option>
+          <option value="5">Cables</option>
+        </select>
+      </div>
+      <div class="row">
+        <button class="btn btn-out" id="clear" style="padding:8px 14px;">Clear</button>
+        <button class="btn btn-out" id="fill" style="padding:8px 14px;">Fill</button>
+      </div>
+      <div class="row" style="margin-top:18px;">
+        <div class="ctl"><label>Pattern size N</label>
+          <div class="seg" id="nseg"><button data-n="2">2&times;2</button><button data-n="3" class="on">3&times;3</button></div>
+        </div>
+      </div>
+      <div class="row">
+        <label class="chk"><input type="checkbox" id="sym" checked> rotations &amp; mirrors</label>
+      </div>
+      <div class="row">
+        <label class="chk"><input type="checkbox" id="wrap" checked> tile the edges (wrap)</label>
+      </div>
+      <p class="note">The solver only ever sees the little N&times;N tiles inside this drawing &mdash; that is all it uses to build the rules.</p>
+    </div>
+
+    <div class="panel">
+      <div class="out-wrap"><canvas id="out" width="48" height="48" aria-label="Generated output"></canvas></div>
+      <div class="setrow">
+        <div class="ctl"><label>Output size</label>
+          <div class="seg" id="sizeseg"><button data-s="32">32</button><button data-s="48" class="on">48</button><button data-s="64">64</button><button data-s="96">96</button></div>
+        </div>
+        <div class="ctl"><label>Speed</label>
+          <input type="range" id="speed" min="1" max="6" value="4" />
+        </div>
+        <div class="ctl"><label>Seed</label>
+          <input type="number" id="seed" value="1" min="0" />
+        </div>
+      </div>
+      <div class="bar">
+        <button class="btn" id="gen">Generate</button>
+        <button class="btn btn-out icn" id="pause" title="Pause / resume" disabled>&#10073;&#10073;</button>
+        <button class="btn btn-out icn" id="step" title="Single step" disabled>&#8250;</button>
+        <button class="btn btn-out" id="png" disabled>Save PNG</button>
+        <span class="stat" id="stat">Ready</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>What you are looking at</h2>
+    <p>Wave Function Collapse is a small idea with a big reputation among game developers. Give it one example image and it will produce as many new images as you like that all share the same local texture &mdash; the same little motifs, joined the same way &mdash; without ever repeating the original. It has been used to generate levels, textures, poetry and city maps. This is a full overlapping-model implementation, and every part of it runs on your machine.</p>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><h3>Learn the tiles</h3><p>An N&times;N window slides over your drawing and records every distinct little tile, and how common each one is.</p></div>
+      <div class="step"><div class="n">02</div><h3>Learn the rules</h3><p>Two tiles may sit next to each other only where their overlapping pixels agree. That is the entire rulebook.</p></div>
+      <div class="step"><div class="n">03</div><h3>Collapse</h3><p>Every output cell starts as every tile at once. The solver repeatedly picks the most-decided cell and commits it to one tile.</p></div>
+      <div class="step"><div class="n">04</div><h3>Propagate</h3><p>Each choice ripples outward, deleting now-impossible tiles from neighbours, until the whole grid agrees. That is the shimmer you see resolving.</p></div>
+    </div>
+
+    <h2>How is this running in my browser?</h2>
+    <p>There is no server doing the work. When you press Generate, the example is handed to a Web Worker &mdash; a background thread &mdash; which extracts the patterns, compiles the adjacency table, and runs the observe-and-propagate loop. After every few steps it sends back a snapshot of the grid, where cells that have not decided yet are drawn as a blur of their remaining possibilities. That is why the picture looks like fog condensing into a scene. Because the heavy work lives off the main thread, the page stays smooth even on a large grid, and nothing you paint ever leaves your device.</p>
+
+    <h2>Things to try</h2>
+    <p>Draw two colours in stripes and watch it invent a striped world. Paint an island of one colour inside a sea of another and it will generate an archipelago. Switch the pattern size to 2&times;2 for looser, more surprising output, or 3&times;3 for output that hugs your example closely. Turn off wrapping to get pieces with clean edges you can drop into a game, or leave it on for seamless, tiling textures. Change the seed to get a completely different world from the same rules.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my drawing uploaded anywhere?</summary><p>No. The example, the solver, and the result all stay in your browser. There is no network request for any of it, and it keeps working with your connection off.</p></details>
+    <details><summary>Why does the output sometimes flash and restart?</summary><p>WFC can reach a cell that has no legal tile left &mdash; a contradiction. Rather than produce a broken image it wipes the grid and retries with new randomness. Simpler examples, a smaller pattern size, and wrapped edges all make this rarer.</p></details>
+    <details><summary>What is the difference between 2&times;2 and 3&times;3?</summary><p>It is the size of the window used to learn tiles. Bigger windows capture more of your example&rsquo;s structure, so the output looks more like the original but is less varied. Smaller windows are freer and more chaotic.</p></details>
+    <details><summary>Can I use the results?</summary><p>Yes. Whatever you make is yours &mdash; hit Save PNG and use it however you like.</p></details>
+    <details><summary>Where did this algorithm come from?</summary><p>Wave Function Collapse was introduced by Maxim Gumin in 2016. This is an independent implementation of his overlapping model, written from scratch to run in the browser.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+
+/* ---------- Presets: each has a palette and a grid of palette-indices ---------- */
+var PRESETS = [
+  { // 0 Islands
+    palette:[[38,102,153],[74,143,181],[224,201,138],[95,171,99],[62,128,72]],
+    legend:{"~":0,"-":1,"s":2,"g":3,"G":4},
+    rows:[
+      "~~~~~~~~~~~~~~~~",
+      "~~~~----~~~~~~~~",
+      "~~--ssss--~~~~~~",
+      "~-sggggs-~~--~~~",
+      "~-sgGGgs~~-ss-~~",
+      "~-sgGGgs~-sggs-~",
+      "~-sgggs-~-sgggs~",
+      "~~-sss-~~-sgggs~",
+      "~~~----~~-sggs-~",
+      "~~~~~~~~~~-ss-~~",
+      "~~~~--~~~~~--~~~",
+      "~~~-ss-~~~~~~~~~",
+      "~~-sggs-~~~~~~~~",
+      "~~-sggs-~~~~~~~~",
+      "~~~-ss-~~~~~~~~~",
+      "~~~~--~~~~~~~~~~"]
+  },
+  { // 1 Flowers
+    palette:[[196,229,247],[63,174,90],[41,120,60],[255,93,115],[255,210,63]],
+    legend:{".":0,"|":1,"o":2,"*":3,"+":4},
+    rows:[
+      "................",
+      ".....*....*.....",
+      "....*+*..*+*....",
+      ".....*....*.....",
+      ".....|....|.....",
+      "....o|....|o....",
+      ".....|...o|.....",
+      "...o.|....|.....",
+      ".....|..o.|.....",
+      "....o|....|o....",
+      ".....|....|.....",
+      ".....|....|.....",
+      "..*..|....|..*..",
+      ".*+*.|....|.*+*.",
+      "..*..|....|..*..",
+      ".....|....|....."]
+  },
+  { // 2 Circuit
+    palette:[[10,26,23],[43,227,176],[255,170,60]],
+    legend:{".":0,"-":1,"|":1,"+":1,"o":2},
+    rows:[
+      "................",
+      "..o---+---o.....",
+      "..|...|...|.....",
+      "..|...o...|..o..",
+      "..+---+---+..|..",
+      "..|...|...|..+--",
+      "..o...|...o..|..",
+      "..|...+---+--+..",
+      "..+---o...|...o.",
+      "..|.......|.....",
+      "..o---+---o.....",
+      "......|.........",
+      "..o---+---o.....",
+      "..|.......|.....",
+      "..o.......o.....",
+      "................"]
+  },
+  { // 3 Maze
+    palette:[[12,20,18],[64,214,170]],
+    legend:{"#":0,".":1},
+    rows:[
+      "################",
+      "#..............#",
+      "#.####.####.##.#",
+      "#.#..#....#.#..#",
+      "#.#.##.##.#.##.#",
+      "#.#....#..#....#",
+      "#.####.#.####.##",
+      "#....#.#....#..#",
+      "####.#.####.#.##",
+      "#....#....#.#..#",
+      "#.######.##.##.#",
+      "#......#.......#",
+      "#.####.######.##",
+      "#.#..........#.#",
+      "#.############.#",
+      "################"]
+  },
+  { // 4 Dungeon rooms
+    palette:[[24,20,32],[120,96,168],[210,196,235]],
+    legend:{"#":0,".":1,"o":2},
+    rows:[
+      "################",
+      "#....#.....#...#",
+      "#.oo.#.ooo.#.o.#",
+      "#.oo...ooo...o.#",
+      "#....#.ooo.#...#",
+      "####.#.....####.",
+      "#......#.......#",
+      "#.oooo.#.ooooo.#",
+      "#.oooo...ooooo.#",
+      "#.oooo.#.ooooo.#",
+      "#......#.......#",
+      "#.####.###.###.#",
+      "#.#......o....o#",
+      "#.#.oo.#.oo.#..#",
+      "#...oo.#.oo.#..#",
+      "################"]
+  },
+  { // 5 Cables
+    palette:[[9,16,20],[80,180,255],[255,110,90]],
+    legend:{".":0,"b":1,"r":2},
+    rows:[
+      "................",
+      "..bbbbbbbb......",
+      ".........b......",
+      "..rrrr...b..rrr.",
+      ".....r...b....r.",
+      ".....r...bbbb.r.",
+      ".....rrrr...b.r.",
+      "...........b.r..",
+      "..bbbbb....b.r..",
+      "......b....b.rr.",
+      "......bbbbbb..r.",
+      "..rrr........r..",
+      "....r........r..",
+      "....rrrrrrrrrr..",
+      "................",
+      "................"]
+  }
+];
+
+/* ---------- Editor state ---------- */
+var exC = document.getElementById("ex"), exX = exC.getContext("2d");
+var GRID = 16;
+var palette = PRESETS[0].palette.slice();
+var cells = new Uint8Array(GRID*GRID); // palette index per cell
+var curColor = 0;
+
+function loadPreset(idx){
+  var p = PRESETS[idx];
+  palette = p.palette.map(function(c){return c.slice();});
+  cells = new Uint8Array(GRID*GRID);
+  for(var y=0;y<GRID;y++){
+    var row = p.rows[y] || "";
+    for(var x=0;x<GRID;x++){
+      var ch = row[x] || Object.keys(p.legend)[0];
+      var v = p.legend[ch];
+      cells[y*GRID+x] = (v===undefined?0:v);
+    }
+  }
+  curColor = 0;
+  buildSwatches();
+  drawEx();
+}
+
+function buildSwatches(){
+  var sw = document.getElementById("sw"); sw.innerHTML="";
+  palette.forEach(function(c,i){
+    var d = document.createElement("div");
+    d.className = "sw" + (i===curColor?" on":"");
+    d.style.background = "rgb("+c[0]+","+c[1]+","+c[2]+")";
+    d.addEventListener("click", function(){ curColor=i; buildSwatches(); });
+    sw.appendChild(d);
+  });
+}
+
+function drawEx(){
+  var img = exX.createImageData(GRID,GRID);
+  for(var i=0;i<cells.length;i++){
+    var c = palette[cells[i]] || [0,0,0];
+    img.data[i*4]=c[0]; img.data[i*4+1]=c[1]; img.data[i*4+2]=c[2]; img.data[i*4+3]=255;
+  }
+  exX.putImageData(img,0,0);
+}
+
+function paintAt(ev){
+  var rect = exC.getBoundingClientRect();
+  var px = (ev.touches?ev.touches[0].clientX:ev.clientX) - rect.left;
+  var py = (ev.touches?ev.touches[0].clientY:ev.clientY) - rect.top;
+  var x = Math.floor(px/rect.width*GRID), y = Math.floor(py/rect.height*GRID);
+  if(x<0||y<0||x>=GRID||y>=GRID) return;
+  cells[y*GRID+x] = curColor; drawEx();
+}
+var painting=false;
+exC.addEventListener("mousedown", function(e){ painting=true; paintAt(e); });
+exC.addEventListener("mousemove", function(e){ if(painting) paintAt(e); });
+window.addEventListener("mouseup", function(){ painting=false; });
+exC.addEventListener("touchstart", function(e){ e.preventDefault(); painting=true; paintAt(e); }, {passive:false});
+exC.addEventListener("touchmove", function(e){ e.preventDefault(); if(painting) paintAt(e); }, {passive:false});
+exC.addEventListener("touchend", function(){ painting=false; });
+
+document.getElementById("clear").addEventListener("click", function(){ cells.fill(0); drawEx(); });
+document.getElementById("fill").addEventListener("click", function(){ cells.fill(curColor); drawEx(); });
+document.getElementById("preset").addEventListener("change", function(e){ loadPreset(+e.target.value); });
+
+/* pattern size + toggles */
+var N = 3;
+document.querySelectorAll("#nseg button").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll("#nseg button").forEach(function(x){x.classList.remove("on");});
+    b.classList.add("on"); N = +b.getAttribute("data-n");
+  });
+});
+var OUT = 48;
+document.querySelectorAll("#sizeseg button").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll("#sizeseg button").forEach(function(x){x.classList.remove("on");});
+    b.classList.add("on"); OUT = +b.getAttribute("data-s");
+  });
+});
+
+/* ---------- Worker source (the WFC engine) ---------- */
+var WORKER_SRC = [
+"'use strict';",
+"var DX=[-1,0,1,0], DY=[0,1,0,-1], OPP=[2,3,0,1];",
+"function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}",
+"// Extract N x N patterns (flattened row-major) from example grid of indices.",
+"function extract(src,w,h,N,sym,wrap){",
+"  var pats=[], key={}, weights=[];",
+"  var maxY = wrap? h : h-N+1, maxX = wrap? w : w-N+1;",
+"  for(var y=0;y<maxY;y++) for(var x=0;x<maxX;x++){",
+"    var variants=[ grab(src,w,h,x,y,N,wrap) ];",
+"    if(sym){ var p=variants[0];",
+"      var r1=rot(p,N), r2=rot(r1,N), r3=rot(r2,N);",
+"      var m=mir(p,N), m1=rot(m,N), m2=rot(m1,N), m3=rot(m2,N);",
+"      variants=[p,r1,r2,r3,m,m1,m2,m3]; }",
+"    for(var v=0;v<variants.length;v++){ var pk=variants[v].join(','); ",
+"      if(key[pk]===undefined){ key[pk]=pats.length; pats.push(variants[v]); weights.push(1); }",
+"      else weights[key[pk]]++; }",
+"  }",
+"  return {pats:pats, weights:weights};",
+"}",
+"function grab(src,w,h,x,y,N,wrap){ var out=new Array(N*N); for(var dy=0;dy<N;dy++) for(var dx=0;dx<N;dx++){ var sx=x+dx, sy=y+dy; if(wrap){sx=(sx%w+w)%w; sy=(sy%h+h)%h;} out[dy*N+dx]=src[sy*w+sx]; } return out; }",
+"function rot(p,N){ var o=new Array(N*N); for(var y=0;y<N;y++) for(var x=0;x<N;x++) o[x*N+(N-1-y)]=p[y*N+x]; return o; }",
+"function mir(p,N){ var o=new Array(N*N); for(var y=0;y<N;y++) for(var x=0;x<N;x++) o[y*N+(N-1-x)]=p[y*N+x]; return o; }",
+"function agrees(p1,p2,dx,dy,N){",
+"  var xmin=dx<0?0:dx, xmax=dx<0?dx+N:N, ymin=dy<0?0:dy, ymax=dy<0?dy+N:N;",
+"  for(var y=ymin;y<ymax;y++) for(var x=xmin;x<xmax;x++){ if(p1[x+N*y]!==p2[(x-dx)+N*(y-dy)]) return false; } return true;",
+"}",
+"function buildProp(pats,N){",
+"  var T=pats.length, prop=[[],[],[],[]];",
+"  for(var d=0;d<4;d++){ prop[d]=new Array(T); for(var t=0;t<T;t++){ var list=[]; for(var t2=0;t2<T;t2++){ if(agrees(pats[t],pats[t2],DX[d],DY[d],N)) list.push(t2); } prop[d][t]=list; } }",
+"  return prop;",
+"}",
+"",
+"var model=null;",
+"function build(msg){",
+"  var ex=msg.example;",
+"  var e=extract(ex.data, ex.w, ex.h, msg.N, msg.sym, msg.wrapInput);",
+"  var prop=buildProp(e.pats, msg.N);",
+"  var rep=e.pats.map(function(p){ return msg.palette[ p[0] ] || [0,0,0]; });",
+"  model={ N:msg.N, pats:e.pats, weights:e.weights, prop:prop, rep:rep,",
+"          W:msg.outW, H:msg.outH, wrap:msg.wrapOutput };",
+"}",
+"",
+"var wave, comp, sumOnes, sumW, sumWlogW, entropy, stack, T, W, H, wrap, weights, prop, rep, rand, logW, contradiction, remaining, restarts=0;",
+"function initWave(seed){",
+"  T=model.pats.length; W=model.W; H=model.H; wrap=model.wrap; weights=model.weights; prop=model.prop; rep=model.rep;",
+"  rand=mulberry32(seed>>>0);",
+"  var n=W*H; wave=new Array(n); comp=new Array(n);",
+"  sumOnes=new Int32Array(n); sumW=new Float64Array(n); sumWlogW=new Float64Array(n); entropy=new Float64Array(n);",
+"  logW=new Float64Array(T); var baseSumW=0, baseSumWlog=0;",
+"  for(var t=0;t<T;t++){ logW[t]=Math.log(weights[t]); baseSumW+=weights[t]; baseSumWlog+=weights[t]*logW[t]; }",
+"  var baseEnt=Math.log(baseSumW)-baseSumWlog/baseSumW;",
+"  for(var i=0;i<n;i++){ wave[i]=new Uint8Array(T); wave[i].fill(1); comp[i]=new Int32Array(T*4);",
+"    for(var t2=0;t2<T;t2++) for(var d=0;d<4;d++){ comp[i][t2*4+d]=prop[OPP[d]][t2].length; }",
+"    sumOnes[i]=T; sumW[i]=baseSumW; sumWlogW[i]=baseSumWlog; entropy[i]=baseEnt; }",
+"  stack=[]; contradiction=false; remaining=n;",
+"}",
+"function ban(i,t){",
+"  if(!wave[i][t]) return; wave[i][t]=0;",
+"  var c=comp[i]; for(var d=0;d<4;d++) c[t*4+d]=0;",
+"  stack.push(i,t);",
+"  sumOnes[i]-=1; sumW[i]-=weights[t]; sumWlogW[i]-=weights[t]*logW[t];",
+"  if(sumOnes[i]<=0){ contradiction=true; }",
+"  else entropy[i]=Math.log(sumW[i])-sumWlogW[i]/sumW[i];",
+"}",
+"function observe(){",
+"  var min=1e9, arg=-1;",
+"  for(var i=0;i<W*H;i++){ if(sumOnes[i]<=1) continue; var e=entropy[i]+ (1e-6)*rand(); if(e<min){ min=e; arg=i; } }",
+"  if(arg===-1){ return false; } // fully collapsed",
+"  // choose a pattern by weight",
+"  var w=wave[arg], sum=0, i2; for(i2=0;i2<T;i2++) if(w[i2]) sum+=weights[i2];",
+"  var r=rand()*sum, chosen=-1; for(i2=0;i2<T;i2++){ if(w[i2]){ r-=weights[i2]; if(r<=0){ chosen=i2; break; } } }",
+"  if(chosen<0) for(i2=0;i2<T;i2++) if(w[i2]){ chosen=i2; break; }",
+"  for(i2=0;i2<T;i2++){ if(w[i2] && i2!==chosen) ban(arg,i2); }",
+"  return true;",
+"}",
+"function propagate(){",
+"  while(stack.length){ var t=stack.pop(), i=stack.pop(); var x=i%W, y=(i/W|0);",
+"    for(var d=0;d<4;d++){ var nx=x+DX[d], ny=y+DY[d];",
+"      if(wrap){ nx=(nx%W+W)%W; ny=(ny%H+H)%H; } else if(nx<0||ny<0||nx>=W||ny>=H) continue;",
+"      var ni=ny*W+nx, list=prop[d][t], nc=comp[ni];",
+"      for(var k=0;k<list.length;k++){ var t2=list[k], idx=t2*4+d; nc[idx]--; if(nc[idx]===0 && wave[ni][t2]) ban(ni,t2); if(contradiction) return; }",
+"    }",
+"  }",
+"}",
+"function snapshot(){",
+"  var n=W*H, rgba=new Uint8ClampedArray(n*4);",
+"  for(var i=0;i<n;i++){ var w=wave[i], r=0,g=0,b=0,tot=0;",
+"    for(var t=0;t<T;t++){ if(w[t]){ var wt=weights[t], c=rep[t]; r+=c[0]*wt; g+=c[1]*wt; b+=c[2]*wt; tot+=wt; } }",
+"    if(tot>0){ rgba[i*4]=r/tot; rgba[i*4+1]=g/tot; rgba[i*4+2]=b/tot; rgba[i*4+3]=255; }",
+"    else { rgba[i*4]=20; rgba[i*4+1]=20; rgba[i*4+2]=24; rgba[i*4+3]=255; }",
+"  }",
+"  return rgba;",
+"}",
+"",
+"var running=false, paused=false, seedBase=1, stepsPerTick=20, delay=16, timer=null, MAXR=20;",
+"function collapsedCount(){ var c=0; for(var i=0;i<W*H;i++) if(sumOnes[i]===1) c++; return c; }",
+"function doRestart(){ restarts++; if(restarts>MAXR){ running=false; if(timer) clearTimeout(timer); postMessage({type:'stuck', restarts:restarts, patterns:T}); return false; } seedBase=(seedBase*1664525+1013904223)>>>0; initWave(seedBase); return true; }",
+"function tick(){",
+"  if(!running || paused) return;",
+"  for(var s=0;s<stepsPerTick;s++){",
+"    var progressed=observe();",
+"    if(!progressed){ postFrame(true); running=false; return; }",
+"    propagate();",
+"    if(contradiction){ if(!doRestart()) return; break; }",
+"  }",
+"  postFrame(false);",
+"  timer=setTimeout(tick, delay);",
+"}",
+"function postFrame(done){",
+"  var rgba=snapshot();",
+"  postMessage({type: done?'done':'frame', rgba:rgba.buffer, W:W, H:H, collapsed:collapsedCount(), total:W*H, restarts:restarts, patterns:T}, [rgba.buffer]);",
+"}",
+"function oneStep(){",
+"  var progressed=observe(); if(!progressed){ postFrame(true); running=false; return; } propagate();",
+"  if(contradiction){ if(!doRestart()) return; }",
+"  postFrame(false);",
+"}",
+"onmessage=function(ev){ var m=ev.data;",
+"  if(m.cmd==='run'){ if(timer) clearTimeout(timer); build(m); seedBase=m.seed>>>0; initWave(seedBase);",
+"    stepsPerTick=m.stepsPerTick; delay=m.delay; running=true; paused=false;",
+"    postMessage({type:'started', patterns:model.pats.length}); tick(); }",
+"  else if(m.cmd==='pause'){ paused=!paused; if(!paused && running){ tick(); } postMessage({type:'paused', paused:paused}); }",
+"  else if(m.cmd==='step'){ if(!running) return; if(!paused){ paused=true; } oneStep(); }",
+"  else if(m.cmd==='setspeed'){ stepsPerTick=m.stepsPerTick; delay=m.delay; }",
+"  else if(m.cmd==='stop'){ running=false; if(timer) clearTimeout(timer); }",
+"};"
+].join("\n");
+
+/* ---------- Main-thread controller ---------- */
+var outC = document.getElementById("out"), outX = outC.getContext("2d");
+var worker=null, curW=0, curH=0;
+var genBtn=document.getElementById("gen"), pauseBtn=document.getElementById("pause"),
+    stepBtn=document.getElementById("step"), pngBtn=document.getElementById("png"),
+    statEl=document.getElementById("stat"), speedEl=document.getElementById("speed"),
+    seedEl=document.getElementById("seed");
+
+if(typeof Worker==="undefined"){ document.getElementById("warn").style.display="block"; genBtn.disabled=true; }
+
+function speedParams(){
+  var v=+speedEl.value; // 1..6
+  var map={1:{s:1,d:70},2:{s:3,d:45},3:{s:8,d:24},4:{s:20,d:14},5:{s:45,d:6},6:{s:120,d:0}};
+  return map[v]||map[4];
+}
+
+function drawFrame(buf,w,h){
+  var rgba=new Uint8ClampedArray(buf);
+  if(outC.width!==w||outC.height!==h){ outC.width=w; outC.height=h; }
+  var img=new ImageData(rgba,w,h);
+  outX.putImageData(img,0,0);
+  curW=w; curH=h;
+}
+
+function makeWorker(){
+  if(worker) worker.terminate();
+  var blob=new Blob([WORKER_SRC],{type:"text/javascript"});
+  worker=new Worker(URL.createObjectURL(blob));
+  worker.onmessage=function(ev){
+    var m=ev.data;
+    if(m.type==="started"){ statEl.innerHTML="Learned <b>"+m.patterns+"</b> tiles · solving…"; }
+    else if(m.type==="frame"){ drawFrame(m.rgba,m.W,m.H);
+      statEl.innerHTML="<b>"+m.collapsed+"</b>/"+m.total+" cells · "+m.patterns+" tiles"+(m.restarts?" · "+m.restarts+" restart"+(m.restarts>1?"s":""):""); }
+    else if(m.type==="done"){ drawFrame(m.rgba,m.W,m.H);
+      statEl.innerHTML="Done · <b>"+m.total+"</b> cells"+(m.restarts?" · "+m.restarts+" restart"+(m.restarts>1?"s":""):"");
+      pauseBtn.disabled=true; stepBtn.disabled=true; genBtn.disabled=false; pngBtn.disabled=false; }
+    else if(m.type==="stuck"){ statEl.innerHTML="<b>Hard example.</b> Try turning on wrap, pattern size 2&times;2, or a simpler drawing.";
+      pauseBtn.disabled=true; stepBtn.disabled=true; genBtn.disabled=false; pngBtn.disabled=(curW===0); }
+    else if(m.type==="paused"){ pauseBtn.innerHTML=m.paused?"&#9654;":"&#10073;&#10073;"; }
+  };
+}
+
+genBtn.addEventListener("click", function(){
+  makeWorker();
+  var sp=speedParams();
+  pngBtn.disabled=true; pauseBtn.disabled=false; stepBtn.disabled=false; pauseBtn.innerHTML="&#10073;&#10073;";
+  statEl.textContent="Learning tiles…";
+  worker.postMessage({ cmd:"run",
+    example:{ w:GRID, h:GRID, data:cells },
+    palette:palette, N:N, sym:document.getElementById("sym").checked,
+    wrapInput:document.getElementById("wrap").checked,
+    outW:OUT, outH:OUT, wrapOutput:document.getElementById("wrap").checked,
+    seed:(+seedEl.value)>>>0, stepsPerTick:sp.s, delay:sp.d });
+});
+pauseBtn.addEventListener("click", function(){ if(worker) worker.postMessage({cmd:"pause"}); });
+stepBtn.addEventListener("click", function(){ if(worker) worker.postMessage({cmd:"step"}); });
+speedEl.addEventListener("input", function(){ if(worker){ var sp=speedParams(); worker.postMessage({cmd:"setspeed", stepsPerTick:sp.s, delay:sp.d}); } });
+
+pngBtn.addEventListener("click", function(){
+  if(!curW) return;
+  var scale=Math.max(1, Math.floor(1024/curW));
+  var big=document.createElement("canvas"); big.width=curW*scale; big.height=curH*scale;
+  var bx=big.getContext("2d"); bx.imageSmoothingEnabled=false; bx.drawImage(outC,0,0,big.width,big.height);
+  var a=document.createElement("a"); a.href=big.toDataURL("image/png"); a.download="collapse.png"; a.click();
+});
+
+/* boot */
+loadPreset(0);
+window.__collapseBoot=true;
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
