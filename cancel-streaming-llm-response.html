@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>What breaks when you cancel a streaming LLM response — Harman Kamboj</title>
+<meta name="description" content="Cancel a streaming LLM response and the UI stops, but the model keeps generating and billing. Here is what actually breaks and how I wire cancellation right." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="What breaks when you cancel a streaming LLM response — Harman Kamboj" />
+<meta property="og:description" content="Cancel a streaming LLM response and the UI stops, but the model keeps generating and billing. Here is what actually breaks and how I wire cancellation right." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/cancel-streaming-llm-response.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="What breaks when you cancel a streaming LLM response — Harman Kamboj" />
+<meta name="twitter:description" content="Cancel a streaming LLM response and the UI stops, but the model keeps generating and billing. Here is what actually breaks and how I wire cancellation right." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/cancel-streaming-llm-response.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"What breaks when you cancel a streaming LLM response","description":"Cancel a streaming LLM response and the UI stops, but the model keeps generating and billing. Here is what actually breaks and how I wire cancellation right.","datePublished":"2026-07-10","dateModified":"2026-07-10","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/cancel-streaming-llm-response.html","url":"https://hammyasf.github.io/cancel-streaming-llm-response.html","keywords":"AI, LLM, Streaming, SSE, Full-stack","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  .rel{margin:40px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin-bottom:6px;}
+  .rel a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">What breaks when you cancel a streaming LLM response</h1>
+   <div class="pmeta"><span>July 10, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>AI</span><span>LLM</span><span>Streaming</span><span>Full-stack</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The stop button on a chat UI is a small lie. A user clicks it, the tokens stop scrolling, and everyone assumes the work stopped too. Most of the time it did not. When you cancel a streaming LLM response the way a lot of apps do it, all you really cancelled was your own side of the pipe. The model keeps generating on a GPU somewhere, the provider keeps counting tokens, and your bill keeps climbing for output nobody is going to read. I found this out the boring way, staring at usage numbers that did not line up with what people were actually doing on screen.</p>
+<p>Starting a stream is the easy half. You open a connection, you flush tokens as they arrive, the text types itself out, everyone is happy. Stopping one cleanly is where the sharp edges hide, and they hide well because in a demo you never hit them. Nobody cancels in a demo. Real users cancel constantly, and they do it in the messiest possible way, at the worst possible moment.</p>
+<h2>The stop button only closes your end</h2>
+<p>Here is the shape of the bug. The browser holds an open connection to your server, usually server-sent events over a plain <code>fetch</code>. When the user hits stop, you abort that fetch, the connection closes, and the UI goes quiet. But your server was in the middle of its own request to the model provider, and closing the browser connection does nothing to that. Unless you explicitly forward the cancellation upstream, the provider request runs to completion and you pay for every token it produces after the user walked away.</p>
+<p>The fix is to thread an abort signal all the way through. The client aborts, your server notices the client is gone, and your server aborts its request to the provider using whatever cancellation the SDK gives you. Most provider SDKs take a signal or an equivalent. If you are not passing one, you do not have cancellation. You have a stop button that only stops the drawing.</p>
+<h2>You find out late that the client left</h2>
+<p>The annoying part is that detecting a gone client is not instant and it is not clean. TCP will happily sit in a half-open state where your side thinks the connection is fine. You often only discover the client is gone when you try to write the next chunk and the write fails. Put a buffering reverse proxy in the path and that discovery slips even later, because the proxy is still holding a connection to you long after the browser dropped.</p>
+<p>So accept that there is always a small window where you keep generating after the user is gone. You cannot make it zero. You can make it small by checking the abort state between chunks instead of only when a write fails, and by turning off proxy buffering on the streaming route. A few wasted tokens per cancel is fine. A whole wasted completion per cancel is a line item.</p>
+<h2>A dropped connection is not the same as a stop</h2>
+<p>This one caught me because it looks solved when it is not. On the wire, a user deliberately hitting stop and a user losing their wifi look almost identical. The connection closes either way. If you treat every closed connection as an intentional cancel, then somebody on a flaky train connection loses a half-finished answer they actually wanted, and there is no way to get it back. This is the same trap I wrote about with a <a href="real-time-ui-stale-data.html">real-time UI after a websocket reconnect</a>, where a drop and a deliberate close need different handling.</p>
+<p>What works for me is making intent explicit. A real stop sends a small signal before it closes, a request to the server that says cancel this generation. A bare transport drop gets treated as maybe temporary, so the server can hold the partial result for a short window instead of throwing it away. The transport telling you the connection ended is not the same as the user telling you to quit.</p>
+<h2>The half-written message has to go somewhere</h2>
+<p>When a stream gets cancelled you are left holding a partial message. The model wrote three sentences and then you cut it off. You have to decide what that partial means. Do you save it, discard it, or store it with a flag that says this was interrupted. My default is to persist it and mark it incomplete. The user watched those words appear, so they expect them to still be there when they scroll back, and quietly deleting text people just read feels broken. Marking it incomplete also lets you do the obvious next thing, which is offer to continue from where it stopped.</p>
+<h2>The dangerous cancel is the one mid-tool-call</h2>
+<p>Cancelling while the model is just emitting text is cheap. Cancelling while it is in the middle of calling a tool that changes real state is where you can actually hurt something. If the abort lands after the tool started its work but before it finished, you can end up with a half-applied side effect and no clean record of it. This is exactly why I lean so hard on <a href="idempotent-tool-calls-agents.html">idempotent tool calls</a>. If running the action twice lands in the same place as running it once, then a cancel in the danger window is survivable. You can retry or roll forward without being scared of what the interrupted call left behind.</p>
+<h2>Watch the race after the user restarts</h2>
+<p>Here is the last one, and it is sneaky. A user hits stop and then immediately types a new message and sends it. Your cleanup for the cancelled stream is still running in the background, and if it writes to the same conversation, it can stomp on the new response or land out of order. The cure is a generation id on every stream. Every write carries the id of the stream that produced it, and the server drops any write whose id is no longer the active one. Late writes from a dead stream get ignored on arrival instead of corrupting the live one. It is the same discipline I use choosing <a href="sse-vs-websockets-real-time-choice.html">SSE or websockets for real-time features</a>, where you assume messages can show up late and out of order and you design so that late arrivals cannot do damage.</p>
+<h2>What I wire up before I ship a stream</h2>
+<p>The list is short and I do not skip it anymore. The client holds an <code>AbortController</code> and a real stop sends an explicit cancel before it closes. The server forwards that cancel to the provider so generation and billing actually stop. Every stream carries a generation id and stale writes get dropped. Partial output is persisted and marked incomplete, not thrown away. Any tool the model can call mid-stream is idempotent so a cancel in the wrong spot is safe. None of this is exotic. It is just the difference between a stop button that stops the work and one that only stops the animation. If you want more of how I think about this kind of plumbing, it is in my <a href="ai.html">AI notes</a>, and the rest of the work is on the <a href="index.html">homepage</a>.</p>
+   <div class="rel">
+     <h2>Related in AI</h2>
+     <ul>
+       <li><a href="idempotent-tool-calls-agents.html">Idempotent tool calls: do this before you let an agent retry</a></li>
+       <li><a href="sse-vs-websockets-real-time-choice.html">SSE or WebSockets? How I actually pick for real-time features</a></li>
+       <li><a href="real-time-ui-stale-data.html">Why your real-time UI lies after a websocket reconnect</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If your product's hard part is the streaming, the real-time, or the parts that quietly break under real users, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="ai-agent-database-migrations.html">The one thing I still will not let an AI agent do: database migrations →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>
