@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Paint Cam — real-time AI style transfer in your browser (no upload)</title>
+<meta name="description" content="Turn your webcam into a living oil painting. A real neural network runs on your GPU and repaints your camera in real time — five art styles, snapshot and record, or style a photo instead. 100% in your browser, nothing uploaded." />
+<meta name="keywords" content="neural style transfer, style transfer online, turn photo into painting, ai art filter, webcam painting, real time style transfer, ai painting filter, live style transfer, onnx style transfer, in browser ai, no upload, van gogh filter, fast neural style" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Paint Cam — real-time AI style transfer in your browser" />
+<meta property="og:description" content="A neural network repaints your webcam live on your GPU, in five art styles. Nothing is uploaded — it all runs in the browser." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/paint-cam.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Paint Cam — real-time neural style transfer, in your browser" />
+<meta name="twitter:description" content="Watch a real AI model repaint your camera live on your GPU. Five styles, snapshot & record, nothing uploaded." />
+<link rel="canonical" href="https://hammyasf.github.io/paint-cam.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://media.githubusercontent.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Paint Cam — Real-Time Neural Style Transfer","url":"https://hammyasf.github.io/paint-cam.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebGPU or WebAssembly)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time neural style transfer studio that runs a fast-neural-style AI model entirely in the browser. Repaint your webcam live on your GPU in five art styles, snapshot or record the result, or style an uploaded photo. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How can a neural network repaint my webcam in real time in a browser?","acceptedAnswer":{"@type":"Answer","text":"Paint Cam loads a small fast-neural-style model (about 6.7 MB) and runs it with ONNX Runtime Web on your GPU through WebGPU. Every frame, the current camera image is turned into a tensor, pushed through the network on your graphics card, and painted back to a canvas. There is no server and no queue — the model executes on your own machine."}},{"@type":"Question","name":"Is my camera or photo uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The video never leaves your device. Frames are read locally, styled on your own GPU, and drawn straight back to the page. Nothing is sent to a server, and the model file is fetched once from a public CDN and then cached by your browser."}},{"@type":"Question","name":"What are the five styles?","acceptedAnswer":{"@type":"Answer","text":"Candy, Mosaic, Rain Princess, Udnie and Pointilism — the classic fast-neural-style models, each trained to imitate a different painting. Switching styles loads that style's network; the first switch downloads it, after which it is instant."}},{"@type":"Question","name":"Why does it look soft or run at a few frames per second?","acceptedAnswer":{"@type":"Answer","text":"The model paints at 224x224 and the result is scaled up, which gives the soft, brushy look. Frame rate depends on your GPU; a modern discrete GPU runs it smoothly, while integrated graphics repaint a few times a second. If WebGPU is unavailable it falls back to WebAssembly, which is slower — try the photo mode there."}},{"@type":"Question","name":"Do I need to install anything or sign up?","acceptedAnswer":{"@type":"Answer","text":"No install, no account, no API key. It is a single web page. A sample image styles itself on load so you can see it work before turning on your camera."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  main{max-width:1080px;margin:0 auto;padding:0 24px 20px;}
+  .hero{padding:30px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,54px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:700px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  .stage{position:relative;margin:22px 0 0;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#02040a;box-shadow:0 30px 80px -40px rgba(0,0,0,.9);}
+  #view{display:block;width:100%;height:66vh;min-height:420px;object-fit:contain;background:#02040a;}
+  video,#work,#src{display:none;}
+  .topbar{position:absolute;top:0;left:0;right:0;display:flex;gap:8px;flex-wrap:wrap;padding:14px;background:linear-gradient(180deg,rgba(2,4,10,.82),rgba(2,4,10,0));z-index:3;}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--ink);background:rgba(12,22,30,.72);border:1px solid var(--line-2);padding:7px 13px;border-radius:100px;cursor:pointer;transition:.15s;backdrop-filter:blur(6px);white-space:nowrap;}
+  .chip:hover{border-color:rgba(var(--accentRGB),.6);}
+  .chip.on{background:var(--accent);color:#04120d;border-color:var(--accent);font-weight:600;}
+  .chip[disabled]{opacity:.4;cursor:not-allowed;}
+  .stats{position:absolute;top:62px;right:14px;z-index:3;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(2,4,10,.6);border:1px solid var(--line);border-radius:10px;padding:8px 11px;line-height:1.7;text-align:right;backdrop-filter:blur(6px);pointer-events:none;max-width:60%;}
+  .stats b{color:var(--accent);}
+  .dock{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;gap:14px 18px;flex-wrap:wrap;align-items:center;padding:14px 16px;background:linear-gradient(0deg,rgba(2,4,10,.9),rgba(2,4,10,0));}
+  .dock .grp{display:flex;flex-direction:column;gap:5px;}
+  .dock label{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .dock .row{display:flex;align-items:center;gap:9px;}
+  input[type=range]{accent-color:var(--accent);width:130px;}
+  .iconbtn{font-family:var(--mono);font-size:12.5px;color:var(--ink);background:rgba(12,22,30,.72);border:1px solid var(--line-2);padding:8px 14px;border-radius:100px;cursor:pointer;transition:.15s;backdrop-filter:blur(6px);}
+  .iconbtn:hover{border-color:rgba(var(--accentRGB),.6);}
+  .iconbtn.primary{background:var(--accent);color:#04120d;border-color:var(--accent);font-weight:700;}
+  .iconbtn.rec{border-color:rgba(255,90,90,.6);color:#ff8f8f;}
+  .iconbtn.rec.on{background:#ff5a5a;color:#12040a;border-color:#ff5a5a;font-weight:700;}
+  .iconbtn[disabled]{opacity:.4;cursor:not-allowed;}
+  .vval{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:34px;}
+  .hint{position:absolute;left:14px;bottom:78px;z-index:3;font-family:var(--mono);font-size:11px;color:var(--faint);background:rgba(2,4,10,.5);padding:5px 9px;border-radius:8px;pointer-events:none;max-width:80%;}
+
+  .loader{position:absolute;inset:0;z-index:6;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(2,4,10,.72);backdrop-filter:blur(3px);text-align:center;padding:24px;}
+  .loader.show{display:flex;}
+  .loader .lt{font-family:var(--display);font-weight:600;font-size:19px;}
+  .loader .ls{font-family:var(--mono);font-size:12px;color:var(--muted);max-width:360px;}
+  .bar{width:min(320px,74vw);height:8px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden;}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .15s;}
+  .fallback{position:absolute;inset:0;z-index:7;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(2,4,10,.9);text-align:center;padding:26px;}
+  .fallback.show{display:flex;}
+  .fallback h3{font-family:var(--display);font-weight:600;font-size:22px;}
+  .fallback p{color:var(--muted);font-size:14.5px;max-width:460px;}
+  .toast{position:absolute;left:50%;top:64px;transform:translateX(-50%);z-index:8;font-family:var(--mono);font-size:12.5px;color:#04120d;background:var(--accent);padding:8px 15px;border-radius:100px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%;text-align:center;}
+  .toast.show{opacity:1;}
+  .drop{position:absolute;inset:0;z-index:5;display:none;align-items:center;justify-content:center;border:2px dashed var(--accent);border-radius:20px;background:rgba(var(--accentRGB),.08);font-family:var(--mono);color:var(--accent);}
+  .drop.show{display:flex;}
+
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:760px;}
+  section.copy code{font-family:var(--mono);font-size:.92em;background:rgba(var(--accentRGB),.1);padding:1px 6px;border-radius:5px;color:var(--accent);}
+  .faq{border-top:1px solid var(--line);margin-top:14px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:640px){#view{height:56vh;}.dock{gap:10px 14px;}.stats{font-size:10.5px;top:56px;}.hint{display:none;}input[type=range]{width:104px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="tag">The Lab · On-device AI</div>
+    <h1>Paint Cam</h1>
+    <p class="sub">A real neural network repaints your webcam into a living painting — right here, on your GPU. Pick a style, point your camera, and watch yourself turn into brushstrokes at video rate. Or drop in a photo. Nothing is uploaded; the whole model runs in your browser.</p>
+    <span class="priv">◆ 100% on-device · your camera never leaves this page</span>
+  </section>
+
+  <div class="stage">
+    <canvas id="view" width="896" height="672"></canvas>
+    <video id="cam" playsinline muted></video>
+    <canvas id="src" width="224" height="224"></canvas>
+    <canvas id="work" width="224" height="224"></canvas>
+
+    <div class="topbar" id="topbar">
+      <button class="chip on" data-style="candy">Candy</button>
+      <button class="chip" data-style="mosaic">Mosaic</button>
+      <button class="chip" data-style="rain-princess">Rain Princess</button>
+      <button class="chip" data-style="udnie">Udnie</button>
+      <button class="chip" data-style="pointilism">Pointilism</button>
+    </div>
+
+    <div class="stats" id="stats" hidden></div>
+
+    <div class="hint" id="hint">A sample styles itself below — hit “Use camera” to paint yourself live.</div>
+
+    <div class="dock">
+      <div class="grp">
+        <label>Source</label>
+        <div class="row">
+          <button class="iconbtn primary" id="btnCam">Use camera</button>
+          <button class="iconbtn" id="btnPhoto">Photo</button>
+          <button class="iconbtn" id="btnSample">Sample</button>
+        </div>
+      </div>
+      <div class="grp">
+        <label>Style strength <span class="vval" id="mixVal">100%</span></label>
+        <div class="row"><input type="range" id="mix" min="0" max="100" value="100"></div>
+      </div>
+      <div class="grp">
+        <label>Save</label>
+        <div class="row">
+          <button class="iconbtn" id="btnSnap">Snapshot</button>
+          <button class="iconbtn rec" id="btnRec">● Record</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="drop" id="drop">Drop an image to paint it</div>
+
+    <div class="loader" id="loader">
+      <div class="lt" id="loaderTitle">Loading the painter…</div>
+      <div class="bar"><i id="loaderFill"></i></div>
+      <div class="ls" id="loaderSub">Fetching the style model (~6.7&nbsp;MB). It downloads once, then your browser caches it.</div>
+    </div>
+
+    <div class="fallback" id="fallback">
+      <h3>This browser can't run the painter</h3>
+      <p id="fallbackMsg">Paint Cam needs a modern browser. Try the latest Chrome or Edge on a desktop.</p>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <input type="file" id="file" accept="image/*" hidden>
+  </div>
+
+  <section class="copy">
+    <h2>Wait — this is running in my browser?</h2>
+    <p>Yes. There's no server doing the painting. Paint Cam downloads a small <em>fast-neural-style</em> network — the same family of models that kicked off the whole "turn a photo into a Van Gogh" trend — and runs it with <a href="https://onnxruntime.ai/docs/tutorials/web/" target="_blank" rel="noopener">ONNX Runtime Web</a> on your GPU through WebGPU. Each style is its own tiny neural network, roughly 6.7&nbsp;MB, trained to repaint any image in that style.</p>
+    <h2>How a frame becomes a painting</h2>
+    <p>Every frame, the current camera image is shrunk to <code>224×224</code>, unpacked into a raw tensor of red, green and blue planes, and fed through the network on your graphics card. The network hands back three colour planes of the same size, which get packed into pixels and scaled up to fill the canvas — that upscaling is where the soft, brushy quality comes from. When you drag <strong>style strength</strong> below 100%, the styled pixels are blended with the original frame, so you can dial the effect from a light filter to a full repaint.</p>
+    <h2>Live, or on a photo</h2>
+    <p>Point your camera and it paints continuously; the frame rate depends on your GPU, so a discrete card feels smooth while integrated graphics repaint a few times a second. Prefer a still? Hit <strong>Photo</strong> (or just drop an image onto the canvas) and it styles that instead. Grab a <strong>snapshot</strong> as a PNG, or <strong>record</strong> the live canvas to a video clip. Everything you make is generated locally and stays on your machine.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>How can a neural network repaint my webcam in real time in a browser?</summary><p>Paint Cam loads a small fast-neural-style model (~6.7&nbsp;MB) and runs it with ONNX Runtime Web on your GPU via WebGPU. Every frame is turned into a tensor, pushed through the network on your graphics card, and painted back to a canvas. No server, no queue — the model executes on your own machine.</p></details>
+    <details><summary>Is my camera or photo uploaded anywhere?</summary><p>No. Your video never leaves your device. Frames are read locally, styled on your own GPU, and drawn straight back to the page. The only thing fetched from the network is the model file itself, once, from a public CDN — after that it's cached.</p></details>
+    <details><summary>What are the five styles?</summary><p>Candy, Mosaic, Rain Princess, Udnie and Pointilism — the classic fast-neural-style models, each trained to imitate a different painting. Switching styles loads that style's network; the first switch downloads it, then it's instant.</p></details>
+    <details><summary>Why does it look soft or run at a few frames per second?</summary><p>The model paints at 224×224 and the result is scaled up, which gives the brushy look. Frame rate depends on your GPU. If WebGPU isn't available it falls back to WebAssembly, which is slower — the Photo mode works better there.</p></details>
+    <details><summary>Do I need to install anything or sign up?</summary><p>No install, no account, no API key. It's a single web page, and a sample image styles itself on load so you can see it work before turning on your camera.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+</script>
+
+<script id="app">
+(function(){
+"use strict";
+
+/* ======================= pure helpers (unit-tested in node) ======================= */
+function clamp255(v){ v=v<0?0:v>255?255:v; return v|0; }
+// RGBA (H*W*4, 0-255) -> planar CHW Float32 [R plane, G plane, B plane], values 0-255
+function toCHW(rgba, w, h){
+  var n=w*h, out=new Float32Array(3*n);
+  for(var i=0;i<n;i++){ var p=i*4; out[i]=rgba[p]; out[n+i]=rgba[p+1]; out[2*n+i]=rgba[p+2]; }
+  return out;
+}
+// planar CHW Float32 (values ~0-255) -> RGBA Uint8ClampedArray, optionally blended with a source RGBA by mix (0..1)
+function fromCHW(chw, w, h, srcRGBA, mix){
+  var n=w*h, out=new Uint8ClampedArray(n*4);
+  var m = (mix==null)?1:(mix<0?0:mix>1?1:mix);
+  for(var i=0;i<n;i++){
+    var p=i*4;
+    var r=clamp255(chw[i]), g=clamp255(chw[n+i]), b=clamp255(chw[2*n+i]);
+    if(m<1 && srcRGBA){
+      r = (srcRGBA[p]  *(1-m) + r*m)|0;
+      g = (srcRGBA[p+1]*(1-m) + g*m)|0;
+      b = (srcRGBA[p+2]*(1-m) + b*m)|0;
+    }
+    out[p]=r; out[p+1]=g; out[p+2]=b; out[p+3]=255;
+  }
+  return out;
+}
+// object-fit: cover — source rect (sx,sy,sw,sh) to crop from a sw0xsh0 image so it fills dw x dh
+function coverRect(sw0, sh0, dw, dh){
+  var sr=sw0/sh0, dr=dw/dh, sx=0, sy=0, sw=sw0, sh=sh0;
+  if(sr>dr){ sw=Math.round(sh0*dr); sx=Math.round((sw0-sw)/2); }
+  else { sh=Math.round(sw0/dr); sy=Math.round((sh0-sh)/2); }
+  return {sx:sx, sy:sy, sw:sw, sh:sh};
+}
+if(typeof module!=="undefined" && module.exports){ module.exports={clamp255:clamp255,toCHW:toCHW,fromCHW:fromCHW,coverRect:coverRect}; }
+
+/* ======================= config ======================= */
+var SIZE=224;
+var ORT_URL="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.webgpu.min.mjs";
+var WASM_BASE="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/";
+var MODEL_BASE="https://media.githubusercontent.com/media/onnx/models/main/validated/vision/style_transfer/fast_neural_style/model/";
+var STYLES={ "candy":"candy-9.onnx","mosaic":"mosaic-9.onnx","rain-princess":"rain-princess-9.onnx","udnie":"udnie-9.onnx","pointilism":"pointilism-9.onnx" };
+
+/* ======================= dom ======================= */
+var $=function(id){return document.getElementById(id);};
+var view=$("view"), vctx=view.getContext("2d");
+var cam=$("cam");
+var srcC=$("src"), srcX=srcC.getContext("2d",{willReadFrequently:true});
+var workC=$("work"), workX=workC.getContext("2d");
+var stats=$("stats"), hint=$("hint"), toastEl=$("toast");
+var loader=$("loader"), loaderTitle=$("loaderTitle"), loaderFill=$("loaderFill"), loaderSub=$("loaderSub");
+var fallback=$("fallback"), fallbackMsg=$("fallbackMsg"), drop=$("drop"), fileIn=$("file");
+var mix=$("mix"), mixVal=$("mixVal");
+var btnCam=$("btnCam"), btnPhoto=$("btnPhoto"), btnSample=$("btnSample"), btnSnap=$("btnSnap"), btnRec=$("btnRec");
+
+/* ======================= state ======================= */
+var ort=null, ep="wasm", sessions={}, curStyle="candy", loadingStyle=null;
+var mode="sample";              // "sample" | "camera" | "photo"
+var stream=null, photoImg=null, running=false, busy=false;
+var fpsN=0, fpsT=performance.now(), lastFps=0;
+var recorder=null, recChunks=[];
+
+vctx.imageSmoothingEnabled=true; vctx.imageSmoothingQuality="high";
+view.style.filter="none";
+
+function toast(m){ toastEl.textContent=m; toastEl.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(function(){toastEl.classList.remove("show");},2600); }
+function showLoader(title){ loaderTitle.textContent=title||"Loading the painter…"; loaderFill.style.width="0%"; loader.classList.add("show"); }
+function setProg(p){ loaderFill.style.width=Math.round(p*100)+"%"; }
+function hideLoader(){ loader.classList.remove("show"); }
+
+/* ======================= sample scene (procedural, so zero setup) ======================= */
+function drawSampleTo(ctx,w,h){
+  var g=ctx.createLinearGradient(0,0,w,h);
+  g.addColorStop(0,"#123a52"); g.addColorStop(.5,"#e0a24b"); g.addColorStop(1,"#7a2f4a");
+  ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+  // sun
+  ctx.fillStyle="#ffd98a"; ctx.beginPath(); ctx.arc(w*0.72,h*0.34,w*0.11,0,7); ctx.fill();
+  // rolling hills
+  var cols=["#2b6b52","#1f5240","#15382c"];
+  for(var k=0;k<3;k++){
+    ctx.fillStyle=cols[k]; ctx.beginPath(); ctx.moveTo(0,h);
+    for(var x=0;x<=w;x+=8){ var y=h*(0.62+0.12*k)+Math.sin(x*0.015+k*1.7)*h*0.05; ctx.lineTo(x,y); }
+    ctx.lineTo(w,h); ctx.closePath(); ctx.fill();
+  }
+  // a couple of cypress trees
+  ctx.fillStyle="#0f2a20";
+  for(var t=0;t<2;t++){ var tx=w*(0.2+0.45*t); ctx.beginPath(); ctx.ellipse(tx,h*0.7,w*0.03,h*0.16,0,0,7); ctx.fill(); }
+}
+
+/* ======================= source frame -> 224 rgba ======================= */
+function grabSrc(){
+  if(mode==="camera" && cam.readyState>=2 && cam.videoWidth){
+    var r=coverRect(cam.videoWidth,cam.videoHeight,SIZE,SIZE);
+    srcX.drawImage(cam,r.sx,r.sy,r.sw,r.sh,0,0,SIZE,SIZE);
+  } else if(mode==="photo" && photoImg){
+    var r2=coverRect(photoImg.naturalWidth||photoImg.width,photoImg.naturalHeight||photoImg.height,SIZE,SIZE);
+    srcX.drawImage(photoImg,r2.sx,r2.sy,r2.sw,r2.sh,0,0,SIZE,SIZE);
+  } else {
+    drawSampleTo(srcX,SIZE,SIZE);
+  }
+  return srcX.getImageData(0,0,SIZE,SIZE);
+}
+
+/* ======================= inference ======================= */
+function paintOnce(){
+  var sess=sessions[curStyle];
+  if(!sess){ return Promise.resolve(false); }
+  var img=grabSrc();
+  var chw=toCHW(img.data,SIZE,SIZE);
+  var feeds={}; feeds[sess.inputNames[0]]=new ort.Tensor("float32",chw,[1,3,SIZE,SIZE]);
+  return sess.run(feeds).then(function(res){
+    var out=res[sess.outputNames[0]].data;
+    var m=(+mix.value)/100;
+    var rgba=fromCHW(out,SIZE,SIZE,img.data,m);
+    workX.putImageData(new ImageData(rgba,SIZE,SIZE),0,0);
+    vctx.drawImage(workC,0,0,view.width,view.height);
+    return true;
+  });
+}
+
+function loop(){
+  if(!running) return;
+  if(mode==="camera" && !busy && sessions[curStyle]){
+    busy=true;
+    paintOnce().then(function(){ busy=false; tickFps(); }).catch(function(e){ busy=false; console.warn(e); });
+  }
+  requestAnimationFrame(loop);
+}
+function tickFps(){
+  fpsN++; var now=performance.now();
+  if(now-fpsT>=500){ lastFps=Math.round(fpsN*1000/(now-fpsT)); fpsN=0; fpsT=now; renderStats(); }
+}
+function renderStats(){
+  stats.hidden=false;
+  var epl = ep==="webgpu" ? "WebGPU · GPU" : "WebAssembly · CPU";
+  var line = "<b>"+prettyStyle(curStyle)+"</b><br>"+epl;
+  if(mode==="camera") line += "<br><b>"+lastFps+"</b> fps · 224px";
+  else line += "<br>224px paint";
+  stats.innerHTML=line;
+}
+function prettyStyle(s){ return ({"candy":"Candy","mosaic":"Mosaic","rain-princess":"Rain Princess","udnie":"Udnie","pointilism":"Pointilism"})[s]||s; }
+
+/* ======================= model loading ======================= */
+function fetchModel(url,onProg){
+  return fetch(url,{mode:"cors"}).then(function(res){
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    var total=+res.headers.get("content-length")||6800000, got=0, chunks=[];
+    if(!res.body||!res.body.getReader) return res.arrayBuffer().then(function(a){return new Uint8Array(a);});
+    var rd=res.body.getReader();
+    return (function pump(){ return rd.read().then(function(r){
+      if(r.done){ var all=new Uint8Array(got),pos=0; for(var i=0;i<chunks.length;i++){all.set(chunks[i],pos);pos+=chunks[i].length;} return all; }
+      chunks.push(r.value); got+=r.value.length; onProg(Math.min(got/total,0.99)); return pump();
+    }); })();
+  });
+}
+function loadStyle(style){
+  if(sessions[style]) return Promise.resolve(sessions[style]);
+  if(loadingStyle) return Promise.reject(new Error("busy"));
+  loadingStyle=style;
+  showLoader("Loading "+prettyStyle(style)+"…");
+  return fetchModel(MODEL_BASE+STYLES[style],setProg).then(function(bytes){
+    setProg(0.99); loaderSub.textContent="Warming up the model on your "+(ep==="webgpu"?"GPU":"CPU")+"…";
+    var opts={executionProviders:[ep], graphOptimizationLevel:"all"};
+    return ort.InferenceSession.create(bytes,opts);
+  }).then(function(sess){
+    sessions[style]=sess; loadingStyle=null;
+    loaderSub.innerHTML="Fetching the style model (~6.7&nbsp;MB). It downloads once, then your browser caches it.";
+    hideLoader();
+    return sess;
+  }).catch(function(e){
+    loadingStyle=null; hideLoader(); throw e;
+  });
+}
+
+/* ======================= boot / init ONNX runtime ======================= */
+function fail(msg){ fallbackMsg.textContent=msg; fallback.classList.add("show"); }
+
+function initORT(){
+  return import(ORT_URL).then(function(mod){
+    ort=mod;
+    try{ ort.env.wasm.wasmPaths=WASM_BASE; ort.env.wasm.numThreads=1; }catch(e){}
+    if(navigator.gpu){
+      return navigator.gpu.requestAdapter().then(function(a){ ep=a?"webgpu":"wasm"; }).catch(function(){ ep="wasm"; });
+    } else { ep="wasm"; }
+  });
+}
+
+function selectStyle(style){
+  if(style===curStyle && sessions[style]){ return; }
+  document.querySelectorAll(".chip").forEach(function(c){ c.classList.toggle("on", c.getAttribute("data-style")===style); });
+  loadStyle(style).then(function(){
+    curStyle=style; renderStats();
+    if(mode!=="camera"){ paintOnce(); }
+  }).catch(function(e){
+    toast("Couldn't load that style — check your connection.");
+    document.querySelectorAll(".chip").forEach(function(c){ c.classList.toggle("on", c.getAttribute("data-style")===curStyle); });
+  });
+}
+
+/* ======================= camera ======================= */
+function startCamera(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ toast("This browser has no camera access — try Photo mode."); return; }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:640},height:{ideal:480}},audio:false}).then(function(s){
+    stream=s; cam.srcObject=s; cam.play();
+    cam.onloadeddata=function(){
+      mode="camera"; hint.style.display="none";
+      btnCam.textContent="Camera on"; btnCam.classList.add("primary");
+      btnPhoto.classList.remove("primary"); btnSample.classList.remove("primary");
+      running=true; loop(); renderStats();
+    };
+  }).catch(function(err){
+    if(err && (err.name==="NotAllowedError"||err.name==="SecurityError")) toast("Camera permission denied — Photo mode still works.");
+    else toast("Couldn't open the camera — try Photo mode.");
+  });
+}
+function stopCamera(){ if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; } running=false; }
+
+/* ======================= photo / sample ======================= */
+function usePhotoFile(file){
+  if(!file || !/^image\//.test(file.type)){ toast("That doesn't look like an image."); return; }
+  var url=URL.createObjectURL(file); var im=new Image();
+  im.onload=function(){ photoImg=im; mode="photo"; stopCamera();
+    btnPhoto.classList.add("primary"); btnCam.classList.remove("primary"); btnSample.classList.remove("primary"); btnCam.textContent="Use camera";
+    hint.style.display="none"; renderStats(); paintOnce(); URL.revokeObjectURL(url);
+  };
+  im.onerror=function(){ toast("Couldn't read that image."); URL.revokeObjectURL(url); };
+  im.src=url;
+}
+function useSample(){
+  mode="sample"; stopCamera(); photoImg=null;
+  btnSample.classList.add("primary"); btnCam.classList.remove("primary"); btnPhoto.classList.remove("primary"); btnCam.textContent="Use camera";
+  renderStats(); paintOnce();
+}
+
+/* ======================= snapshot / record ======================= */
+function snapshot(){
+  view.toBlob(function(b){ if(!b){toast("Snapshot failed");return;} var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="paint-cam-"+prettyStyle(curStyle).toLowerCase().replace(/\s/g,"-")+".png"; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},1500); toast("Saved a PNG"); },"image/png");
+}
+function toggleRecord(){
+  if(recorder && recorder.state==="recording"){ recorder.stop(); return; }
+  if(typeof MediaRecorder==="undefined" || !view.captureStream){ toast("Recording isn't supported in this browser."); return; }
+  var s=view.captureStream(30); var mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")?"video/webm;codecs=vp9":(MediaRecorder.isTypeSupported("video/webm;codecs=vp8")?"video/webm;codecs=vp8":"video/webm");
+  try{ recorder=new MediaRecorder(s,{mimeType:mime}); }catch(e){ toast("Recording isn't supported here."); return; }
+  recChunks=[];
+  recorder.ondataavailable=function(e){ if(e.data&&e.data.size) recChunks.push(e.data); };
+  recorder.onstop=function(){ var blob=new Blob(recChunks,{type:"video/webm"}); var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="paint-cam.webm"; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},2000); btnRec.classList.remove("on"); btnRec.textContent="● Record"; toast("Saved a video clip"); };
+  recorder.start(); btnRec.classList.add("on"); btnRec.textContent="■ Stop"; toast("Recording the canvas…");
+}
+
+/* ======================= events ======================= */
+btnCam.addEventListener("click",startCamera);
+btnPhoto.addEventListener("click",function(){ fileIn.click(); });
+btnSample.addEventListener("click",useSample);
+btnSnap.addEventListener("click",snapshot);
+btnRec.addEventListener("click",toggleRecord);
+fileIn.addEventListener("change",function(){ if(fileIn.files&&fileIn.files[0]) usePhotoFile(fileIn.files[0]); });
+mix.addEventListener("input",function(){ mixVal.textContent=mix.value+"%"; if(mode!=="camera") paintOnce(); });
+document.querySelectorAll(".chip").forEach(function(c){ c.addEventListener("click",function(){ selectStyle(c.getAttribute("data-style")); }); });
+
+// drag & drop an image onto the stage
+var stage=document.querySelector(".stage");
+["dragenter","dragover"].forEach(function(ev){ stage.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("show"); }); });
+["dragleave","drop"].forEach(function(ev){ stage.addEventListener(ev,function(e){ e.preventDefault(); if(ev==="drop"){ var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) usePhotoFile(f); } drop.classList.remove("show"); }); });
+
+/* ======================= go ======================= */
+window.__pcPure={clamp255:clamp255,toCHW:toCHW,fromCHW:fromCHW,coverRect:coverRect};
+window.__pcBoot=false;
+
+showLoader("Starting the painter…");
+loaderSub.innerHTML="Loading ONNX Runtime, then the first style model (~6.7&nbsp;MB, cached after).";
+initORT().then(function(){
+  renderStats();
+  return loadStyle(curStyle);
+}).then(function(){
+  window.__pcBoot=true;
+  useSample();               // instant magic on first paint, no camera permission needed
+}).catch(function(e){
+  console.error(e);
+  fail("Couldn't start the AI runtime. This needs a modern browser (latest Chrome or Edge) with WebAssembly, ideally WebGPU. Error: "+(e&&e.message||e));
+});
+
+})();
+</script>
+
+<!-- Monetization slot (left intentionally empty): AdSense / Polar.sh can drop in below the fold later. -->
+
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
