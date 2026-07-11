@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EIP-7702 changed what your frontend can assume about a wallet — Harman Kamboj</title>
+<meta name="description" content="EIP-7702 lets a normal wallet address carry code, so your frontend can no longer treat every EOA as a plain key. What breaks and how I handle it." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="EIP-7702 changed what your frontend can assume about a wallet — Harman Kamboj" />
+<meta property="og:description" content="EIP-7702 lets a normal wallet address carry code, so your frontend can no longer treat every EOA as a plain key. What breaks and how I handle it." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/eip-7702-frontend.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="EIP-7702 changed what your frontend can assume about a wallet — Harman Kamboj" />
+<meta name="twitter:description" content="EIP-7702 lets a normal wallet address carry code, so your frontend can no longer treat every EOA as a plain key. What breaks and how I handle it." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/eip-7702-frontend.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"EIP-7702 changed what your frontend can assume about a wallet","description":"EIP-7702 lets a normal wallet address carry code, so your frontend can no longer treat every EOA as a plain key. What breaks and how I handle it.","datePublished":"2026-07-11","dateModified":"2026-07-11","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/eip-7702-frontend.html","url":"https://hammyasf.github.io/eip-7702-frontend.html","keywords":"EIP-7702, Web3, Frontend, Wallets, Account Abstraction","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  .rel{margin:40px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin-bottom:6px;}
+  .rel a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">EIP-7702 changed what your frontend can assume about a wallet</h1>
+   <div class="pmeta"><span>July 11, 2026</span><span>6 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>EIP-7702</span><span>Web3</span><span>Frontend</span><span>Wallets</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>For most of the years I spent wiring swap and bridge frontends, one assumption held and I never questioned it. An address was one of two things. Either an EOA, a plain account controlled by a private key, or a contract with code living at it. You could tell them apart with a single call, and a lot of app logic hung off that answer. EIP-7702 quietly deleted that clean split, and most frontend code has not caught up. If you build anything that touches a wallet, the way your EIP-7702 frontend reasons about accounts needs a rethink, because a normal-looking address can now carry code and behave like a smart account.</p>
+<p>This is not a proposal on a whiteboard. It shipped with Ethereum's Pectra upgrade back in May 2025, and by now the mainstream wallets support it. So this is live, on the chains your users are already on, whether or not your app knows about it.</p>
+<h2>What EIP-7702 actually does</h2>
+<p>The trick is small and a little sneaky. An EOA can sign an authorization that points at a contract, and after that the account stores a tiny marker in its code slot. The marker is the bytes <code>0xef0100</code> followed by the contract address it delegates to. When someone sends a transaction to that account, the EVM runs the delegate's code with the account's own storage and balance. So the key holder is still in charge, but for the length of that call the account acts like a smart wallet. It can batch several actions into one signature, let a paymaster cover gas, or run custom checks before it moves funds.</p>
+<p>The part that trips people up is that this is not a one-time thing that resets after the transaction. The delegation sits in the account until the owner replaces it or clears it. I have seen more than one person assume it is per-transaction and build on that assumption. It is not. Once an address is delegated, it stays delegated, and your app should treat that as the normal steady state, not a blip.</p>
+<h2>The assumption that quietly breaks</h2>
+<p>Here is where it bites. Plenty of frontends and helper libraries have some version of an <code>isContract</code> check. You fetch the code at an address, and if there is any code you branch one way, if it is empty you branch the other. That branch decides how you show the account, whether you expect a smart contract wallet flow, or how you word a warning before a transfer.</p>
+<p>A delegated EOA now returns code from that same call. So a check that was really asking "is this a human with a key" starts answering "yes, this is a contract" for accounts that are still very much controlled by one person with a seed phrase. If your logic assumed empty code meant a simple EOA, it is now wrong for a growing slice of real users, and the failure is quiet. Nothing throws. The UI just makes a bad decision and moves on.</p>
+<h2>Detecting a delegated account in the frontend</h2>
+<p>The good news is that detection is cheap once you know the shape. You still call <code>eth_getCode</code> on the address. If the returned bytes start with <code>0xef0100</code>, you are looking at a 7702 delegation, and the next 20 bytes are the contract it points to. That prefix is reserved for exactly this, so it is a reliable signal rather than a guess.</p>
+<p>So the real fix is to stop treating "has code" as one category. You now have three: an empty EOA, a full contract account, and a delegated EOA that is a key holder wearing a smart-account coat. Once you can name the delegate address, you can also show the user what their account is pointing at, which matters more than it sounds like, and I will get to why in a minute.</p>
+<h2>Batching is the feature users will feel</h2>
+<p>The upside is real, and it lands right in the spots that used to make swap UIs feel clumsy. The classic one is approve then swap. For years that was two separate signatures with a confusing gap in the middle, and I wrote about how much grief that pattern causes in my notes on <a href="token-swap-frontend-pitfalls.html">token swap frontend pitfalls</a>. With 7702, a delegated account can bundle the approve and the swap into a single signed action. One prompt, one confirmation, done.</p>
+<p>It stacks nicely with the gas work too. If a paymaster is covering fees, a first-time user can do something useful without holding the native token at all, which removes the most common dead end in onboarding. I still think the frontend has to be honest about what is being signed in that bundle, the same way I argued in <a href="gas-aware-frontend.html">building a gas-aware frontend</a>. Batching hides steps from the user by design, and hidden steps are exactly the ones a careful app should surface in plain language.</p>
+<h2>The new phishing surface you inherit</h2>
+<p>This is the part I would not skip. Because a signed authorization can point an account at any contract, a user who signs the wrong thing can hand full control of their account to an attacker's code, and it sticks around after the signature. Security researchers have already documented 7702 phishing that works this way. It is not a reason to avoid the standard, but it does change the frontend's job.</p>
+<p>If you can read the delegate address, you can check it against a list of known-good implementations and warn loudly when an account is delegated to something you do not recognize. This is the same reliability mindset I lean on for <a href="rpc-reliability-web3.html">RPC reliability in web3 apps</a>, where you assume the data you are shown could be stale or hostile and you design the UI so a bad input cannot quietly do damage. An address that carries code is now a thing your app should inspect, not just render.</p>
+<h2>What I would do today</h2>
+<p>None of this is a rewrite, it is a shift in defaults. Stop equating empty code with a safe simple EOA. Add a real check for the <code>0xef0100</code> prefix and treat a delegated account as its own case. Read the delegate address and show the user what they are pointing at, especially before a signature that changes it. Where the standard is supported, offer the batched flow, because your users will feel the difference on the very first swap. And keep the warning path honest, since the same feature that removes friction is the one an attacker wants to abuse. If you want more of how I think about the wallet-facing layer, it is collected in my <a href="web3.html">Web3 and on-chain notes</a>, and the rest of the work is on the <a href="index.html">homepage</a>.</p>
+   <div class="rel">
+     <h2>Related in Web3</h2>
+     <ul>
+       <li><a href="token-swap-frontend-pitfalls.html">The token swap frontend pitfalls that cost me real debugging time</a></li>
+       <li><a href="gas-aware-frontend.html">Building a gas-aware frontend that does not lie about fees</a></li>
+       <li><a href="rpc-reliability-web3.html">RPC reliability: how I keep a web3 frontend honest when nodes flake</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If your product's hard part is the wallet layer, the on-chain data, or the parts that quietly break under real users, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="cancel-streaming-llm-response.html">What breaks when you cancel a streaming LLM response →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>
