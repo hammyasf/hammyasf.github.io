@@ -281,7 +281,7 @@
 
   /* ---------- worker ---------- */
   var WORKER_SRC=[
-"import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1/dist/transformers.web.js';",
+"import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1';",
 "env.allowLocalModels=false; env.useBrowserCache=true;",
 "let qa=null;",
 "const MODEL='Xenova/distilbert-base-cased-distilled-squad';",
@@ -332,6 +332,8 @@
     if(worker) return worker;
     var blob=new Blob([WORKER_SRC],{type:"text/javascript"});
     worker=new Worker(URL.createObjectURL(blob),{type:"module"});
+    worker.onerror=function(ev){ busy=false; prog.className="prog"; try{worker.terminate();}catch(e){} worker=null; workerReady=false;
+      showWarn("Couldn't start the on-device model: "+((ev&&ev.message)||"worker error")+". Reload the page and try again."); updateState(); };
     var files={};
     worker.onmessage=function(e){
       var d=e.data;
@@ -343,7 +345,8 @@
       else if(d.type==="ready"){ workerReady=true; }
       else if(d.type==="stage"){ setProg(0.85+0.14*(d.pct||0), d.msg); }
       else if(d.type==="result"){ busy=false; workerReady=true; renderResults(d.results); }
-      else if(d.type==="error"){ busy=false; prog.className="prog"; showWarn("The model hit an error: "+d.error+". Reload and try again on a desktop browser with enough memory."); updateState(); }
+      else if(d.type==="error"){ busy=false; prog.className="prog"; var ne=/network|fetch|load/i.test(d.error||"");
+        showWarn(ne ? "The model download was interrupted ("+d.error+"). Check your connection and press Ask again to resume." : "The model hit an error: "+d.error+". Reload and try again on a desktop browser with enough memory."); updateState(); }
     };
     return worker;
   }
