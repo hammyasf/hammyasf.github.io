@@ -312,12 +312,10 @@
 "    self.postMessage({type:'stage',msg:wins.length>1?('Reading section '+(k+1)+' of '+wins.length):'Reading the document…',pct:wins.length>1?k/wins.length:0.5});",
 "    let r; try{ r=await qa(question,wins[k].text,{topk:1}); }catch(e){ continue; }",
 "    const best=Array.isArray(r)?r[0]:r;",
-"    if(best&&best.answer&&best.answer.trim()&&typeof best.start==='number'){",
-"      results.push({answer:best.answer.trim(),score:best.score,start:wins[k].offset+best.start,end:wins[k].offset+best.end});",
-"    }",
+"    if(best&&best.answer&&best.answer.trim()){ results.push({answer:best.answer.trim(),score:best.score}); }",
 "  }",
 "  results.sort((a,b)=>b.score-a.score);",
-"  const seen={}, uniq=[]; for(const r of results){ const key=r.answer.toLowerCase(); if(!seen[key]){ seen[key]=1; uniq.push(r);} }",
+"  const seen={}, uniq=[]; for(const r of results){ const key=r.answer.toLowerCase().replace(/\\s+/g,''); if(key&&!seen[key]){ seen[key]=1; uniq.push(r);} }",
 "  return uniq.slice(0,4);",
 "}",
 "self.onmessage=async(e)=>{ const d=e.data;",
@@ -372,6 +370,18 @@
     return {label:"Very low — the answer may not be in this document",pct:10};
   }
 
+  // the QA model returns answer text without character offsets, and its tokenizer
+  // inserts spaces (e.g. "$ 2, 400"). Locate the answer in the source by matching
+  // with whitespace removed, then map the position back to the original text.
+  function locate(source,answer){
+    var so="",sidx=[]; for(var i=0;i<source.length;i++){ if(!/\s/.test(source[i])){ so+=source[i]; sidx.push(i); } }
+    var ao=String(answer).replace(/\s+/g,"");
+    if(!ao) return null;
+    var pos=so.toLowerCase().indexOf(ao.toLowerCase());
+    if(pos<0) return null;
+    return {start:sidx[pos], end:sidx[pos+ao.length-1]+1};
+  }
+
   function highlight(start,end){
     var text=doc.value;
     // expand to sentence bounds for gentle context highlight
@@ -399,8 +409,10 @@
       alts.style.display="none"; ans.className="ans on"; srcbox.className="srcbox";
       addHistory(question,"— no answer found —"); return;
     }
+    // attach a located span + clean display text to each result
+    results.forEach(function(r){ var loc=locate(doc.value,r.answer); r.loc=loc; r.display=loc?doc.value.slice(loc.start,loc.end):r.answer; });
     var top=results[0], cm=confMeta(top.score);
-    atext.textContent=top.answer;
+    atext.textContent=top.display;
     confbar.style.width=cm.pct+"%";
     conflabel.innerHTML="<b>"+cm.label+"</b> · score "+top.score.toFixed(3);
     // alternatives
@@ -408,14 +420,14 @@
     if(others.length){
       altwrap.innerHTML="";
       others.forEach(function(r){ var b=document.createElement("button"); b.className="altchip";
-        b.innerHTML=escapeHtml(r.answer)+'<span>'+r.score.toFixed(2)+'</span>';
-        b.addEventListener("click",function(){ atext.textContent=r.answer; var c=confMeta(r.score); confbar.style.width=c.pct+"%"; conflabel.innerHTML="<b>"+c.label+"</b> · score "+r.score.toFixed(3); highlight(r.start,r.end); });
+        b.innerHTML=escapeHtml(r.display)+'<span>'+r.score.toFixed(2)+'</span>';
+        b.addEventListener("click",function(){ atext.textContent=r.display; var c=confMeta(r.score); confbar.style.width=c.pct+"%"; conflabel.innerHTML="<b>"+c.label+"</b> · score "+r.score.toFixed(3); if(r.loc) highlight(r.loc.start,r.loc.end); else srcbox.className="srcbox"; });
         altwrap.appendChild(b); });
       alts.style.display="block";
     } else { alts.style.display="none"; }
     ans.className="ans on";
-    highlight(top.start,top.end);
-    addHistory(question,top.answer);
+    if(top.loc) highlight(top.loc.start,top.loc.end); else srcbox.className="srcbox";
+    addHistory(question,top.display);
   }
 
   function addHistory(question,answer){
