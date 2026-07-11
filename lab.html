@@ -67,6 +67,13 @@
   </div></header>
   <section><div class="wrap">
     <div class="grid">
+      <a class="tool" href="inquire.html">
+        <div class="cat">On-device AI · Reading comprehension</div>
+        <h2>Inquire</h2>
+        <p>Paste a contract, report, or article, ask it a question in plain English, and watch a real AI reach into the text and highlight the exact answer &mdash; all without a single byte leaving your machine. Inquire runs a DistilBERT model fine-tuned on SQuAD as ONNX weights through Transformers.js on WebAssembly, in a Web Worker so the page never stutters. Because it does extractive question answering, it never invents facts: it locates the passage that answers you and shows a confidence score, so every answer is traceable back to the source. Documents longer than the model's context are split into overlapping windows, each scored, and the single most confident answer across the whole thing wins. Try the built-in sample lease, drop a .txt / .md / .pdf, and ask away &mdash; the ~65&nbsp;MB model downloads once, then works offline.</p>
+        <div class="tags"><span>Transformers.js</span><span>DistilBERT SQuAD</span><span>WebAssembly</span><span>No upload</span></div>
+        <span class="use">Use tool &rarr;</span>
+      </a>
       <a class="tool" href="paint-cam.html">
         <div class="cat">On-device AI · Neural style transfer</div>
         <h2>Paint Cam</h2>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Inquire — Ask Any Document | On-device AI question answering, no upload</title>
+<meta name="description" content="Paste or drop a document, ask a question in plain English, and get the exact answer highlighted in the text. A real reading-comprehension AI runs 100% in your browser. Nothing is uploaded." />
+<meta name="keywords" content="ask questions about a document, document question answering, question answering online, extract answer from text, ai reading comprehension, semantic search document, ask a pdf question, private document qa, question answering no upload, on-device ai" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Inquire — Ask Any Document" />
+<meta property="og:description" content="Ask a document a question and get the exact answer highlighted. A real AI reads it entirely in your browser. Nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/inquire.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Inquire — Ask Any Document" />
+<meta name="twitter:description" content="Ask any document a question, get the answer highlighted. Runs 100% in your browser, no upload." />
+<link rel="canonical" href="https://hammyasf.github.io/inquire.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://huggingface.co" crossorigin>
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Inquire — Ask Any Document","url":"https://hammyasf.github.io/inquire.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser with WebAssembly)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Ask any document a question in plain English and get the exact answer highlighted. A reading-comprehension AI model runs entirely in your browser; nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my document uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI model is downloaded to your browser once and every question is answered locally with WebAssembly. Your document and your questions never leave your device."}},{"@type":"Question","name":"How does an AI run in the browser with no server?","acceptedAnswer":{"@type":"Answer","text":"Inquire loads a DistilBERT question-answering model (trained on SQuAD) as ONNX weights and runs it with the Transformers.js runtime on WebAssembly in a Web Worker. The first question downloads about 65 MB, then the model is cached and works offline."}},{"@type":"Question","name":"What kind of questions can it answer?","acceptedAnswer":{"@type":"Answer","text":"Factual, extractive questions whose answer is a span of text somewhere in the document, such as amounts, dates, names, deadlines, and definitions. It finds and highlights the passage rather than writing a new paragraph."}},{"@type":"Question","name":"Does it work on long documents?","acceptedAnswer":{"@type":"Answer","text":"Yes. Long text is split into overlapping windows so nothing at the end is cut off, each window is scored, and the highest-confidence answer across the whole document is returned."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .phead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px 6px;flex-wrap:wrap;}
+  .phead .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);background:transparent;border-radius:100px;padding:6px 12px;cursor:pointer;transition:.15s;}
+  .chip:hover{border-color:var(--accent);color:var(--accent);}
+  textarea#doc{width:calc(100% - 40px);margin:6px 20px 4px;min-height:190px;resize:vertical;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:14px;padding:14px 16px;font-family:var(--body);font-size:15px;line-height:1.65;}
+  textarea#doc:focus{outline:none;border-color:var(--accent);}
+  .docmeta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:2px 20px 14px;}
+  .docmeta .count{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .docmeta .count b{color:var(--accent);}
+  .drop{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);border:1px dashed var(--line-2);border-radius:10px;padding:8px 12px;cursor:pointer;transition:.2s;}
+  .drop:hover,.drop.over{border-color:var(--accent);color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .askbar{display:flex;gap:10px;align-items:stretch;padding:0 20px 18px;flex-wrap:wrap;}
+  input#q{flex:1 1 320px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:100px;padding:13px 18px;font-family:var(--body);font-size:15.5px;}
+  input#q:focus{outline:none;border-color:var(--accent);}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:12px 24px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;white-space:nowrap;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .prog{display:none;padding:0 20px 18px;}
+  .prog.on{display:block;}
+  .track{height:8px;border-radius:100px;background:rgba(var(--accentRGB),.12);overflow:hidden;}
+  .track .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .3s var(--ease);}
+  .plbl{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px;}
+  .warn{display:none;margin:0 20px 18px;padding:12px 14px;border:1px solid rgba(255,180,90,.4);background:rgba(255,180,90,.08);border-radius:12px;font-size:14px;color:#ffd9a8;}
+  .warn.on{display:block;}
+  .ans{display:none;padding:0 20px 20px;}
+  .ans.on{display:block;}
+  .acard{border:1px solid rgba(var(--accentRGB),.3);border-radius:16px;background:linear-gradient(150deg,rgba(var(--accentRGB),.1),rgba(var(--accentRGB),.02));padding:18px 20px;}
+  .acard .qline{font-family:var(--mono);font-size:12px;color:var(--faint);margin-bottom:8px;}
+  .acard .qline b{color:var(--muted);}
+  .acard .atext{font-family:var(--display);font-weight:600;font-size:clamp(20px,3.4vw,28px);line-height:1.25;letter-spacing:-.01em;color:var(--ink);}
+  .conf{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap;}
+  .conf .meter{flex:1 1 160px;max-width:220px;height:7px;border-radius:100px;background:rgba(237,242,239,.1);overflow:hidden;}
+  .conf .meter i{display:block;height:100%;width:0;background:var(--accent);border-radius:100px;}
+  .conf .clabel{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .conf .clabel b{color:var(--accent);}
+  .alts{margin-top:14px;}
+  .alts .h{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
+  .altchip{font-family:var(--body);font-size:13px;color:var(--muted);border:1px solid var(--line-2);background:transparent;border-radius:100px;padding:6px 13px;cursor:pointer;margin:0 8px 8px 0;transition:.15s;}
+  .altchip:hover{border-color:var(--accent);color:var(--accent);}
+  .altchip span{font-family:var(--mono);font-size:11px;color:var(--faint);margin-left:6px;}
+  .srcbox{margin:16px 20px 4px;border:1px solid var(--line);border-radius:14px;background:rgba(var(--surfaceRGB),.4);padding:16px 18px;max-height:360px;overflow:auto;font-size:15px;line-height:1.75;color:#cdd8d3;display:none;white-space:pre-wrap;word-break:break-word;}
+  .srcbox.on{display:block;}
+  .srcbox mark{background:rgba(var(--accentRGB),.28);color:var(--ink);border-radius:4px;padding:1px 3px;box-shadow:0 0 0 1px rgba(var(--accentRGB),.4);}
+  .srcbox .sent{background:rgba(var(--accentRGB),.07);border-radius:4px;}
+  .hist{margin:6px 20px 20px;display:none;}
+  .hist.on{display:block;}
+  .hist .h{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:10px 0 8px;}
+  .hrow{border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:8px;background:rgba(var(--surfaceRGB),.3);}
+  .hrow .hq{font-size:13.5px;color:var(--muted);}
+  .hrow .hq b{color:var(--ink);}
+  .hrow .ha{font-size:14.5px;color:var(--accent);margin-top:3px;font-weight:600;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){textarea#doc,input#q{font-size:16px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · on-device AI · runs in your browser</div>
+    <h1>Inquire — ask any document</h1>
+    <p class="sub">Paste a contract, report, or article, ask a question in plain English, and get the exact answer pulled straight out of the text and highlighted. A real reading-comprehension model does the thinking, entirely on your machine.</p>
+    <span class="priv">&#128274; 100% private — the document and your questions never leave your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="phead">
+      <span class="lbl">1 · Your document</span>
+      <div class="chips">
+        <button class="chip" data-sample="lease">Try a sample: rental lease</button>
+        <button class="chip" data-sample="clear" id="clearDoc">Clear</button>
+      </div>
+    </div>
+    <textarea id="doc" placeholder="Paste any text here — a lease, a policy, an email thread, a research paper, meeting notes… then ask it a question below. Or drop a .txt, .md, or .pdf file."></textarea>
+    <div class="docmeta">
+      <span class="count" id="count"><b>0</b> words</span>
+      <label class="drop" id="drop" tabindex="0" role="button">&#128193; Drop or choose a .txt / .md / .pdf<input type="file" id="file" accept=".txt,.md,.markdown,.pdf,text/plain,application/pdf" hidden /></label>
+    </div>
+
+    <div class="phead" style="padding-top:4px;"><span class="lbl">2 · Ask a question</span></div>
+    <div class="chips" id="qchips" style="padding:0 20px 10px;"></div>
+    <div class="askbar">
+      <input id="q" type="text" placeholder="e.g. How much is the security deposit?" autocomplete="off" />
+      <button class="btn" id="go" disabled>Ask</button>
+    </div>
+
+    <div class="prog" id="prog"><div class="track"><div class="fill" id="fill"></div></div><div class="plbl" id="plbl"></div></div>
+    <div class="warn" id="warn"></div>
+
+    <div class="ans" id="ans">
+      <div class="acard">
+        <div class="qline">Q: <b id="askedQ"></b></div>
+        <div class="atext" id="atext"></div>
+        <div class="conf"><div class="meter"><i id="confbar"></i></div><div class="clabel" id="conflabel"></div></div>
+        <div class="alts" id="alts" style="display:none;"><div class="h">Other possible answers</div><div id="altwrap"></div></div>
+      </div>
+    </div>
+
+    <div class="srcbox" id="srcbox"></div>
+    <div class="hist" id="hist"><div class="h">This session</div><div id="histwrap"></div></div>
+  </div>
+
+  <section class="copy">
+    <h2>Why answer questions in the browser?</h2>
+    <p>Every popular "chat with your document" tool uploads your file to someone else's servers. That is fine for a blog post, but not for a lease, an offer letter, a medical result, a legal brief, or an internal report. Inquire flips that around: the AI model itself is downloaded to your browser once, and then every question you ask is answered locally. Nothing is uploaded, there is no account, and it keeps working with your Wi-Fi off.</p>
+    <h2>How it works</h2>
+    <p>Inquire runs a DistilBERT model fine-tuned on the SQuAD reading-comprehension dataset. It does extractive question answering: instead of writing a fresh paragraph the way a chatbot would, it finds the span of text in your document that best answers the question and hands it back with a confidence score. That makes the answers traceable — you can see exactly where in the source they came from, highlighted in place.</p>
+    <p>The model, its tokenizer, and the ONNX runtime are loaded with Transformers.js and executed on WebAssembly inside a Web Worker, so a long document never freezes the page. To handle text that is longer than the model's context window, Inquire splits it into overlapping windows, scores every window against your question, and returns the single most confident answer across the whole document — so a detail buried on the last page is found just as easily as one in the first line.</p>
+    <h2>Good questions to ask</h2>
+    <p>It is strongest on factual, extractive questions: amounts, dates, names, deadlines, percentages, definitions, and "who / what / when / how much" style queries where the answer is actually written somewhere in the text. It is not a chatbot and will not invent facts or summarize an argument — if the answer is not in the document, it tells you its confidence is low rather than making something up.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my document uploaded anywhere?</summary><p>No. The model runs locally in your browser with WebAssembly. Your document and your questions never touch a server, which is the whole point of building it this way.</p></details>
+    <details><summary>How can an AI model run without a server?</summary><p>The DistilBERT question-answering model is about 65&nbsp;MB of ONNX weights. It downloads once, is cached by your browser, and then runs on WebAssembly in a background Web Worker. After the first load it works entirely offline.</p></details>
+    <details><summary>Why does it highlight text instead of writing an answer?</summary><p>This is extractive QA. It locates the exact passage that answers your question so the answer is verifiable and can never hallucinate a fact that is not in your document. You always see where the answer came from.</p></details>
+    <details><summary>Does it handle long documents and PDFs?</summary><p>Yes. Drop a .txt, .md, or text-based .pdf and it is read locally. Long text is split into overlapping windows so nothing at the end gets cut off, and the highest-confidence answer across the whole document wins.</p></details>
+    <details><summary>Which browsers work?</summary><p>Any recent desktop Chrome, Edge, Firefox, or Safari with WebAssembly and Web Workers. It runs on mobile too, though the one-time model download is heavier there.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build a tool like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  /* match the portfolio's saved theme */
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var $=function(id){return document.getElementById(id);};
+  var doc=$("doc"),q=$("q"),go=$("go"),count=$("count"),drop=$("drop"),file=$("file"),
+      prog=$("prog"),fill=$("fill"),plbl=$("plbl"),warn=$("warn"),
+      ans=$("ans"),askedQ=$("askedQ"),atext=$("atext"),confbar=$("confbar"),conflabel=$("conflabel"),
+      alts=$("alts"),altwrap=$("altwrap"),srcbox=$("srcbox"),hist=$("hist"),histwrap=$("histwrap");
+  var busy=false, worker=null, workerReady=false, modelDownloaded=false, lastResults=null, history=[];
+
+  var SAMPLES={ lease:"RESIDENTIAL LEASE AGREEMENT\n\nThis Lease Agreement is made on March 1, 2026 between Cedar Grove Properties LLC (\"Landlord\") and Priya Anand (\"Tenant\") for the premises at 418 Marlow Street, Apartment 3B, Portland, Oregon.\n\nTerm. The lease begins on April 1, 2026 and continues for a fixed term of twelve (12) months, ending on March 31, 2027.\n\nRent. The Tenant shall pay monthly rent of $2,150, due on the first day of each month. A late fee of $75 applies to any rent received after the fifth day of the month.\n\nSecurity Deposit. The Tenant shall pay a security deposit of $2,400 before taking possession. The deposit will be returned within 30 days of move-out, less any deductions for damage beyond normal wear and tear.\n\nUtilities. The Tenant is responsible for electricity, gas, and internet. The Landlord covers water, sewer, and trash collection.\n\nPets. One cat or one dog under 35 pounds is permitted with an additional non-refundable pet fee of $300. No other animals are allowed without written consent.\n\nNotice to Vacate. Either party must give at least 60 days written notice before the end of the term. Early termination requires payment equal to two months rent.\n\nParking. One assigned off-street parking space (Space 12) is included at no additional cost." };
+
+  var QSAMPLES=["How much is the security deposit?","When is rent due?","Am I allowed to have a pet?","How much notice do I need to give before moving out?"];
+
+  /* capability guard */
+  if(typeof Worker==="undefined" || typeof WebAssembly==="undefined" || typeof Blob==="undefined" || !window.URL || !URL.createObjectURL){
+    warn.className="warn on";
+    warn.innerHTML="This browser can't run the on-device model (it needs WebAssembly, Web Workers and Blob URLs). Try a recent Chrome, Edge, Firefox or Safari on desktop.";
+    go.disabled=true; q.disabled=true; doc.disabled=true;
+  }
+
+  function wc(t){ var m=String(t||"").trim().match(/\S+/g); return m?m.length:0; }
+  function updateState(){ count.innerHTML="<b>"+wc(doc.value).toLocaleString()+"</b> word"+(wc(doc.value)===1?"":"s"); go.disabled=busy||wc(doc.value)<3||!q.value.trim(); }
+  doc.addEventListener("input",updateState);
+  q.addEventListener("input",updateState);
+  q.addEventListener("keydown",function(e){ if(e.key==="Enter"&&!go.disabled){ ask(); } });
+
+  /* question sample chips */
+  QSAMPLES.forEach(function(text){ var b=document.createElement("button"); b.className="chip"; b.textContent=text;
+    b.addEventListener("click",function(){ q.value=text; updateState(); q.focus(); }); $("qchips").appendChild(b); });
+
+  /* doc sample + clear */
+  document.querySelectorAll(".chip[data-sample]").forEach(function(c){
+    c.addEventListener("click",function(){ var s=c.getAttribute("data-sample");
+      if(s==="clear"){ doc.value=""; ans.className="ans"; srcbox.className="srcbox"; }
+      else { doc.value=SAMPLES[s]||""; }
+      updateState(); });
+  });
+
+  /* file drop / pick */
+  ["dragenter","dragover"].forEach(function(ev){ drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add("over");}); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove("over");}); });
+  drop.addEventListener("drop",function(e){ var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) readFile(f); });
+  drop.addEventListener("click",function(){ file.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();file.click();} });
+  file.addEventListener("change",function(){ if(file.files&&file.files[0]) readFile(file.files[0]); file.value=""; });
+
+  function showWarn(msg){ warn.className="warn on"; warn.textContent=msg; }
+  function clearWarn(){ warn.className="warn"; warn.textContent=""; }
+
+  function readFile(f){
+    clearWarn();
+    var name=(f.name||"").toLowerCase();
+    if(name.endsWith(".pdf")||f.type==="application/pdf"){ extractPdf(f); return; }
+    if(name.endsWith(".txt")||name.endsWith(".md")||name.endsWith(".markdown")||f.type==="text/plain"||f.type===""){
+      var r=new FileReader();
+      r.onload=function(){ doc.value=String(r.result||""); updateState(); };
+      r.onerror=function(){ showWarn("Could not read that file."); };
+      r.readAsText(f); return;
+    }
+    showWarn("Unsupported file type. Drop a .txt, .md, or .pdf.");
+  }
+
+  async function extractPdf(f){
+    showWarn("Reading PDF locally…");
+    try{
+      var pdfjs=await import("https://cdn.jsdelivr.net/npm/pdfjs-dist@6.1.200/build/pdf.min.mjs");
+      pdfjs.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@6.1.200/build/pdf.worker.min.mjs";
+      var buf=await f.arrayBuffer();
+      var pdf=await pdfjs.getDocument({data:buf}).promise;
+      var all=[];
+      for(var p=1;p<=pdf.numPages;p++){
+        var page=await pdf.getPage(p);
+        var tc=await page.getTextContent();
+        all.push(tc.items.map(function(it){return it.str;}).join(" "));
+        showWarn("Reading PDF locally… page "+p+" of "+pdf.numPages);
+      }
+      doc.value=all.join("\n\n").replace(/[ \t]{2,}/g," ").trim();
+      updateState();
+      if(wc(doc.value)<5) showWarn("This PDF looks like scanned images with no selectable text. Try a text-based PDF.");
+      else clearWarn();
+    }catch(err){ showWarn("Could not read that PDF: "+(err&&err.message?err.message:err)); }
+  }
+
+  /* ---------- worker ---------- */
+  var WORKER_SRC=[
+"import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1/dist/transformers.web.js';",
+"env.allowLocalModels=false; env.useBrowserCache=true;",
+"let qa=null;",
+"const MODEL='Xenova/distilbert-base-cased-distilled-squad';",
+"async function load(){",
+"  if(qa) return qa;",
+"  qa=await pipeline('question-answering',MODEL,{dtype:'q8',device:'wasm',progress_callback:(p)=>{",
+"    if(p&&p.status==='progress'){ self.postMessage({type:'dl',file:p.file,loaded:p.loaded,total:p.total}); }",
+"    else if(p&&p.status==='ready'){ self.postMessage({type:'dlready'}); }",
+"  }});",
+"  return qa;",
+"}",
+"function windows(ctx,size,overlap){",
+"  const re=/\\S+/g, ws=[]; let m; while((m=re.exec(ctx))!==null){ ws.push({w:m[0],i:m.index}); }",
+"  if(!ws.length) return [];",
+"  if(ws.length<=size){ const last=ws[ws.length-1]; return [{text:ctx.slice(ws[0].i,last.i+last.w.length),offset:ws[0].i}]; }",
+"  const out=[]; let i=0;",
+"  while(i<ws.length){",
+"    const j=Math.min(ws.length,i+size); const start=ws[i].i; const last=ws[j-1]; const end=last.i+last.w.length;",
+"    out.push({text:ctx.slice(start,end),offset:start});",
+"    if(j>=ws.length) break; i+=(size-overlap);",
+"  }",
+"  return out;",
+"}",
+"async function run(question,context){",
+"  await load();",
+"  const wins=windows(context,220,50); const results=[];",
+"  for(let k=0;k<wins.length;k++){",
+"    self.postMessage({type:'stage',msg:wins.length>1?('Reading section '+(k+1)+' of '+wins.length):'Reading the document…',pct:wins.length>1?k/wins.length:0.5});",
+"    let r; try{ r=await qa(question,wins[k].text,{topk:1}); }catch(e){ continue; }",
+"    const best=Array.isArray(r)?r[0]:r;",
+"    if(best&&best.answer&&best.answer.trim()&&typeof best.start==='number'){",
+"      results.push({answer:best.answer.trim(),score:best.score,start:wins[k].offset+best.start,end:wins[k].offset+best.end});",
+"    }",
+"  }",
+"  results.sort((a,b)=>b.score-a.score);",
+"  const seen={}, uniq=[]; for(const r of results){ const key=r.answer.toLowerCase(); if(!seen[key]){ seen[key]=1; uniq.push(r);} }",
+"  return uniq.slice(0,4);",
+"}",
+"self.onmessage=async(e)=>{ const d=e.data;",
+"  if(d.type==='warm'){ try{ await load(); self.postMessage({type:'ready'}); }catch(err){ self.postMessage({type:'error',error:String(err&&err.message||err)}); } return; }",
+"  if(d.type==='run'){ try{ const res=await run(d.question,d.context); self.postMessage({type:'result',results:res}); }catch(err){ self.postMessage({type:'error',error:String(err&&err.message||err)}); } } };"
+].join("\n");
+
+  function fmtMB(b){ return (b/1048576).toFixed(1)+" MB"; }
+  function setProg(frac,label){ prog.className="prog on"; fill.style.width=Math.round(Math.max(0,Math.min(1,frac))*100)+"%"; if(label!=null) plbl.innerHTML=label; }
+
+  function ensureWorker(){
+    if(worker) return worker;
+    var blob=new Blob([WORKER_SRC],{type:"text/javascript"});
+    worker=new Worker(URL.createObjectURL(blob),{type:"module"});
+    var files={};
+    worker.onmessage=function(e){
+      var d=e.data;
+      if(d.type==="dl"){
+        if(d.total){ files[d.file]={loaded:d.loaded,total:d.total}; }
+        var l=0,t=0; for(var k in files){ l+=files[k].loaded; t+=files[k].total; }
+        if(t){ setProg(Math.min(0.99,l/t)*0.85, "Downloading the AI model · "+fmtMB(l)+" / "+fmtMB(t)+" (one time, then cached)"); }
+      } else if(d.type==="dlready"){ modelDownloaded=true; }
+      else if(d.type==="ready"){ workerReady=true; }
+      else if(d.type==="stage"){ setProg(0.85+0.14*(d.pct||0), d.msg); }
+      else if(d.type==="result"){ busy=false; workerReady=true; renderResults(d.results); }
+      else if(d.type==="error"){ busy=false; prog.className="prog"; showWarn("The model hit an error: "+d.error+". Reload and try again on a desktop browser with enough memory."); updateState(); }
+    };
+    return worker;
+  }
+
+  go.addEventListener("click",ask);
+  function ask(){
+    if(busy) return;
+    var context=doc.value.trim(), question=q.value.trim();
+    if(wc(context)<3){ showWarn("Add a document first — paste some text or drop a file."); return; }
+    if(!question){ showWarn("Type a question to ask the document."); return; }
+    clearWarn();
+    busy=true; go.disabled=true; ans.className="ans"; srcbox.className="srcbox";
+    setProg(0.03, (workerReady||modelDownloaded) ? "Thinking…" : "Loading the AI model (first question downloads ~65 MB, then it's cached)…");
+    ensureWorker().postMessage({type:"run",question:question,context:context});
+  }
+
+  function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  function confMeta(score){
+    if(score>=0.5) return {label:"High confidence",pct:Math.min(100,Math.round(60+score*40))};
+    if(score>=0.15) return {label:"Medium confidence",pct:Math.round(35+score*40)};
+    if(score>=0.03) return {label:"Low confidence",pct:Math.round(15+score*60)};
+    return {label:"Very low — the answer may not be in this document",pct:10};
+  }
+
+  function highlight(start,end){
+    var text=doc.value;
+    // expand to sentence bounds for gentle context highlight
+    var sStart=start, sEnd=end;
+    while(sStart>0 && !/[.!?\n]/.test(text[sStart-1])) sStart--;
+    while(sEnd<text.length && !/[.!?\n]/.test(text[sEnd])) sEnd++;
+    if(sEnd<text.length) sEnd++;
+    var html=escapeHtml(text.slice(0,sStart))
+      +'<span class="sent">'+escapeHtml(text.slice(sStart,start))
+      +'<mark id="hitmark">'+escapeHtml(text.slice(start,end))+'</mark>'
+      +escapeHtml(text.slice(end,sEnd))+'</span>'
+      +escapeHtml(text.slice(sEnd));
+    srcbox.innerHTML=html; srcbox.className="srcbox on";
+    var mk=$("hitmark"); if(mk){ mk.scrollIntoView({behavior:"smooth",block:"center"}); }
+  }
+
+  function renderResults(results){
+    prog.className="prog"; updateState();
+    lastResults=results;
+    var question=q.value.trim();
+    askedQ.textContent=question;
+    if(!results||!results.length){
+      atext.textContent="No answer found in the document.";
+      confbar.style.width="6%"; conflabel.innerHTML="<b>No match</b> — try rephrasing, or the answer may not be written here.";
+      alts.style.display="none"; ans.className="ans on"; srcbox.className="srcbox";
+      addHistory(question,"— no answer found —"); return;
+    }
+    var top=results[0], cm=confMeta(top.score);
+    atext.textContent=top.answer;
+    confbar.style.width=cm.pct+"%";
+    conflabel.innerHTML="<b>"+cm.label+"</b> · score "+top.score.toFixed(3);
+    // alternatives
+    var others=results.slice(1).filter(function(r){return r.score>0.01;});
+    if(others.length){
+      altwrap.innerHTML="";
+      others.forEach(function(r){ var b=document.createElement("button"); b.className="altchip";
+        b.innerHTML=escapeHtml(r.answer)+'<span>'+r.score.toFixed(2)+'</span>';
+        b.addEventListener("click",function(){ atext.textContent=r.answer; var c=confMeta(r.score); confbar.style.width=c.pct+"%"; conflabel.innerHTML="<b>"+c.label+"</b> · score "+r.score.toFixed(3); highlight(r.start,r.end); });
+        altwrap.appendChild(b); });
+      alts.style.display="block";
+    } else { alts.style.display="none"; }
+    ans.className="ans on";
+    highlight(top.start,top.end);
+    addHistory(question,top.answer);
+  }
+
+  function addHistory(question,answer){
+    history.unshift({q:question,a:answer});
+    histwrap.innerHTML="";
+    history.slice(0,8).forEach(function(h){ var d=document.createElement("div"); d.className="hrow";
+      d.innerHTML='<div class="hq">Q: <b>'+escapeHtml(h.q)+'</b></div><div class="ha">'+escapeHtml(h.a)+'</div>'; histwrap.appendChild(d); });
+    hist.className="hist on";
+  }
+
+  updateState();
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+<!-- AdSense slot (add publisher script + <ins> here when approved). -->
+<!-- Polar.sh support/donate slot (add embed here later). -->
+</body>
+</html>
