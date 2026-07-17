@@ -128,7 +128,7 @@
     <div class="panel">
       <div class="board-wrap">
         <canvas id="board" aria-label="Decision boundary and data points. Click or drag to add points."></canvas>
-        <div class="board-legend"><span><i style="background:var(--accent)"></i>Class B</span><span><i style="background:var(--warn)"></i>Class A</span></div>
+        <div class="board-legend"><span><i style="background:#4aa3ff"></i>Class B</span><span><i style="background:#ff8a3d"></i>Class A</span></div>
         <div class="board-hint" id="hint">Click to add points &middot; hollow dots are the test set</div>
       </div>
     </div>
@@ -141,7 +141,7 @@
       </div>
       <div id="loss-wrap">
         <canvas id="loss" aria-label="Training and test loss over time"></canvas>
-        <div class="loss-key"><span><i style="background:var(--accent)"></i>train loss</span><span><i style="background:var(--warn)"></i>test loss</span></div>
+        <div class="loss-key"><span><i style="background:var(--accent)"></i>train loss</span><span><i style="background:#c9d6d1"></i>test loss</span></div>
       </div>
     </div>
   </div>
@@ -216,14 +216,14 @@
 
   <div class="net-panel">
     <div class="net-head">
-      <div><h3>Inside the network</h3><p>Every tile is one neuron's learned response across the plane. Edges are weights &mdash; green pulls the answer toward B, orange toward A, thickness is strength.</p></div>
+      <div><h3>Inside the network</h3><p>Every tile is one neuron's learned response across the plane. Edges are weights &mdash; blue pulls the answer toward B, orange toward A, thickness is strength.</p></div>
     </div>
     <canvas id="net" aria-label="Live view of the network's neurons and weights"></canvas>
   </div>
 
   <section class="copy">
     <h2>What you are looking at</h2>
-    <p>The coloured background is the network's opinion about every single point on the plane: green where it predicts class B, orange where it predicts class A, and dark where it is unsure. The dots are your data. When you press Train, the network nudges its weights a few thousand times a second, and you watch the boundary bend itself around your points until it separates them. Hollow dots are a held-out test set the network never trains on, so you can catch it cheating.</p>
+    <p>The coloured background is the network's opinion about every single point on the plane: blue where it predicts class B, orange where it predicts class A, and dark where it is unsure. The dots are your data. When you press Train, the network nudges its weights a few thousand times a second, and you watch the boundary bend itself around your points until it separates them. Hollow dots are a held-out test set the network never trains on, so you can catch it cheating.</p>
     <h2>How it actually learns</h2>
     <p>This is a genuine multilayer perceptron. Each layer multiplies its inputs by a matrix of weights, adds a bias, and squashes the result through a non-linearity like <code>tanh</code> or <code>ReLU</code>. The final neuron passes through a sigmoid to give a probability. To learn, it measures how wrong that probability is with cross-entropy loss, then runs <em>backpropagation</em> &mdash; the chain rule, applied layer by layer from the output backwards &mdash; to work out how every weight should change. An optimiser (Adam or momentum SGD) takes the step. All of it is a few hundred lines of hand-written JavaScript; there is no machine-learning library on this page.</p>
     <h2>How this runs in your browser</h2>
@@ -409,7 +409,7 @@
   var NN=window.SynapseNet; if(!NN){ return; }
   var $=function(id){return document.getElementById(id);};
   var DOMAIN=6, IN_SCALE=1/DOMAIN;
-  var CLASS_A=[255,154,61];               // orange (label 0)
+  var CLASS_B=[74,163,255], CLASS_A=[255,138,61];   // fixed & theme-independent so the two classes never collide with the accent colour
   function accentRGB(){ try{ var v=getComputedStyle(document.documentElement).getPropertyValue("--accentRGB").trim(); var p=v.split(",").map(Number); if(p.length===3&&p.every(function(n){return n>=0;})) return p; }catch(e){} return [43,227,176]; }
 
   // ---------- state ----------
@@ -521,7 +521,7 @@
   function p2d(px,py){ return [ px/BW*2*DOMAIN-DOMAIN, DOMAIN-py/BH*2*DOMAIN ]; }
   function drawBoard(){
     if(!net) return;
-    var acc=accentRGB(), img=gctx.createImageData(RES,RES), d=img.data, idx=0;
+    var img=gctx.createImageData(RES,RES), d=img.data, idx=0;
     for(var yy=0;yy<RES;yy++){
       var dy=DOMAIN - (yy+0.5)/RES*2*DOMAIN;
       for(var xx=0;xx<RES;xx++){
@@ -529,7 +529,7 @@
         var p=net.predict([dx*IN_SCALE, dy*IN_SCALE]);
         var t=(p-0.5)*2;                       // -1..1
         var m=Math.min(1,Math.abs(t))*0.72;
-        var col = t>=0? acc : CLASS_A;
+        var col = t>=0? CLASS_B : CLASS_A;
         d[idx]  = Math.round(11 + (col[0]-11)*m);
         d[idx+1]= Math.round(23 + (col[1]-23)*m);
         d[idx+2]= Math.round(20 + (col[2]-20)*m);
@@ -543,7 +543,7 @@
     // points
     for(var i=0;i<points.length;i++){
       var pt=points[i], pos=d2p(pt.x,pt.y), isTest=(i%2!==0);
-      var col=pt.label? acc : CLASS_A;
+      var col=pt.label? CLASS_B : CLASS_A;
       bctx.beginPath(); bctx.arc(pos[0],pos[1],4.5,0,2*Math.PI);
       if(isTest){ bctx.lineWidth=2; bctx.strokeStyle="rgba("+col[0]+","+col[1]+","+col[2]+",.95)"; bctx.fillStyle="rgba(7,16,14,.55)"; bctx.fill(); bctx.stroke(); }
       else{ bctx.fillStyle="rgba("+col[0]+","+col[1]+","+col[2]+",.98)"; bctx.fill(); bctx.lineWidth=1; bctx.strokeStyle="rgba(7,16,14,.7)"; bctx.stroke(); }
@@ -564,7 +564,7 @@
       for(var i=0;i<lossHist.length;i++){ var x=i/(lossHist.length-1)*w; var y=h-Math.min(1,lossHist[i][sel]/max)*(h-6)-3; if(i===0)lctx.moveTo(x,y);else lctx.lineTo(x,y); }
       lctx.lineWidth=2; lctx.strokeStyle=color; lctx.stroke();
     }
-    plot(1,"rgba(255,154,61,.9)");
+    plot(1,"rgba(201,214,209,.85)");
     plot(0,"rgba("+acc[0]+","+acc[1]+","+acc[2]+",.95)");
   }
 
@@ -611,7 +611,7 @@
   function drawNet(){
     if(!net) return; if(!fieldCache) computeField();
     var w=netC.width/dpr, h=netC.height/dpr; nctx.clearRect(0,0,w,h);
-    var acc=accentRGB();
+    var acc=CLASS_B;
     var cols=[2].concat(hidden).concat([1]); // neuron counts per A-layer
     var nCols=cols.length, R=13;
     var padX=46, colW=(w-2*padX)/(nCols-1);
