@@ -180,23 +180,23 @@
     </div>
     <div class="ctl">
       <label>Learning rate <b id="lr-v">0.030</b></label>
-      <input type="range" id="lr" min="0" max="100" value="55" />
+      <input type="range" id="lr" min="0" max="100" value="64" />
     </div>
     <div class="ctl">
       <label>L2 regularisation <b id="reg-v">0.000</b></label>
       <input type="range" id="reg" min="0" max="100" value="0" />
     </div>
     <div class="ctl">
-      <label>Noise <b id="noise-v">15%</b></label>
-      <input type="range" id="noise" min="0" max="60" value="15" />
+      <label>Noise <b id="noise-v">10%</b></label>
+      <input type="range" id="noise" min="0" max="60" value="10" />
     </div>
     <div class="ctl">
       <label>Batch size <b id="bs-v">16</b></label>
       <input type="range" id="bs" min="1" max="60" value="16" />
     </div>
     <div class="ctl">
-      <label>Speed <b id="spd-v">6</b></label>
-      <input type="range" id="spd" min="1" max="24" value="6" />
+      <label>Speed <b id="spd-v">10</b></label>
+      <input type="range" id="spd" min="1" max="24" value="10" />
     </div>
     <div class="ctl">
       <label>Brush class (for drawing)</label>
@@ -413,8 +413,8 @@
   function accentRGB(){ try{ var v=getComputedStyle(document.documentElement).getPropertyValue("--accentRGB").trim(); var p=v.split(",").map(Number); if(p.length===3&&p.every(function(n){return n>=0;})) return p; }catch(e){} return [43,227,176]; }
 
   // ---------- state ----------
-  var hidden=[5,4], activation="tanh", optimiser="adam", dataset="spiral";
-  var lr=0.03, lambda=0, noise=0.15, batchSize=16, speed=6, brush=1;
+  var hidden=[8,8], activation="tanh", optimiser="adam", dataset="spiral";
+  var lr=0.03, lambda=0, noise=0.10, batchSize=16, speed=10, brush=1;
   var net=null, points=[], train=[], test=[], epoch=0, sampleIdx=0, order=[], running=false;
   var lossHist=[], drawing=false, pointerId=null, drewCustom=false, frame=0, fieldCache=null;
 
@@ -463,8 +463,10 @@
   }
   function splitData(){
     train=[]; test=[];
-    for(var i=0;i<points.length;i++){ (i%2===0?train:test).push(points[i]); }
-    if(train.length===0&&points.length){ train=points.slice(); }
+    var idx=points.map(function(_,i){return i;}); shuffle(idx);   // random split (points are generated in class pairs, so an index-parity split would put one whole class in each set)
+    var half=points.length>>1;
+    for(var k=0;k<idx.length;k++){ var p=points[idx[k]]; p.test=(k>=half); (p.test?test:train).push(p); }
+    if(train.length===0&&points.length){ train=points.slice(); for(var q=0;q<train.length;q++) train[q].test=false; test=[]; }
     order=train.map(function(_,i){return i;});
     shuffle(order); sampleIdx=0;
   }
@@ -542,7 +544,7 @@
     bctx.drawImage(grid,0,0,RES,RES,0,0,BW,BH);
     // points
     for(var i=0;i<points.length;i++){
-      var pt=points[i], pos=d2p(pt.x,pt.y), isTest=(i%2!==0);
+      var pt=points[i], pos=d2p(pt.x,pt.y), isTest=!!pt.test;
       var col=pt.label? CLASS_B : CLASS_A;
       bctx.beginPath(); bctx.arc(pos[0],pos[1],4.5,0,2*Math.PI);
       if(isTest){ bctx.lineWidth=2; bctx.strokeStyle="rgba("+col[0]+","+col[1]+","+col[2]+",.95)"; bctx.fillStyle="rgba(7,16,14,.55)"; bctx.fill(); bctx.stroke(); }
@@ -691,7 +693,7 @@
   slider("bs","bs-v",function(v){ batchSize=v; },function(v){ return ""+v; });
   slider("spd","spd-v",function(v){ speed=v; },function(v){ return ""+v; });
   // initialise lr/reg from defaults
-  lr=Math.pow(10,-3+55/100*2.3); $("lr-v").textContent=lr.toFixed(3);
+  lr=Math.pow(10,-3+64/100*2.3); $("lr-v").textContent=lr.toFixed(3);
 
   function buildArch(){
     var el=$("arch"); el.innerHTML="";
