@@ -67,6 +67,41 @@
   </div></header>
   <section><div class="wrap">
     <div class="grid">
+      <a class="tool" href="synapse.html">
+        <div class="cat">Explorable · Neural network</div>
+        <h2>Synapse</h2>
+        <p>Draw two blobs of dots, press play, and watch a real neural network learn to tell them apart in front of you. This is a genuine multilayer perceptron: the forward pass, the cross-entropy loss and the full backpropagation are all written from scratch in plain JavaScript, with no TensorFlow and no library of any kind. The coloured background is the network&rsquo;s live opinion about every point on the plane, redrawn each training step as the boundary bends itself around your data, and half your points are held out as a test set so you can catch it overfitting. Add hidden layers and watch the famously hard two-spiral dataset finally crack; delete a layer and watch it fail because a single layer can only make straight cuts. Every neuron shows a little tile of the feature it has learned, and the edges between them are the weights &mdash; green pulling the answer one way, orange the other, thickness for strength &mdash; so you can literally see simple edge detectors combine into curves. Switch between tanh, ReLU and sigmoid, between Adam and momentum SGD, dial the learning rate, noise and L2 regularisation, then export the trained weights plus a dependency-free predict() function. Nothing is uploaded; the whole thing trains on your device.</p>
+        <div class="tags"><span>Backprop from scratch</span><span>No libraries</span><span>Live boundary</span><span>No upload</span></div>
+        <span class="use">Use tool &rarr;</span>
+      </a>
+      <a class="tool" href="ember.html">
+        <div class="cat">Web3 · Live on-chain</div>
+        <h2>Ember</h2>
+        <p>Watch Ethereum&rsquo;s fee market work in real time: the base fee, how full each block is against its target, and the ETH being burned block by block. Since EIP-1559, every block has a base fee the protocol sets for itself with no auction, and that base fee is <em>burned</em> &mdash; destroyed forever &mdash; instead of paid to a validator. Ember reads it straight from a node in your browser: a gauge shows how full the last block ran, and because a block over the 50% target pushes the base fee up by up to 12.5% while an emptier one pulls it down, you can see cause and effect happen live. It also multiplies base fee by gas to tally the ETH going up in smoke since you opened the tab, and shows what a transfer, a token send, a swap or an NFT mint costs at this exact moment in both gwei and dollars. No wallet, no sign-up, no server &mdash; it only ever reads public chain data, cycling across several nodes so it stays live.</p>
+        <div class="tags"><span>EIP-1559</span><span>JSON-RPC</span><span>ETH burn</span><span>No wallet</span></div>
+        <span class="use">Use tool &rarr;</span>
+      </a>
+      <a class="tool" href="morphogen.html">
+        <div class="cat">WebGPU · Reaction-diffusion</div>
+        <h2>Morphogen</h2>
+        <p>Grow living Turing patterns from a real Gray-Scott reaction-diffusion simulation, solved on your graphics card every frame with WebGPU compute shaders. Two virtual chemicals spread at different speeds while one reacts with the other, and spots, stripes, mazes, coral and self-replicating mitosis fall out of the maths on their own &mdash; the same mechanism Turing proposed for leopard rosettes and seashells. A compute shader runs once per cell in parallel over hundreds of thousands of cells, ping-ponging two buffers each step; because it&rsquo;s a live simulation and not a video, you can reach in and paint chemical B into a disc of cells and the field takes it from there. The clever part is the pattern map: only the feed and kill rates really matter, so the whole space is a little navigator you click through to jump between regimes, including the blends nobody named. Nine presets, six palettes, seamless wrap-around tiling, and PNG export for wallpaper. Nothing is ever uploaded.</p>
+        <div class="tags"><span>WebGPU compute</span><span>Gray-Scott</span><span>Turing patterns</span><span>No upload</span></div>
+        <span class="use">Use tool &rarr;</span>
+      </a>
+      <a class="tool" href="upscale.html">
+        <div class="cat">On-device AI · Super-resolution</div>
+        <h2>Upscale</h2>
+        <p>Upscale and sharpen any image 2&times; or 4&times; with a real AI super-resolution model that runs entirely on your own device &mdash; no upload, no watermark, no per-image cost. Upscale runs Swin2SR, a Swin Transformer&nbsp;v2 super-resolution network, through Transformers.js on WebGPU where your browser supports it and WebAssembly everywhere else, all inside a Web Worker so the page never stutters. The hard part is doing it to a full-size photo without blowing up memory: the image is cut into overlapping tiles, each tile is upscaled on its own, and the pieces are stitched back with a feathered weighted blend across the overlap so no seams ever show. Three modes &mdash; a fast 2&times; sharpen, a 4&times; maximum enlarge, and a 4&times; mode tuned to strip JPEG blocking out of compressed photos and screenshots. Drag a before/after slider to compare, then download the PNG. Try the built-in sample or drop your own; the model downloads once, then works offline, and nothing you upscale ever leaves your machine.</p>
+        <div class="tags"><span>Transformers.js</span><span>Swin2SR</span><span>WebGPU / WASM</span><span>Tiled + no upload</span></div>
+        <span class="use">Use tool &rarr;</span>
+      </a>
+      <a class="tool" href="cadence.html">
+        <div class="cat">Audio · Chord &amp; key detection</div>
+        <h2>Cadence</h2>
+        <p>Drop any song and get its chords, musical key, and tempo &mdash; worked out live in your browser, with nothing uploaded. Cadence decodes your audio with the Web Audio API, runs an FFT to build a chromagram of how much of each of the twelve notes is sounding at every moment, then matches each instant against all 24 major and minor triads and smooths the sequence with a Viterbi decoder so the chords hold instead of flickering. The key comes from correlating the song&rsquo;s note profile with the Krumhansl-Schmuckle key profiles, and the tempo from an onset-strength envelope run through autocorrelation. Watch a colour-coded chord map and a live chromagram scroll under the player, click anywhere to seek, and copy the whole progression as a chord sheet. Try the built-in sample or drop an MP3, WAV, M4A, FLAC or OGG &mdash; it works offline, no model to download.</p>
+        <div class="tags"><span>Web Audio</span><span>Chromagram + FFT</span><span>Viterbi</span><span>No upload</span></div>
+        <span class="use">Use tool &rarr;</span>
+      </a>
       <a class="tool" href="inquire.html">
         <div class="cat">On-device AI · Reading comprehension</div>
         <h2>Inquire</h2>
