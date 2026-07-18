@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lenia — Continuous Cellular Automata &amp; Artificial Life in your browser</title>
+<meta name="description" content="Watch a real Lenia continuous cellular automaton run live on your GPU. A swimming Orbium glider, primordial soup that self-organizes into life, and a brush to paint your own — 100% in your browser, nothing uploaded." />
+<meta name="keywords" content="lenia, continuous cellular automata, artificial life, orbium, smoothlife, game of life, generative art, webgl, gpu simulation, emergent life, cellular automata online, lenia simulator" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Lenia — Artificial Life in your browser" />
+<meta property="og:description" content="A real continuous cellular automaton on your GPU. Watch the Orbium glider swim, grow life from noise, or paint your own. 100% in-browser." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/lenia.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Lenia — Artificial Life in your browser" />
+<meta name="twitter:description" content="A real continuous cellular automaton on your GPU. Watch the Orbium glider swim, grow life from noise, or paint your own." />
+<link rel="canonical" href="https://hammyasf.github.io/lenia.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Lenia — Continuous Cellular Automata","url":"https://hammyasf.github.io/lenia.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebGL2)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"An interactive Lenia continuous cellular automaton running on the GPU with WebGL2. Watch the Orbium glider swim, grow emergent life from noise, and paint your own patterns, entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Lenia?","acceptedAnswer":{"@type":"Answer","text":"Lenia is a continuous generalization of Conway's Game of Life, invented by Bert Chan. Instead of cells that are simply on or off, every cell holds a continuous value between 0 and 1, and time and space are smoothed out too. From these rules, stable, moving, life-like creatures called solitons emerge — the most famous is the Orbium, a glider that swims across the grid."}},{"@type":"Question","name":"Does this run on a server?","acceptedAnswer":{"@type":"Answer","text":"No. The entire simulation runs on your own GPU using WebGL2. Each cell's update — a convolution with the Lenia kernel followed by the growth mapping — is computed in a fragment shader every frame. Nothing is uploaded and it works offline."}},{"@type":"Question","name":"Why does the Orbium keep its shape while moving?","acceptedAnswer":{"@type":"Answer","text":"The Orbium is a soliton: a self-stabilizing attractor of the Lenia rule. Its exact shape and the parameters (kernel radius 13, growth centre 0.15, width 0.015) are tuned so that as it grows on its leading edge and decays on its trailing edge, it reproduces itself one step over — so it appears to swim while staying intact."}},{"@type":"Question","name":"My browser says it is not supported. Why?","acceptedAnswer":{"@type":"Answer","text":"Lenia needs WebGL2 with floating-point render targets (the EXT_color_buffer_float extension). That is available in current Chrome, Edge, Firefox, and Safari on most desktops and many phones. If your device or browser lacks it, the simulation cannot run and a message is shown instead."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .stage{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .canvas-wrap{position:relative;width:100%;aspect-ratio:16/10;background:#04070a;}
+  #gl{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none;}
+  #hud{position:absolute;left:14px;top:12px;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(4,7,10,.5);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:10px;padding:7px 11px;pointer-events:none;line-height:1.5;}
+  #hud b{color:var(--accent);font-weight:500;}
+  #fail{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;background:rgba(4,7,10,.9);}
+  #fail h3{font-family:var(--display);font-size:22px;margin-bottom:8px;}
+  #fail p{color:var(--muted);font-size:14.5px;max-width:440px;}
+  .controls{display:flex;flex-wrap:wrap;gap:14px 22px;padding:16px 20px;align-items:flex-end;border-top:1px solid var(--line);}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
+  .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;}
+  .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 15px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s,opacity .2s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);background:transparent;border:1px solid var(--line-2);border-radius:9px;padding:8px 12px;cursor:pointer;transition:.15s;}
+  .chip:hover{border-color:var(--accent);color:var(--ink);}
+  .chip.on{background:var(--accent);color:#07100e;border-color:var(--accent);font-weight:600;}
+  input[type=range]{accent-color:var(--accent);width:150px;}
+  .val{font-family:var(--mono);font-size:12.5px;color:var(--accent);min-width:44px;display:inline-block;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 13px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .hint{font-family:var(--mono);font-size:11.5px;color:var(--faint);padding:0 20px 16px;}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  section.copy code{font-family:var(--mono);font-size:.92em;background:rgba(var(--accentRGB),.1);padding:1px 6px;border-radius:5px;color:var(--accent);}
+  .faq{border-top:1px solid var(--line);margin-top:14px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.canvas-wrap{aspect-ratio:1/1;}input[type=range]{width:120px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Artificial life · runs on your GPU</div>
+    <h1>Lenia</h1>
+    <p class="sub">A real continuous cellular automaton, computed live on your graphics card. Watch the <em>Orbium</em> glider swim, grow a primordial soup that self-organizes into life, or paint your own — the whole simulation runs in your browser, nothing uploaded.</p>
+    <span class="priv">&#9889; 100% in your browser — no server, no upload</span>
+  </header>
+
+  <div class="stage">
+    <div class="canvas-wrap">
+      <canvas id="gl"></canvas>
+      <div id="hud"></div>
+      <div id="fail">
+        <h3>WebGL2 not available</h3>
+        <p>Lenia needs WebGL2 with floating-point render targets. Try the latest Chrome, Edge, Firefox, or Safari on a desktop, or a recent phone. Everything else on the page still works.</p>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Life forms &amp; soups</label>
+        <div class="row" id="presets">
+          <button class="chip on" data-preset="orbium">Orbium glider</button>
+          <button class="chip" data-preset="soup1">Primordial soup</button>
+          <button class="chip" data-preset="soup2">Rotors</button>
+          <button class="chip" data-preset="soup3">Coral</button>
+          <button class="chip" data-preset="orbium3">Orbium swarm</button>
+        </div>
+      </div>
+      <div class="ctl"><label>Run</label>
+        <div class="row">
+          <button class="btn" id="play">Pause</button>
+          <button class="btn btn-out" id="stepb">Step</button>
+          <button class="btn btn-out" id="reseed">Reseed</button>
+        </div>
+      </div>
+      <div class="ctl"><label>Brush</label>
+        <div class="row">
+          <div class="seg" id="brushmode"><button data-b="1" class="on">Add life</button><button data-b="0">Erase</button></div>
+        </div>
+      </div>
+      <div class="ctl"><label>Growth centre μ · <span class="val" id="muv">0.150</span></label>
+        <input type="range" id="mu" min="0.05" max="0.35" step="0.005" value="0.15" />
+      </div>
+      <div class="ctl"><label>Growth width σ · <span class="val" id="sgv">0.0150</span></label>
+        <input type="range" id="sg" min="0.005" max="0.07" step="0.0005" value="0.015" />
+      </div>
+      <div class="ctl"><label>Speed · <span class="val" id="spv">6×</span></label>
+        <input type="range" id="sp" min="1" max="14" step="1" value="6" />
+      </div>
+      <div class="ctl"><label>Palette</label>
+        <div class="seg" id="pal"><button data-p="0" class="on">Aurora</button><button data-p="1">Magma</button><button data-p="2">Ice</button><button data-p="3">Mono</button></div>
+      </div>
+      <div class="ctl"><label>Detail</label>
+        <div class="seg" id="qual"><button data-q="170">Fast</button><button data-q="230" class="on">Balanced</button><button data-q="320">Sharp</button></div>
+      </div>
+      <div class="ctl"><label>Export</label>
+        <div class="row">
+          <button class="btn btn-out" id="snap">Save PNG</button>
+          <button class="btn btn-out" id="rec">Record</button>
+        </div>
+      </div>
+    </div>
+    <div class="hint">Drag on the canvas to paint life (or erase). The grid wraps around like a torus, so creatures that leave one edge return on the other. The math is real Lenia — a convolution with the kernel, then a Gaussian growth mapping, once per cell per step, all on your GPU.</div>
+  </div>
+
+  <section class="copy">
+    <h2>What am I looking at?</h2>
+    <p>This is <strong>Lenia</strong>, a continuous cellular automaton invented by Bert Chan. Conway&rsquo;s Game of Life has cells that are either alive or dead and time that ticks in whole steps. Lenia smooths all of that out: every cell holds a real value between 0 and 1, the neighbourhood is a wide fuzzy ring instead of eight square cells, and each step nudges the grid by a small fraction. From those smooth rules, something remarkable happens — stable, self-repairing, <em>moving</em> creatures appear. They are called solitons, and they behave uncannily like microscopic organisms.</p>
+    <p>The headline creature is the <em>Orbium</em>: a little crescent that swims steadily across the grid, holding its exact shape as it goes. It is the continuous cousin of the Game of Life glider. Load it and watch it wrap around the edges forever. Then switch to a primordial soup and watch structure condense out of pure noise, or grab the brush and drop your own blob of life to see what it becomes.</p>
+
+    <h2>How does this run in my browser?</h2>
+    <p>The whole simulation lives on your GPU. Lenia&rsquo;s update rule is, for every cell: take a weighted average of the neighbours inside a radius using the Lenia <em>kernel</em>, feed that number through a bell-shaped <em>growth</em> function <code>G(u) = 2·exp(−(u−μ)²/2σ²) − 1</code>, and add a small slice of the result back to the cell. That is exactly a convolution followed by a pointwise map — the kind of thing graphics cards are built for.</p>
+    <p>So each step is a WebGL2 fragment shader that runs once per cell in parallel, reading the current state from a floating-point texture and writing the next state to another, ping-ponging between the two. At the balanced setting that is tens of thousands of cells, each summing hundreds of neighbours, several times per frame — comfortably real time. The kernel itself is the classic smooth bump, <code>exp(α(1 − 1/(4r(1−r))))</code>, precomputed once and uploaded as a small texture. Nothing is uploaded to a server and it keeps running with your internet off.</p>
+
+    <h2>Things to try</h2>
+    <p>Load the <em>Orbium glider</em> and let it swim, then gently paint a wall in its path and watch it deform and recover. Switch to <em>Primordial soup</em> and nudge <code>μ</code> and <code>σ</code> a hair — the entire character of the world changes, from isolated blobs to writhing rotors to branching coral. Drop the growth width <code>σ</code> very low with <code>μ</code> near 0.15 and life becomes fragile and picky; widen it and the grid fills with churn. Paint two blobs next to each other and see whether they merge, orbit, or annihilate. When something beautiful happens, hit <em>Save PNG</em> or <em>Record</em>.</p>
+
+    <div class="faq">
+      <details open><summary>Is this really the same math as the research Lenia?</summary><p>Yes. The kernel is the unimodal smooth-bump core, the growth is the Gaussian mapping, and the Orbium uses its published parameters — kernel radius 13, μ = 0.15, σ = 0.015 — and its exact seed. I verified the seed reproduces a stable, translating soliton before shipping.</p></details>
+      <details><summary>Does anything leave my device?</summary><p>No. The simulation runs entirely on your GPU in the browser. There is no server, no upload, and no sign-up. It works offline.</p></details>
+      <details><summary>Why does the soup sometimes fade away?</summary><p>Life in Lenia only survives in certain bands of μ and σ. If you push the sliders into a hostile regime the pattern can die out or, at the other extreme, flood the grid. The presets sit in known living regimes; hit Reseed to start fresh.</p></details>
+      <details><summary>Who invented Lenia?</summary><p>Lenia was created and named by Bert Wang-Chak Chan, building on Conway&rsquo;s Game of Life and SmoothLife. The Orbium and the other creatures come from his search through this continuous world.</p></details>
+    </div>
+  </section>
+
+  <div class="cta">
+    <h3>I build something like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+
+(function(){
+  "use strict";
+  var canvas=document.getElementById("gl"), hud=document.getElementById("hud"), fail=document.getElementById("fail");
+  var gl=canvas.getContext("webgl2",{antialias:false,preserveDrawingBuffer:true,alpha:false});
+  if(!gl){ fail.style.display="flex"; return; }
+  var extCBF=gl.getExtension("EXT_color_buffer_float");
+  var extLIN=gl.getExtension("OES_texture_float_linear");
+  if(!extCBF){ fail.style.display="flex"; return; }
+
+  // ---- Lenia constants ----
+  var R=13, ALPHA=4.0;                 // kernel radius (cells), bump exponent
+  var mu=0.15, sigma=0.015, dt=0.1;    // Orbium defaults (T=10 -> dt=0.1)
+  var stepsPerFrame=6, brushVal=1.0, running=true, palette=0;
+  var simH=230, simW=368;              // simulation grid (set by quality + aspect)
+
+  // ---- canonical Orbium seed (Bert Chan; from OpenLenia tutorial) ----
+  var ORBIUM=[
+    [0,0,0,0,0,0,0.1,0.14,0.1,0,0,0.03,0.03,0,0,0.3,0,0,0,0],
+    [0,0,0,0,0,0.08,0.24,0.3,0.3,0.18,0.14,0.15,0.16,0.15,0.09,0.2,0,0,0,0],
+    [0,0,0,0,0,0.15,0.34,0.44,0.46,0.38,0.18,0.14,0.11,0.13,0.19,0.18,0.45,0,0,0],
+    [0,0,0,0,0.06,0.13,0.39,0.5,0.5,0.37,0.06,0,0,0,0.02,0.16,0.68,0,0,0],
+    [0,0,0,0.11,0.17,0.17,0.33,0.4,0.38,0.28,0.14,0,0,0,0,0,0.18,0.42,0,0],
+    [0,0,0.09,0.18,0.13,0.06,0.08,0.26,0.32,0.32,0.27,0,0,0,0,0,0,0.82,0,0],
+    [0.27,0,0.16,0.12,0,0,0,0.25,0.38,0.44,0.45,0.34,0,0,0,0,0,0.22,0.17,0],
+    [0,0.07,0.2,0.02,0,0,0,0.31,0.48,0.57,0.6,0.57,0,0,0,0,0,0,0.49,0],
+    [0,0.59,0.19,0,0,0,0,0.2,0.57,0.69,0.76,0.76,0.49,0,0,0,0,0,0.36,0],
+    [0,0.58,0.19,0,0,0,0,0,0.67,0.83,0.9,0.92,0.87,0.12,0,0,0,0,0.22,0.07],
+    [0,0,0.46,0,0,0,0,0,0.7,0.93,1,1,1,0.61,0,0,0,0,0.18,0.11],
+    [0,0,0.82,0,0,0,0,0,0.47,1,1,0.98,1,0.96,0.27,0,0,0,0.19,0.1],
+    [0,0,0.46,0,0,0,0,0,0.25,1,1,0.84,0.92,0.97,0.54,0.14,0.04,0.1,0.21,0.05],
+    [0,0,0,0.4,0,0,0,0,0.09,0.8,1,0.82,0.8,0.85,0.63,0.31,0.18,0.19,0.2,0.01],
+    [0,0,0,0.36,0.1,0,0,0,0.05,0.54,0.86,0.79,0.74,0.72,0.6,0.39,0.28,0.24,0.13,0],
+    [0,0,0,0.01,0.3,0.07,0,0,0.08,0.36,0.64,0.7,0.64,0.6,0.51,0.39,0.29,0.19,0.04,0],
+    [0,0,0,0,0.1,0.24,0.14,0.1,0.15,0.29,0.45,0.53,0.52,0.46,0.4,0.31,0.21,0.08,0,0],
+    [0,0,0,0,0,0.08,0.21,0.21,0.22,0.29,0.36,0.39,0.37,0.33,0.26,0.18,0.09,0,0,0],
+    [0,0,0,0,0,0,0.03,0.13,0.19,0.22,0.24,0.24,0.23,0.18,0.13,0.05,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0.02,0.06,0.08,0.09,0.07,0.05,0.01,0,0,0,0,0]
+  ];
+
+  // ---- shaders ----
+  var VERT="#version 300 es\nin vec2 aPos;\nvoid main(){ gl_Position=vec4(aPos,0.0,1.0); }";
+
+  var SIM=
+  "#version 300 es\nprecision highp float;\nprecision highp int;\n"+
+  "uniform sampler2D uState; uniform sampler2D uKernel;\n"+
+  "uniform int uW; uniform int uH; uniform float uMu; uniform float uSigma; uniform float uDt;\n"+
+  "out vec4 o;\n"+
+  "const int R="+R+";\n"+
+  "void main(){\n"+
+  "  ivec2 p=ivec2(gl_FragCoord.xy);\n"+
+  "  float U=0.0;\n"+
+  "  for(int dy=-R;dy<=R;dy++){\n"+
+  "    for(int dx=-R;dx<=R;dx++){\n"+
+  "      float w=texelFetch(uKernel, ivec2(dx+R,dy+R),0).r;\n"+
+  "      if(w>0.0){\n"+
+  "        int xx=p.x+dx; xx=xx-uW*int(floor(float(xx)/float(uW)));\n"+
+  "        int yy=p.y+dy; yy=yy-uH*int(floor(float(yy)/float(uH)));\n"+
+  "        U+=w*texelFetch(uState, ivec2(xx,yy),0).r;\n"+
+  "      }\n"+
+  "    }\n"+
+  "  }\n"+
+  "  float e=U-uMu;\n"+
+  "  float G=2.0*exp(-(e*e)/(2.0*uSigma*uSigma))-1.0;\n"+
+  "  float a=clamp(texelFetch(uState,p,0).r + G*uDt, 0.0, 1.0);\n"+
+  "  o=vec4(a, U, 0.0, 1.0);\n"+
+  "}";
+
+  var BRUSH=
+  "#version 300 es\nprecision highp float;\n"+
+  "uniform sampler2D uState; uniform vec2 uBrush; uniform float uRadius; uniform float uVal;\n"+
+  "out vec4 o;\n"+
+  "void main(){\n"+
+  "  ivec2 p=ivec2(gl_FragCoord.xy);\n"+
+  "  vec4 s=texelFetch(uState,p,0);\n"+
+  "  float d=distance(gl_FragCoord.xy, uBrush);\n"+
+  "  float f=smoothstep(uRadius,0.0,d);\n"+
+  "  float a;\n"+
+  "  if(uVal>0.5){ a=clamp(s.r + f, 0.0, 1.0); } else { a=clamp(s.r - f*1.5, 0.0, 1.0); }\n"+
+  "  o=vec4(a, s.g, 0.0, 1.0);\n"+
+  "}";
+
+  var DISP=
+  "#version 300 es\nprecision highp float;\n"+
+  "uniform sampler2D uState; uniform vec2 uOut; uniform int uPal;\n"+
+  "out vec4 o;\n"+
+  "vec3 aurora(float t){\n"+
+  "  vec3 c1=vec3(0.02,0.05,0.09), c2=vec3(0.05,0.34,0.45), c3=vec3(0.16,0.82,0.68), c4=vec3(0.78,1.0,0.86);\n"+
+  "  if(t<0.35) return mix(c1,c2,t/0.35);\n"+
+  "  if(t<0.72) return mix(c2,c3,(t-0.35)/0.37);\n"+
+  "  return mix(c3,c4,(t-0.72)/0.28);\n"+
+  "}\n"+
+  "vec3 magma(float t){\n"+
+  "  vec3 c1=vec3(0.02,0.01,0.06), c2=vec3(0.35,0.09,0.36), c3=vec3(0.86,0.28,0.30), c4=vec3(0.99,0.85,0.55);\n"+
+  "  if(t<0.35) return mix(c1,c2,t/0.35);\n"+
+  "  if(t<0.7) return mix(c2,c3,(t-0.35)/0.35);\n"+
+  "  return mix(c3,c4,(t-0.7)/0.3);\n"+
+  "}\n"+
+  "vec3 ice(float t){\n"+
+  "  vec3 c1=vec3(0.02,0.03,0.08), c2=vec3(0.09,0.20,0.45), c3=vec3(0.30,0.62,0.92), c4=vec3(0.90,0.97,1.0);\n"+
+  "  if(t<0.4) return mix(c1,c2,t/0.4);\n"+
+  "  if(t<0.75) return mix(c2,c3,(t-0.4)/0.35);\n"+
+  "  return mix(c3,c4,(t-0.75)/0.25);\n"+
+  "}\n"+
+  "void main(){\n"+
+  "  vec2 uv=gl_FragCoord.xy/uOut; uv.y=1.0-uv.y;\n"+
+  "  vec4 s=texture(uState,uv);\n"+
+  "  float a=clamp(s.r,0.0,1.0);\n"+
+  "  vec3 col;\n"+
+  "  if(uPal==0) col=aurora(a);\n"+
+  "  else if(uPal==1) col=magma(a);\n"+
+  "  else if(uPal==2) col=ice(a);\n"+
+  "  else col=vec3(0.03,0.05,0.06)+a*vec3(0.17,0.89,0.69);\n"+
+  "  o=vec4(col,1.0);\n"+
+  "}";
+
+  function compile(type,src){ var s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){ throw new Error(gl.getShaderInfoLog(s)); } return s; }
+  function program(fsrc){ var p=gl.createProgram();
+    gl.attachShader(p,compile(gl.VERTEX_SHADER,VERT)); gl.attachShader(p,compile(gl.FRAGMENT_SHADER,fsrc)); gl.linkProgram(p);
+    if(!gl.getProgramParameter(p,gl.LINK_STATUS)){ throw new Error(gl.getProgramInfoLog(p)); } return p; }
+
+  var simP, brushP, dispP;
+  try{ simP=program(SIM); brushP=program(BRUSH); dispP=program(DISP); }
+  catch(err){ console.error(err); fail.querySelector("p").textContent="Shader failed to compile on this GPU: "+err.message; fail.style.display="flex"; return; }
+
+  // full-screen triangle
+  var vao=gl.createVertexArray(); gl.bindVertexArray(vao);
+  var buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1, 3,-1, -1,3]),gl.STATIC_DRAW);
+  var loc=gl.getAttribLocation(simP,"aPos"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+
+  // kernel texture (unimodal Lenia bump, normalized)
+  var kernelTex=gl.createTexture();
+  (function buildKernel(){
+    var D=2*R+1, data=new Float32Array(D*D), sum=0, i, j;
+    for(j=-R;j<=R;j++)for(i=-R;i<=R;i++){
+      var r=Math.sqrt(i*i+j*j)/R, w=0;
+      if(r>0 && r<1){ var k=4*r*(1-r); w=Math.exp(ALPHA*(1-1/k)); }
+      data[(j+R)*D+(i+R)]=w; sum+=w;
+    }
+    for(i=0;i<data.length;i++) data[i]/=sum;
+    gl.bindTexture(gl.TEXTURE_2D,kernelTex);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.R32F,D,D,0,gl.RED,gl.FLOAT,data);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  })();
+
+  // ping-pong state textures + framebuffers
+  var texA,texB,fboA,fboB,cur;
+  function makeStateTex(){ var t=gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA32F,simW,simH,0,gl.RGBA,gl.FLOAT,null);
+    var f=extLIN?gl.LINEAR:gl.NEAREST;
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,f);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,f);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
+    return t;
+  }
+  function makeFbo(t){ var f=gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER,f);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,t,0); return f; }
+  function allocState(){ texA=makeStateTex(); texB=makeStateTex(); fboA=makeFbo(texA); fboB=makeFbo(texB); cur=0; }
+
+  function uploadField(data){ // data: Float32Array length simW*simH, values in .r
+    var rgba=new Float32Array(simW*simH*4);
+    for(var k=0;k<simW*simH;k++){ rgba[k*4]=data[k]; rgba[k*4+3]=1.0; }
+    gl.bindTexture(gl.TEXTURE_2D,texA); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA32F,simW,simH,0,gl.RGBA,gl.FLOAT,rgba);
+    gl.bindTexture(gl.TEXTURE_2D,texB); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA32F,simW,simH,0,gl.RGBA,gl.FLOAT,rgba);
+    cur=0;
+  }
+
+  // ---- seeds ----
+  function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; var t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+  function blank(){ return new Float32Array(simW*simH); }
+  function stamp(field, cells, cx, cy){
+    var h=cells.length, w=cells[0].length, y,x;
+    var oy=Math.round(cy-h/2), ox=Math.round(cx-w/2);
+    for(y=0;y<h;y++)for(x=0;x<w;x++){
+      var gy=((oy+y)%simH+simH)%simH, gx=((ox+x)%simW+simW)%simW;
+      field[gy*simW+gx]=cells[y][x];
+    }
+  }
+  function soup(seed, density){
+    var f=blank(), rr=rng(seed), i;
+    for(i=0;i<f.length;i++) f[i]=rr()<density?rr():0;
+    // smooth a few times for coherent blobs
+    for(var p=0;p<3;p++){
+      var g=blank();
+      for(var y=0;y<simH;y++)for(var x=0;x<simW;x++){
+        var s=0;
+        for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++){
+          var yy=(y+dy+simH)%simH, xx=(x+dx+simW)%simW; s+=f[yy*simW+xx];
+        }
+        g[y*simW+x]=s/9;
+      }
+      f=g;
+    }
+    return f;
+  }
+
+  var curPreset="orbium";
+  function loadPreset(name){
+    curPreset=name;
+    var f;
+    if(name==="orbium"){ mu=0.15; sigma=0.015; f=blank(); stamp(f,ORBIUM,simW*0.32,simH*0.5); }
+    else if(name==="orbium3"){ mu=0.15; sigma=0.015; f=blank();
+      stamp(f,ORBIUM,simW*0.25,simH*0.32); stamp(f,ORBIUM,simW*0.55,simH*0.6); stamp(f,ORBIUM,simW*0.78,simH*0.4); }
+    else if(name==="soup1"){ mu=0.15; sigma=0.030; f=soup((Math.random()*1e9)|0,0.5); }
+    else if(name==="soup2"){ mu=0.26; sigma=0.050; f=soup((Math.random()*1e9)|0,0.5); }
+    else if(name==="soup3"){ mu=0.30; sigma=0.055; f=soup((Math.random()*1e9)|0,0.5); }
+    uploadField(f);
+    // sync sliders
+    document.getElementById("mu").value=mu; document.getElementById("sg").value=sigma;
+    document.getElementById("muv").textContent=mu.toFixed(3); document.getElementById("sgv").textContent=sigma.toFixed(4);
+  }
+  function reseed(){ loadPreset(curPreset); }
+
+  // ---- uniform locations ----
+  var uSim={state:gl.getUniformLocation(simP,"uState"),kernel:gl.getUniformLocation(simP,"uKernel"),w:gl.getUniformLocation(simP,"uW"),h:gl.getUniformLocation(simP,"uH"),mu:gl.getUniformLocation(simP,"uMu"),sg:gl.getUniformLocation(simP,"uSigma"),dt:gl.getUniformLocation(simP,"uDt")};
+  var uBr={state:gl.getUniformLocation(brushP,"uState"),brush:gl.getUniformLocation(brushP,"uBrush"),radius:gl.getUniformLocation(brushP,"uRadius"),val:gl.getUniformLocation(brushP,"uVal")};
+  var uDs={state:gl.getUniformLocation(dispP,"uState"),out:gl.getUniformLocation(dispP,"uOut"),pal:gl.getUniformLocation(dispP,"uPal")};
+
+  function simStep(){
+    var srcTex=cur===0?texA:texB, dstFbo=cur===0?fboB:fboA;
+    gl.useProgram(simP); gl.bindVertexArray(vao);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,dstFbo); gl.viewport(0,0,simW,simH);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,srcTex); gl.uniform1i(uSim.state,0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D,kernelTex); gl.uniform1i(uSim.kernel,1);
+    gl.uniform1i(uSim.w,simW); gl.uniform1i(uSim.h,simH);
+    gl.uniform1f(uSim.mu,mu); gl.uniform1f(uSim.sg,sigma); gl.uniform1f(uSim.dt,dt);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+    cur=1-cur;
+  }
+  function applyBrush(px,py,rad,val){
+    var srcTex=cur===0?texA:texB, dstFbo=cur===0?fboB:fboA;
+    gl.useProgram(brushP); gl.bindVertexArray(vao);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,dstFbo); gl.viewport(0,0,simW,simH);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,srcTex); gl.uniform1i(uBr.state,0);
+    gl.uniform2f(uBr.brush,px,py); gl.uniform1f(uBr.radius,rad); gl.uniform1f(uBr.val,val);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+    cur=1-cur;
+  }
+  function draw(){
+    var srcTex=cur===0?texA:texB;
+    gl.useProgram(dispP); gl.bindVertexArray(vao);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null); gl.viewport(0,0,canvas.width,canvas.height);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,srcTex); gl.uniform1i(uDs.state,0);
+    gl.uniform2f(uDs.out,canvas.width,canvas.height); gl.uniform1i(uDs.pal,palette);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+  }
+
+  // ---- sizing ----
+  function resize(){
+    var wrap=canvas.parentElement, dpr=Math.min(window.devicePixelRatio||1,2);
+    var cw=Math.round(wrap.clientWidth*dpr), ch=Math.round(wrap.clientHeight*dpr);
+    canvas.width=cw; canvas.height=ch;
+  }
+  function rebuildSim(){
+    var wrap=canvas.parentElement, aspect=wrap.clientWidth/wrap.clientHeight;
+    simH=curQuality; simW=Math.max(48,Math.round(simH*aspect)); if(simW%2)simW++;
+    allocState();
+    loadPreset(curPreset);
+  }
+  var curQuality=230;
+
+  // ---- pointer paint ----
+  var painting=false;
+  function canvasToSim(ev){
+    var rect=canvas.getBoundingClientRect();
+    var x=(ev.clientX-rect.left)/rect.width, y=(ev.clientY-rect.top)/rect.height;
+    return [x*simW, (1.0-y)*simH];
+  }
+  function pointerDown(ev){ painting=true; paintAt(ev); }
+  function paintAt(ev){ if(!painting)return; var p=canvasToSim(ev); applyBrush(p[0],p[1], Math.max(6,simH*0.05), brushVal); ev.preventDefault(); }
+  function pointerUp(){ painting=false; }
+  canvas.addEventListener("pointerdown",pointerDown);
+  canvas.addEventListener("pointermove",paintAt);
+  window.addEventListener("pointerup",pointerUp);
+
+  // ---- HUD ----
+  var frames=0, lastT=performance.now(), fps=0;
+  function updateHud(){
+    hud.innerHTML="<b>"+curPreset.replace("orbium3","Orbium ×3").replace("orbium","Orbium").replace("soup1","Soup").replace("soup2","Rotors").replace("soup3","Coral")+"</b> · "+simW+"×"+simH+" grid · μ "+mu.toFixed(3)+" σ "+sigma.toFixed(4)+" · "+fps+" fps";
+  }
+
+  // ---- main loop ----
+  function frame(now){
+    if(running){ for(var i=0;i<stepsPerFrame;i++) simStep(); }
+    draw();
+    frames++;
+    if(now-lastT>=500){ fps=Math.round(frames*1000/(now-lastT)); frames=0; lastT=now; updateHud(); }
+    requestAnimationFrame(frame);
+  }
+
+  // ---- controls ----
+  document.getElementById("presets").addEventListener("click",function(e){
+    var b=e.target.closest("button[data-preset]"); if(!b)return;
+    document.querySelectorAll("#presets .chip").forEach(function(x){x.classList.remove("on");}); b.classList.add("on");
+    loadPreset(b.getAttribute("data-preset")); updateHud();
+  });
+  var playBtn=document.getElementById("play");
+  playBtn.addEventListener("click",function(){ running=!running; playBtn.textContent=running?"Pause":"Play"; });
+  document.getElementById("stepb").addEventListener("click",function(){ running=false; playBtn.textContent="Play"; simStep(); draw(); });
+  document.getElementById("reseed").addEventListener("click",function(){ reseed(); updateHud(); });
+  document.getElementById("brushmode").addEventListener("click",function(e){ var b=e.target.closest("button");if(!b)return;
+    document.querySelectorAll("#brushmode button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); brushVal=+b.getAttribute("data-b"); });
+  document.getElementById("mu").addEventListener("input",function(){ mu=+this.value; document.getElementById("muv").textContent=mu.toFixed(3); updateHud(); });
+  document.getElementById("sg").addEventListener("input",function(){ sigma=+this.value; document.getElementById("sgv").textContent=sigma.toFixed(4); updateHud(); });
+  document.getElementById("sp").addEventListener("input",function(){ stepsPerFrame=+this.value; document.getElementById("spv").textContent=stepsPerFrame+"×"; });
+  document.getElementById("pal").addEventListener("click",function(e){ var b=e.target.closest("button");if(!b)return;
+    document.querySelectorAll("#pal button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); palette=+b.getAttribute("data-p"); });
+  document.getElementById("qual").addEventListener("click",function(e){ var b=e.target.closest("button");if(!b)return;
+    document.querySelectorAll("#qual button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); curQuality=+b.getAttribute("data-q"); rebuildSim(); updateHud(); });
+
+  document.getElementById("snap").addEventListener("click",function(){
+    draw();
+    canvas.toBlob(function(blob){ var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="lenia-"+Date.now()+".png"; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},2000); });
+  });
+  var recorder=null, recBtn=document.getElementById("rec");
+  recBtn.addEventListener("click",function(){
+    if(recorder){ recorder.stop(); return; }
+    if(!canvas.captureStream){ alert("Recording is not supported in this browser."); return; }
+    var stream=canvas.captureStream(30), chunks=[];
+    try{ recorder=new MediaRecorder(stream,{mimeType:"video/webm"}); }catch(e){ alert("Recording is not supported in this browser."); recorder=null; return; }
+    recorder.ondataavailable=function(ev){ if(ev.data.size>0)chunks.push(ev.data); };
+    recorder.onstop=function(){ var blob=new Blob(chunks,{type:"video/webm"}); var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="lenia-"+Date.now()+".webm"; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},2000); recorder=null; recBtn.textContent="Record"; };
+    recorder.start(); recBtn.textContent="Stop";
+  });
+
+  window.addEventListener("resize",function(){ resize(); });
+
+  // ---- boot ----
+  resize();
+  rebuildSim();      // allocates state + loads Orbium
+  updateHud();
+  requestAnimationFrame(frame);
+  window.__leniaBoot=true;
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
