@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>What an intent-based swaps frontend has to stop promising — Harman Kamboj</title>
+<meta name="description" content="Intent-based swaps hand execution to a solver, so your swap UI can no longer promise a price it does not control. What breaks in the frontend and how I handle it." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="What an intent-based swaps frontend has to stop promising — Harman Kamboj" />
+<meta property="og:description" content="Intent-based swaps hand execution to a solver, so your swap UI can no longer promise a price it does not control. What breaks in the frontend and how I handle it." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/intent-based-swaps-frontend.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="What an intent-based swaps frontend has to stop promising — Harman Kamboj" />
+<meta name="twitter:description" content="Intent-based swaps hand execution to a solver, so your swap UI can no longer promise a price it does not control. What breaks in the frontend and how I handle it." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/intent-based-swaps-frontend.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"What an intent-based swaps frontend has to stop promising","description":"Intent-based swaps hand execution to a solver, so your swap UI can no longer promise a price it does not control. What breaks in the frontend and how I handle it.","datePublished":"2026-07-18","dateModified":"2026-07-18","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/intent-based-swaps-frontend.html","url":"https://hammyasf.github.io/intent-based-swaps-frontend.html","keywords":"Intents, Solvers, Web3, Frontend, DeFi, Swaps","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  .rel{margin:40px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin-bottom:6px;}
+  .rel a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">What an intent-based swaps frontend has to stop promising</h1>
+   <div class="pmeta"><span>July 18, 2026</span><span>6 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Intents</span><span>Solvers</span><span>Web3</span><span>DeFi</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>For most of the years I spent building swap and bridge interfaces, the shape of the job never really moved. The user picks a token pair, you quote a price off a pool or a router, they sign one transaction, and you sit there watching for the receipt. Intent-based swaps take that loop apart. The user no longer signs a transaction that says how to move state. They sign a wish that says what outcome they want, and a network of off-chain solvers competes to deliver it. If you are building an intent-based swaps frontend, the hard part is not the signing. It is being honest about a result you no longer own.</p>
+<p>I have watched teams bolt an intent flow onto a UI that still thinks it is quoting a Uniswap pool, and the seams show up fast. So here is what actually changes once a solver stands between your user and the chain, written from the parts that bit me.</p>
+<h2>The quote is now a hope, not a price</h2>
+<p>In a classic router swap, the number you show is close to the number the user gets, minus slippage and gas. You are reading the same pool the transaction will hit. With intents, the amount you display is an estimate of what some solver might fill, and the real fill happens later in an auction you cannot see from the browser. CoW Protocol batches orders and matches them against each other before it ever touches a pool. UniswapX runs a Dutch auction where the price the user accepts is a floor, not a target. So the friendly "you will receive 1,204.6 USDC" is doing more work than it looks like.</p>
+<p>The fix is not a better estimate. It is a UI that says what the number actually is. I show a minimum received as the real promise, because that is the value the signed order enforces, and I treat the mid estimate as a maybe. This is the same discipline I argued for in my notes on <a href="gas-aware-frontend.html">building a gas-aware frontend</a>. If a number can be worse than what you print, print the worse number as the commitment and let the upside be a pleasant surprise.</p>
+<h2>You are waiting on a solver you do not control</h2>
+<p>A router swap resolves on its own timeline. You submit, it lands or it reverts, and either way the chain tells you within a block or two. An intent sits in a mempool of orders waiting for a solver to decide it is worth filling. Most of the time that is fast. Sometimes it is not, because the pair is thin, the size is awkward, or the market moved and no solver can fill inside the limit the user signed. Your UI has to hold a state that the old flow never had, which is "signed, accepted, and still waiting."</p>
+<p>I have seen frontends treat that gap as a spinner and nothing else, and users read a long spinner as a hang. So I give the pending window its own honest state. Order received, solvers looking, and a plain note that it can take a bit longer for larger or less liquid trades. When I have a deadline from the order itself, I show it counting down, because a visible deadline feels different from a spinner that might never end.</p>
+<h2>Failure looks different, so it has to read different</h2>
+<p>The old failure was a revert. Gas spent, transaction on chain, red toast, done. Intents fail in quieter ways. The order can expire because no solver filled it before the deadline. It can be filled at the floor when the user was eyeing the estimate, which is not a failure at all but reads like one if you only advertised the rosy number. On chains where signing the order costs nothing, an expiry can leave the user with no on-chain trace, which is great for their wallet and confusing for their trust if the UI does not explain it.</p>
+<p>Every one of these needs its own copy. Expired is not reverted. Filled below your estimate is not a bug. I learned the hard way with ordinary swaps that vague failure states generate support tickets faster than almost anything else, which is half of what my writeup on <a href="token-swap-frontend-pitfalls.html">token swap frontend pitfalls</a> is really about. Intents add three new endings, and each one deserves a sentence a normal person can read.</p>
+<h2>Approvals and signatures moved around too</h2>
+<p>Intents change the signing story in a way that helps you if you plan for it. Most intent systems take a gasless off-chain signature rather than an on-chain approve and swap, so the wallet prompt is one signature over typed data, not a transaction. That pairs well with smart accounts. Once <a href="eip-7702-frontend.html">EIP-7702 lets a plain wallet carry code</a>, you can bundle the token permit and the order into a single signed object instead of dragging the user through two prompts. The catch is that a typed-data signature is harder for a user to read than a transaction, and a signed order that points at the wrong settlement contract is exactly the kind of thing phishing loves. So I surface what the order authorizes in plain language before the prompt, not after.</p>
+<h2>Where this is genuinely better</h2>
+<p>I am not down on intents. When the wiring is right they fix real pain. Batching orders means one user's sell can be another's buy without either touching a pool, which trims cost. Solvers route across venues so a thin pair on your home chain can still fill from liquidity somewhere else, which is the cross-chain UX people actually wanted when I was stitching bridges together by hand. And handing execution to a competitive auction takes a class of MEV off the user, since the solver eats the routing risk instead of the trader. I spent a good while on venue design in my writeup on <a href="defi-dex-architecture.html">DeFi DEX architecture</a>, and intents solve some of the exact edges that were painful to handle inside a single AMM.</p>
+<h2>What I would build first</h2>
+<p>If I were adding intents to a swap product tomorrow, I would start with the states, not the happy path. Wire the pending window as a first-class screen with a real deadline. Show minimum received as the promise and the estimate as a maybe. Write distinct copy for filled, filled at floor, and expired. Only then would I polish the quote. The demo of an intent swap is one clean click, and that click is the easy 20 percent. The other 80 percent is telling the truth about an outcome a solver decides after the user has already let go. If you want more of how I think about the wallet-facing layer, it is collected in my <a href="web3.html">Web3 and on-chain notes</a>, and the rest of the work is on the <a href="index.html">homepage</a>.</p>
+   <div class="rel">
+     <h2>Related in Web3</h2>
+     <ul>
+       <li><a href="token-swap-frontend-pitfalls.html">The token swap frontend pitfalls that cost me real debugging time</a></li>
+       <li><a href="gas-aware-frontend.html">Building a gas-aware frontend that does not lie about fees</a></li>
+       <li><a href="eip-7702-frontend.html">EIP-7702 changed what your frontend can assume about a wallet</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If your product's hard part is the swap layer, the on-chain data, or the parts that quietly break under real users, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="rollback-netcode-browser-determinism.html">Rollback netcode in the browser: determinism is the hard part →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>
