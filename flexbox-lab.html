@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Freespace — see exactly how CSS flexbox lays out your page</title>
+<meta name="description" content="A real CSS flexbox layout engine, written from scratch, running next to your browser's own. Change flex-grow, flex-basis or justify-content and read the step-by-step algorithm with live numbers. Free, no sign-up." />
+<meta name="keywords" content="how flexbox works, flexbox playground, flex-grow vs flex-basis, flex-shrink explained, justify-content, align-items, css flexbox tutorial, flexbox algorithm, min-width auto flexbox, flexbox layout engine" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Freespace — see exactly how CSS flexbox lays out your page" />
+<meta property="og:description" content="A from-scratch flexbox engine running side by side with your browser's, with the algorithm's every step shown in live numbers." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/flexbox-lab.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Freespace — see exactly how CSS flexbox lays out your page" />
+<meta name="twitter:description" content="A from-scratch flexbox engine running side by side with your browser's own, step by step." />
+<link rel="canonical" href="https://hammyasf.github.io/flexbox-lab.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Freespace — Flexbox Lab","url":"https://hammyasf.github.io/flexbox-lab.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A CSS flexbox layout engine written from scratch that runs beside your browser's own layout, showing the algorithm step by step with live numbers.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between flex-basis and width?","acceptedAnswer":{"@type":"Answer","text":"flex-basis is the size an item starts at before any free space is handed out or taken away, measured along the main axis. width is a normal CSS size. If flex-basis is anything other than auto it wins over width on the main axis. If flex-basis is auto, the item falls back to its width, and if that is auto too it falls back to the size of its content."}},{"@type":"Question","name":"Why does flex-grow: 2 not make an item twice as wide?","acceptedAnswer":{"@type":"Answer","text":"flex-grow does not divide the container, it divides the leftover free space. Every item starts at its flex base size, the leftover space is split in proportion to the grow factors, and each item keeps its base size plus its share. An item with grow 2 gets twice the extra space, not twice the width."}},{"@type":"Question","name":"Why does my flex item refuse to shrink below its content?","acceptedAnswer":{"@type":"Answer","text":"A flex item's min-width defaults to auto, not zero, which resolves to an automatic minimum size roughly the size of its content. Shrinking stops there and the item overflows instead. Setting min-width: 0 (or min-height: 0 in a column) is the usual fix."}},{"@type":"Question","name":"Is anything uploaded when I use this?","acceptedAnswer":{"@type":"Answer","text":"No. The layout engine, the comparison against your browser and the fuzz test all run locally in your browser tab. There is no server and nothing is sent anywhere."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);--warn:#ffb454;--bad:#ff6a6a;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1180px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a{color:var(--muted);}nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 10px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.2vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:720px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+
+  .app{margin:26px 0 10px;display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start;}
+  @media(max-width:960px){.app{grid-template-columns:1fr;}}
+  .panel{border:1px solid var(--line);border-radius:18px;background:rgba(var(--surfaceRGB),.55);}
+  .panel h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500;padding:14px 16px 0;}
+  .pad{padding:14px 16px 16px;}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;}
+  .row label{font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap;}
+  .row .v{font-family:var(--mono);font-size:11.5px;color:var(--accent);min-width:44px;text-align:right;}
+  select,input[type=number],input[type=text]{background:rgba(var(--surfaceRGB),.85);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:6px 8px;font-family:var(--mono);font-size:12px;max-width:100%;}
+  select{width:158px;}
+  input[type=range]{accent-color:var(--accent);width:130px;}
+  input[type=number]{width:66px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+  .chip{font-family:var(--mono);font-size:12px;padding:5px 11px;border-radius:8px;border:1px solid var(--line-2);color:var(--muted);cursor:pointer;background:transparent;transition:.15s;}
+  .chip.on{background:var(--accent);color:#07100e;border-color:var(--accent);font-weight:600;}
+  .chip.mini{padding:4px 8px;font-size:11px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line-2);font-weight:500;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .stagebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--line);}
+  .badge{font-family:var(--mono);font-size:11.5px;padding:5px 10px;border-radius:100px;border:1px solid rgba(var(--accentRGB),.35);color:var(--accent);}
+  .badge.bad{border-color:rgba(255,106,106,.5);color:var(--bad);}
+  .stagewrap{padding:16px;display:grid;gap:14px;}
+  .stage{position:relative;}
+  .stage .cap{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:7px;display:flex;gap:8px;align-items:center;}
+  .box{position:relative;border:1px dashed var(--line-2);border-radius:10px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.018) 0 8px,transparent 8px 16px);max-width:100%;}
+  .fitem{position:absolute;border-radius:7px;background:rgba(var(--accentRGB),.16);border:1px solid rgba(var(--accentRGB),.55);color:var(--ink);font-family:var(--mono);font-size:11.5px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;transition:background .15s,border-color .15s;}
+  .fitem.sel{background:rgba(var(--accentRGB),.34);border-color:var(--accent);box-shadow:0 0 0 2px rgba(var(--accentRGB),.3);}
+  .fitem.hl{background:var(--warn);color:#1a1000;border-color:var(--warn);}
+  .fitem .lb{font-weight:600;}
+  .fitem .sz{opacity:.65;font-size:10px;margin-left:6px;}
+  .bitem{border-radius:7px;background:rgba(20,195,201,.14);border:1px solid rgba(20,195,201,.5);color:var(--ink);font-family:var(--mono);font-size:11.5px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .ghostrect{position:absolute;border:1.5px dashed var(--accent);border-radius:7px;pointer-events:none;}
+  .ovbadge{position:absolute;right:6px;top:6px;font-family:var(--mono);font-size:10px;color:var(--faint);}
+  .trace{border-top:1px solid var(--line);}
+  .step{border-bottom:1px solid var(--line);padding:12px 16px;}
+  .step .st{font-family:var(--mono);font-size:11.5px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;}
+  .step .sd{font-size:13.5px;color:#cdd8d3;margin-top:5px;}
+  .step table{width:100%;border-collapse:collapse;margin-top:8px;font-family:var(--mono);font-size:11.5px;}
+  .step th{text-align:left;color:var(--faint);font-weight:500;padding:3px 8px 3px 0;border-bottom:1px solid var(--line);white-space:nowrap;}
+  .step td{padding:3px 8px 3px 0;color:var(--muted);border-bottom:1px solid rgba(237,242,239,.05);white-space:nowrap;}
+  .step td.k{color:var(--ink);}
+  .step td em{color:var(--warn);font-style:normal;}
+  .step .frozen{color:var(--faint);}
+  .scroll{overflow-x:auto;}
+  .cssout{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:pre;overflow-x:auto;padding:14px 16px;line-height:1.6;}
+  .cssout .p{color:var(--accent);}
+  .fuzz{padding:14px 16px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .fuzz b{color:var(--ink);font-weight:500;}
+  .bar{height:6px;border-radius:100px;background:rgba(237,242,239,.08);overflow:hidden;margin-top:8px;}
+  .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s;}
+  .note{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:10px;line-height:1.6;}
+  section.copy{margin:34px 0;max-width:760px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:26px;letter-spacing:-.02em;margin:26px 0 10px;}
+  section.copy p{color:#c3d0cb;margin-top:10px;font-size:16px;}
+  section.copy code{font-family:var(--mono);font-size:13.5px;color:var(--accent);background:rgba(var(--accentRGB),.08);padding:1px 5px;border-radius:5px;}
+  .faq{max-width:760px;margin:20px 0 30px;}
+  .faq details{border-top:1px solid var(--line);padding:14px 0;}
+  .faq summary{cursor:pointer;font-family:var(--display);font-weight:500;font-size:17px;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq summary:before{content:"+ ";color:var(--accent);}
+  .faq details[open] summary:before{content:"– ";}
+  .faq p{color:var(--muted);margin-top:8px;font-size:15px;}
+  .cta{border:1px solid rgba(var(--accentRGB),.28);background:rgba(var(--accentRGB),.05);border-radius:18px;padding:24px;max-width:760px;margin:10px 0 30px;}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:21px;}
+  .cta p{color:var(--muted);margin-top:8px;font-size:15px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">Lab</a><a href="blog.html">Writing</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Layout engine · Explorable</div>
+    <h1>Freespace</h1>
+    <p class="sub">A complete CSS flexbox layout engine, written from scratch in plain JavaScript, laying out the same boxes your browser does — side by side, with every step of the algorithm and its actual numbers on screen. Move a slider and watch where the free space really goes.</p>
+    <span class="priv">Runs entirely in your browser · nothing uploaded</span>
+  </header>
+
+  <div class="app">
+    <!-- ============ LEFT: controls ============ -->
+    <div>
+      <div class="panel">
+        <h3>Preset</h3>
+        <div class="pad" style="padding-top:10px">
+          <select id="preset" style="width:100%"></select>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:14px">
+        <h3>Container</h3>
+        <div class="pad" style="padding-top:8px">
+          <div class="row"><label>width</label><input type="range" id="cw" min="180" max="900" step="1"><span class="v" id="cwv"></span></div>
+          <div class="row"><label>height</label><input type="range" id="ch" min="90" max="420" step="1"><span class="v" id="chv"></span></div>
+          <div class="row"><label>flex-direction</label><select id="dir">
+            <option>row</option><option>row-reverse</option><option>column</option><option>column-reverse</option></select></div>
+          <div class="row"><label>flex-wrap</label><select id="wrap">
+            <option>nowrap</option><option>wrap</option><option>wrap-reverse</option></select></div>
+          <div class="row"><label>justify-content</label><select id="justify">
+            <option>flex-start</option><option>flex-end</option><option>center</option><option>space-between</option><option>space-around</option><option>space-evenly</option></select></div>
+          <div class="row"><label>align-items</label><select id="align">
+            <option>stretch</option><option>flex-start</option><option>center</option><option>flex-end</option></select></div>
+          <div class="row"><label>align-content</label><select id="aligncontent">
+            <option>stretch</option><option>flex-start</option><option>center</option><option>flex-end</option><option>space-between</option><option>space-around</option><option>space-evenly</option></select></div>
+          <div class="row"><label>column-gap</label><input type="range" id="cgap" min="0" max="48" step="1"><span class="v" id="cgapv"></span></div>
+          <div class="row"><label>row-gap</label><input type="range" id="rgap" min="0" max="48" step="1"><span class="v" id="rgapv"></span></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:14px">
+        <h3>Items</h3>
+        <div class="pad" style="padding-top:8px">
+          <div class="chips" id="itemchips"></div>
+          <div class="chips" style="margin-top:10px">
+            <button class="chip mini" id="additem">+ add item</button>
+            <button class="chip mini" id="delitem">− remove</button>
+          </div>
+          <div id="itemctl" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ RIGHT: stage ============ -->
+    <div>
+      <div class="panel">
+        <div class="stagebar">
+          <button class="chip on" id="modeSide" data-mode="side">Side by side</button>
+          <button class="chip" id="modeOver" data-mode="over">Overlay the difference</button>
+          <span style="flex:1"></span>
+          <span class="badge" id="matchbadge">checking…</span>
+        </div>
+        <div class="stagewrap" id="stagewrap">
+          <div class="stage" id="stageA">
+            <div class="cap"><span style="width:9px;height:9px;border-radius:2px;background:rgba(43,227,176,.6);display:inline-block"></span> My engine — 640 lines of JavaScript, no libraries</div>
+            <div class="box" id="boxA"></div>
+          </div>
+          <div class="stage" id="stageB">
+            <div class="cap"><span style="width:9px;height:9px;border-radius:2px;background:rgba(20,195,201,.6);display:inline-block"></span> Your browser — real <span style="color:var(--muted)">display:flex</span></div>
+            <div class="box" id="boxB"></div>
+          </div>
+        </div>
+        <div class="fuzz">
+          <button class="btn ghost" id="fuzzbtn">Fuzz 400 random layouts against your browser</button>
+          <div class="bar"><i id="fuzzbar"></i></div>
+          <div id="fuzzout" style="margin-top:8px">Every layout on this page is also laid out by your browser and compared, box by box. Run the fuzzer to check the engine on hundreds of random configurations at once.</div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:14px">
+        <h3>What the algorithm just did</h3>
+        <div class="trace" id="trace"></div>
+      </div>
+
+      <div class="panel" style="margin-top:14px">
+        <h3>The CSS</h3>
+        <div class="cssout" id="cssout"></div>
+        <div class="pad" style="padding-top:0"><button class="chip mini" id="copycss">Copy CSS</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AdSense slot (leave empty until approved)
+  <div class="adslot" data-slot="flexbox-lab-mid"></div> -->
+  <!-- Polar.sh / sponsor slot: <div id="sponsor"></div> -->
+
+  <section class="copy">
+    <h2>How this works</h2>
+    <p>Flexbox has a reputation for being unpredictable, and it isn't. It runs a fixed algorithm, written down in the CSS Flexible Box Layout spec, and the reason it feels arbitrary is that the algorithm is invisible: you change <code>flex-grow</code>, boxes move, and you are left guessing why.</p>
+    <p>So I implemented that algorithm. The panel on the left drives a flexbox layout engine I wrote from scratch in plain JavaScript, with no libraries: it works out each item's flex base size, breaks items into lines, runs the spec's loop for resolving flexible lengths (including freezing items that hit a min or max and redistributing what's left), sizes and stretches the lines on the cross axis, then applies <code>justify-content</code>, <code>align-content</code> and <code>align-self</code>. Every intermediate number it computes is printed under the stage as it happens.</p>
+    <p>The second box on the stage is your browser laying out the very same items with real <code>display:flex</code>. After every change, both results are measured and compared box by box, and the badge at the top shows the largest difference in pixels. If my engine were wrong, you would see it immediately, so the "how it works" story here is checkable rather than something you have to take my word for. The fuzz button pushes that further: it generates hundreds of random containers and items, lays each one out both ways, and reports how many matched.</p>
+
+    <h2>flex-grow does not divide the container</h2>
+    <p>This is the single most common misreading. <code>flex-grow: 2</code> on one item and <code>flex-grow: 1</code> on another does not produce a 2:1 split. Each item first gets its flex base size, then whatever space is <em>left over</em> is divided in the ratio 2:1 and added on top. If the two items start at 200px each in a 500px container, the leftover is 100px, so they end up at 266.7px and 233.3px, nowhere near 2:1. Load the "flex-grow shares the leftover" preset and drag the container width to watch the ratio drift.</p>
+
+    <h2>Why your item refuses to shrink</h2>
+    <p>The other classic: a flex item that overflows its container and ignores <code>flex-shrink</code>. Flex items get <code>min-width: auto</code> by default, and for a flex item that resolves to an automatic minimum size, roughly the size of its content, rather than to zero. Shrinking stops dead at that floor and the rest overflows. Setting <code>min-width: 0</code> (or <code>min-height: 0</code> in a column) releases it. The "min-width:auto overflow trap" preset shows this happening, and you can watch the trace freeze the items at their minimum.</p>
+
+    <h2>What this engine does not do</h2>
+    <p>It covers the parts of flexbox you use daily: both directions and their reverses, wrapping and wrap-reverse, gaps, grow, shrink, basis, min and max on both axes, order, margins, <code>justify-content</code>, <code>align-items</code>, <code>align-content</code> and <code>align-self</code>. It deliberately leaves out baseline alignment, auto margins, percentage lengths, aspect ratios and writing modes, and each item carries an explicit content size instead of real text, so intrinsic text measurement never enters into it. Those exclusions are why the comparison against your browser is a fair one rather than a rigged one.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>What is the difference between flex-basis and width?</summary><p>flex-basis is the size an item starts at along the main axis, before any free space is handed out or taken away. If it is anything other than <code>auto</code> it wins over width on the main axis. If it is <code>auto</code>, the item falls back to its width, and if that is auto too, to the size of its content.</p></details>
+    <details><summary>Why does flex-grow: 2 not make an item twice as wide?</summary><p>Because grow divides the leftover free space, not the container. Each item keeps its base size and gains a share of what is left, so the final ratio depends on where the items started.</p></details>
+    <details><summary>Why does my flex item refuse to shrink below its content?</summary><p>min-width defaults to auto on flex items, which resolves to an automatic minimum size based on the content rather than zero. Set <code>min-width: 0</code> in a row, or <code>min-height: 0</code> in a column.</p></details>
+    <details><summary>Is anything uploaded?</summary><p>No. The engine, the comparison and the fuzz test all run in your browser tab. There is no server and nothing is sent anywhere.</p></details>
+    <details><summary>Does it match Chrome, Firefox and Safari?</summary><p>It is checked live against whichever browser you are using right now, since the comparison box is that browser's own flex layout. The badge tells you the truth for your engine, not mine.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build something like this every day.</h3>
+    <p>Senior full-stack engineer, open to senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a>, read the <a href="blog.html">writing</a>, or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+<script>
+/*ENGINE-START*/
+/* ------------------------------------------------------------------
+   A CSS flexbox layout engine, written from scratch.
+   Follows CSS Flexible Box Layout Module Level 1, section 9
+   (the "flex layout algorithm"). No libraries.
+   Deliberately unsupported, and excluded from the UI so the
+   comparison stays honest: baseline alignment, auto margins,
+   percentage lengths, aspect ratios, writing modes, and
+   content-based sizing of real text (items here carry an
+   explicit content size instead).
+   ------------------------------------------------------------------ */
+function flexLayout(C, ITEMS){
+  var trace = [];
+  var isRow = C.direction === 'row' || C.direction === 'row-reverse';
+  var revMain = C.direction === 'row-reverse' || C.direction === 'column-reverse';
+  var revCross = C.wrap === 'wrap-reverse';
+  var gapMain = isRow ? C.columnGap : C.rowGap;
+  var gapCross = isRow ? C.rowGap : C.columnGap;
+
+  // container inner sizes on each axis. null = indefinite (auto).
+  var innerMain = isRow ? C.width : C.height;
+  var innerCross = isRow ? C.height : C.width;
+
+  function num(v){ return (v === 'auto' || v === 'none' || v === null || v === undefined) ? null : v; }
+
+  // ---- per item, pull out the main-axis and cross-axis properties
+  var its = ITEMS.map(function(s, i){
+    var mainProp  = num(isRow ? s.width  : s.height);
+    var crossProp = num(isRow ? s.height : s.width);
+    var minMain   = isRow ? s.minWidth  : s.minHeight;
+    var maxMain   = isRow ? s.maxWidth  : s.maxHeight;
+    var minCross  = isRow ? s.minHeight : s.minWidth;
+    var maxCross  = isRow ? s.maxHeight : s.maxWidth;
+    return {
+      src:s, idx:i, label:s.label, order:s.order|0,
+      mainProp:mainProp, crossProp:crossProp,
+      minMain:minMain, maxMain:num(maxMain), minCross:minCross, maxCross:num(maxCross),
+      contentMain: isRow ? s.contentW : s.contentH,
+      contentCross: isRow ? s.contentH : s.contentW,
+      mMainStart: isRow ? s.margin.l : s.margin.t,
+      mMainEnd:   isRow ? s.margin.r : s.margin.b,
+      mCrossStart:isRow ? s.margin.t : s.margin.l,
+      mCrossEnd:  isRow ? s.margin.b : s.margin.r,
+      grow: s.grow, shrink: s.shrink, basis: s.basis,
+      alignSelf: s.alignSelf === 'auto' ? C.alignItems : s.alignSelf
+    };
+  });
+  its.forEach(function(it){ it.mMain = it.mMainStart + it.mMainEnd; it.mCross = it.mCrossStart + it.mCrossEnd; });
+
+  // order property: stable sort by order for layout order
+  var ordered = its.slice().sort(function(a,b){ return (a.order - b.order) || (a.idx - b.idx); });
+
+  // ---- 9.2 step 3: flex base size and hypothetical main size
+  function autoMinMain(it){
+    // CSS Sizing: automatic minimum size = min(specified size suggestion, content size suggestion)
+    var v = it.mainProp !== null ? Math.min(it.mainProp, it.contentMain) : it.contentMain;
+    if (it.maxMain !== null) v = Math.min(v, it.maxMain);
+    return v;
+  }
+  function minMainPx(it){ return it.minMain === 'auto' ? autoMinMain(it) : it.minMain; }
+  function clampMain(it, v){
+    var lo = minMainPx(it), hi = it.maxMain;
+    if (hi !== null && v > hi) v = hi;
+    if (v < lo) v = lo;
+    return v;
+  }
+  ordered.forEach(function(it){
+    if (it.basis.type === 'px'){ it.base = it.basis.value; it.baseWhy = 'flex-basis: ' + it.basis.value + 'px'; }
+    else if (it.basis.type === 'content'){ it.base = it.contentMain; it.baseWhy = 'flex-basis: content → content ' + it.contentMain + 'px'; }
+    else if (it.mainProp !== null){ it.base = it.mainProp; it.baseWhy = 'basis auto → ' + (isRow?'width':'height') + ' ' + it.mainProp + 'px'; }
+    else { it.base = it.contentMain; it.baseWhy = 'basis auto, size auto → content ' + it.contentMain + 'px'; }
+    it.outerBase = it.base + it.mMain;
+    it.hyp = clampMain(it, it.base);
+    it.outerHyp = it.hyp + it.mMain;
+  });
+
+  trace.push({ t:'1 · Available space', d: 'The container’s inner ' + (isRow?'width':'height') + ' is the main axis. ' +
+    (innerMain === null ? 'It is indefinite here, so there is no free space to hand out.' : innerMain + 'px of main-axis space, minus ' + gapMain + 'px gaps between items.') });
+
+  trace.push({ t:'2 · Flex base size', d:'Every item is measured before any flexing happens, then clamped by its min and max to give a hypothetical main size.',
+    cols:['item','where the base size comes from','base','min','max','hypothetical'],
+    rows: ordered.map(function(it){ return { id:it.idx, c:[it.label, it.baseWhy, it.base.toFixed(0), minMainPx(it).toFixed(0), it.maxMain===null?'none':it.maxMain.toFixed(0),
+      it.hyp.toFixed(0) + (it.hyp !== it.base ? ' (clamped)' : '')] }; }) });
+
+  // ---- 9.3: collect items into lines
+  var lines = [];
+  if (C.wrap === 'nowrap' || innerMain === null){
+    lines = [ordered.slice()];
+  } else {
+    var cur = [], used = 0;
+    ordered.forEach(function(it){
+      var add = it.outerHyp + (cur.length ? gapMain : 0);
+      if (cur.length && used + add > innerMain + 0.0001){ lines.push(cur); cur = [it]; used = it.outerHyp; }
+      else { cur.push(it); used += add; }
+    });
+    if (cur.length) lines.push(cur);
+  }
+  trace.push({ t:'3 · Line breaking', d: C.wrap === 'nowrap'
+      ? 'flex-wrap: nowrap, so every item stays on one line even if that overflows the container.'
+      : 'Items are added to a line until the next one will not fit, then a new line starts. ' + lines.length + (lines.length===1?' line.':' lines.'),
+    cols:['line','items','sum of hypothetical sizes + gaps'],
+    rows: lines.map(function(ln,i){ var s = ln.reduce(function(a,x){return a+x.outerHyp;},0) + gapMain*(ln.length-1);
+      return { c:['line ' + (i+1), ln.map(function(x){return x.label;}).join(' '), s.toFixed(0) + 'px'] }; }) });
+
+  // ---- 9.7: resolving flexible lengths
+  var flexSteps = [];
+  lines.forEach(function(line, li){
+    var gapTotal = gapMain * (line.length - 1);
+    if (innerMain === null){ line.forEach(function(it){ it.target = it.hyp; }); return; }
+    var sumOuterBase = line.reduce(function(a,x){ return a + x.outerBase; }, 0);
+    var growing = (sumOuterBase + gapTotal) < innerMain;
+
+    line.forEach(function(it){
+      it.frozen = false;
+      var f = growing ? it.grow : it.shrink;
+      if (f === 0 || (growing && it.base > it.hyp) || (!growing && it.base < it.hyp)){ it.frozen = true; it.target = it.hyp; it.freezeWhy = f === 0 ? (growing?'flex-grow: 0':'flex-shrink: 0') : 'already clamped'; }
+      else it.target = it.base;
+    });
+
+    var initialFree = innerMain - gapTotal - line.reduce(function(a,x){ return a + (x.frozen ? x.target : x.base) + x.mMain; }, 0);
+    var passes = [], guard = 0;
+
+    while (guard++ < 60){
+      var un = line.filter(function(x){ return !x.frozen; });
+      if (!un.length) break;
+      var remaining = innerMain - gapTotal - line.reduce(function(a,x){ return a + (x.frozen ? x.target : x.base) + x.mMain; }, 0);
+      var sumF = un.reduce(function(a,x){ return a + (growing ? x.grow : x.shrink); }, 0);
+      // 9.7 step 4b: small flex factor sum
+      if (sumF < 1){
+        var scaled = initialFree * sumF;
+        if (growing ? (scaled < remaining) : (scaled > remaining)) remaining = scaled;
+      }
+      var pass = { free: remaining, items: [] };
+      if (remaining !== 0 && isFinite(remaining)){
+        if (growing){
+          un.forEach(function(x){ x.target = x.base + remaining * (x.grow / sumF); });
+        } else {
+          var sumScaled = un.reduce(function(a,x){ return a + x.base * x.shrink; }, 0);
+          un.forEach(function(x){ x.target = x.base - Math.abs(remaining) * ((x.base * x.shrink) / (sumScaled || 1)); });
+        }
+      } else un.forEach(function(x){ x.target = x.base; });
+
+      var totalViolation = 0;
+      un.forEach(function(x){
+        var unclamped = x.target;
+        var clamped = clampMain(x, unclamped);
+        x.violation = clamped - unclamped;
+        totalViolation += x.violation;
+        x.target = clamped;
+        pass.items.push({ id:x.idx, label:x.label, want:unclamped, got:clamped, v:x.violation });
+      });
+      if (Math.abs(totalViolation) < 1e-9){ un.forEach(function(x){ x.frozen = true; x.freezeWhy = 'settled'; }); pass.freeze = 'all remaining items'; }
+      else if (totalViolation > 0){ un.forEach(function(x){ if (x.violation > 0){ x.frozen = true; x.freezeWhy = 'hit its minimum'; } }); pass.freeze = 'items that hit a minimum'; }
+      else { un.forEach(function(x){ if (x.violation < 0){ x.frozen = true; x.freezeWhy = 'hit its maximum'; } }); pass.freeze = 'items that hit a maximum'; }
+      passes.push(pass);
+    }
+    flexSteps.push({ li:li, growing:growing, initialFree:initialFree, passes:passes, line:line });
+  });
+
+  if (innerMain !== null){
+    var fs = flexSteps[0];
+    var rows = [];
+    flexSteps.forEach(function(f){
+      f.passes.forEach(function(p, pi){
+        p.items.forEach(function(x){
+          rows.push({ id:x.id, c:[ (flexSteps.length>1?('L'+(f.li+1)+' '):'') + x.label, 'pass ' + (pi+1),
+            (f.growing ? 'grow' : 'shrink'), x.want.toFixed(1), x.got.toFixed(1),
+            Math.abs(x.v) < 1e-9 ? '—' : (x.v > 0 ? 'clamped up to min' : 'clamped down to max') ] });
+        });
+      });
+    });
+    trace.push({ t:'4 · Resolving flexible lengths', d: fs
+        ? (fs.growing
+            ? 'The items are smaller than the line, so there is ' + fs.initialFree.toFixed(0) + 'px of free space and flex-grow shares it out in proportion. Note that grow divides the leftover space, not the container.'
+            : 'The items do not fit by ' + Math.abs(fs.initialFree).toFixed(0) + 'px, so flex-shrink takes space back, weighted by each item’s base size × its shrink factor. An item that cannot shrink any further is frozen and the rest is redistributed.')
+        : '', cols:['item','pass','mode','wanted','used','clamp'], rows: rows });
+  }
+
+  // ---- 9.4 / 9.5: cross sizes
+  function minCrossPx(it){
+    // the automatic minimum size only applies in the main axis, so an auto
+    // minimum in the cross axis is simply zero
+    return it.minCross === 'auto' ? 0 : it.minCross;
+  }
+  function clampCross(it, v){
+    var lo = minCrossPx(it), hi = it.maxCross;
+    if (hi !== null && v > hi) v = hi;
+    if (v < lo) v = lo;
+    return v;
+  }
+  ordered.forEach(function(it){
+    it.hypCross = clampCross(it, it.crossProp !== null ? it.crossProp : it.contentCross);
+  });
+
+  var singleLine = lines.length === 1 && C.wrap === 'nowrap';
+  lines.forEach(function(line){
+    if (singleLine && innerCross !== null) line.cross = innerCross;
+    else line.cross = line.reduce(function(a,x){ return Math.max(a, x.hypCross + x.mCross); }, 0);
+  });
+
+  // align-content: stretch adds the leftover cross space to every line
+  var sumLineCross = lines.reduce(function(a,l){ return a + l.cross; }, 0) + gapCross * (lines.length - 1);
+  if (!singleLine && innerCross !== null && C.alignContent === 'stretch' && sumLineCross < innerCross){
+    var extra = (innerCross - sumLineCross) / lines.length;
+    lines.forEach(function(l){ l.cross += extra; });
+    sumLineCross = innerCross;
+  }
+
+  // stretch each item to its line, unless it has its own cross size
+  ordered.forEach(function(it){
+    var line = lines.filter(function(l){ return l.indexOf(it) >= 0; })[0];
+    if (it.alignSelf === 'stretch' && it.crossProp === null){
+      it.crossSize = clampCross(it, line.cross - it.mCross);
+      it.stretched = true;
+    } else { it.crossSize = it.hypCross; it.stretched = false; }
+  });
+
+  trace.push({ t:'5 · Cross sizes', d: singleLine && innerCross !== null
+      ? 'One line, and the container has a definite cross size, so the line is as tall as the container. align-items decides what each item does inside it.'
+      : 'Each line is as thick as its tallest item, and the lines are packed by align-content.',
+    cols:['item','cross size','how'],
+    rows: ordered.map(function(it){ return { id:it.idx, c:[it.label, it.crossSize.toFixed(0) + 'px',
+      it.stretched ? 'stretched to the line (align-' + (it.src.alignSelf==='auto'?'items':'self') + ': stretch)' :
+      (it.crossProp !== null ? 'its own ' + (isRow?'height':'width') : 'content size, align: ' + it.alignSelf)] }; }) });
+
+  // ---- 9.5: main-axis alignment
+  var out = [];
+  var containerMain = innerMain !== null ? innerMain
+    : Math.max.apply(null, lines.map(function(l){ return l.reduce(function(a,x){ return a + x.target + x.mMain; }, 0) + gapMain*(l.length-1); }));
+  var containerCross = innerCross !== null ? innerCross : sumLineCross;
+
+  // cross offsets per line (align-content)
+  var lineOffsets = [], freeCross = containerCross - sumLineCross;
+  (function(){
+    var n = lines.length, lead = 0, between = gapCross;
+    if (n > 1 || !singleLine){
+      switch (C.alignContent){
+        case 'flex-end': lead = freeCross; break;
+        case 'center': lead = freeCross / 2; break;
+        case 'space-between': between = gapCross + (n > 1 ? freeCross/(n-1) : 0); break;
+        case 'space-around': lead = freeCross/(2*n); between = gapCross + freeCross/n; break;
+        case 'space-evenly': lead = freeCross/(n+1); between = gapCross + freeCross/(n+1); break;
+      }
+      if (singleLine) { lead = 0; }
+    }
+    var y = lead;
+    lines.forEach(function(l, i){ lineOffsets[i] = y; y += l.cross + between; });
+  })();
+
+  var justifyInfo = null;
+  lines.forEach(function(line, li){
+    var used = line.reduce(function(a,x){ return a + x.target + x.mMain; }, 0) + gapMain * (line.length - 1);
+    var free = containerMain - used;
+    var lead = 0, between = gapMain, n = line.length;
+    switch (C.justify){
+      case 'flex-end': lead = free; break;
+      case 'center': lead = free / 2; break;
+      case 'space-between': if (n > 1){ between = gapMain + free/(n-1); } else if (free < 0) { lead = 0; } break;
+      case 'space-around': if (free > 0 || n){ lead = free/(2*n); between = gapMain + free/n; } break;
+      case 'space-evenly': lead = free/(n+1); between = gapMain + free/(n+1); break;
+    }
+    if (free < 0 && (C.justify === 'space-around' || C.justify === 'space-evenly' || C.justify === 'space-between')){
+      // overflow: the spec falls back to centering (safe start for space-between)
+      if (C.justify === 'space-between'){ lead = 0; between = gapMain; }
+      else { lead = free/2; between = gapMain; }
+    }
+    if (li === 0) justifyInfo = { free:free, lead:lead, between:between, used:used };
+
+    var pos = lead;
+    line.forEach(function(it){
+      var mainStart = pos + it.mMainStart;
+      var mainSize = it.target;
+      // cross position inside the line
+      var lineY = lineOffsets[li], lineH = line.cross, cpos;
+      switch (it.alignSelf){
+        case 'flex-end': cpos = lineY + lineH - it.crossSize - it.mCrossEnd; break;
+        case 'center': cpos = lineY + (lineH - (it.crossSize + it.mCross))/2 + it.mCrossStart; break;
+        default: cpos = lineY + it.mCrossStart; break; // flex-start and stretch
+      }
+      var m = revMain ? (containerMain - mainStart - mainSize) : mainStart;
+      var c = revCross ? (containerCross - cpos - it.crossSize) : cpos;
+      out[it.idx] = isRow
+        ? { x:m, y:c, w:mainSize, h:it.crossSize }
+        : { x:c, y:m, w:it.crossSize, h:mainSize };
+      pos += it.mMain + mainSize + between;
+    });
+  });
+
+  if (justifyInfo){
+    trace.push({ t:'6 · justify-content', d:'After flexing, the first line uses ' + justifyInfo.used.toFixed(0) + 'px of ' + containerMain.toFixed(0) + 'px, leaving ' + justifyInfo.free.toFixed(0) + 'px. ' +
+      'justify-content: ' + C.justify + ' puts ' + justifyInfo.lead.toFixed(1) + 'px before the first item and ' + justifyInfo.between.toFixed(1) + 'px between items (gap included).' +
+      (justifyInfo.free < -0.5 ? ' The line overflows, so there is nothing left to distribute.' : '') });
+  }
+  trace.push({ t:'7 · Final boxes', d:'Positions are relative to the container’s content box' + (revMain ? ', flipped because the direction is reversed' : '') + (revCross ? ', with the lines stacked from the far side because of wrap-reverse' : '') + '.',
+    cols:['item','x','y','width','height'],
+    rows: ordered.map(function(it){ var r = out[it.idx]; return { id:it.idx, c:[it.label, r.x.toFixed(1), r.y.toFixed(1), r.w.toFixed(1), r.h.toFixed(1)] }; }) });
+
+  return { rects: out, trace: trace, containerCross: containerCross, containerMain: containerMain, lines: lines.length };
+}
+/*ENGINE-END*/
+
+/* ================= state ================= */
+var LABELS = ['A','B','C','D','E','F','G','H'];
+function mkItem(label, o){
+  var it = { label:label, grow:0, shrink:1, basis:{type:'auto',value:100}, width:'auto', height:'auto',
+    minWidth:'auto', maxWidth:'none', minHeight:'auto', maxHeight:'none',
+    contentW:88, contentH:52, alignSelf:'auto', order:0, margin:{t:0,r:0,b:0,l:0} };
+  for (var k in (o||{})) it[k] = o[k];
+  return it;
+}
+var S, sel = 0, mode = 'side';
+
+var PRESETS = [
+  { n:'Start here — three plain items', s:function(){ return { width:520, height:190, direction:'row', wrap:'nowrap', justify:'flex-start', alignItems:'stretch', alignContent:'stretch', columnGap:10, rowGap:10,
+      items:[mkItem('A'), mkItem('B'), mkItem('C')] }; } },
+  { n:'flex-grow shares the leftover, not the box', s:function(){ return { width:560, height:170, direction:'row', wrap:'nowrap', justify:'flex-start', alignItems:'stretch', alignContent:'stretch', columnGap:12, rowGap:10,
+      items:[mkItem('A',{grow:1}), mkItem('B',{grow:2}), mkItem('C',{grow:0})] }; } },
+  { n:'flex-basis overrides width', s:function(){ return { width:520, height:170, direction:'row', wrap:'nowrap', justify:'flex-start', alignItems:'stretch', alignContent:'stretch', columnGap:12, rowGap:10,
+      items:[mkItem('A',{width:300, basis:{type:'px',value:100}}), mkItem('B',{width:120}), mkItem('C',{grow:1})] }; } },
+  { n:'The min-width:auto overflow trap', s:function(){ return { width:340, height:170, direction:'row', wrap:'nowrap', justify:'flex-start', alignItems:'stretch', alignContent:'stretch', columnGap:10, rowGap:10,
+      items:[mkItem('A',{contentW:200, shrink:1}), mkItem('B',{contentW:200, shrink:1})] }; } },
+  { n:'Sidebar + fluid content', s:function(){ return { width:620, height:210, direction:'row', wrap:'nowrap', justify:'flex-start', alignItems:'stretch', alignContent:'stretch', columnGap:14, rowGap:10,
+      items:[mkItem('A',{basis:{type:'px',value:200}, grow:0, shrink:0, contentW:120}), mkItem('B',{grow:1, minWidth:0, contentW:300})] }; } },
+  { n:'max-width freezes an item mid-flex', s:function(){ return { width:640, height:170, direction:'row', wrap:'nowrap', justify:'flex-start', alignItems:'stretch', alignContent:'stretch', columnGap:12, rowGap:10,
+      items:[mkItem('A',{grow:1, maxWidth:150}), mkItem('B',{grow:1}), mkItem('C',{grow:1})] }; } },
+  { n:'Shrinking is weighted by size', s:function(){ return { width:360, height:170, direction:'row', wrap:'nowrap', justify:'flex-start', alignItems:'stretch', alignContent:'stretch', columnGap:10, rowGap:10,
+      items:[mkItem('A',{basis:{type:'px',value:400}, minWidth:0, contentW:60}), mkItem('B',{basis:{type:'px',value:100}, minWidth:0, contentW:60})] }; } },
+  { n:'A wrapping gallery', s:function(){ return { width:600, height:330, direction:'row', wrap:'wrap', justify:'flex-start', alignItems:'stretch', alignContent:'flex-start', columnGap:12, rowGap:12,
+      items:[mkItem('A',{basis:{type:'px',value:160},grow:1,height:80}), mkItem('B',{basis:{type:'px',value:160},grow:1,height:80}), mkItem('C',{basis:{type:'px',value:160},grow:1,height:80}),
+             mkItem('D',{basis:{type:'px',value:160},grow:1,height:80}), mkItem('E',{basis:{type:'px',value:160},grow:1,height:80})] }; } },
+  { n:'Perfectly centred, at last', s:function(){ return { width:480, height:230, direction:'row', wrap:'nowrap', justify:'center', alignItems:'center', alignContent:'stretch', columnGap:10, rowGap:10,
+      items:[mkItem('A',{contentW:180, contentH:90})] }; } },
+  { n:'A column that fills its height', s:function(){ return { width:330, height:330, direction:'column', wrap:'nowrap', justify:'flex-start', alignItems:'stretch', alignContent:'stretch', columnGap:10, rowGap:10,
+      items:[mkItem('A',{contentH:40, grow:0}), mkItem('B',{grow:1, minHeight:0, contentH:60}), mkItem('C',{contentH:40, grow:0})] }; } }
+];
+
+/* ================= dom refs ================= */
+var $ = function(id){ return document.getElementById(id); };
+var boxA = $('boxA'), boxB = $('boxB'), traceEl = $('trace'), cssEl = $('cssout');
+
+/* ================= building the browser's own layout ================= */
+function itemStyle(it){
+  var s = 'box-sizing:border-box;flex-grow:' + it.grow + ';flex-shrink:' + it.shrink + ';';
+  s += 'flex-basis:' + (it.basis.type === 'px' ? it.basis.value + 'px' : 'auto') + ';';
+  s += 'width:' + (it.width === 'auto' ? 'auto' : it.width + 'px') + ';';
+  s += 'height:' + (it.height === 'auto' ? 'auto' : it.height + 'px') + ';';
+  s += 'min-width:' + (it.minWidth === 'auto' ? 'auto' : it.minWidth + 'px') + ';';
+  s += 'min-height:' + (it.minHeight === 'auto' ? 'auto' : it.minHeight + 'px') + ';';
+  s += 'max-width:' + (it.maxWidth === 'none' ? 'none' : it.maxWidth + 'px') + ';';
+  s += 'max-height:' + (it.maxHeight === 'none' ? 'none' : it.maxHeight + 'px') + ';';
+  s += 'align-self:' + it.alignSelf + ';order:' + it.order + ';';
+  s += 'margin:' + it.margin.t + 'px ' + it.margin.r + 'px ' + it.margin.b + 'px ' + it.margin.l + 'px;';
+  return s;
+}
+function containerStyle(st){
+  return 'display:flex;box-sizing:border-box;width:' + st.width + 'px;height:' + st.height + 'px;' +
+    'flex-direction:' + st.direction + ';flex-wrap:' + st.wrap + ';justify-content:' + st.justify + ';' +
+    'align-items:' + st.alignItems + ';align-content:' + st.alignContent + ';' +
+    'column-gap:' + st.columnGap + 'px;row-gap:' + st.rowGap + 'px;';
+}
+function buildBrowser(host, st, cls){
+  host.setAttribute('style', containerStyle(st));
+  host.innerHTML = st.items.map(function(it, i){
+    return '<div class="' + (cls||'bitem') + '" data-i="' + i + '" style="' + itemStyle(it) + '">' +
+      '<div style="width:' + it.contentW + 'px;height:' + it.contentH + 'px;display:flex;align-items:center;justify-content:center">' +
+      '<span class="lb">' + it.label + '</span></div></div>';
+  }).join('');
+}
+function measure(host){
+  var hb = host.getBoundingClientRect();
+  return [].map.call(host.children, function(el){
+    var r = el.getBoundingClientRect();
+    return { x: r.left - hb.left, y: r.top - hb.top, w: r.width, h: r.height, i: +el.getAttribute('data-i') };
+  }).sort(function(a,b){ return a.i - b.i; });
+}
+function compare(engine, browser){
+  var worst = 0, which = -1;
+  browser.forEach(function(b){
+    var e = engine[b.i]; if (!e) return;
+    ['x','y','w','h'].forEach(function(k){
+      var d = Math.abs(e[k === 'w' ? 'w' : k === 'h' ? 'h' : k] - b[k]);
+      if (d > worst){ worst = d; which = b.i; }
+    });
+  });
+  return { worst: worst, which: which };
+}
+
+/* ================= render ================= */
+var offscreen = document.createElement('div');
+offscreen.style.cssText = 'position:absolute;left:-99999px;top:0;visibility:hidden;';
+document.body.appendChild(offscreen);
+var probe = document.createElement('div');
+offscreen.appendChild(probe);
+
+function render(){
+  var res = flexLayout(S, S.items);
+
+  // my engine's boxes
+  boxA.setAttribute('style', 'width:' + S.width + 'px;height:' + S.height + 'px;');
+  boxA.innerHTML = res.rects.map(function(r, i){
+    var it = S.items[i];
+    return '<div class="fitem' + (i === sel ? ' sel' : '') + '" data-i="' + i + '" style="left:' + r.x + 'px;top:' + r.y + 'px;width:' + r.w + 'px;height:' + r.h + 'px">' +
+      '<span class="lb">' + it.label + '</span><span class="sz">' + Math.round(r.w) + '×' + Math.round(r.h) + '</span></div>';
+  }).join('');
+
+  // the browser's own layout
+  buildBrowser(boxB, S);
+  var bm = measure(boxB);
+  var cmp = compare(res.rects, bm);
+
+  var badge = $('matchbadge');
+  if (cmp.worst < 0.5){ badge.className = 'badge'; badge.textContent = 'identical to your browser · max Δ ' + cmp.worst.toFixed(2) + 'px'; }
+  else { badge.className = 'badge bad'; badge.textContent = 'mismatch on ' + (S.items[cmp.which] ? S.items[cmp.which].label : '?') + ' · Δ ' + cmp.worst.toFixed(2) + 'px'; }
+
+  // overlay mode: draw the engine's rects on top of the browser's boxes
+  var old = boxB.parentNode.querySelectorAll('.ghostrect');
+  [].forEach.call(old, function(n){ n.remove(); });
+  $('stageA').style.display = mode === 'over' ? 'none' : '';
+  if (mode === 'over'){
+    res.rects.forEach(function(r){
+      var g = document.createElement('div');
+      g.className = 'ghostrect';
+      g.style.cssText = 'left:' + r.x + 'px;top:' + r.y + 'px;width:' + r.w + 'px;height:' + r.h + 'px;';
+      boxB.appendChild(g);
+    });
+    boxB.style.position = 'relative';
+  }
+
+  drawTrace(res.trace);
+  drawCss();
+  drawItemChips();
+  drawItemControls();
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function drawTrace(trace){
+  traceEl.innerHTML = trace.map(function(st){
+    var h = '<div class="step"><div class="st">' + esc(st.t) + '</div>';
+    if (st.d) h += '<div class="sd">' + st.d + '</div>';
+    if (st.rows && st.rows.length){
+      h += '<div class="scroll"><table><tr>' + st.cols.map(function(c){ return '<th>' + esc(c) + '</th>'; }).join('') + '</tr>';
+      h += st.rows.map(function(r){
+        return '<tr data-i="' + (r.id === undefined ? '' : r.id) + '">' + r.c.map(function(c, i){
+          return '<td class="' + (i === 0 ? 'k' : '') + '">' + esc(c) + '</td>'; }).join('') + '</tr>';
+      }).join('');
+      h += '</table></div>';
+    }
+    return h + '</div>';
+  }).join('');
+}
+function drawCss(){
+  var l = [];
+  l.push('.container {');
+  l.push('  display: flex;');
+  l.push('  width: ' + S.width + 'px;  height: ' + S.height + 'px;');
+  if (S.direction !== 'row') l.push('  flex-direction: ' + S.direction + ';');
+  if (S.wrap !== 'nowrap') l.push('  flex-wrap: ' + S.wrap + ';');
+  if (S.justify !== 'flex-start') l.push('  justify-content: ' + S.justify + ';');
+  if (S.alignItems !== 'stretch') l.push('  align-items: ' + S.alignItems + ';');
+  if (S.alignContent !== 'stretch') l.push('  align-content: ' + S.alignContent + ';');
+  if (S.columnGap || S.rowGap) l.push('  gap: ' + S.rowGap + 'px ' + S.columnGap + 'px;');
+  l.push('}');
+  S.items.forEach(function(it){
+    var b = [];
+    b.push('flex: ' + it.grow + ' ' + it.shrink + ' ' + (it.basis.type === 'px' ? it.basis.value + 'px' : 'auto') + ';');
+    if (it.width !== 'auto') b.push('width: ' + it.width + 'px;');
+    if (it.height !== 'auto') b.push('height: ' + it.height + 'px;');
+    if (it.minWidth !== 'auto') b.push('min-width: ' + it.minWidth + 'px;');
+    if (it.minHeight !== 'auto') b.push('min-height: ' + it.minHeight + 'px;');
+    if (it.maxWidth !== 'none') b.push('max-width: ' + it.maxWidth + 'px;');
+    if (it.maxHeight !== 'none') b.push('max-height: ' + it.maxHeight + 'px;');
+    if (it.alignSelf !== 'auto') b.push('align-self: ' + it.alignSelf + ';');
+    if (it.order) b.push('order: ' + it.order + ';');
+    var m = it.margin;
+    if (m.t || m.r || m.b || m.l) b.push('margin: ' + m.t + 'px ' + m.r + 'px ' + m.b + 'px ' + m.l + 'px;');
+    l.push('');
+    l.push('.item-' + it.label.toLowerCase() + ' { ' + b.join(' ') + ' }');
+  });
+  cssEl.textContent = l.join('\n');
+}
+
+/* ================= item controls ================= */
+function drawItemChips(){
+  $('itemchips').innerHTML = S.items.map(function(it, i){
+    return '<button class="chip' + (i === sel ? ' on' : '') + '" data-sel="' + i + '">' + it.label + '</button>';
+  }).join('');
+}
+function opt(list, cur){ return list.map(function(v){ return '<option' + (v === cur ? ' selected' : '') + '>' + v + '</option>'; }).join(''); }
+function pairRow(label, prop, autoWord, it){
+  var isAuto = it[prop] === autoWord;
+  return '<div class="row"><label>' + label + '</label><div style="display:flex;gap:6px">' +
+    '<select data-mode="' + prop + '" style="width:64px">' + opt([autoWord, 'px'], isAuto ? autoWord : 'px') + '</select>' +
+    '<input type="number" data-val="' + prop + '" value="' + (isAuto ? '' : it[prop]) + '" ' + (isAuto ? 'disabled' : '') + ' step="1"></div></div>';
+}
+var ctlFor = -1;
+function drawItemControls(force){
+  if (!force && ctlFor === sel) return;
+  ctlFor = sel;
+  var it = S.items[sel];
+  if (!it){ $('itemctl').innerHTML = ''; return; }
+  var h = '';
+  h += '<div class="row"><label>flex-grow</label><input type="number" data-num="grow" min="0" step="1" value="' + it.grow + '"></div>';
+  h += '<div class="row"><label>flex-shrink</label><input type="number" data-num="shrink" min="0" step="1" value="' + it.shrink + '"></div>';
+  h += '<div class="row"><label>flex-basis</label><div style="display:flex;gap:6px">' +
+       '<select data-mode="basis" style="width:64px">' + opt(['auto','px'], it.basis.type === 'px' ? 'px' : 'auto') + '</select>' +
+       '<input type="number" data-val="basis" value="' + (it.basis.type === 'px' ? it.basis.value : '') + '" ' + (it.basis.type === 'px' ? '' : 'disabled') + '></div></div>';
+  h += pairRow('width', 'width', 'auto', it);
+  h += pairRow('height', 'height', 'auto', it);
+  h += pairRow('min-width', 'minWidth', 'auto', it);
+  h += pairRow('max-width', 'maxWidth', 'none', it);
+  h += pairRow('min-height', 'minHeight', 'auto', it);
+  h += pairRow('max-height', 'maxHeight', 'none', it);
+  h += '<div class="row"><label>align-self</label><select data-str="alignSelf">' + opt(['auto','stretch','flex-start','center','flex-end'], it.alignSelf) + '</select></div>';
+  h += '<div class="row"><label>order</label><input type="number" data-num="order" step="1" value="' + it.order + '"></div>';
+  h += '<div class="row"><label>margin</label><input type="number" data-num="marginAll" min="0" step="1" value="' + it.margin.t + '"></div>';
+  h += '<div class="note">Content inside the item. This is what “auto” and the automatic minimum size resolve to.</div>';
+  h += '<div class="row"><label>content w</label><input type="range" data-num="contentW" min="10" max="260" value="' + it.contentW + '"><span class="v">' + it.contentW + '</span></div>';
+  h += '<div class="row"><label>content h</label><input type="range" data-num="contentH" min="10" max="200" value="' + it.contentH + '"><span class="v">' + it.contentH + '</span></div>';
+  $('itemctl').innerHTML = h;
+}
+
+$('itemctl').addEventListener('input', function(e){
+  var t = e.target, it = S.items[sel];
+  if (t.dataset.num){
+    var v = parseFloat(t.value); if (isNaN(v)) return;
+    if (t.dataset.num === 'marginAll') it.margin = { t:v, r:v, b:v, l:v };
+    else it[t.dataset.num] = v;
+    if (t.type === 'range' && t.nextElementSibling) t.nextElementSibling.textContent = v;
+  } else if (t.dataset.str){ it[t.dataset.str] = t.value; }
+  else if (t.dataset.val){
+    var p = t.dataset.val, n = parseFloat(t.value); if (isNaN(n)) return;
+    if (p === 'basis') it.basis = { type:'px', value:n }; else it[p] = n;
+  } else if (t.dataset.mode){
+    var p2 = t.dataset.mode, box = t.parentNode.querySelector('input');
+    if (t.value === 'px'){
+      box.disabled = false;
+      var d = p2 === 'basis' ? 100 : (p2.indexOf('max') === 0 ? 240 : (p2 === 'width' || p2 === 'minWidth' ? 120 : 60));
+      if (!box.value) box.value = d;
+      if (p2 === 'basis') it.basis = { type:'px', value:+box.value }; else it[p2] = +box.value;
+    } else {
+      box.disabled = true; box.value = '';
+      if (p2 === 'basis') it.basis = { type:'auto', value:100 }; else it[p2] = t.value;
+    }
+  } else return;
+  render(true);
+});
+$('itemctl').addEventListener('change', function(e){ if (e.target.dataset.mode || e.target.dataset.str) render(true); });
+
+$('itemchips').addEventListener('click', function(e){
+  var b = e.target.closest('[data-sel]'); if (!b) return;
+  sel = +b.dataset.sel; render();
+});
+boxA.addEventListener('click', function(e){
+  var b = e.target.closest('.fitem'); if (!b) return;
+  sel = +b.dataset.i; render();
+});
+$('additem').addEventListener('click', function(){
+  if (S.items.length >= 8) return;
+  S.items.push(mkItem(LABELS[S.items.length])); sel = S.items.length - 1; ctlFor = -1; render();
+});
+$('delitem').addEventListener('click', function(){
+  if (S.items.length <= 1) return;
+  S.items.splice(sel, 1);
+  S.items.forEach(function(it, i){ it.label = LABELS[i]; });
+  sel = Math.max(0, sel - 1); ctlFor = -1; render();
+});
+
+/* ================= container controls ================= */
+function bindRange(id, prop, valId){
+  var el = $(id);
+  el.addEventListener('input', function(){ S[prop] = +el.value; if (valId) $(valId).textContent = el.value + 'px'; render(true); });
+}
+bindRange('cw', 'width', 'cwv'); bindRange('ch', 'height', 'chv');
+bindRange('cgap', 'columnGap', 'cgapv'); bindRange('rgap', 'rowGap', 'rgapv');
+[['dir','direction'],['wrap','wrap'],['justify','justify'],['align','alignItems'],['aligncontent','alignContent']].forEach(function(p){
+  $(p[0]).addEventListener('change', function(){ S[p[1]] = $(p[0]).value; render(true); });
+});
+function syncControls(){
+  $('cw').value = S.width; $('cwv').textContent = S.width + 'px';
+  $('ch').value = S.height; $('chv').textContent = S.height + 'px';
+  $('cgap').value = S.columnGap; $('cgapv').textContent = S.columnGap + 'px';
+  $('rgap').value = S.rowGap; $('rgapv').textContent = S.rowGap + 'px';
+  $('dir').value = S.direction; $('wrap').value = S.wrap; $('justify').value = S.justify;
+  $('align').value = S.alignItems; $('aligncontent').value = S.alignContent;
+}
+
+/* ================= presets & modes ================= */
+$('preset').innerHTML = PRESETS.map(function(p, i){ return '<option value="' + i + '">' + p.n + '</option>'; }).join('');
+$('preset').addEventListener('change', function(){ loadPreset(+$('preset').value); });
+function loadPreset(i){ S = PRESETS[i].s(); sel = 0; ctlFor = -1; syncControls(); render(); }
+
+['modeSide','modeOver'].forEach(function(id){
+  $(id).addEventListener('click', function(){
+    mode = $(id).dataset.mode;
+    $('modeSide').classList.toggle('on', mode === 'side');
+    $('modeOver').classList.toggle('on', mode === 'over');
+    render(true);
+  });
+});
+$('copycss').addEventListener('click', function(){
+  navigator.clipboard.writeText(cssEl.textContent).then(function(){
+    $('copycss').textContent = 'Copied'; setTimeout(function(){ $('copycss').textContent = 'Copy CSS'; }, 1200);
+  }).catch(function(){});
+});
+
+/* ================= the fuzzer ================= */
+function pick(a){ return a[(Math.random() * a.length) | 0]; }
+function ri(a, b){ return a + ((Math.random() * (b - a + 1)) | 0); }
+function randomCase(){
+  var n = ri(1, 5), items = [];
+  for (var i = 0; i < n; i++){
+    var basisPx = Math.random() < 0.45;
+    items.push(mkItem(LABELS[i], {
+      grow: pick([0,0,1,1,2,3]), shrink: pick([0,1,1,1,2,3]),
+      basis: basisPx ? { type:'px', value: ri(20, 240) } : { type:'auto', value:100 },
+      width: Math.random() < 0.3 ? ri(30, 220) : 'auto',
+      height: Math.random() < 0.3 ? ri(20, 140) : 'auto',
+      minWidth: Math.random() < 0.3 ? (Math.random() < 0.5 ? 0 : ri(20, 120)) : 'auto',
+      minHeight: Math.random() < 0.2 ? ri(10, 90) : 'auto',
+      maxWidth: Math.random() < 0.3 ? ri(40, 260) : 'none',
+      maxHeight: Math.random() < 0.2 ? ri(30, 160) : 'none',
+      contentW: ri(20, 200), contentH: ri(16, 110),
+      alignSelf: pick(['auto','auto','stretch','flex-start','center','flex-end']),
+      order: pick([0,0,0,-1,1,2]),
+      margin: (function(){ var m = pick([0,0,0,4,8,12]); return { t:m, r:m, b:m, l:m }; })()
+    }));
+  }
+  return {
+    width: ri(180, 760), height: ri(90, 340),
+    direction: pick(['row','row','row-reverse','column','column-reverse']),
+    wrap: pick(['nowrap','nowrap','wrap','wrap-reverse']),
+    justify: pick(['flex-start','flex-end','center','space-between','space-around','space-evenly']),
+    alignItems: pick(['stretch','flex-start','center','flex-end']),
+    alignContent: pick(['stretch','flex-start','center','flex-end','space-between','space-around','space-evenly']),
+    columnGap: pick([0,0,6,12,20]), rowGap: pick([0,0,6,12,20]),
+    items: items
+  };
+}
+var fuzzing = false, worstCase = null;
+$('fuzzbtn').addEventListener('click', function(){
+  if (fuzzing) return;
+  fuzzing = true; worstCase = null;
+  var total = 400, done = 0, pass = 0, worst = 0, fails = [];
+  $('fuzzbtn').disabled = true;
+  function chunk(){
+    var t0 = performance.now();
+    while (done < total && performance.now() - t0 < 12){
+      var cfg = randomCase();
+      var res = flexLayout(cfg, cfg.items);
+      buildBrowser(probe, cfg);
+      var cmp = compare(res.rects, measure(probe));
+      if (cmp.worst < 0.5) pass++; else { fails.push(cfg); if (cmp.worst > worst){ worst = cmp.worst; worstCase = cfg; } }
+      if (cmp.worst > worst && cmp.worst >= 0.5) worst = cmp.worst;
+      else if (cmp.worst > worst) worst = cmp.worst;
+      done++;
+    }
+    $('fuzzbar').style.width = (done / total * 100) + '%';
+    if (done < total){ requestAnimationFrame(chunk); return; }
+    fuzzing = false; $('fuzzbtn').disabled = false;
+    var msg = '<b>' + pass + ' of ' + total + '</b> random layouts matched your browser exactly (within half a pixel). Worst difference across the whole run: <b>' + worst.toFixed(2) + 'px</b>.';
+    if (fails.length) msg += ' <button class="chip mini" id="loadfail">Load the worst mismatch</button>';
+    $('fuzzout').innerHTML = msg;
+    if (fails.length){
+      $('loadfail').addEventListener('click', function(){ S = worstCase; sel = 0; ctlFor = -1; syncControls(); render(); window.scrollTo({ top: 0, behavior:'smooth' }); });
+    }
+  }
+  requestAnimationFrame(chunk);
+});
+
+/* headless self-check hook, used to verify the engine outside the UI */
+window.__flexSelfTest = function(n){
+  var pass = 0, worst = 0, fails = [];
+  for (var i = 0; i < (n || 400); i++){
+    var cfg = randomCase();
+    var res = flexLayout(cfg, cfg.items);
+    buildBrowser(probe, cfg);
+    var cmp = compare(res.rects, measure(probe));
+    if (cmp.worst < 0.5) pass++; else { if (fails.length < 5) fails.push({ cfg: cfg, d: cmp.worst, which: cmp.which }); }
+    if (cmp.worst > worst) worst = cmp.worst;
+  }
+  return { pass: pass, of: (n || 400), worst: worst, fails: fails };
+};
+
+/* ================= boot ================= */
+(function(){
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+loadPreset(0);
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>
