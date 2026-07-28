@@ -499,7 +499,8 @@ function flexLayout(C, ITEMS){
     // when the lines overflow, space-* has nothing to distribute and the
     // browser packs the lines from the start instead
     var spacedAC = C.alignContent.indexOf('space-') === 0;
-    if (spacedAC && freeCross < 0 && revCross) lead = freeCross; // overflow packs from the physical top either way
+    // same fallback as justify-content when the lines overflow
+    if (spacedAC && freeCross < 0 && revCross && C.alignContent !== 'space-between') lead = freeCross;
     if ((n > 1 || !singleLine) && !(spacedAC && freeCross < 0)){
       switch (C.alignContent){
         case 'flex-end': lead = freeCross; break;
@@ -527,9 +528,11 @@ function flexLayout(C, ITEMS){
       case 'space-evenly': lead = free/(n+1); between = gapMain + free/(n+1); break;
     }
     if (free < 0 && C.justify.indexOf('space-') === 0){
-      // an overflowing line has no free space to share, so every space-*
-      // value packs from the physical start instead
-      lead = revMain ? free : 0; between = gapMain;
+      // an overflowing line has no free space to share, so space-* falls back:
+      // space-between packs from the line's own start, while space-around and
+      // space-evenly pack from the physical start of the axis
+      lead = (C.justify !== 'space-between' && revMain) ? free : 0;
+      between = gapMain;
     }
     if (li === 0) justifyInfo = { free:free, lead:lead, between:between, used:used };
 
