@@ -70,7 +70,9 @@
   .stagewrap{padding:16px;display:grid;gap:14px;}
   .stage{position:relative;}
   .stage .cap{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:7px;display:flex;gap:8px;align-items:center;}
-  .box{position:relative;border:1px dashed var(--line-2);border-radius:10px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.018) 0 8px,transparent 8px 16px);max-width:100%;}
+  /* outline, not border: a border would shrink the container's content box
+     by 2px and the comparison against the browser would be unfair */
+  .box{position:relative;outline:1px dashed var(--line-2);outline-offset:-1px;border-radius:10px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.018) 0 8px,transparent 8px 16px);max-width:100%;}
   .fitem{position:absolute;border-radius:7px;background:rgba(var(--accentRGB),.16);border:1px solid rgba(var(--accentRGB),.55);color:var(--ink);font-family:var(--mono);font-size:11.5px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;transition:background .15s,border-color .15s;}
   .fitem.sel{background:rgba(var(--accentRGB),.34);border-color:var(--accent);box-shadow:0 0 0 2px rgba(var(--accentRGB),.3);}
   .fitem.hl{background:var(--warn);color:#1a1000;border-color:var(--warn);}
@@ -363,8 +365,10 @@ function flexLayout(C, ITEMS){
   lines.forEach(function(line, li){
     var gapTotal = gapMain * (line.length - 1);
     if (innerMain === null){ line.forEach(function(it){ it.target = it.hyp; }); return; }
-    var sumOuterBase = line.reduce(function(a,x){ return a + x.outerBase; }, 0);
-    var growing = (sumOuterBase + gapTotal) < innerMain;
+    // 9.7 step 1: the choice between growing and shrinking is made on the sum
+    // of the *hypothetical* main sizes, not the raw flex base sizes
+    var sumOuterHyp = line.reduce(function(a,x){ return a + x.outerHyp; }, 0);
+    var growing = (sumOuterHyp + gapTotal) < innerMain;
 
     line.forEach(function(it){
       it.frozen = false;
@@ -495,6 +499,7 @@ function flexLayout(C, ITEMS){
     // when the lines overflow, space-* has nothing to distribute and the
     // browser packs the lines from the start instead
     var spacedAC = C.alignContent.indexOf('space-') === 0;
+    if (spacedAC && freeCross < 0 && revCross) lead = freeCross; // overflow packs from the physical top either way
     if ((n > 1 || !singleLine) && !(spacedAC && freeCross < 0)){
       switch (C.alignContent){
         case 'flex-end': lead = freeCross; break;
@@ -523,8 +528,8 @@ function flexLayout(C, ITEMS){
     }
     if (free < 0 && C.justify.indexOf('space-') === 0){
       // an overflowing line has no free space to share, so every space-*
-      // value packs from the start instead
-      lead = 0; between = gapMain;
+      // value packs from the physical start instead
+      lead = revMain ? free : 0; between = gapMain;
     }
     if (li === 0) justifyInfo = { free:free, lead:lead, between:between, used:used };
 
