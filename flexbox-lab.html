@@ -925,7 +925,7 @@ $('fuzzbtn').addEventListener('click', function(){
       done++;
     }
     $('fuzzbar').style.width = (done / total * 100) + '%';
-    if (done < total){ requestAnimationFrame(chunk); return; }
+    if (done < total){ setTimeout(chunk, 0); return; } // setTimeout, not rAF, so a backgrounded tab still finishes
     fuzzing = false; $('fuzzbtn').disabled = false;
     var msg = '<b>' + pass + ' of ' + total + '</b> random layouts matched your browser exactly (within half a pixel). Worst difference across the whole run: <b>' + worst.toFixed(2) + 'px</b>.';
     if (fails.length) msg += ' <button class="chip mini" id="loadfail">Load the worst mismatch</button>';
@@ -934,7 +934,7 @@ $('fuzzbtn').addEventListener('click', function(){
       $('loadfail').addEventListener('click', function(){ S = worstCase; sel = 0; ctlFor = -1; syncControls(); render(); window.scrollTo({ top: 0, behavior:'smooth' }); });
     }
   }
-  requestAnimationFrame(chunk);
+  setTimeout(chunk, 0);
 });
 
 /* headless self-check hook, used to verify the engine outside the UI */
