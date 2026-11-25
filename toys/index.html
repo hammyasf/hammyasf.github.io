@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free open-source toys by Harman Kamboj</title>
+<meta name="description" content="Small, useful, free and open-source apps: a taxi meter for your AI agent spend and a writing pad that replays how you typed. Get each new one by email.">
+<meta name="theme-color" content="#07100e">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="Free open-source toys by Harman Kamboj">
+<meta property="og:description" content="Small, useful, free and open-source apps. Get each new one by email.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hammyasf.github.io/toys/">
+<meta property="og:image" content="https://hammyasf.github.io/toys/taxi-meter.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://hammyasf.github.io/toys/">
+<link rel="icon" href="../favicon.svg">
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&f[]=satoshi@400,500,700&f[]=jetbrains-mono@400,500&display=swap">
+<style>
+  :root { --bg: #07100e; --surface: #0e1a17; --card: #12211d; --ink: #edf2ef; --muted: #93a8a1; --line: rgb(237 242 239 / .12);
+          --accent: #2be3b0; --accent-ink: #07100e; --err: #ff8a7a; --r: 18px; --wrap: 1120px; --gut: 16px;
+          --display: "Clash Display", system-ui, sans-serif; --text: "Satoshi", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, Menlo, monospace; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 17px/1.55 var(--text); -webkit-font-smoothing: antialiased; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; }
+  h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 600; letter-spacing: -.02em; }
+  p { margin: 0; }
+  .wrap { width: min(var(--wrap), 100% - 2 * var(--gut)); margin-inline: auto; }
+  .skip { position: absolute; left: var(--gut); top: -60px; padding: 10px 14px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); z-index: 10; }
+  .skip:focus { top: 12px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* nav */
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .nav__home { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font: 600 16px/1 var(--display); text-decoration: none; }
+  .nav__home i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--accent); color: var(--accent-ink); font: 800 17px/1 var(--text); font-style: normal; }
+  .nav__links { display: flex; gap: 6px; }
+  .nav__links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 500; transition: color .15s, background-color .15s; }
+  .nav__links a:hover { color: var(--ink); background: rgb(237 242 239 / .06); }
+
+  /* hero: the signup */
+  .hero { min-height: calc(100svh - 72px); display: grid; align-content: center; padding-block: 48px 72px; }
+  .hero__grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; }
+  .eyebrow { font: 500 13px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .hero h1 { margin-top: 18px; font-size: clamp(42px, 6.2vw, 80px); line-height: .98; }
+  .hero h1 span { color: var(--muted); }
+  .lede { margin-top: 22px; max-width: 34em; font-size: 19px; color: var(--muted); }
+  .sign { padding: 28px; border-radius: var(--r); background: var(--surface); box-shadow: 0 0 0 1px var(--line), 0 40px 80px -40px rgb(43 227 176 / .25); }
+  .sign h2 { font-size: 26px; line-height: 1.15; }
+  .sign > p { margin-top: 8px; color: var(--muted); font-size: 16px; }
+  .form { display: grid; gap: 12px; margin-top: 20px; }
+  .form label { font-size: 14px; font-weight: 500; }
+  .form input { width: 100%; height: 52px; padding: 0 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--ink); font: inherit; }
+  .form input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+  .form input[aria-invalid="true"] { border: 2px solid var(--err); }
+  .err { font-size: 14px; color: var(--err); }
+  .err[hidden] { display: none; }
+  .status { min-height: 1.4em; font-size: 15px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 22px; border: 0; border-radius: 999px;
+         background: var(--accent); color: var(--accent-ink); font: 700 16px/1 var(--text); text-decoration: none; cursor: pointer;
+         transition: transform .18s cubic-bezier(.22, 1, .36, 1), box-shadow .18s; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -12px rgb(43 227 176 / .6); }
+  .btn:active { transform: translateY(0) scale(.98); }
+  .btn[disabled] { opacity: .6; cursor: progress; }
+  .fine { margin-top: 12px; font-size: 13px; color: var(--muted); }
+
+  /* the toys */
+  .sec { padding-block: 96px; border-top: 1px solid var(--line); }
+  .sec__head { display: flex; align-items: end; justify-content: space-between; gap: 24px; }
+  .sec h2 { font-size: clamp(32px, 4.4vw, 52px); line-height: 1.02; }
+  .sec__head p { max-width: 26em; color: var(--muted); }
+  .toys { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 40px; }
+  .toy { display: grid; grid-template-rows: auto 1fr; overflow: hidden; border-radius: var(--r); background: var(--card); box-shadow: 0 0 0 1px var(--line);
+         text-decoration: none; transition: transform .22s cubic-bezier(.22, 1, .36, 1), box-shadow .22s; }
+  .toy:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgb(43 227 176 / .45), 0 30px 60px -30px rgb(0 0 0 / .8); }
+  .toy__pic { overflow: hidden; aspect-ratio: 16 / 10; background: var(--surface); }
+  .toy__pic img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.22, 1, .36, 1); }
+  .toy:hover .toy__pic img { transform: scale(1.03); }
+  .toy__body { display: grid; align-content: start; gap: 10px; padding: 24px; }
+  .toy__meta { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .toy h3 { font-size: 28px; }
+  .toy__body p { color: var(--muted); }
+  .toy__go { margin-top: 6px; font-weight: 700; color: var(--accent); }
+  .toy__go span { display: inline-block; transition: transform .2s; }
+  .toy:hover .toy__go span { transform: translateX(4px); }
+
+  /* sponsor */
+  .back { display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center; }
+  .back p { margin-top: 14px; max-width: 32em; color: var(--muted); }
+  .heart { display: inline-flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 24px 0 18px; border-radius: 999px; background: var(--card);
+           box-shadow: 0 0 0 1px rgb(43 227 176 / .4); color: var(--ink); font: 700 16px/1 var(--text); text-decoration: none;
+           transition: transform .18s cubic-bezier(.22, 1, .36, 1), box-shadow .18s; }
+  .heart:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px var(--accent), 0 14px 30px -14px rgb(43 227 176 / .55); }
+  .heart:active { transform: scale(.98); }
+  .heart svg { width: 22px; height: 22px; fill: none; stroke: var(--accent); stroke-width: 2; transition: fill .2s; }
+  .heart:hover svg, .heart:focus-visible svg { fill: var(--accent); animation: beat .7s cubic-bezier(.34, 1.56, .64, 1) 2; }
+  @keyframes beat { 30% { transform: scale(1.25); } 60% { transform: scale(.95); } }
+
+  .foot { padding-block: 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+  .foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+  .foot a { color: var(--ink); }
+
+  /* the hero enters once */
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  .hero [data-enter] { animation: rise .7s cubic-bezier(.22, 1, .36, 1) both; }
+  .hero [data-enter="2"] { animation-delay: .08s; } .hero [data-enter="3"] { animation-delay: .16s; } .hero [data-enter="4"] { animation-delay: .24s; }
+
+  @media (max-width: 900px) {
+    .hero__grid, .back { grid-template-columns: 1fr; gap: 32px; }
+    .toys { grid-template-columns: 1fr; }
+    .sec__head { display: grid; }
+    .sec { padding-block: 72px; }
+  }
+  @media (max-width: 520px) { .nav__links a:not(:last-child) { display: none; } .sign { padding: 22px; } .btn, .heart { width: 100%; justify-content: center; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="wrap nav">
+  <a class="nav__home" href="./"><i aria-hidden="true">H</i>Toys</a>
+  <nav class="nav__links" aria-label="Main">
+    <a href="#toys">The toys</a>
+    <a href="https://github.com/hammyasf">GitHub</a>
+    <a href="../">About Harman</a>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="wrap hero" aria-labelledby="hero-h">
+    <div class="hero__grid">
+      <div>
+        <p class="eyebrow" data-enter>Free &middot; open source &middot; AGPL-3.0</p>
+        <h1 id="hero-h" data-enter="2">Small free apps you will use every day. <span>One email each.</span></h1>
+        <p class="lede" data-enter="3">I build small, useful apps with a joke in them and give them away with their code. Two are out: a taxi meter for what your AI agent costs, and a writing pad that replays how you typed.</p>
+      </div>
+      <div class="sign" data-enter="4">
+        <h2>Get every new toy by email</h2>
+        <p>Confirm your address and the toys come with the next message.</p>
+        <!-- KIT_FORM_ID: the Kit form's number, from its embed code (app.kit.com/forms/<id>/subscriptions) -->
+        <form class="form" id="sign" action="https://app.kit.com/forms/KIT_FORM_ID/subscriptions" method="post" novalidate>
+          <label for="email">Email</label>
+          <input id="email" name="email_address" type="email" autocomplete="email" required aria-describedby="email-err">
+          <p class="err" id="email-err" hidden>Write an email address with an @, like name@example.com.</p>
+          <button class="btn" type="submit">Send me the toys</button>
+          <p class="status" role="status"></p>
+        </form>
+        <p class="fine">One email per new toy, never shared. Unsubscribe in one click.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="toys" aria-labelledby="toys-h">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 id="toys-h">The toys so far</h2>
+        <p>Each one does a real job daily and has its own page, code and release on GitHub.</p>
+      </div>
+      <div class="toys">
+        <a class="toy" href="../taxi-meter/">
+          <div class="toy__pic"><img src="taxi-meter.jpg" alt="Taxi Meter's yellow-roofed meter window showing a live fare in red digits" width="1440" height="900" loading="lazy"></div>
+          <div class="toy__body">
+            <span class="toy__meta">Mac menu bar &middot; Swift</span>
+            <h3>Taxi Meter</h3>
+            <p>A live fare in your menu bar for what Claude Code costs, with trips, receipts, caps and a log book.</p>
+            <span class="toy__go">See Taxi Meter <span aria-hidden="true">&rarr;</span></span>
+          </div>
+        </a>
+        <a class="toy" href="../typed-by-hand/">
+          <div class="toy__pic"><img src="typed-by-hand.jpg" alt="Typed by Hand's paper page with a letter being typed and its live typing record beside it" width="1440" height="900" loading="lazy"></div>
+          <div class="toy__body">
+            <span class="toy__meta">Browser &middot; one HTML file</span>
+            <h3>Typed by Hand</h3>
+            <p>A writing pad that records every keystroke on your device and replays your text, typo by typo.</p>
+            <span class="toy__go">See Typed by Hand <span aria-hidden="true">&rarr;</span></span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="back-h">
+    <div class="wrap back">
+      <div>
+        <h2 id="back-h">Sponsors keep the toys free</h2>
+        <p>No ads, no paid tiers. If a toy earns its place on your screen, a GitHub sponsorship pays for the next one.</p>
+      </div>
+      <a class="heart" href="https://github.com/sponsors/hammyasf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.2-4.4-9.2-8.9C1.4 8.4 3.4 5 6.8 5c2 0 3.5 1.1 5.2 3 1.7-1.9 3.2-3 5.2-3 3.4 0 5.4 3.4 4 6.6-2 4.5-9.2 8.9-9.2 8.9z"/></svg>Sponsor on GitHub</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>&copy; 2026 Harman Kamboj. Toys under AGPL-3.0; names and logos reserved.</span>
+    <span><a href="../">hammyasf.github.io</a></span>
+  </div>
+</footer>
+
+<script>
+  // signup: checked on submit, sent to Kit by fetch; the toys arrive after the address is confirmed
+  (() => {
+    const form = document.getElementById('sign'), input = form.email, err = document.getElementById('email-err'),
+          status = form.querySelector('.status'), btn = form.querySelector('button');
+    const ok = () => { const v = input.checkValidity(); input.toggleAttribute('aria-invalid', !v); if (!v) input.setAttribute('aria-invalid', 'true'); err.hidden = v; return v; };
+    input.addEventListener('input', () => { if (input.getAttribute('aria-invalid')) ok(); });
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (!ok()) { input.focus(); return; }
+      btn.disabled = true; status.textContent = 'Sending';
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(res.status);
+        form.reset(); status.textContent = 'Check your inbox. Confirm your email and the toys come right after.';
+      } catch { status.textContent = 'Not sent: the connection failed. Your email is still here; try again.'; }
+      finally { btn.disabled = false; }
+    });
+  })();
+</script>
+</body>
+</html>
