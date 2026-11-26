@@ -7,148 +7,130 @@
 <meta name="description" content="Applied AI and full-stack engineer with 13+ years: Claude agent pipelines at CodeWisp (YC W26), the developer portal for Shiba Inu, and Endeavor, GatheredHere and ElasticSwap through Toptal. Remote.">
 <link rel="canonical" href="https://hammyasf.github.io/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Recruit Harman Kamboj: Applied AI and full-stack engineer">
-<meta property="og:description" content="Ask his on-device AI guide anything about his work. 13+ years, YC W26 agent pipeline, a top-10 cryptocurrency's developer portal.">
+<meta property="og:title" content="Harman Kamboj: walk through his work, or ask his AI guide">
+<meta property="og:description" content="A little felt world where every building is a real job. Ask Scout, his on-device AI guide, and it walks you to the proof. 13+ years, YC W26 agent pipeline.">
 <meta property="og:image" content="https://hammyasf.github.io/share.jpg">
 <meta property="og:url" content="https://hammyasf.github.io/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#0d1020">
+<meta name="theme-color" content="#f6d9c4">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="recruit/fonts.css">
-<link rel="stylesheet" href="recruit/recruit.css">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="world/world.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/environments/RoomEnvironment.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/EffectComposer.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/RenderPass.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/ShaderPass.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/UnrealBloomPass.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/OutputPass.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/Pass.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/MaskPass.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/shaders/CopyShader.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/shaders/LuminosityHighPassShader.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/shaders/OutputShader.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/shaders/HorizontalTiltShiftShader.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/shaders/VerticalTiltShiftShader.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/geometries/RoundedBoxGeometry.js" crossorigin>
+<link rel="modulepreload" href="world/world.js">
+<link rel="modulepreload" href="world/felt.js">
+<link rel="modulepreload" href="world/props.js">
+<link rel="modulepreload" href="world/characters.js">
+<link rel="modulepreload" href="world/audio.js">
+<link rel="modulepreload" href="world/layout.js">
+<link rel="modulepreload" href="world/agent.js">
+<link rel="modulepreload" href="recruit/keyword.js">
+<link rel="modulepreload" href="recruit/guide.js">
+<link rel="modulepreload" href="recruit/embedder.js">
+<link rel="modulepreload" href="recruit/retrieve.js">
 </head>
 <body>
-<a class="skip" href="#guide">Skip to the guide</a>
+<a class="skip" href="#resume-h">Skip to the plain résumé</a>
+<h1 class="sr-only">Harman Kamboj, Applied AI and full-stack engineer</h1>
 
-<header class="topbar">
-  <p class="topbar__name">Harman Kamboj <span class="topbar__lv">Lv 13 · Applied AI / Full-stack</span></p>
-  <span class="topbar__status">Open to the right team · remote</span>
-  <nav class="topbar__actions" aria-label="Quick actions">
-    <button class="btn btn--icon" id="sound" type="button" aria-pressed="false" aria-label="Guide voice off">🔇</button>
-    <a class="btn" href="Harman-Kamboj-Resume.pdf">Résumé</a>
-    <a class="btn btn--gold" href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
-  </nav>
-</header>
-
-<main id="top">
-  <h1 class="sr-only">Harman Kamboj, Applied AI and full-stack engineer</h1>
-  <div class="screen">
-    <section class="panel sheet" aria-labelledby="sheet-h">
-      <h2 class="sr-only" id="sheet-h">Character sheet</h2>
-      <img class="portrait" src="recruit/art/portrait.png" onerror="this.onerror=null;this.src='recruit/art/avatar.png'" alt="Harman Kamboj's portrait" width="320" height="320">
-      <p class="sheet__class">Class: Applied AI engineer</p>
-      <p class="sheet__sub">Full-stack · 13+ years · Chandigarh, remote</p>
-      <p class="panel__label">Stats</p>
-      <ul class="stats">
-        <li>YC W26 agent pipeline</li>
-        <li>Developer portal for a top-10 cryptocurrency</li>
-        <li>Enterprise clients (Endeavor)</li>
-        <li>Play Store apps past 100K installs</li>
-        <li>5,000+ member game-dev community</li>
-      </ul>
-      <p class="panel__label abilities-label">Abilities</p>
-      <ul class="abilities" aria-label="Tools he uses">
-        <li><img src="recruit/abilities/anthropic.svg" width="22" height="22" loading="lazy" alt="Claude (Anthropic)" class="ink"></li>
-        <li><img src="recruit/abilities/typescript.svg" width="22" height="22" loading="lazy" alt="TypeScript"></li>
-        <li><img src="recruit/abilities/go.svg" width="22" height="22" loading="lazy" alt="Go"></li>
-        <li><img src="recruit/abilities/react.svg" width="22" height="22" loading="lazy" alt="React"></li>
-        <li><img src="recruit/abilities/nextjs.svg" width="22" height="22" loading="lazy" alt="Next.js" class="ink"></li>
-        <li><img src="recruit/abilities/nodejs.svg" width="22" height="22" loading="lazy" alt="Node.js"></li>
-        <li><img src="recruit/abilities/svelte.svg" width="22" height="22" loading="lazy" alt="Svelte"></li>
-        <li><img src="recruit/abilities/postgres.svg" width="22" height="22" loading="lazy" alt="PostgreSQL"></li>
-        <li><img src="recruit/abilities/supabase.svg" width="22" height="22" loading="lazy" alt="Supabase"></li>
-        <li><img src="recruit/abilities/aws.svg" width="22" height="22" loading="lazy" alt="AWS"></li>
-        <li><img src="recruit/abilities/docker.svg" width="22" height="22" loading="lazy" alt="Docker"></li>
-        <li><img src="recruit/abilities/threejs.svg" width="22" height="22" loading="lazy" alt="Three.js" class="ink"></li>
-        <li><img src="recruit/abilities/unity.svg" width="22" height="22" loading="lazy" alt="Unity" class="ink"></li>
-        <li><img src="recruit/abilities/godot.svg" width="22" height="22" loading="lazy" alt="Godot"></li>
-      </ul>
-    </section>
-
-    <section class="panel guide" id="guide" aria-labelledby="guide-h">
-      <div class="guide__head">
-        <img class="guide__face" src="recruit/art/guide.png" onerror="this.onerror=null;this.src='recruit/art/avatar.png'" alt="" width="44" height="44">
-        <h2 class="guide__who" id="guide-h">Scout · guide</h2>
-        <span class="chip" id="model-chip" data-state="idle">on-device AI · idle</span>
-      </div>
-      <p class="say" aria-hidden="true" id="say">I know his work. Pick a line, or ask me anything.</p>
-      <p class="sr-only" aria-live="polite" id="say-live"></p>
-      <div class="say__cta" id="say-cta" hidden><a class="btn btn--gold" href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email Harman</a></div>
-      <pre class="trace" id="trace" aria-label="What the guide did"></pre>
-      <ul class="choices" id="choices" aria-label="Pick a line"></ul>
-      <form class="ask" id="ask">
-        <label for="ask-input">Ask the guide a question</label>
-        <input id="ask-input" name="q" type="text" autocomplete="off" enterkeyhint="send" placeholder="Ask anything: “has he built evals?”" maxlength="160">
-        <button class="btn btn--gold" type="submit">Ask</button>
-      </form>
-      <p class="hint">Arrow keys pick a line, <kbd>Enter</kbd> chooses, <kbd>/</kbd> jumps here, <kbd>Esc</kbd> closes a file. The AI runs in your browser.</p>
-    </section>
-
-    <section class="panel stage" id="stage" aria-labelledby="stage-h">
-      <h2 class="panel__label" id="stage-h">Quest log · completed quests</h2>
-      <p class="stage__intro">Nine case files from his résumé. Open any three to recruit him.</p>
-      <ul class="log" id="log"></ul>
-    </section>
-
-    <section class="panel quest" aria-labelledby="quest-h">
-      <h2 class="quest__title" id="quest-h">Quest: review 3 case files</h2>
-      <span class="pips" id="pips" role="img" aria-label="0 of 3 reviewed"><i></i><i></i><i></i></span>
-      <div class="quest__actions">
-        <button class="btn" id="side-btn" type="button">Side quests</button>
-        <button class="btn" id="ach-btn" type="button" aria-expanded="false" aria-controls="ach">Achievements 0/5</button>
-        <a class="btn btn--gold" id="recruit" href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman" aria-disabled="true" tabindex="-1">Recruit Harman</a>
-        <button class="btn" id="share-btn" type="button" hidden>Share</button>
-      </div>
-      <div class="panel pop" id="ach" hidden><p class="panel__label">Achievements</p><ul id="ach-list"></ul></div>
-    </section>
-  </div>
-
-  <section class="resume" aria-labelledby="resume-h">
-    <div class="resume__grid">
-      <div>
-        <h2 id="resume-h">The plain version</h2>
-        <p>Everything above, without the game.</p>
-        <ul class="links">
-          <li><a href="Harman-Kamboj-Resume.pdf">Résumé (PDF)</a></li>
-          <li><a href="Harman-Kamboj-Resume-FDE.pdf">Forward deployed résumé</a></li>
-          <li><a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email Harman</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3>About</h3>
-        <p>Full-stack engineer and technical lead with 13+ years building production platforms across AI, crypto, enterprise, healthcare and e-commerce. Most recently he built Claude-based agentic pipelines at a Y Combinator startup: multi-model routing across Opus, Sonnet and Haiku, LLM-as-judge evals, sandboxed code generation and per-run cost controls. He owns systems end to end and works directly with founders and clients. Chandigarh, India; remote with US/EU overlap. English, Hindi and Punjabi.</p>
-
-        <h3 style="margin-top:24px">Experience</h3>
-        <ul class="roles">
-          <li><strong>CodeWisp (Y Combinator W26) · Senior Full-Stack Engineer, AI Platform</strong><span class="when">2026</span><p>Seven-stage agentic game-generation pipeline; Opus, Sonnet and Haiku routing under a $6 per-run cap; LLM-as-judge evals; Lua sandbox; 60 fps runtime. <a href="codewisp.html">Case study</a></p></li>
-          <li><strong>Shiba Inu (Shib.io) · Senior Full-Stack Engineer</strong><span class="when">2024 to 2025</span><p>The Shib.io developer portal for a top-10 cryptocurrency, for 10K+ daily users; Subsquid indexers, cross-chain bridge and token swap. <a href="shiba-inu.html">Case study</a></p></li>
-          <li><strong>Arch Systems · Senior Full-Stack Developer &amp; Tech Lead</strong><span class="when">2023 to 2024</span><p>Tech lead for the Mental Health Foundation's screening-test platform; design system and real-time React dashboards.</p></li>
-          <li><strong>Toptal · Senior Full-Stack Engineer</strong><span class="when">2021 to 2023</span><p>Endeavor (OpenSpeaker), GatheredHere, ElasticSwap and Zvoid. <a href="openspeaker.html">OpenSpeaker</a> · <a href="gatheredhere.html">GatheredHere</a> · <a href="elasticswap.html">ElasticSwap</a></p></li>
-          <li><strong>Gometa (Koji) · Full-Stack &amp; Game Engineer</strong><span class="when">2020 to 2021</span><p>Most of the templates creators used to make Kojis; Stripe payments and OAuth. <a href="koji.html">Case study</a></p></li>
-          <li><strong>Scaleflow · Software Engineer</strong><span class="when">2018 to 2019</span><p>Sole full-time engineer on a sprint-productivity app, working directly with the CTO.</p></li>
-          <li><strong>Aftertutor Ventures · Lead Developer</strong><span class="when">2016 to 2020</span><p>The Bewakoof e-commerce site; native then React Native apps with 100K+, 50K+ and 10K+ installs. <a href="aftertutor.html">Case study</a></p></li>
-          <li><strong>RadEgg · Full-Stack Developer &amp; UX Designer</strong><span class="when">2012 to 2016</span><p>A mobile-first anti-theft web app that reached 20,000 users in six months.</p></li>
-        </ul>
-
-        <h3>Skills</h3>
-        <p>AI engineering: LLM agents, RAG, Claude API, multi-model routing, tool use, LLM-as-judge evals, cost controls. Languages: TypeScript, JavaScript, Go, Python, PHP, Java, Kotlin, Swift, Lua. Frontend: React, Next.js, Svelte, Vue, Angular. Backend: Node.js, Go, Laravel, REST and GraphQL; PostgreSQL, MongoDB, Redis. Delivery: Jest, Cypress, Docker, GitHub Actions, AWS, Vercel.</p>
-
-        <h3>Side quests</h3>
-        <p>Small open-source apps he ships in days, to keep his shipping fast: <a href="https://taxi-meter.codepost.dev/">Taxi Meter</a> and <a href="https://typed-by-hand.codepost.dev/">Typed by Hand</a>. He also runs <a href="https://codepost.dev/">codepost.dev</a>, and has fixes merged upstream at <a href="https://github.com/Cap-go/capacitor-native-purchases/pull/246">Capgo</a>. Writing: <a href="blog.html">blog</a> · <a href="lab.html">lab</a>.</p>
-
-        <footer class="footer">
-          <span>© 2026 Harman Kamboj</span>
-          <a href="https://github.com/hammyasf">GitHub</a>
-          <a href="https://linkedin.com/in/hammyasf">LinkedIn</a>
-          <span>Product names and logos are trademarks of their owners</span>
-        </footer>
+<section class="hero" id="hero" aria-label="Harman's little world: walk around, or ask Scout">
+  <canvas id="world" aria-label="A tiny handmade world of felt toys. Harman, a plush doll, walks between buildings; each building is a job from his career."></canvas>
+  <div id="ui">
+    <div class="title" id="title" aria-hidden="true"><p class="title__h" id="title-h">Harman Kamboj</p><p class="title__sub">Applied AI and full-stack engineer · 13 years of shipping</p></div>
+    <div class="hud" id="hud">
+      <div class="who">Harman's little world</div>
+      <div class="right">
+        <button class="btn" id="sound" type="button" aria-pressed="false">Sound off</button>
+        <a class="btn" href="#resume-h">Plain résumé</a>
+        <a class="btn hot" href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email Harman</a>
       </div>
     </div>
-  </section>
-</main>
+    <div class="hint" id="hint" aria-hidden="true"><span class="keys"><span class="kbd">W A S D</span> walk · <span class="kbd">Space</span> hop · <span class="kbd">E</span> go in · or click anywhere</span><span class="touch">Tap to walk · tap a building to go in</span></div>
+    <form class="ask patch" id="ask" autocomplete="off">
+      <ul class="chips" id="chips" aria-label="Questions to try"></ul>
+      <div class="ask__row">
+        <label class="sr-only" for="ask-input">Ask Scout about Harman's work</label>
+        <input id="ask-input" name="q" type="text" maxlength="160" placeholder="Ask Scout anything: has he shipped AI agents?" enterkeyhint="send">
+        <button class="btn hot" type="submit">Ask</button>
+      </div>
+      <p class="ask__ai" id="ai-chip" data-state="idle">Scout runs on your device · no server</p>
+    </form>
+    <p class="sr-only" aria-live="polite" id="say-live"></p>
+    <div class="card patch" id="card" role="dialog" aria-modal="true" aria-labelledby="card-h"></div>
+  </div>
+  <div class="fade" id="fade"></div>
+  <div class="load" id="load">stitching the world…</div>
+  <a class="scroll-cue" href="#resume-h">The plain version ↓</a>
+</section>
 
-<div class="toast" id="toast" role="status" hidden></div>
-<script type="module" src="recruit/app.js"></script>
+<section class="resume" aria-labelledby="resume-h">
+  <div class="resume__grid">
+    <div>
+      <h2 id="resume-h">The plain version</h2>
+      <p>Everything in the world above, without the game.</p>
+      <ul class="links">
+        <li><a href="Harman-Kamboj-Resume.pdf">Résumé (PDF)</a></li>
+        <li><a href="Harman-Kamboj-Resume-FDE.pdf">Forward deployed résumé</a></li>
+        <li><a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email Harman</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>About</h3>
+      <p>Full-stack engineer and technical lead with 13+ years building production platforms across AI, crypto, enterprise, healthcare and e-commerce. Most recently he built Claude-based agentic pipelines at a Y Combinator startup: multi-model routing across Opus, Sonnet and Haiku, LLM-as-judge evals, sandboxed code generation and per-run cost controls. He owns systems end to end and works directly with founders and clients. Chandigarh, India; remote with US/EU overlap. English, Hindi and Punjabi.</p>
+
+      <h3 class="gap">Experience</h3>
+      <ul class="roles">
+        <li><strong>CodeWisp (Y Combinator W26) · Senior Full-Stack Engineer, AI Platform</strong><span class="when">2026</span><p>Seven-stage agentic game-generation pipeline; Opus, Sonnet and Haiku routing under a $6 per-run cap; LLM-as-judge evals; Lua sandbox; 60 fps runtime. <a href="codewisp.html">Case study</a></p></li>
+        <li><strong>Shiba Inu (Shib.io) · Senior Full-Stack Engineer</strong><span class="when">2024 to 2025</span><p>The Shib.io developer portal for a top-10 cryptocurrency, for 10K+ daily users; Subsquid indexers, cross-chain bridge and token swap. <a href="shiba-inu.html">Case study</a></p></li>
+        <li><strong>Arch Systems · Senior Full-Stack Developer &amp; Tech Lead</strong><span class="when">2023 to 2024</span><p>Tech lead for the Mental Health Foundation's screening-test platform; design system and real-time React dashboards.</p></li>
+        <li><strong>Toptal · Senior Full-Stack Engineer</strong><span class="when">2021 to 2023</span><p>Endeavor (OpenSpeaker), GatheredHere, ElasticSwap and Zvoid. <a href="openspeaker.html">OpenSpeaker</a> · <a href="gatheredhere.html">GatheredHere</a> · <a href="elasticswap.html">ElasticSwap</a></p></li>
+        <li><strong>Gometa (Koji) · Full-Stack &amp; Game Engineer</strong><span class="when">2020 to 2021</span><p>Most of the templates creators used to make Kojis; Stripe payments and OAuth. <a href="koji.html">Case study</a></p></li>
+        <li><strong>Scaleflow · Software Engineer</strong><span class="when">2018 to 2019</span><p>Sole full-time engineer on a sprint-productivity app, working directly with the CTO.</p></li>
+        <li><strong>Aftertutor Ventures · Lead Developer</strong><span class="when">2016 to 2020</span><p>The Bewakoof e-commerce site; native then React Native apps with 100K+, 50K+ and 10K+ installs. <a href="aftertutor.html">Case study</a></p></li>
+        <li><strong>RadEgg · Full-Stack Developer &amp; UX Designer</strong><span class="when">2012 to 2016</span><p>A mobile-first anti-theft web app that reached 20,000 users in six months.</p></li>
+      </ul>
+
+      <h3>Skills</h3>
+      <p>AI engineering: LLM agents, RAG, Claude API, multi-model routing, tool use, LLM-as-judge evals, cost controls. Languages: TypeScript, JavaScript, Go, Python, PHP, Java, Kotlin, Swift, Lua. Frontend: React, Next.js, Svelte, Vue, Angular. Backend: Node.js, Go, Laravel, REST and GraphQL; PostgreSQL, MongoDB, Redis. Delivery: Jest, Cypress, Docker, GitHub Actions, AWS, Vercel.</p>
+
+      <h3>Side quests</h3>
+      <p>Small open-source apps he ships in days, to keep his shipping fast: <a href="https://taxi-meter.codepost.dev/">Taxi Meter</a> and <a href="https://typed-by-hand.codepost.dev/">Typed by Hand</a>. He also runs <a href="https://codepost.dev/">codepost.dev</a>, and has fixes merged upstream at <a href="https://github.com/Cap-go/capacitor-native-purchases/pull/246">Capgo</a>. Writing: <a href="blog.html">blog</a> · <a href="lab.html">lab</a>.</p>
+
+      <h3>About this page</h3>
+      <p>The world is three.js with felt and knit materials, no build step. Scout is a small retrieval agent that runs in your browser: transformers.js embeddings with keyword search over 62 fact cards, then tool calls that walk Harman to the building that proves the answer.</p>
+
+      <footer class="footer">
+        <span>© 2026 Harman Kamboj</span>
+        <a href="https://github.com/hammyasf">GitHub</a>
+        <a href="https://linkedin.com/in/hammyasf">LinkedIn</a>
+        <span>Product names and logos are trademarks of their owners</span>
+      </footer>
+    </div>
+  </div>
+</section>
+<script type="module" src="world/world.js"></script>
 </body>
 </html>
