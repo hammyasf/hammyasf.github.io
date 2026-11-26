@@ -1,0 +1,172 @@
+[
+  {
+    "id": "codewisp",
+    "client": "CodeWisp (Y Combinator W26)",
+    "role": "Senior Full-Stack Engineer, AI Platform",
+    "years": "2026",
+    "stack": [
+      "TypeScript",
+      "Node.js",
+      "React",
+      "Supabase",
+      "Claude",
+      "fal.ai",
+      "Three.js"
+    ],
+    "outcome": [
+      "Architected the generation pipeline as seven agentic stages: routing, research, build, art, audio, quality gate and publish.",
+      "Routed work across Claude Opus, Sonnet and Haiku by task complexity, under a fixed $6 per-run cost cap.",
+      "Built \"Judge\", an LLM-as-judge stage that checks sprite consistency, level passability, win states and mechanics, and feeds findings back into system prompts.",
+      "Constrained AI code generation to a Lua sandbox and built a deterministic 2D/3D runtime at 60 fps.",
+      "Built the Petlings content engine: 19 short-form videos in a week from code-driven templates."
+    ],
+    "image": "img/codewisp.jpg",
+    "image800": "img/codewisp-800.jpg",
+    "imageAlt": "CodeWisp's game gallery with Aether Rush, Cube Jump and Fruit Merge",
+    "page": "codewisp.html"
+  },
+  {
+    "id": "shiba-inu",
+    "client": "Shiba Inu (Shib.io)",
+    "role": "Senior Full-Stack Engineer",
+    "years": "2024 to 2025",
+    "stack": [
+      "Go",
+      "Node.js",
+      "TypeScript",
+      "React",
+      "Svelte",
+      "Subsquid"
+    ],
+    "outcome": [
+      "Built the Shib.io developer portal for a top-10 cryptocurrency, with the transactions and balances APIs, for 10K+ daily users.",
+      "Built Subsquid indexers for on-chain event data, plus the cross-chain bridge and token swap.",
+      "Built a shared React component library in Storybook and improved load performance with code splitting.",
+      "Delivered the public marketing sites and the web side of the metaverse experience."
+    ],
+    "image": "img/shibdocs-wide.jpg",
+    "image800": "img/shibdocs-wide-800.jpg",
+    "imageAlt": "Shib docs, the Shiba Inu developer portal, on its Shibarium introduction page",
+    "page": "shiba-inu.html"
+  },
+  {
+    "id": "openspeaker",
+    "client": "Endeavor (OpenSpeaker)",
+    "role": "Senior Backend Engineer, via Toptal",
+    "years": "2021 to 2023",
+    "stack": [
+      "Node.js",
+      "TypeScript",
+      "React",
+      "GraphQL"
+    ],
+    "outcome": [
+      "Senior backend engineer on an enterprise platform for booking talks and meetings with high-profile speakers.",
+      "Built the APIs and services behind booking and scheduling, with a React front end on a GraphQL API."
+    ],
+    "page": "openspeaker.html"
+  },
+  {
+    "id": "gatheredhere",
+    "client": "GatheredHere (Australia)",
+    "role": "Full-Stack Engineer, via Toptal",
+    "years": "2021 to 2023",
+    "stack": [
+      "Next.js",
+      "React",
+      "Node.js"
+    ],
+    "outcome": [
+      "Full-stack on Australia's largest funeral-services platform, built on Next.js.",
+      "Shipped frontend and backend for a high-traffic consumer platform."
+    ],
+    "page": "gatheredhere.html"
+  },
+  {
+    "id": "elasticswap",
+    "client": "ElasticSwap ($TIC)",
+    "role": "Full-Stack / Web3 Engineer, via Toptal",
+    "years": "2021 to 2023",
+    "stack": [
+      "The Graph",
+      "TypeScript",
+      "React"
+    ],
+    "outcome": [
+      "Built The Graph API, on-chain indexing and the exchange frontend for a DeFi AMM DEX."
+    ],
+    "page": "elasticswap.html",
+    "logo": "recruit/logos/elasticswap.png"
+  },
+  {
+    "id": "koji",
+    "client": "Gometa (Koji)",
+    "role": "Full-Stack & Game Engineer",
+    "years": "2020 to 2021",
+    "stack": [
+      "React",
+      "Svelte",
+      "Three.js",
+      "Phaser",
+      "PixiJS",
+      "PlayCanvas",
+      "Unity",
+      "Godot"
+    ],
+    "outcome": [
+      "Built most of the templates creators used to make Kojis, and ran the approval and allocation workflow for new apps and games.",
+      "Implemented Stripe payments and OAuth login flows.",
+      "Worked across React, Angular, Svelte and Vue, with PlayCanvas, Phaser, Three.js, PixiJS, and Unity/Godot via JavaScript bridges."
+    ],
+    "page": "koji.html",
+    "logo": "recruit/logos/koji.jpg"
+  },
+  {
+    "id": "aftertutor",
+    "client": "Aftertutor Ventures (Bewakoof and client work)",
+    "role": "Lead Developer",
+    "years": "2016 to 2020",
+    "stack": [
+      "Laravel",
+      "React Native",
+      "Kotlin",
+      "Swift",
+      "Node.js"
+    ],
+    "outcome": [
+      "Led development as the EdTech grew into a software services business, including the Bewakoof e-commerce site.",
+      "Built IoT systems and native Android/iOS apps, then moved the team to React Native.",
+      "Shipped Play Store apps with 100K+, 50K+ and 10K+ installs."
+    ],
+    "page": "aftertutor.html"
+  },
+  {
+    "id": "arch-mhf",
+    "client": "Arch Systems (Mental Health Foundation)",
+    "role": "Senior Full-Stack Developer & Tech Lead",
+    "years": "2023 to 2024",
+    "stack": [
+      "React",
+      "Design systems",
+      "Data visualisation"
+    ],
+    "outcome": [
+      "Tech lead for the Mental Health Foundation's screening-test platform used by practitioners; owned architecture and engineering delivery.",
+      "Set up a reusable component design system and built React dashboards with real-time data visualisation."
+    ]
+  },
+  {
+    "id": "zvoid",
+    "client": "Zvoid",
+    "role": "Full-Stack Engineer, via Toptal",
+    "years": "2021 to 2023",
+    "stack": [
+      "APIs",
+      "Scraping",
+      "AI suggestions"
+    ],
+    "outcome": [
+      "Built a YouTube analytics product combining API data, scraping and AI-generated suggestions."
+    ]
+  }
+]

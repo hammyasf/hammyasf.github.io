@@ -1,0 +1,186 @@
+{
+  "root": "start",
+  "nodes": {
+    "start": {
+      "line": "I know his work. Pick a line, or ask me anything.",
+      "choices": [
+        {
+          "label": "What has he built with AI?",
+          "card": "ai.codewisp",
+          "next": "ai"
+        },
+        {
+          "label": "What platforms has he built?",
+          "card": "shib.overview",
+          "next": "platforms"
+        },
+        {
+          "label": "Who has he worked for?",
+          "card": "client.toptal",
+          "next": "clients"
+        },
+        {
+          "label": "Does he make games?",
+          "card": "games.overview",
+          "next": "games"
+        },
+        {
+          "label": "What's he like to work with?",
+          "card": "work.style",
+          "next": "working"
+        },
+        {
+          "label": "How do I reach him?",
+          "card": "contact.email"
+        },
+        {
+          "label": "What does he build for fun?",
+          "card": "side.overview",
+          "next": "side"
+        }
+      ]
+    },
+    "ai": {
+      "line": "His AI work is production agents. Where do you want to look?",
+      "choices": [
+        {
+          "label": "How did he route models?",
+          "card": "ai.routing"
+        },
+        {
+          "label": "How does he control cost?",
+          "card": "ai.cost"
+        },
+        {
+          "label": "How does he test AI output?",
+          "card": "ai.evals"
+        },
+        {
+          "label": "How long has he worked with AI?",
+          "card": "ai.history"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "platforms": {
+      "line": "Platforms with real traffic, front to back.",
+      "choices": [
+        {
+          "label": "The on-chain side",
+          "card": "shib.indexers"
+        },
+        {
+          "label": "The Mental Health Foundation platform",
+          "card": "client.arch"
+        },
+        {
+          "label": "E-commerce and mobile",
+          "card": "client.aftertutor"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "clients": {
+      "line": "Enterprise, consumer and DeFi clients.",
+      "choices": [
+        {
+          "label": "Endeavor",
+          "card": "client.endeavor"
+        },
+        {
+          "label": "GatheredHere",
+          "card": "client.gatheredhere"
+        },
+        {
+          "label": "ElasticSwap",
+          "card": "client.elasticswap"
+        },
+        {
+          "label": "Zvoid",
+          "card": "client.zvoid"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "games": {
+      "line": "Games run through his whole life. They still shape how he builds.",
+      "choices": [
+        {
+          "label": "The game-dev community",
+          "card": "games.community"
+        },
+        {
+          "label": "3D on the web",
+          "card": "games.threejs"
+        },
+        {
+          "label": "Creator templates at Koji",
+          "card": "client.koji"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "working": {
+      "line": "What do you need to know?",
+      "choices": [
+        {
+          "label": "Can he start now?",
+          "card": "work.start"
+        },
+        {
+          "label": "Full-time or contract?",
+          "card": "work.type"
+        },
+        {
+          "label": "Which hours does he work?",
+          "card": "work.timezone"
+        },
+        {
+          "label": "Has he led a team?",
+          "card": "work.leadership"
+        },
+        {
+          "label": "Show me his résumé",
+          "card": "contact.resume"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "side": {
+      "line": "Side quests. Small apps, shipped in days.",
+      "choices": [
+        {
+          "label": "Try Typed by Hand",
+          "card": "side.typed"
+        },
+        {
+          "label": "Taxi Meter",
+          "card": "side.taxi"
+        },
+        {
+          "label": "Fixes merged upstream",
+          "card": "side.prs"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    }
+  }
+}

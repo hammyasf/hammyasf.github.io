@@ -1,0 +1,1155 @@
+[
+{
+"id": "intro.who",
+"title": "Who Harman is",
+"text": "Harman Kamboj is a senior full-stack and Applied AI engineer with 13+ years of production work across AI, crypto, enterprise, healthcare and e-commerce. He owns systems end to end, from service boundaries to the frontend.",
+"tags": [
+"about",
+"summary"
+],
+"paraphrases": [
+"Who is Harman?",
+"Tell me about him",
+"Give me the short version",
+"What does he do?",
+"Summarise his background"
+],
+"action": {
+"tool": "show_stats"
+}
+},
+{
+"id": "intro.years",
+"title": "Years of experience",
+"text": "13+ years. His first production work was at RadEgg in 2012; he has used TypeScript since 2016.",
+"tags": [
+"experience",
+"years"
+],
+"paraphrases": [
+"How many years of experience does he have?",
+"How long has he been coding professionally?",
+"How senior is he?",
+"When did he start working?"
+],
+"action": {
+"tool": "show_stats"
+}
+},
+{
+"id": "intro.role",
+"title": "Roles he fits",
+"text": "Applied AI engineer, senior full-stack engineer, or forward deployed engineer: roles where one person takes an AI feature from the idea to production with the customer in the room.",
+"tags": [
+"roles",
+"fit"
+],
+"paraphrases": [
+"What role is he looking for?",
+"Is he a fit for an Applied AI role?",
+"Could he be a forward deployed engineer?",
+"What kind of position does he want?"
+]
+},
+{
+"id": "intro.location",
+"title": "Where he is",
+"text": "Chandigarh, India. He works remotely with US and EU overlap.",
+"tags": [
+"location",
+"remote"
+],
+"paraphrases": [
+"Where is he based?",
+"Where does he live?",
+"Is he remote?",
+"Which country is he in?"
+]
+},
+{
+"id": "intro.languages",
+"title": "Spoken languages",
+"text": "English, Hindi and Punjabi.",
+"tags": [
+"languages",
+"communication"
+],
+"paraphrases": [
+"What languages does he speak?",
+"Does he speak English?",
+"Can he communicate in English?",
+"Does he speak Hindi?"
+]
+},
+{
+"id": "ai.codewisp",
+"title": "AI work at CodeWisp",
+"text": "At CodeWisp (Y Combinator W26) he architected the pipeline that turns a prompt into a playable game: seven agentic stages, routing, research, build, art, audio, quality gate and publish.",
+"tags": [
+"ai",
+"agents",
+"codewisp"
+],
+"paraphrases": [
+"What has he built with AI?",
+"Tell me about his agent work",
+"What did he do at CodeWisp?",
+"Has he built multi-agent systems?",
+"Show me his best AI work",
+"What did he ship at the YC startup?"
+],
+"action": {
+"tool": "open_case",
+"arg": "codewisp"
+}
+},
+{
+"id": "ai.routing",
+"title": "Multi-model routing",
+"text": "He routed each step across Claude Opus, Sonnet and Haiku by task complexity, so the cheap model handles easy work and the strong model only the hard parts.",
+"tags": [
+"ai",
+"routing",
+"claude"
+],
+"paraphrases": [
+"Has he done multi-model routing?",
+"How did he choose between models?",
+"Does he know Opus, Sonnet and Haiku?",
+"How does he decide which LLM to use?"
+],
+"action": {
+"tool": "open_case",
+"arg": "codewisp"
+}
+},
+{
+"id": "ai.cost",
+"title": "Cost control",
+"text": "Every CodeWisp generation ran under a fixed $6 per-run cost cap, plus a usage credit limiter for users.",
+"tags": [
+"ai",
+"cost",
+"budget"
+],
+"paraphrases": [
+"How does he control LLM costs?",
+"Can he keep token spend down?",
+"Has he managed AI budgets?",
+"What about cost caps?"
+],
+"action": {
+"tool": "open_case",
+"arg": "codewisp"
+}
+},
+{
+"id": "ai.evals",
+"title": "Evals",
+"text": "He designed \"Judge\", an LLM-as-judge stage that verifies sprite consistency, level passability, win states and mechanics, retries failures, and logs findings to improve the system prompts.",
+"tags": [
+"ai",
+"evals",
+"quality"
+],
+"paraphrases": [
+"Has he built evals?",
+"How does he test LLM output?",
+"Does he know LLM-as-judge?",
+"How does he measure AI quality?",
+"Eval-driven prompt iteration?"
+],
+"action": {
+"tool": "open_case",
+"arg": "codewisp"
+}
+},
+{
+"id": "ai.sandbox",
+"title": "Sandboxed code generation",
+"text": "He constrained AI code generation to a Lua sandbox to cut hallucinated code, and built a deterministic 2D/3D runtime at 60 fps with hash-based verification.",
+"tags": [
+"ai",
+"sandbox",
+"safety"
+],
+"paraphrases": [
+"How did he stop hallucinated code?",
+"Has he sandboxed generated code?",
+"Is AI-generated code safe in his systems?",
+"What runtime did he build?"
+],
+"action": {
+"tool": "open_case",
+"arg": "codewisp"
+}
+},
+{
+"id": "ai.petlings",
+"title": "Petlings content engine",
+"text": "For Petlings, CodeWisp's iOS game, he built a seeded battle simulator and code-driven video templates that produced 19 short-form videos in a week.",
+"tags": [
+"ai",
+"video",
+"content"
+],
+"paraphrases": [
+"What is the Petlings engine?",
+"Has he automated video content?",
+"Did he build anything for marketing?",
+"Tell me about the video templates"
+],
+"action": {
+"tool": "open_case",
+"arg": "codewisp"
+}
+},
+{
+"id": "ai.rag",
+"title": "RAG",
+"text": "He works with RAG: embeddings, vector search and retrieval pipelines. This page's guide is a small example: it embeds your question in your browser and retrieves the closest fact.",
+"tags": [
+"ai",
+"rag",
+"retrieval"
+],
+"paraphrases": [
+"Has he used RAG?",
+"Does he know retrieval augmented generation?",
+"Embeddings and vector search?",
+"How does this guide work?",
+"Is this chatbot real AI?"
+]
+},
+{
+"id": "ai.providers",
+"title": "LLM providers",
+"text": "He has used Anthropic, OpenAI, Gemini, Llama, Mistral and DeepSeek. His production agent work runs on Claude.",
+"tags": [
+"ai",
+"providers",
+"llm"
+],
+"paraphrases": [
+"Which LLMs has he used?",
+"Does he know OpenAI?",
+"Has he worked with Gemini?",
+"Claude or GPT?",
+"Open-source models like Llama?"
+]
+},
+{
+"id": "ai.history",
+"title": "How long in AI",
+"text": "He has worked with AI since 2016, training agents in OpenAI Gym, and with LLMs since GPT-2 early access in 2019.",
+"tags": [
+"ai",
+"history",
+"years"
+],
+"paraphrases": [
+"How long has he worked with AI?",
+"When did he start with LLMs?",
+"Is he new to AI?",
+"Has he done reinforcement learning?"
+]
+},
+{
+"id": "ai.tooluse",
+"title": "Tool use",
+"text": "His agents call tools: this guide does too. Each answer here shows the search it ran and the tool it called on the page.",
+"tags": [
+"ai",
+"tools",
+"agents"
+],
+"paraphrases": [
+"Has he built tool-using agents?",
+"Does he know function calling?",
+"Can his agents take actions?",
+"Agents that call APIs?"
+]
+},
+{
+"id": "ai.fal",
+"title": "Generative media",
+"text": "fal.ai media models were part of the CodeWisp stack, alongside Claude.",
+"tags": [
+"ai",
+"media",
+"fal"
+],
+"paraphrases": [
+"Has he used image generation models?",
+"fal.ai experience?",
+"Generative art and audio?",
+"Media models in production?"
+],
+"action": {
+"tool": "open_case",
+"arg": "codewisp"
+}
+},
+{
+"id": "ai.founder",
+"title": "Working with founders on AI",
+"text": "At CodeWisp he reported straight to the founder, in twice-weekly product calls: scope, build, demo, then turn the feedback into the next version.",
+"tags": [
+"ai",
+"founder",
+"delivery"
+],
+"paraphrases": [
+"How did he work with the CodeWisp founder?",
+"Can he work directly with a CEO?",
+"Does he demo his work?",
+"How does he take feedback?"
+],
+"action": {
+"tool": "open_case",
+"arg": "codewisp"
+}
+},
+{
+"id": "ai.prototypes",
+"title": "B2B AI prototypes",
+"text": "He prototyped B2B AI workflow tools, including an AML alert-triage copilot and a helpdesk auto-QA and triage app.",
+"tags": [
+"ai",
+"b2b",
+"prototypes"
+],
+"paraphrases": [
+"Has he built AI for businesses?",
+"Any fintech AI work?",
+"AML or compliance AI?",
+"Helpdesk automation?"
+]
+},
+{
+"id": "shib.overview",
+"title": "Shiba Inu platform",
+"text": "At Shiba Inu he built the Shib.io developer portal for a top-10 cryptocurrency, including the transactions and balances APIs, for 10K+ daily users.",
+"tags": [
+"web3",
+"shiba",
+"platform"
+],
+"paraphrases": [
+"What did he do at Shiba Inu?",
+"Tell me about Shib.io",
+"What platforms has he built?",
+"Has he worked in crypto?",
+"Biggest platform he has built?"
+],
+"action": {
+"tool": "open_case",
+"arg": "shiba-inu"
+}
+},
+{
+"id": "shib.indexers",
+"title": "On-chain indexing",
+"text": "He built Subsquid indexers for on-chain event data at Shiba Inu, and The Graph indexing at ElasticSwap.",
+"tags": [
+"web3",
+"indexing",
+"subsquid"
+],
+"paraphrases": [
+"Has he built blockchain indexers?",
+"Subsquid or The Graph?",
+"On-chain data experience?",
+"Can he index events from a chain?"
+],
+"action": {
+"tool": "open_case",
+"arg": "shiba-inu"
+}
+},
+{
+"id": "shib.bridge",
+"title": "Bridge and swap",
+"text": "He built the cross-chain bridge and the token swap for Shiba Inu.",
+"tags": [
+"web3",
+"bridge",
+"defi"
+],
+"paraphrases": [
+"Has he built a bridge?",
+"Token swap experience?",
+"DeFi work?",
+"Cross-chain experience?"
+],
+"action": {
+"tool": "open_case",
+"arg": "shiba-inu"
+}
+},
+{
+"id": "shib.frontend",
+"title": "Frontend at scale",
+"text": "At Shiba Inu he built a shared React component library in Storybook and improved load performance with code splitting and lazy loading, with Jest and Cypress tests.",
+"tags": [
+"frontend",
+"performance",
+"design system"
+],
+"paraphrases": [
+"Has he built a component library?",
+"Does he care about performance?",
+"Storybook experience?",
+"Frontend testing?"
+],
+"action": {
+"tool": "open_case",
+"arg": "shiba-inu"
+}
+},
+{
+"id": "shib.go",
+"title": "Go",
+"text": "He writes Go in production: the Shiba Inu backend ran on Go, Node.js and TypeScript.",
+"tags": [
+"go",
+"backend"
+],
+"paraphrases": [
+"Does he know Go?",
+"Golang experience?",
+"Backend languages?",
+"Has he used Go in production?"
+],
+"action": {
+"tool": "open_case",
+"arg": "shiba-inu"
+}
+},
+{
+"id": "client.endeavor",
+"title": "Endeavor (OpenSpeaker)",
+"text": "Through Toptal he was a senior backend engineer on OpenSpeaker, Endeavor's enterprise platform for booking talks and meetings with high-profile speakers.",
+"tags": [
+"enterprise",
+"endeavor",
+"backend"
+],
+"paraphrases": [
+"Has he worked with enterprise clients?",
+"What did he build for Endeavor?",
+"Tell me about OpenSpeaker",
+"Big-company experience?",
+"Has he worked with large companies?",
+"Enterprise software experience?"
+],
+"action": {
+"tool": "open_case",
+"arg": "openspeaker"
+}
+},
+{
+"id": "client.gatheredhere",
+"title": "GatheredHere",
+"text": "Full-stack on GatheredHere, Australia's largest funeral-services platform, built on Next.js.",
+"tags": [
+"fullstack",
+"nextjs",
+"australia"
+],
+"paraphrases": [
+"What is GatheredHere?",
+"Next.js production work?",
+"Has he worked with Australian clients?",
+"Consumer platform experience?"
+],
+"action": {
+"tool": "open_case",
+"arg": "gatheredhere"
+}
+},
+{
+"id": "client.elasticswap",
+"title": "ElasticSwap",
+"text": "He built The Graph API, on-chain indexing and the exchange frontend for ElasticSwap, a DeFi AMM DEX.",
+"tags": [
+"web3",
+"defi",
+"dex"
+],
+"paraphrases": [
+"What did he build for ElasticSwap?",
+"Has he built a DEX?",
+"AMM experience?",
+"DeFi frontend?"
+],
+"action": {
+"tool": "open_case",
+"arg": "elasticswap"
+}
+},
+{
+"id": "client.zvoid",
+"title": "Zvoid",
+"text": "For Zvoid he built a YouTube analytics product combining API data, scraping and AI-generated suggestions.",
+"tags": [
+"ai",
+"analytics",
+"youtube"
+],
+"paraphrases": [
+"What is Zvoid?",
+"Has he built analytics products?",
+"YouTube data experience?",
+"Scraping experience?"
+],
+"action": {
+"tool": "open_case",
+"arg": "zvoid"
+}
+},
+{
+"id": "client.toptal",
+"title": "Toptal",
+"text": "From 2021 to 2023 he worked through Toptal as a senior engineer for Endeavor, GatheredHere, ElasticSwap and Zvoid.",
+"tags": [
+"toptal",
+"contract",
+"clients"
+],
+"paraphrases": [
+"Has he worked through Toptal?",
+"Who were his Toptal clients?",
+"Contract experience?",
+"Has he freelanced?"
+],
+"action": {
+"tool": "open_case",
+"arg": "openspeaker"
+}
+},
+{
+"id": "client.arch",
+"title": "Mental Health Foundation platform",
+"text": "At Arch Systems he was tech lead for the Mental Health Foundation's screening-test platform used by practitioners, and owned architecture and delivery.",
+"tags": [
+"healthcare",
+"lead",
+"architecture",
+"medical"
+],
+"paraphrases": [
+"Has he led a team?",
+"Healthcare experience?",
+"Has he been a tech lead?",
+"What did he do at Arch Systems?",
+"Healthcare or medical software?",
+"Mental health tech experience?"
+],
+"action": {
+"tool": "open_case",
+"arg": "arch-mhf"
+}
+},
+{
+"id": "client.arch.dashboards",
+"title": "Real-time dashboards",
+"text": "He set up a reusable component design system and built React dashboards with real-time data visualisation for the Mental Health Foundation platform.",
+"tags": [
+"dashboards",
+"dataviz",
+"react"
+],
+"paraphrases": [
+"Has he built dashboards?",
+"Data visualisation?",
+"Real-time UI?",
+"Design system work?"
+],
+"action": {
+"tool": "open_case",
+"arg": "arch-mhf"
+}
+},
+{
+"id": "client.koji",
+"title": "Koji",
+"text": "At Gometa he built most of the templates creators used to make Kojis, and ran the approval and allocation workflow for new apps and games.",
+"tags": [
+"koji",
+"creator",
+"games"
+],
+"paraphrases": [
+"What did he do at Koji?",
+"Creator platform experience?",
+"What is Gometa?",
+"Templates for creators?"
+],
+"action": {
+"tool": "open_case",
+"arg": "koji"
+}
+},
+{
+"id": "client.aftertutor",
+"title": "Aftertutor and Bewakoof",
+"text": "As lead developer at Aftertutor he delivered the Bewakoof e-commerce site and shipped Play Store apps with 100K+, 50K+ and 10K+ installs.",
+"tags": [
+"mobile",
+"ecommerce",
+"lead"
+],
+"paraphrases": [
+"Has he built e-commerce?",
+"Mobile apps with real users?",
+"What is Bewakoof?",
+"What did he do at Aftertutor?",
+"Has he built an online shop?",
+"E-commerce website experience?"
+],
+"action": {
+"tool": "open_case",
+"arg": "aftertutor"
+}
+},
+{
+"id": "client.mobile",
+"title": "Mobile",
+"text": "He built native Android and iOS apps, then moved the Aftertutor team to React Native. Kotlin, Java and Swift on native.",
+"tags": [
+"mobile",
+"react native",
+"android",
+"ios"
+],
+"paraphrases": [
+"Does he do mobile?",
+"React Native experience?",
+"iOS or Android?",
+"Native app development?"
+],
+"action": {
+"tool": "open_case",
+"arg": "aftertutor"
+}
+},
+{
+"id": "client.scaleflow",
+"title": "Scaleflow",
+"text": "At Scaleflow he was the sole full-time engineer on a sprint-productivity app, working directly with the CTO and owning the build end to end in Ember.js and Ruby on Rails.",
+"tags": [
+"rails",
+"sole engineer",
+"startup"
+],
+"paraphrases": [
+"Has he been the only engineer?",
+"Ruby on Rails experience?",
+"Ember.js?",
+"Can he own a product alone?"
+]
+},
+{
+"id": "client.radegg",
+"title": "RadEgg",
+"text": "His first role, from 2012 to 2016: he designed and built a mobile-first anti-theft web app at RadEgg that reached 20,000 users in six months, and migrated a jQuery codebase to React.",
+"tags": [
+"first job",
+"ux",
+"react"
+],
+"paraphrases": [
+"What was his first job?",
+"What did he do before 2016?",
+"Has he done UX design?",
+"Early career?"
+]
+},
+{
+"id": "client.iot",
+"title": "IoT",
+"text": "He built IoT systems at Aftertutor alongside the mobile apps.",
+"tags": [
+"iot",
+"hardware"
+],
+"paraphrases": [
+"Has he done IoT?",
+"Hardware experience?",
+"Embedded or connected devices?"
+],
+"action": {
+"tool": "open_case",
+"arg": "aftertutor"
+}
+},
+{
+"id": "client.payments",
+"title": "Payments and auth",
+"text": "He implemented Stripe payments and OAuth login flows at Koji.",
+"tags": [
+"stripe",
+"oauth",
+"payments"
+],
+"paraphrases": [
+"Has he integrated Stripe?",
+"OAuth experience?",
+"Payments experience?",
+"Login flows?"
+],
+"action": {
+"tool": "open_case",
+"arg": "koji"
+}
+},
+{
+"id": "games.overview",
+"title": "Games",
+"text": "He has made games his whole life: web games at Koji across Phaser, Three.js, PixiJS and PlayCanvas, Unity and Godot via JavaScript bridges, and the 60 fps runtime at CodeWisp.",
+"tags": [
+"games",
+"phaser",
+"threejs",
+"unity",
+"godot"
+],
+"paraphrases": [
+"Does he make games?",
+"Game development experience?",
+"Does he know Unity?",
+"Three.js or Phaser?",
+"Has he worked on game engines?"
+],
+"action": {
+"tool": "open_case",
+"arg": "koji"
+}
+},
+{
+"id": "games.community",
+"title": "Game-dev community",
+"text": "He runs a game-development community of 5,000+ members and hosts online game jams on itch.io, including the CodeWisp Game Jam, Bullet Hell Jam and Spooktober.",
+"tags": [
+"community",
+"game jams",
+"leadership"
+],
+"paraphrases": [
+"Does he run a community?",
+"Game jams?",
+"Community leadership?",
+"Does he organise events?"
+]
+},
+{
+"id": "games.threejs",
+"title": "3D on the web",
+"text": "He builds 3D on the web with Three.js: at Koji, and the deterministic 2D/3D runtime at CodeWisp.",
+"tags": [
+"3d",
+"threejs",
+"webgl"
+],
+"paraphrases": [
+"Can he do 3D?",
+"WebGL experience?",
+"Three.js projects?",
+"Graphics programming?"
+],
+"action": {
+"tool": "open_case",
+"arg": "codewisp"
+}
+},
+{
+"id": "work.ownership",
+"title": "End-to-end ownership",
+"text": "He owns systems end to end: service boundaries, API contracts and data design through frontend architecture and delivery.",
+"tags": [
+"ownership",
+"fullstack",
+"architecture"
+],
+"paraphrases": [
+"Can he own a system end to end?",
+"Is he really full-stack?",
+"Does he do architecture?",
+"Backend and frontend both?"
+]
+},
+{
+"id": "work.customers",
+"title": "Working with customers",
+"text": "Much of his work has him in the room with the customer: scoping with stakeholders, building fast, demoing, and iterating on their feedback across time zones.",
+"tags": [
+"customers",
+"fde",
+"communication"
+],
+"paraphrases": [
+"Is he customer-facing?",
+"Can he talk to clients?",
+"How does he communicate?",
+"Can he scope with stakeholders?"
+]
+},
+{
+"id": "work.style",
+"title": "How he works",
+"text": "Scope it on a call, build it, demo it, ship the next version. Teams get working software early and decisions made on real output.",
+"tags": [
+"process",
+"delivery"
+],
+"paraphrases": [
+"What's he like to work with?",
+"What is his process?",
+"How does he run a project?",
+"How fast does he deliver?"
+]
+},
+{
+"id": "work.leadership",
+"title": "Leadership",
+"text": "He has been tech lead at Arch Systems, lead developer at Aftertutor, and the sole engineer beside a CTO at Scaleflow.",
+"tags": [
+"leadership",
+"lead"
+],
+"paraphrases": [
+"Can he lead engineers?",
+"Management experience?",
+"Has he led developers?",
+"Is he a team lead?"
+],
+"action": {
+"tool": "open_case",
+"arg": "arch-mhf"
+}
+},
+{
+"id": "work.quality",
+"title": "Quality and delivery",
+"text": "Jest, React Testing Library, Cypress and Sentry for quality; Docker, GitHub Actions, AWS (core services, CloudFront) and Vercel for delivery, with staging and preview environments.",
+"tags": [
+"testing",
+"devops",
+"aws"
+],
+"paraphrases": [
+"Does he write tests?",
+"CI/CD experience?",
+"Does he know AWS?",
+"Docker?",
+"DevOps?"
+]
+},
+{
+"id": "work.frontend",
+"title": "Frontend",
+"text": "React, Next.js, Svelte, Vue and Angular; design systems in Storybook, Redux and Zustand, code splitting, Core Web Vitals and WCAG accessibility.",
+"tags": [
+"frontend",
+"react",
+"nextjs"
+],
+"paraphrases": [
+"Frontend frameworks?",
+"Does he know React?",
+"Next.js?",
+"Svelte or Vue?",
+"Accessibility?",
+"Strong in React?"
+]
+},
+{
+"id": "work.backend",
+"title": "Backend",
+"text": "Node.js, Express, Go and Laravel; REST and GraphQL schema design; PostgreSQL (Supabase), MongoDB and Redis.",
+"tags": [
+"backend",
+"api",
+"database"
+],
+"paraphrases": [
+"Backend stack?",
+"GraphQL experience?",
+"Which databases?",
+"PostgreSQL?",
+"API design?",
+"What databases does he work with?"
+]
+},
+{
+"id": "work.languages",
+"title": "Programming languages",
+"text": "TypeScript, JavaScript, Go, Python, PHP, Java, Kotlin, Swift and Lua.",
+"tags": [
+"languages",
+"python",
+"typescript"
+],
+"paraphrases": [
+"Which programming languages does he know?",
+"Does he know Python?",
+"TypeScript?",
+"PHP?"
+]
+},
+{
+"id": "work.typescript",
+"title": "TypeScript",
+"text": "He has used TypeScript since 2016: about ten years, front end and back end.",
+"tags": [
+"typescript",
+"years"
+],
+"paraphrases": [
+"How long has he used TypeScript?",
+"Is he strong in TypeScript?",
+"Years of TypeScript?",
+"JavaScript experience?"
+]
+},
+{
+"id": "work.timezone",
+"title": "Hours and timezone",
+"text": "He works from India (IST) and overlaps with US and EU hours.",
+"tags": [
+"timezone",
+"hours",
+"remote"
+],
+"paraphrases": [
+"What timezone does he work in?",
+"Can he overlap with US hours?",
+"Will he work EU hours?",
+"When is he online?"
+]
+},
+{
+"id": "work.start",
+"title": "Start date",
+"text": "He can start now: his CodeWisp contract ended on 15 November 2026.",
+"tags": [
+"availability",
+"start"
+],
+"paraphrases": [
+"When can he start?",
+"Is he available?",
+"What is his notice period?",
+"Is he currently employed?",
+"Why did he leave CodeWisp?"
+]
+},
+{
+"id": "work.type",
+"title": "Full-time or contract",
+"text": "Full-time is the goal, with the right team. Short contracts work meanwhile.",
+"tags": [
+"full-time",
+"contract"
+],
+"paraphrases": [
+"Does he want full-time?",
+"Would he do a contract?",
+"Is he open to freelance?",
+"Part-time?"
+]
+},
+{
+"id": "work.oss.reviews",
+"title": "Reading other teams' code",
+"text": "He reviews open-source TypeScript libraries and reports correctness and concurrency defects to maintainers, for example in tldraw, RivetKit, Polotno and Revideo.",
+"tags": [
+"open source",
+"code review"
+],
+"paraphrases": [
+"Does he do code review?",
+"Open-source contributions?",
+"Can he find bugs in other code?",
+"Concurrency bugs?"
+]
+},
+{
+"id": "contact.email",
+"title": "Contact",
+"text": "The fastest way is email. The button opens a message to him.",
+"tags": [
+"contact",
+"email",
+"hire"
+],
+"paraphrases": [
+"How do I contact him?",
+"How do I reach Harman?",
+"Can I email him?",
+"I want to hire him",
+"How do I get in touch?",
+"Recruit Harman"
+],
+"action": {
+"tool": "contact"
+}
+},
+{
+"id": "contact.resume",
+"title": "Résumé",
+"text": "His résumé is a PDF. There's a second version for forward deployed roles.",
+"tags": [
+"resume",
+"cv",
+"pdf"
+],
+"paraphrases": [
+"Can I see his résumé?",
+"Download his CV",
+"Is there a PDF?",
+"Forward deployed résumé?"
+],
+"action": {
+"tool": "open_resume",
+"arg": "main"
+}
+},
+{
+"id": "contact.links",
+"title": "Links",
+"text": "His code is on GitHub and his career history is on LinkedIn; both are linked in the footer.",
+"tags": [
+"github",
+"linkedin",
+"links"
+],
+"paraphrases": [
+"Where is his GitHub?",
+"LinkedIn profile?",
+"Where can I see his code?",
+"Social links?"
+]
+},
+{
+"id": "side.overview",
+"title": "What he builds for fun",
+"text": "Side quests: small open-source apps he takes from idea to public release in a few days, to keep his shipping fast. They're practice, not the record.",
+"tags": [
+"side",
+"indie",
+"toys"
+],
+"paraphrases": [
+"What does he build for fun?",
+"Side projects?",
+"Does he have hobby projects?",
+"Indie hacking?",
+"What are the side quests?"
+],
+"side": true
+},
+{
+"id": "side.taxi",
+"title": "Taxi Meter",
+"text": "Taxi Meter, a Mac menu-bar app that shows what Claude Code costs as a live fare. Built and released in days, AGPL-3.0.",
+"tags": [
+"side",
+"taxi meter",
+"mac"
+],
+"paraphrases": [
+"What is Taxi Meter?",
+"Mac app he made?",
+"Claude Code cost tracker?",
+"Menu bar app?"
+],
+"side": true,
+"action": {
+"tool": "play_toy",
+"arg": "taxi-meter"
+}
+},
+{
+"id": "side.typed",
+"title": "Typed by Hand",
+"text": "Typed by Hand, a writing pad that records every keystroke on your device and replays your text, typos included. It runs right here.",
+"tags": [
+"side",
+"typed by hand",
+"writing"
+],
+"paraphrases": [
+"What is Typed by Hand?",
+"Writing replay app?",
+"Can I try one of his apps?",
+"Keystroke replay?"
+],
+"side": true,
+"action": {
+"tool": "play_toy",
+"arg": "typed-by-hand"
+}
+},
+{
+"id": "side.codepost",
+"title": "codepost",
+"text": "codepost.dev, a small app that turns GitHub pushes into X posts approved in Telegram.",
+"tags": [
+"side",
+"codepost"
+],
+"paraphrases": [
+"What is codepost?",
+"codepost.dev?",
+"GitHub to Twitter app?",
+"Telegram approval bot?"
+],
+"side": true
+},
+{
+"id": "side.prs",
+"title": "Fixes merged upstream",
+"text": "When he reads another team's code he sends fixes, not complaints: five pull requests merged into Capgo's in-app purchases plugin in November 2026.",
+"tags": [
+"side",
+"open source",
+"capgo",
+"pull requests"
+],
+"paraphrases": [
+"Has he contributed to open source?",
+"Merged pull requests?",
+"What did he fix at Capgo?",
+"Show me his pull requests"
+],
+"side": true,
+"action": {
+"tool": "show_pr",
+"arg": "246"
+}
+},
+{
+"id": "work.comp",
+"title": "Rates and salary",
+"text": "Rates and salary he discusses directly. Email him with the role and its range.",
+"tags": [
+"salary",
+"rate",
+"compensation",
+"pay"
+],
+"paraphrases": [
+"What are his salary expectations?",
+"How much does he charge per hour?",
+"Is he expensive?",
+"What does he cost to hire?",
+"Pay expectations?",
+"Day rate for contracts?"
+],
+"action": {
+"tool": "contact"
+}
+}
+]
