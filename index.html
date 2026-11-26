@@ -256,6 +256,9 @@
 
   /* ---------- EXPERIENCE ---------- */
   .career{border-top:1px solid var(--line);}
+  .subh{font-family:var(--display);font-weight:600;font-size:clamp(24px,2.8vw,34px);letter-spacing:-.02em;margin:72px 0 10px;}
+  .subp{font-size:15.5px;color:var(--muted);max-width:720px;margin-bottom:26px;}
+  .subp a{color:var(--lime);}
   .job{display:block;padding:24px 14px;border-bottom:1px solid var(--line);transition:background .2s,padding .2s;position:relative;}
   .job::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--lime);transform:scaleY(0);transform-origin:top;transition:transform .3s;}
   .job:hover::before{transform:scaleY(1);}
@@ -376,6 +379,7 @@
       <a class="lnk" href="#career" data-cursor="VIEW">Experience</a>
       <a class="lnk" href="blog.html" data-cursor="VIEW">Writing</a>
       <a class="lnk" href="lab.html" data-cursor="VIEW">Lab</a>
+      <a class="lnk" href="#making" data-cursor="VIEW">Toys</a>
       <span class="nav-clock" id="clock">—</span>
       <button class="snd" id="snd" aria-label="Toggle sound" data-cursor="VIEW">SND OFF</button>
       <a class="nav-btn magnetic" href="#contact" data-cursor="OPEN">Hire me</a>
@@ -613,14 +617,23 @@
       <div class="kicker reveal"><span class="n">06</span> Experience <span class="rule"></span></div>
       <h2 class="big reveal-line" style="margin-bottom:44px;">Thirteen years,<br><em>end to end.</em></h2>
       <div class="career">
-        <div class="job reveal"><div class="jrow"><div class="co">CodeWisp (YC W26)</div><div class="ro">Senior Full-Stack Engineer, AI Platform</div><div class="tk">TypeScript · Node · React · Supabase · Claude</div><div class="yr">2026 — now</div></div><div class="jd">Built the agentic game-generation pipeline: multi-model Claude routing under a $6 per-run cap, an LLM-as-judge eval stage, a Lua sandbox for generated code and a 60 fps deterministic runtime. Worked directly with the founder.</div></div>
-        <div class="job reveal"><div class="jrow"><div class="co">Independent AI Products</div><div class="ro">Founder &amp; Lead Engineer</div><div class="tk">LLMs · CLI · PR triage</div><div class="yr">2025 — 26</div></div><div class="jd">Built Codepost, an AI code security scanner and PR-triage bot. Also prototyped an AML alert-triage copilot and a helpdesk auto-QA tool.</div></div>
+        <div class="job reveal"><div class="jrow"><div class="co">Independent Products</div><div class="ro">Founder &amp; Engineer</div><div class="tk">Gemini · GitHub · Telegram · Swift</div><div class="yr">2025 — now</div></div><div class="jd">Built and run codepost.dev, which turns GitHub pushes into X posts you approve in Telegram. Ship free, open-source toys and fix bugs upstream in other teams&#39; SDKs. Also prototyped an AML alert-triage copilot and a helpdesk auto-QA tool.</div></div>
+        <div class="job reveal"><div class="jrow"><div class="co">CodeWisp (YC W26)</div><div class="ro">Senior Full-Stack Engineer, AI Platform</div><div class="tk">TypeScript · Node · React · Supabase · Claude</div><div class="yr">2026</div></div><div class="jd">Built the agentic game-generation pipeline: multi-model Claude routing under a $6 per-run cap, an LLM-as-judge eval stage, a Lua sandbox for generated code and a 60 fps deterministic runtime. Worked directly with the founder.</div></div>
         <div class="job reveal"><div class="jrow"><div class="co">Shiba Inu</div><div class="ro">Senior Full-Stack Engineer</div><div class="tk">Go · Node · TypeScript · React · Svelte</div><div class="yr">2024 — 25</div></div><div class="jd">Developer portal, marketing sites, and metaverse web experience — plus Subsquid on-chain indexers, a cross-chain bridge, and the token swap.</div></div>
         <div class="job reveal"><div class="jrow"><div class="co">Arch Systems</div><div class="ro">Senior Full-Stack Developer &amp; Tech Lead</div><div class="tk">React · Design systems · Data viz</div><div class="yr">2023 — 24</div></div><div class="jd">Tech lead for the Mental Health Foundation's screening-test platform. Owned architecture and delivery, set up a component design system and built real-time React dashboards.</div></div>
         <div class="job reveal"><div class="jrow"><div class="co">Toptal</div><div class="ro">Senior Engineer — Endeavor, GatheredHere, ElasticSwap, Zvoid</div><div class="tk">Node · TypeScript · React · GraphQL</div><div class="yr">2021 — 23</div></div><div class="jd">Four clients across the contract: Endeavor's OpenSpeaker, Australia's GatheredHere, the ElasticSwap ($TIC) DEX, and Zvoid.</div></div>
         <div class="job reveal"><div class="jrow"><div class="co">Gometa (Koji)</div><div class="ro">Full-Stack &amp; Game Engineer</div><div class="tk">React · Svelte · Three.js · Unity · Godot</div><div class="yr">2020 — 21</div></div><div class="jd">Built most of the creator templates plus many games across the web game stack — React, Svelte, Three.js, Phaser, Unity and Godot.</div></div>
         <div class="job reveal"><div class="jrow"><div class="co">Scaleflow</div><div class="ro">Software Engineer — sole IC</div><div class="tk">Ember.js · Ruby on Rails</div><div class="yr">2018 — 19</div></div><div class="jd">Sole engineer on a sprint-productivity app, working directly with the CTO; Ember.js front end on a Ruby on Rails backend.</div></div>
         <div class="job reveal"><div class="jrow"><div class="co">Aftertutor Ventures</div><div class="ro">Lead Developer</div><div class="tk">PHP · Laravel · Node · React Native</div><div class="yr">2016 — 20</div></div><div class="jd">Bewakoof e-commerce, IoT work, and native then React Native mobile apps reaching 100K+, 50K+, and 10K+ Play Store installs.</div></div>
+      </div>
+      <h3 class="subh reveal">Open source, merged upstream.</h3>
+      <p class="subp reveal d1">I find real bugs in other teams' SDKs and send the fix with a test. Five merged into Capgo's in-app purchases plugin in November 2026; the first shipped the same day in 8.9.7. More open with Valyu, SignWell, Intlayer, Agent Relay and KugelAudio. <a href="https://github.com/pulls?q=is%3Apr+author%3Ahammyasf+-user%3Ahammyasf" target="_blank" rel="noopener">All my PRs &rarr;</a></p>
+      <div class="career">
+        <a class="job reveal" href="https://github.com/Cap-go/capacitor-native-purchases/pull/246" target="_blank" rel="noopener"><div class="jrow"><div class="co">Capgo</div><div class="ro">fix: add an explicit exit for unverified transactions</div><div class="tk">native-purchases #246</div><div class="yr">Merged</div></div></a>
+        <a class="job reveal" href="https://github.com/Cap-go/capacitor-native-purchases/pull/248" target="_blank" rel="noopener"><div class="jrow"><div class="co">Capgo</div><div class="ro">fix(android): keep billing client open until Play answers</div><div class="tk">native-purchases #248</div><div class="yr">Merged</div></div></a>
+        <a class="job reveal" href="https://github.com/Cap-go/capacitor-native-purchases/pull/249" target="_blank" rel="noopener"><div class="jrow"><div class="co">Capgo</div><div class="ro">fix(android): report the purchased product type</div><div class="tk">native-purchases #249</div><div class="yr">Merged</div></div></a>
+        <a class="job reveal" href="https://github.com/Cap-go/capacitor-native-purchases/pull/253" target="_blank" rel="noopener"><div class="jrow"><div class="co">Capgo</div><div class="ro">fix(ios): compare dotted build numbers</div><div class="tk">native-purchases #253</div><div class="yr">Merged</div></div></a>
+        <a class="job reveal" href="https://github.com/Cap-go/capacitor-native-purchases/pull/247" target="_blank" rel="noopener"><div class="jrow"><div class="co">Capgo</div><div class="ro">docs: correct unverified transaction follow-ups</div><div class="tk">native-purchases #247</div><div class="yr">Merged</div></div></a>
       </div>
     </div>
   </section>
@@ -629,6 +642,15 @@
   <section class="sec panel-bg" data-name="Beyond work" data-idx="07">
     <div class="wrap">
       <div class="kicker reveal"><span class="n">07</span> Beyond the day job <span class="rule"></span></div>
+      <div id="making">
+      <h3 class="subh reveal" style="margin-top:0">Things I make and run.</h3>
+      <p class="subp reveal d1">Small products I build, ship and keep running on my own. Plus a growing shelf of free, open-source toys. <a href="toys/">All toys &rarr;</a></p>
+      <div class="career" style="margin-bottom:64px">
+        <a class="job reveal" href="https://codepost.dev" target="_blank" rel="noopener"><div class="jrow"><div class="co">codepost.dev</div><div class="ro">Push code, get an X post drafted by Gemini, approve it in Telegram.</div><div class="tk">Next.js · Gemini · Telegram</div><div class="yr">Live</div></div></a>
+        <a class="job reveal" href="https://taxi-meter.codepost.dev/" target="_blank" rel="noopener"><div class="jrow"><div class="co">Taxi Meter</div><div class="ro">A live fare in your Mac menu bar for what Claude Code costs.</div><div class="tk">Swift · SwiftUI · AGPL</div><div class="yr">Free</div></div></a>
+        <a class="job reveal" href="https://typed-by-hand.codepost.dev/" target="_blank" rel="noopener"><div class="jrow"><div class="co">Typed by Hand</div><div class="ro">A writing pad that replays your text keystroke by keystroke, typos included.</div><div class="tk">Web · AGPL</div><div class="yr">Free</div></div></a>
+      </div>
+      </div>
       <div class="feature reveal">
         <div class="feature-in">
           <h3>I build communities, not just code.</h3>
