@@ -149,15 +149,19 @@
 "text": "He designed \"Judge\", an LLM-as-judge stage that verifies sprite consistency, level passability, win states and mechanics, retries failures, and logs findings to improve the system prompts.",
 "tags": [
 "ai",
+"check",
+"correct",
 "evals",
-"quality"
+"quality",
+"verify"
 ],
 "paraphrases": [
 "Has he built evals?",
-"How does he test LLM output?",
 "Does he know LLM-as-judge?",
 "How does he measure AI quality?",
-"Eval-driven prompt iteration?"
+"How does he check whether AI output is good?",
+"How does he make sure model answers are correct?",
+"Does he verify LLM results?"
 ],
 "action": {
 "tool": "open_case",
