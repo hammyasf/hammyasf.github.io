@@ -101,6 +101,7 @@ body.reading #world { filter: brightness(.7) saturate(.85) blur(3px); }
 .hint .touch { display: none; }
 @media (hover: none) and (pointer: coarse) { .hint .keys { display: none; } .hint .touch { display: inline; } }
 body.reading .label, body.reading .prompt, body.reading .hint, body.reading .bubble { opacity: 0 !important; animation: none; }
+body.reading .ask.on { opacity: 0; transform: translate(-50%, 30px); pointer-events: none !important; visibility: hidden; transition: opacity .3s ease, transform .3s ease, visibility 0s .3s; }
 
 .scroll-cue { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); font: 600 13px/1 Fredoka, sans-serif; color: #fff; text-decoration: none; text-shadow: 0 2px 0 #c98a6c; opacity: .9; }
 .fade { position: absolute; inset: 0; background: var(--cream); pointer-events: none; transition: opacity 1.6s ease; }
