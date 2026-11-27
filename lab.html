@@ -7,7 +7,7 @@
 <meta name="description" content="A growing collection of free, fast, privacy-first web tools built by Harman Kamboj, senior full-stack engineer. New tools ship regularly." />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="The Lab — free tools by Harman Kamboj" />
 <meta property="og:description" content="Free, fast, privacy-first web tools. New ones ship regularly." />
@@ -19,561 +19,135 @@
 <meta name="twitter:description" content="Free, fast, privacy-first web tools. New ones ship regularly." />
 <link rel="canonical" href="https://hammyasf.github.io/lab.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/hub.css">
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"The Lab — free tools by Harman Kamboj","url":"https://hammyasf.github.io/lab.html","description":"Free, fast, privacy-first web tools.","author":{"@type":"Person","name":"Harman Kamboj"}}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.08),transparent 55%);background-attachment:fixed;}
-  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
-  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
-  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  .nav-r a:hover{color:var(--ink);}
-  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
-  .bhero{padding:150px 0 10px;}
-  .bhero .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);}
-  .bhero h1{font-family:var(--display);font-weight:600;letter-spacing:-.03em;line-height:1.0;font-size:clamp(44px,8vw,92px);margin-top:14px;}
-  .bhero p{margin-top:20px;font-size:18px;color:#cdd8d3;max-width:640px;}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;padding:40px 0;}
-  .tool{display:block;border:1px solid var(--line);border-radius:20px;padding:26px;background:rgba(var(--surfaceRGB),.5);transition:border-color .3s,transform .25s var(--ease),background .3s;position:relative;overflow:hidden;}
-  .tool:hover{border-color:rgba(var(--accentRGB),.4);transform:translateY(-4px);background:rgba(var(--accentRGB),.05);}
-  .tool .cat{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);}
-  .tool h2{font-family:var(--display);font-weight:600;font-size:24px;letter-spacing:-.01em;margin:12px 0 8px;}
-  .tool p{color:var(--muted);font-size:15px;}
-  .tool .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;}
-  .tool .tags span{font-family:var(--mono);font-size:11px;color:var(--faint);border:1px solid var(--line);padding:3px 8px;border-radius:6px;}
-  .tool .use{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--accent);display:inline-flex;gap:6px;align-items:center;}
-  .soon{opacity:.55;}
-  footer{border-top:1px solid var(--line);margin-top:50px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-</style>
 </head>
-<body>
-<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="lab.html">Lab</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
-<main>
-  <header class="bhero"><div class="wrap">
+<body class="hub-page hub--lab">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html" aria-current="page">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="hub-main">
+  <header class="bhero patch">
     <div class="k">The Lab</div>
     <h1>Tools I ship,<br>free to use.</h1>
     <p>A growing collection of fast, privacy-first web tools. Built in public, one at a time. Everything runs in your browser, no sign-up, no upload.</p>
-  </div></header>
-  <section><div class="wrap">
-    <div class="grid">
-      <a class="tool" href="flexbox-lab.html">
-        <div class="cat">Layout engine · Explorable</div>
-        <h2>Freespace</h2>
-        <p>A complete CSS flexbox layout engine, written from scratch in plain JavaScript, laying out boxes right next to your browser doing the same job with real <code>display:flex</code> &mdash; so you can see the algorithm that is normally invisible. Move a slider and the panel underneath fills in with the actual numbers the spec asks for: each item&rsquo;s flex base size and where it came from, the line breaking, then the loop that resolves flexible lengths pass by pass, freezing every item that hits a min or a max and redistributing what is left to the others. It is the answer to the two questions everyone has about flexbox. Why does <em>flex-grow: 2</em> not make an item twice as wide? Because grow divides the leftover free space, not the container, and you can watch the ratio drift as you drag the width. Why does an item refuse to shrink and overflow instead? Because <em>min-width</em> defaults to auto on flex items, which resolves to roughly the size of its content rather than to zero, and the trace shows it freezing there. The honest part is the comparison: after every change both layouts are measured box by box and the badge reports the largest difference in pixels, and a fuzz button generates 400 random containers and items and checks every one against your browser, so the engine has to prove itself instead of being taken on trust. Ten presets for the classic puzzles, the CSS to copy, and nothing uploaded.</p>
-        <div class="tags"><span>Flexbox spec from scratch</span><span>Live diff vs your browser</span><span>400-case fuzzer</span><span>No dependencies</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="rollback-netcode.html">
-        <div class="cat">Game networking · Explorable</div>
-        <h2>Ghostframe</h2>
-        <p>Two complete game clients, side by side, connected by a fake internet whose latency, jitter and packet loss you control with sliders. Play one of them and watch the other predict you, get it wrong, and quietly re-simulate the last few frames to catch up. This is <em>rollback netcode</em>, the technique fighting games use so your own inputs never feel late: the client runs ahead using a guess for what you are pressing, snapshots the game state every frame, and when your real input arrives and contradicts the guess it restores the snapshot and re-runs every frame since, all inside one displayed frame. Because both clients are on screen at once you can see the thing that is normally invisible &mdash; the orange ghost marking where the peer was believed to be before a correction, a per-frame timeline colouring each frame as confirmed or predicted with red spikes where rollbacks happened, and live counters for prediction hit rate, rollbacks per second and how many times the simulation actually ran per frame drawn. Flip to delay-based lockstep and the game stops guessing and starts freezing instead; flip to naive and both clients desync on the first frame and never recover. The physics is deliberately integer-only, positions at a 1/64 pixel fixed-point scale with a hand-written integer square root, because re-simulation has to be bit-identical or none of it works &mdash; and both clients hash their state every frame so the page can show you, live, the newest frame it has verified identical on both sides. No server, no account, nothing uploaded.</p>
-        <div class="tags"><span>Rollback + prediction</span><span>Deterministic fixed-point sim</span><span>State hash desync check</span><span>No server</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="retune.html">
-        <div class="cat">Audio DSP · Real-time auto-tune</div>
-        <h2>Retune</h2>
-        <p>Sing into your mic and hear yourself auto-tuned to a musical key, live, with the whole thing running inside the browser tab. There is no server and nothing is uploaded &mdash; when you press start, the page opens your microphone with the Web Audio API and streams it through an <em>AudioWorklet</em>, a piece of DSP that runs on the browser&rsquo;s real-time audio thread, so the corrected voice comes back with only a few milliseconds of delay. Many times a second it estimates the pitch of your voice with the YIN algorithm, snaps that to the nearest note allowed by the key and scale you picked, and works out the exact ratio between where you are and where you should be. The worklet then pitch-shifts your live audio by that ratio using a granular overlap-add shifter with two crossfaded grains, so the sound stays continuous while it stretches the waveform. The retune-speed knob is the whole trick: at zero it yanks your pitch to the target instantly and holds it, quantizing your singing into hard steps &mdash; the robotic T-Pain sound &mdash; and turned up it glides in gently and fixes flat notes without anyone noticing. A live tuner ribbon draws your raw pitch against the snapped result so you can watch the correction happen, and you can record the corrected output and download the clip. Chromatic, major, minor and pentatonic scales, any key. Nothing you sing ever leaves your device.</p>
-        <div class="tags"><span>Web Audio · AudioWorklet</span><span>YIN pitch detection</span><span>Granular pitch-shift</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="atlas.html">
-        <div class="cat">On-device AI · Semantic map</div>
-        <h2>Atlas</h2>
-        <p>Paste any list of words or sentences and watch a real AI model lay them out on a map by <em>meaning</em> &mdash; fruit drifts to one corner, animals to another, and a word like &ldquo;bat&rdquo; lands quietly between the animals and the sports gear. Each line is turned into a 384-number vector by all-MiniLM-L6-v2, the same sentence-embedding model behind a lot of production search, running through Transformers.js on WebAssembly inside a Web Worker so the page never freezes. Those 384 dimensions are flattened to a 2D point with principal component analysis written from scratch, so distance on the screen is roughly distance in meaning. The colour groups come from k-means run on the full vectors, and the search box does what a vector database does: it embeds your query into the same space and ranks every item by cosine similarity, so typing &ldquo;something you eat&rdquo; lights up the foods even when they share no letters with your query. Click any point for its nearest neighbours, slide the cluster count and watch the groups re-form instantly, or hit &ldquo;show near-duplicates&rdquo; to catch the items that are really the same thing worded differently. The ~23&nbsp;MB model downloads once and then works offline, and nothing you paste ever leaves your device. Great for making sense of survey answers, feedback, tags, or a messy backlog.</p>
-        <div class="tags"><span>Transformers.js</span><span>all-MiniLM-L6-v2</span><span>PCA + k-means from scratch</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="gambit.html">
-        <div class="cat">Chess engine · Explorable</div>
-        <h2>Gambit</h2>
-        <p>Play a chess engine and watch it think while it does. Most chess apps show you the move and throw away the reasoning; this one puts the search on screen. While the engine is working you see the moves it is weighing at the top of its search, each one scored on a live bar, the ranking reshuffling as it looks deeper, and the principal variation &mdash; the line it expects if both sides play the best replies it can find. The engine is written from scratch in plain JavaScript with no chess library: a 0x88 board, full legal move generation with castling, en passant and promotion, alpha-beta search with iterative deepening, quiescence search so it never miscounts a trade halfway through, capture-first move ordering, and an evaluation built on material plus piece-square tables. It runs in a Web Worker, so the board stays responsive while it searches. Move generation in chess is either exactly right or quietly broken, so the page ships a <em>perft</em> panel: press the button and it counts every legal position to a fixed depth from six standard test positions and compares against the counts chess programmers have published, including Kiwipete &mdash; you can check the engine&rsquo;s correctness yourself rather than take it on trust. There are preset positions to load, including a mate in two where you can watch the score jump to M2 the moment the search gets deep enough to see it. No server, no account, and it keeps working offline.</p>
-        <div class="tags"><span>Alpha-beta from scratch</span><span>Search visualiser</span><span>Perft verified</span><span>No dependencies</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="wasmscope.html">
-        <div class="cat">Developer tool · WebAssembly</div>
-        <h2>Wasmscope</h2>
-        <p>Drop in any <em>.wasm</em> file and actually read it. You get the full section breakdown with a size bar for each one, so you can see which part of your module is really eating the bundle, plus every import, export, global, data segment and the memory it asks for. Pick a function and you get a real disassembly in WebAssembly text format, with byte offsets down the left and the block structure indented. Then the part browsers won&rsquo;t give you: press Step and run that function one instruction at a time, watching values push and pop off the operand stack while locals, globals, the call stack and a live hex view of linear memory update underneath. The <code>WebAssembly</code> API only hands you a compiled function to call &mdash; there is no way to pause it or read its stack &mdash; so this page carries its own WebAssembly implementation instead: a binary decoder, a disassembler and a stepping interpreter written from scratch in plain JavaScript with no dependencies. To prove the interpreter is honest, every run is also executed by your browser&rsquo;s real engine on the same inputs and the two answers are shown side by side with a match badge. It was checked the same way before shipping, against Node&rsquo;s engine across 128 numeric opcodes and about 28,700 argument combinations, including divide-by-zero traps, integer overflow, float rounding half-to-even and out-of-bounds memory access. There is a sample module built in so you can start without hunting for a file, and nothing you open is ever uploaded.</p>
-        <div class="tags"><span>Interpreter from scratch</span><span>WAT disassembly</span><span>No dependencies</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="lenia.html">
-        <div class="cat">Artificial life · Continuous CA</div>
-        <h2>Lenia</h2>
-        <p>A real continuous cellular automaton running live on your GPU. Lenia is Conway&rsquo;s Game of Life taken continuous: every cell holds a value between 0 and 1, the neighbourhood is a soft fuzzy ring instead of eight square cells, and time moves in small steps &mdash; and out of those smooth rules, life-like creatures emerge on their own. Load the famous <em>Orbium</em> and watch a little crescent swim across the grid holding its exact shape, the continuous cousin of the Game of Life glider. Every step is a convolution with the Lenia kernel followed by a bell-shaped growth function, run once per cell in a WebGL2 fragment shader that ping-pongs two floating-point textures each frame, so tens of thousands of cells each summing hundreds of neighbours stay comfortably real time. Grow a primordial soup that self-organizes out of pure noise, nudge the growth centre and width to morph the whole world between isolated blobs, writhing rotors and branching coral, or paint your own blob of life with the brush and see what it becomes. The grid wraps like a torus, so a creature that leaves one edge returns on the other. Nothing is uploaded; the whole simulation runs on your machine.</p>
-        <div class="tags"><span>WebGL2</span><span>Continuous cellular automata</span><span>Orbium glider</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="synapse.html">
-        <div class="cat">Explorable · Neural network</div>
-        <h2>Synapse</h2>
-        <p>Draw two blobs of dots, press play, and watch a real neural network learn to tell them apart in front of you. This is a genuine multilayer perceptron: the forward pass, the cross-entropy loss and the full backpropagation are all written from scratch in plain JavaScript, with no TensorFlow and no library of any kind. The coloured background is the network&rsquo;s live opinion about every point on the plane, redrawn each training step as the boundary bends itself around your data, and half your points are held out as a test set so you can catch it overfitting. Add hidden layers and watch the famously hard two-spiral dataset finally crack; delete a layer and watch it fail because a single layer can only make straight cuts. Every neuron shows a little tile of the feature it has learned, and the edges between them are the weights &mdash; blue pulling the answer one way, orange the other, thickness for strength &mdash; so you can literally see simple edge detectors combine into curves. Switch between tanh, ReLU and sigmoid, between Adam and momentum SGD, dial the learning rate, noise and L2 regularisation, then export the trained weights plus a dependency-free predict() function. Nothing is uploaded; the whole thing trains on your device.</p>
-        <div class="tags"><span>Backprop from scratch</span><span>No libraries</span><span>Live boundary</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="ember.html">
-        <div class="cat">Web3 · Live on-chain</div>
-        <h2>Ember</h2>
-        <p>Watch Ethereum&rsquo;s fee market work in real time: the base fee, how full each block is against its target, and the ETH being burned block by block. Since EIP-1559, every block has a base fee the protocol sets for itself with no auction, and that base fee is <em>burned</em> &mdash; destroyed forever &mdash; instead of paid to a validator. Ember reads it straight from a node in your browser: a gauge shows how full the last block ran, and because a block over the 50% target pushes the base fee up by up to 12.5% while an emptier one pulls it down, you can see cause and effect happen live. It also multiplies base fee by gas to tally the ETH going up in smoke since you opened the tab, and shows what a transfer, a token send, a swap or an NFT mint costs at this exact moment in both gwei and dollars. No wallet, no sign-up, no server &mdash; it only ever reads public chain data, cycling across several nodes so it stays live.</p>
-        <div class="tags"><span>EIP-1559</span><span>JSON-RPC</span><span>ETH burn</span><span>No wallet</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="morphogen.html">
-        <div class="cat">WebGPU · Reaction-diffusion</div>
-        <h2>Morphogen</h2>
-        <p>Grow living Turing patterns from a real Gray-Scott reaction-diffusion simulation, solved on your graphics card every frame with WebGPU compute shaders. Two virtual chemicals spread at different speeds while one reacts with the other, and spots, stripes, mazes, coral and self-replicating mitosis fall out of the maths on their own &mdash; the same mechanism Turing proposed for leopard rosettes and seashells. A compute shader runs once per cell in parallel over hundreds of thousands of cells, ping-ponging two buffers each step; because it&rsquo;s a live simulation and not a video, you can reach in and paint chemical B into a disc of cells and the field takes it from there. The clever part is the pattern map: only the feed and kill rates really matter, so the whole space is a little navigator you click through to jump between regimes, including the blends nobody named. Nine presets, six palettes, seamless wrap-around tiling, and PNG export for wallpaper. Nothing is ever uploaded.</p>
-        <div class="tags"><span>WebGPU compute</span><span>Gray-Scott</span><span>Turing patterns</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="upscale.html">
-        <div class="cat">On-device AI · Super-resolution</div>
-        <h2>Upscale</h2>
-        <p>Upscale and sharpen any image 2&times; or 4&times; with a real AI super-resolution model that runs entirely on your own device &mdash; no upload, no watermark, no per-image cost. Upscale runs Swin2SR, a Swin Transformer&nbsp;v2 super-resolution network, through Transformers.js on WebGPU where your browser supports it and WebAssembly everywhere else, all inside a Web Worker so the page never stutters. The hard part is doing it to a full-size photo without blowing up memory: the image is cut into overlapping tiles, each tile is upscaled on its own, and the pieces are stitched back with a feathered weighted blend across the overlap so no seams ever show. Three modes &mdash; a fast 2&times; sharpen, a 4&times; maximum enlarge, and a 4&times; mode tuned to strip JPEG blocking out of compressed photos and screenshots. Drag a before/after slider to compare, then download the PNG. Try the built-in sample or drop your own; the model downloads once, then works offline, and nothing you upscale ever leaves your machine.</p>
-        <div class="tags"><span>Transformers.js</span><span>Swin2SR</span><span>WebGPU / WASM</span><span>Tiled + no upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="cadence.html">
-        <div class="cat">Audio · Chord &amp; key detection</div>
-        <h2>Cadence</h2>
-        <p>Drop any song and get its chords, musical key, and tempo &mdash; worked out live in your browser, with nothing uploaded. Cadence decodes your audio with the Web Audio API, runs an FFT to build a chromagram of how much of each of the twelve notes is sounding at every moment, then matches each instant against all 24 major and minor triads and smooths the sequence with a Viterbi decoder so the chords hold instead of flickering. The key comes from correlating the song&rsquo;s note profile with the Krumhansl-Schmuckle key profiles, and the tempo from an onset-strength envelope run through autocorrelation. Watch a colour-coded chord map and a live chromagram scroll under the player, click anywhere to seek, and copy the whole progression as a chord sheet. Try the built-in sample or drop an MP3, WAV, M4A, FLAC or OGG &mdash; it works offline, no model to download.</p>
-        <div class="tags"><span>Web Audio</span><span>Chromagram + FFT</span><span>Viterbi</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="inquire.html">
-        <div class="cat">On-device AI · Reading comprehension</div>
-        <h2>Inquire</h2>
-        <p>Paste a contract, report, or article, ask it a question in plain English, and watch a real AI reach into the text and highlight the exact answer &mdash; all without a single byte leaving your machine. Inquire runs a DistilBERT model fine-tuned on SQuAD as ONNX weights through Transformers.js on WebAssembly, in a Web Worker so the page never stutters. Because it does extractive question answering, it never invents facts: it locates the passage that answers you and shows a confidence score, so every answer is traceable back to the source. Documents longer than the model's context are split into overlapping windows, each scored, and the single most confident answer across the whole thing wins. Try the built-in sample lease, drop a .txt / .md / .pdf, and ask away &mdash; the ~65&nbsp;MB model downloads once, then works offline.</p>
-        <div class="tags"><span>Transformers.js</span><span>DistilBERT SQuAD</span><span>WebAssembly</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="paint-cam.html">
-        <div class="cat">On-device AI · Neural style transfer</div>
-        <h2>Paint Cam</h2>
-        <p>A real neural network repaints your webcam into a living painting &mdash; and the whole model runs on your own GPU, right in the tab. Paint Cam loads a tiny fast-neural-style network (about 6.7&nbsp;MB) and runs it with ONNX Runtime Web through WebGPU: every frame, your camera image is turned into a tensor, pushed through the net on your graphics card, and painted back to the canvas at video rate. Pick from five classic styles &mdash; Candy, Mosaic, Rain Princess, Udnie, Pointilism &mdash; dial the style strength from a light filter to a full repaint, then snapshot a PNG or record the canvas to a clip. No camera? Drop in a photo instead. A sample styles itself on load, and nothing you point it at ever leaves your device.</p>
-        <div class="tags"><span>ONNX Runtime Web</span><span>WebGPU</span><span>Live webcam</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="collapse.html">
-        <div class="cat">Procedural · Wave Function Collapse</div>
-        <h2>Collapse</h2>
-        <p>Paint a tiny example and watch a Wave Function Collapse solver learn its rules and generate an endless, coherent tilemap in real time. It slides a small window over your drawing, collects every little tile it sees, and works out which tiles are allowed to touch &mdash; then fills a blank grid so every neighbourhood matches, one cell at a time. You literally watch the picture condense out of fog as each choice ripples through its neighbours. Six painterly presets, adjustable pattern size, seamless tiling, and PNG export. The whole solver runs in a Web Worker on your machine; nothing you paint is ever uploaded.</p>
-        <div class="tags"><span>Constraint solver</span><span>Overlapping model</span><span>Web Worker</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="cowrite.html">
-        <div class="cat">Realtime · Collaborative editor</div>
-        <h2>Cowrite</h2>
-        <p>A shared Markdown document that any number of people can edit at the same time &mdash; share a link and watch each other's cursors move as the words appear. Getting that right is harder than it looks: when two people type in the same spot at once, naive syncing loses edits. Cowrite uses a CRDT (Yjs) so every keystroke carries enough identity that all the edits merge deterministically into the exact same document on every screen, with nothing lost and no editing lock. Keystrokes become tiny binary deltas relayed over a realtime channel; the relay never sees a stored copy of your text. Markdown renders to a safe, sanitized live preview on the right as everyone types. No sign-up, no database &mdash; the note lives only in the browsers open right now.</p>
-        <div class="tags"><span>CRDT / Yjs</span><span>Live cursors</span><span>Supabase Realtime</span><span>No login</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="splat-studio.html">
-        <div class="cat">3D · Gaussian Splatting</div>
-        <h2>Splat Studio</h2>
-        <p>A photorealistic 3D scan, captured from a handful of photos, rendering live in a browser tab &mdash; and you can clean it up. Gaussian Splatting represents a scene as millions of tiny translucent 3D blobs; Splat Studio projects every one to the screen, works out its exact elliptical footprint from a covariance matrix, keeps them depth-sorted in a background worker, and blends them front-to-back, all on your GPU with WebGL2. Drop a <code>.splat</code> or a raw 3D Gaussian Splatting <code>.ply</code> (converted in-browser), orbit it, then switch to crop mode and box away the stray floaters that surround every scan and export a smaller, cleaner file. A sample galaxy is built in so it works with zero setup, and nothing is ever uploaded.</p>
-        <div class="tags"><span>WebGL2</span><span>Gaussian Splatting</span><span>.splat + .ply</span><span>Crop &amp; export</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="ripple.html">
-        <div class="cat">Physics · Wave simulation</div>
-        <h2>Ripple</h2>
-        <p>A real 2D wave equation, solved on your graphics card every single frame. Watch the double-slit experiment build up its striped interference pattern, see one narrow slit spray a wave in every direction, and focus a flat wave to a point through a slow lens &mdash; all live. Ripple stores the wave height in a floating-point texture and runs a finite-difference solver in a WebGL2 fragment shader across hundreds of thousands of cells, stepping the grid several times between frames. Paint walls, carve your own slits, drop single ripples, and change frequency and damping on the fly. Nothing is uploaded; the whole simulation runs on your GPU.</p>
-        <div class="tags"><span>WebGL2</span><span>Wave equation</span><span>Double-slit</span><span>Runs on your GPU</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="riscv-studio.html">
-        <div class="cat">Systems · RISC-V CPU</div>
-        <h2>RISC-V Studio</h2>
-        <p>Write RISC-V assembly, assemble it to real machine code, and single-step a genuine RV32I processor &mdash; all in a browser tab. It is a real fetch-decode-execute core: your text is turned into actual 32-bit instructions laid out in a simulated memory, and the CPU reads each word, decodes the opcode and register fields out of the raw bits, and runs it. Watch all 32 registers, the console, and every byte of memory update live, and see the exact binary encoding of each instruction split into its hardware fields. Loads, stores, branches, jumps, the stack, and the common pseudo-instructions all work, with samples from Fibonacci to a recursive factorial. No install, no toolchain, nothing uploaded.</p>
-        <div class="tags"><span>RV32I</span><span>Assembler + CPU</span><span>Step debugger</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="sonify.html">
-        <div class="cat">Audio · Image to sound</div>
-        <h2>Sonify</h2>
-        <p>Turn any image, word, or doodle into a sound whose spectrogram <em>is</em> that picture &mdash; the trick Aphex Twin used to hide a face in a track. Sonify reads your image row by row, turns each row into a pure tone and each pixel&rsquo;s brightness into how loud that tone is, then renders the whole stack offline with the browser&rsquo;s own Web Audio engine. Press play and a live FFT redraws your image out of what sounds like noise; download the WAV and open it in any spectrogram viewer to find it hiding there. Nothing is uploaded.</p>
-        <div class="tags"><span>Web Audio</span><span>Additive synthesis</span><span>Live FFT</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="distill.html">
-        <div class="cat">On-device AI · Summarization</div>
-        <h2>Distill</h2>
-        <p>Summarize an article, a transcript, or a whole PDF &mdash; any length &mdash; with a real AI model that runs entirely in your browser. A summarization model only reads about a thousand words at a time, so Distill splits long text into sections, summarizes each one, then summarizes those together, letting it handle documents far longer than the model&rsquo;s own limit. It also highlights the sentences your summary drew from most. Your text is never uploaded, and once the model caches it works offline.</p>
-        <div class="tags"><span>Transformers.js</span><span>DistilBART</span><span>Map-reduce</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="framewise.html">
-        <div class="cat">Media · Frame-accurate video</div>
-        <h2>Framewise</h2>
-        <p>Step through any video one exact frame at a time, right in your browser. A normal player only jumps between keyframes, so it skips the moment you actually want &mdash; the frame a club meets the ball, the single sharp frame in a shaky clip. Framewise demuxes the file and decodes every individual frame with WebCodecs, the browser&rsquo;s own hardware video decoder, all inside a Web Worker so the page never stutters. Onion-skin the previous frame, wipe between any two frames, and save the precise frame you land on as a full-resolution PNG. Your video is never uploaded.</p>
-        <div class="tags"><span>WebCodecs</span><span>MP4 demux</span><span>Onion skin</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="spotter.html">
-        <div class="cat">On-device AI · Object detection</div>
-        <h2>Spotter</h2>
-        <p>Point your camera, or drop in a photo, and a real AI model boxes and labels every object it sees, live. It recognises 80 everyday things &mdash; people, cups, laptops, dogs, cars &mdash; and counts each kind as it appears, keeping a thumbnail of every new object it spots. Built on Google&rsquo;s MediaPipe EfficientDet detector running through WebAssembly and your GPU, so every frame is analysed on your own machine and nothing is ever uploaded.</p>
-        <div class="tags"><span>MediaPipe</span><span>EfficientDet</span><span>Real-time</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="regexlab.html">
-        <div class="cat">Dev tool · Regex internals</div>
-        <h2>RegexLab</h2>
-        <p>See how a regular expression actually runs. Type a pattern and it compiles, on its own from-scratch engine, into a finite state machine you can watch step through your text character by character, with no backtracking. Then it grows a crafted input and charts the step count to expose catastrophic backtracking &mdash; the ReDoS bug that silently hangs servers. Two engines, side by side, all in your browser, nothing uploaded.</p>
-        <div class="tags"><span>Thompson NFA</span><span>Backtracking</span><span>ReDoS detector</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="gravity.html">
-        <div class="cat">Physics · N-body gravity</div>
-        <h2>Gravity</h2>
-        <p>A real N-body galaxy simulation running on your GPU. Tens of thousands of stars, each one gravitationally pulling on every other, recomputed every frame with WebGPU compute shaders. Spawn a spiral galaxy, slam two together, or drag your cursor to bend the field.</p>
-        <div class="tags"><span>WebGPU</span><span>Compute shaders</span><span>All-pairs N-body</span><span>Runs on your GPU</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="translator.html">
-        <div class="cat">On-device AI · Translation</div>
-        <h2>Private Translator</h2>
-        <p>Translate between 100+ languages with a real 600M-parameter neural model that runs entirely in your browser. Your text is never uploaded, and once the model caches, it keeps translating with your internet off &mdash; on a plane, in a clinic, anywhere. Powered by Meta&rsquo;s open NLLB-200.</p>
-        <div class="tags"><span>Transformers.js</span><span>NLLB-200</span><span>WebAssembly</span><span>Offline</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="pixel-party.html">
-        <div class="cat">Real-time · Multiplayer</div>
-        <h2>Pixel Party</h2>
-        <p>A shared 64&times;64 pixel-art canvas you paint on together, live. Share a link and anyone who opens it places pixels next to you in real time, with their cursor hopping from cell to cell as they go. Every pixel you place is broadcast over a realtime channel to everyone in the room, and when someone joins late, one person already there hands them the whole grid in a single message. Replay a fast timelapse of how the art was built, or hit Save PNG for a crisp upscaled image. No sign-up, nothing stored by default.</p>
-        <div class="tags"><span>Supabase Realtime</span><span>Presence + broadcast</span><span>Live cursors</span><span>No sign-up</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="epicycle.html">
-        <div class="cat">Creative coding · Fourier</div>
-        <h2>Fourier Epicycle Machine</h2>
-        <p>Draw any shape in one stroke, or type your name, and a chain of spinning circles will retrace it in front of you. It runs a real Discrete Fourier Transform on your path right in the browser, turning it into rotating vectors stacked tip to tail. Drag the circle count down to watch the detail melt into a smooth blob, then back up to snap to your exact line. Record the rebuild as a video to share. No upload, no sign-up, works offline.</p>
-        <div class="tags"><span>Fourier transform</span><span>Canvas</span><span>Draw with circles</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="midi-player.html">
-        <div class="cat">Music · Web MIDI</div>
-        <h2>Pianola</h2>
-        <p>Drop a MIDI file and watch it play with Synthesia-style falling notes and a built-in synth, all parsed and rendered in your browser — nothing is uploaded. It reads the raw Standard MIDI File bytes itself: the tempo map, every track, and each note event. Plug in a real MIDI keyboard and play along with the keys lighting up, route a song out to a hardware synth or DAW, or record what you play and save it as a .mid file. Works offline, no sign-up.</p>
-        <div class="tags"><span>Web MIDI API</span><span>SMF parser</span><span>Web Audio</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="bundlescope.html">
-        <div class="cat">Dev tool · Bundle analysis</div>
-        <h2>Bundle Size Explorer</h2>
-        <p>Drop a minified JS bundle and its source map to see a zoomable treemap of exactly which files and npm packages are eating your bundle. It decodes the source map's VLQ mappings and attributes every byte of generated code back to its original file, the same way the source-map-explorer CLI does, but with no install and nothing uploaded. Group node_modules by package to spot the one dependency quietly costing you 200&nbsp;KB, and read the real gzipped size measured in your browser.</p>
-        <div class="tags"><span>Source maps</span><span>VLQ decode</span><span>Treemap</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="vocal-range.html">
-        <div class="cat">Audio · Real-time pitch</div>
-        <h2>Vocal Range Finder</h2>
-        <p>Sing your lowest note, then slide up to your highest, and watch your range fill in live. A real-time pitch tracker reads your voice many times a second right in the browser, then tells you your range, how many octaves you cover, and your closest voice type — bass to soprano. Your mic audio never leaves your device, and you get a shareable result card.</p>
-        <div class="tags"><span>Web Audio</span><span>McLeod Pitch Method</span><span>Voice type</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="path-tracer.html">
-        <div class="cat">Graphics · Real-time ray tracing</div>
-        <h2>WebGPU Path Tracer</h2>
-        <p>A real Monte Carlo path tracer running on your GPU, in a browser tab. Drag to orbit and the image accumulates samples live — true global illumination, soft shadows, mirror reflections and glass refraction. Switch the centre sphere between glass, metal and diffuse, or open the Cornell box to watch the walls bleed colour. No install, no upload, every ray is computed on your own machine.</p>
-        <div class="tags"><span>WebGPU</span><span>WGSL shaders</span><span>Monte Carlo</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="chat-with-pdf.html">
-        <div class="cat">On-device AI · Chat with PDF</div>
-        <h2>Vellum</h2>
-        <p>Drop in a PDF and ask it anything. A real language model and a semantic search index run entirely in your browser on your GPU, so the file is never uploaded. Answers are grounded in the document and cite the pages they came from, and you can click any citation to read the source. Works offline once the models cache.</p>
-        <div class="tags"><span>Local RAG</span><span>WebLLM + WebGPU</span><span>Transformers.js</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="ocr.html">
-        <div class="cat">On-device AI · OCR</div>
-        <h2>Scribe</h2>
-        <p>Drop a photo of handwriting, a receipt, or a screenshot and get clean, editable text. A real OCR transformer runs entirely in your browser — it finds each line and reads it on your own device, so your documents are never uploaded. Handwriting mode keeps the original capitalisation.</p>
-        <div class="tags"><span>Transformers.js</span><span>TrOCR</span><span>Line segmentation</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="green-screen.html">
-        <div class="cat">On-device AI · Live camera</div>
-        <h2>Green Screen Studio</h2>
-        <p>Blur or replace your webcam background in real time, with no green screen and no install. A neural segmentation model runs entirely in your browser to cut you out of your room, so your camera never leaves your device. Drop to a blur, a color, a scene, or your own image, then save a photo or record a clip.</p>
-        <div class="tags"><span>MediaPipe Segmenter</span><span>WebAssembly + GPU</span><span>Real-time matte</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="quakes-3d.html">
-        <div class="cat">Live data · 3D globe</div>
-        <h2>Quakes 3D</h2>
-        <p>Every earthquake on Earth, live on a 3D globe straight from the USGS feed. Spin the planet, filter by magnitude, and hit play to watch a whole month of quakes ripple across the map in seconds. Click any dot for its magnitude, depth, and time. Auto-refreshes, no sign-up.</p>
-        <div class="tags"><span>WebGL globe</span><span>USGS live feed</span><span>Time-lapse</span><span>Three.js</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="typing-race.html">
-        <div class="cat">Multiplayer · Typing race</div>
-        <h2>Typebolt</h2>
-        <p>A typing race you play with friends. Share the link and everyone types the same passage at the same moment, with each racer's car sliding along its lane live as they type. Only your progress and speed are shared, never your keystrokes, and nothing is stored. Alone, it's a clean typing speed test.</p>
-        <div class="tags"><span>Supabase Realtime</span><span>Presence</span><span>Live WPM</span><span>No sign-up</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="alt-text.html">
-        <div class="cat">On-device AI · Alt text</div>
-        <h2>Alt Text Studio</h2>
-        <p>Drop in your images and a real image-captioning AI writes the alt text for you, running entirely in your browser. A Vision Transformer reads each picture and a GPT-2 decoder describes it, all on your own CPU, so nothing is uploaded. Edit any description, then export them all as CSV or JSON.</p>
-        <div class="tags"><span>Transformers.js</span><span>ViT + GPT-2</span><span>Accessibility</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="fractal-lab.html">
-        <div class="cat">Generative art · GPU fractals</div>
-        <h2>Fractal Lab</h2>
-        <p>Zoom into the Mandelbrot set in real time and watch the matching Julia set appear live as you move your cursor. Every pixel is computed on your GPU with a WebGL2 shader, and emulated double precision keeps the deep zooms sharp. Frame a view, then export it as a 4K wallpaper.</p>
-        <div class="tags"><span>WebGL2 shader</span><span>Double precision</span><span>Deep zoom</span><span>4K export</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="beam.html">
-        <div class="cat">Peer-to-peer · File transfer</div>
-        <h2>Beam</h2>
-        <p>Send a file straight from your browser to someone else's — no upload, no account, no size cap. Drop a file, share the link or scan the QR, and it streams directly between the two browsers over an encrypted peer-to-peer connection. The file bytes never touch a server.</p>
-        <div class="tags"><span>WebRTC</span><span>Data channels</span><span>QR share</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="large-file-viewer.html">
-        <div class="cat">Dev tool · Large files</div>
-        <h2>Loupe — Large File Viewer</h2>
-        <p>Open and search files too big for your editor — multi-gigabyte logs, CSVs and JSONL, even gzipped. It streams the file so memory stays flat, jumps to line 40 million instantly, and draws a timeline showing where your matches cluster. Nothing is uploaded.</p>
-        <div class="tags"><span>Streams API</span><span>Web Worker</span><span>Regex + gzip</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="voicebox.html">
-        <div class="cat">On-device AI · Text to speech</div>
-        <h2>VoiceBox</h2>
-        <p>Type anything and hear it spoken in a natural voice — generated by a real 82M-parameter neural TTS model that runs entirely in your browser. 28 voices across American and British English, adjustable speed, instant WAV download. Your text is never uploaded, and after the first load it works offline.</p>
-        <div class="tags"><span>Kokoro 82M</span><span>Transformers.js</span><span>WebGPU / WASM</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="face-avatar.html">
-        <div class="cat">On-device AI · Avatar</div>
-        <h2>Face Avatar</h2>
-        <p>Become a live cartoon. A real face-tracking model runs entirely in your browser, reading 478 points and 52 expressions off your face, and a character mirrors your every blink, smile, and head turn in real time. Pick a character, record a clip — your camera never leaves your device.</p>
-        <div class="tags"><span>MediaPipe Face</span><span>478 landmarks</span><span>52 blendshapes</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="redactor.html">
-        <div class="cat">On-device AI · Privacy</div>
-        <h2>PII Redactor</h2>
-        <p>Paste text or drop a file and strip out personal data before you share it or paste it into an AI. Emails, phones, cards, SSNs, IPs and secrets are caught instantly, and a real BERT-NER model finds names, companies and places — all on your own device. Nothing is uploaded.</p>
-        <div class="tags"><span>Transformers.js</span><span>BERT-NER</span><span>Luhn + regex</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="photo-search.html">
-        <div class="cat">On-device AI · Image search</div>
-        <h2>Semantic Photo Search</h2>
-        <p>Drop in your photos and search them by what's in them — "a dog on the beach", "city at night", "something red" — even if the files are named IMG_4821. A real CLIP model runs entirely in your browser, so your whole photo library is searched privately on your own machine. Click any result to find visually similar shots.</p>
-        <div class="tags"><span>CLIP (ViT-B/16)</span><span>Transformers.js</span><span>Embeddings</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="particle-life.html">
-        <div class="cat">WebGPU · Artificial life</div>
-        <h2>Particle Life</h2>
-        <p>A few thousand particles, a small table of attraction rules, and life-like creatures appear on their own. Edit the rules, roll a new lifeform, and watch it self-organize. Every force between every pair of particles is computed on your GPU in real time, nothing uploaded.</p>
-        <div class="tags"><span>WebGPU</span><span>Compute shaders</span><span>Emergent</span><span>Editable matrix</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="webcam-theremin.html">
-        <div class="cat">AI · Live camera</div>
-        <h2>Webcam Theremin</h2>
-        <p>Wave your hands at your webcam and play a synth in the air, like a theremin. Your right hand sets the pitch, your left hand rides the volume, and a pinch adds vibrato. A real hand-tracking model runs on your GPU, so your camera never leaves your device. No webcam? Play it with your mouse.</p>
-        <div class="tags"><span>MediaPipe Hands</span><span>Web Audio</span><span>21 landmarks</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="liveboard.html">
-        <div class="cat">Multiplayer · Whiteboard</div>
-        <h2>Liveboard</h2>
-        <p>A whiteboard you draw on together. Share the link and anyone who opens it lands on the same canvas, with live cursors you can watch move in real time. Sketch, highlight, and drop sticky notes side by side. No sign-up, nothing stored.</p>
-        <div class="tags"><span>Supabase Realtime</span><span>Live cursors</span><span>Presence</span><span>No sign-up</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="fluid-sim.html">
-        <div class="cat">WebGPU · Fluid</div>
-        <h2>Fluid Simulation</h2>
-        <p>A real Navier-Stokes fluid solver running on your GPU with WebGPU. Stir glowing ink with your mouse, or drop a photo and melt it into liquid. Every frame is computed on your graphics card, nothing is uploaded. Record a clip or save a still.</p>
-        <div class="tags"><span>WebGPU</span><span>Compute shaders</span><span>Stable fluids</span><span>Photo to liquid</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="pocket-llm.html">
-        <div class="cat">AI · Local LLM</div>
-        <h2>Pocket LLM</h2>
-        <p>Chat with a real large language model that runs entirely in your browser on your own GPU. No server, no API key, no sign-up. Your messages never leave your device, and once a model downloads it keeps working with your internet off.</p>
-        <div class="tags"><span>WebLLM</span><span>WebGPU</span><span>Offline</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="postgres-playground.html">
-        <div class="cat">Dev tool · WASM Postgres</div>
-        <h2>Postgres Playground</h2>
-        <p>A real PostgreSQL database, compiled to WebAssembly, running entirely in your browser. Create tables, run joins and window functions, and your data persists locally between visits. Share a query as a link. Nothing is uploaded.</p>
-        <div class="tags"><span>PGlite</span><span>PostgreSQL 18</span><span>WebAssembly</span><span>Persistent</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="depth-studio.html">
-        <div class="cat">AI · Depth &amp; 3D</div>
-        <h2>Depth Studio</h2>
-        <p>Drop a photo and a real AI depth model turns it into a 3D parallax animation you can move with your mouse. The model and the 3D rendering both run in your browser, so nothing is uploaded. Export a depth map or a 3D video clip.</p>
-        <div class="tags"><span>transformers.js</span><span>Depth Anything V2</span><span>WebGL</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="hum-to-midi.html">
-        <div class="cat">Audio · Real-time</div>
-        <h2>Hum to MIDI</h2>
-        <p>Hum, sing, or whistle a melody and watch it become MIDI notes in real time on a live piano roll. Then download a MIDI file for your DAW. Pitch detection runs entirely in your browser, so your mic audio never leaves your device.</p>
-        <div class="tags"><span>Web Audio</span><span>Autocorrelation</span><span>MIDI export</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="secret-note.html">
-        <div class="cat">Security · Zero-knowledge</div>
-        <h2>Send a Secret</h2>
-        <p>Share a password or private note with a link that self-destructs after one read. It is encrypted in your browser with AES-256, and the key rides in the link, so the server only ever sees ciphertext. No sign-up.</p>
-        <div class="tags"><span>Web Crypto</span><span>AES-256-GCM</span><span>Self-destruct</span><span>Zero-knowledge</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="rep-counter.html">
-        <div class="cat">AI · Live camera</div>
-        <h2>AI Rep Counter</h2>
-        <p>Point your webcam at yourself and it counts your squats, push-ups, curls, sit-ups and jumping jacks automatically, with live form feedback. A real pose model runs in your browser, so your camera never leaves your device.</p>
-        <div class="tags"><span>MediaPipe Pose</span><span>WebAssembly</span><span>33 landmarks</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="ethereum-live.html">
-        <div class="cat">Web3 · Live on-chain</div>
-        <h2>Ethereum Live</h2>
-        <p>Watch the Ethereum mainnet build itself in real time. Every new block lands within seconds and each transaction is decoded straight from its calldata into a swap, transfer, NFT trade or contract call. No wallet, no sign-up, all in your browser.</p>
-        <div class="tags"><span>JSON-RPC</span><span>Calldata decode</span><span>Canvas</span><span>Live</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="theme-finder.html">
-        <div class="cat">AI · Text</div>
-        <h2>Theme Finder</h2>
-        <p>Paste a pile of survey answers, reviews, or notes and a real AI model groups them into themes by meaning, not keywords. The whole model runs in your browser, so nothing is uploaded. Export the groups as CSV.</p>
-        <div class="tags"><span>transformers.js</span><span>Embeddings</span><span>k-means</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="csv-dashboard.html">
-        <div class="cat">Data · Explorable</div>
-        <h2>Instant CSV Dashboard</h2>
-        <p>Drop a CSV and get a live dashboard. Click any chart or drag a range and every other chart re-filters in the same instant. Auto-detects columns, handles big files, exports your slice. Nothing is uploaded.</p>
-        <div class="tags"><span>Cross-filter</span><span>Typed indexes</span><span>Canvas</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="attractor-studio.html">
-        <div class="cat">Generative art · WebGL</div>
-        <h2>Strange Attractor Studio</h2>
-        <p>Turn four numbers into art. A million points iterate on your GPU in real time, building intricate strange-attractor patterns from chaos equations. Tweak the maths, pick a palette, export a 4K wallpaper. Nothing is uploaded.</p>
-        <div class="tags"><span>WebGL2</span><span>GPGPU</span><span>1M points</span><span>4K export</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="beat-maker.html">
-        <div class="cat">Real-time · Multiplayer</div>
-        <h2>Live Beat Maker</h2>
-        <p>A drum machine you play with other people. Share the room link and every beat you tap lands on everyone's grid at the same moment, with live cursors. All sound is synthesized in the browser, nothing is stored.</p>
-        <div class="tags"><span>Supabase Realtime</span><span>Web Audio</span><span>Presence</span><span>No sign-up</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="sql-playground.html">
-        <div class="cat">Data · SQL engine</div>
-        <h2>Browser SQL Playground</h2>
-        <p>Drop in a CSV, Parquet, or JSON file and query it with real analytical SQL. A full DuckDB database runs in your browser through WebAssembly, so nothing is uploaded. Export results as CSV or JSON.</p>
-        <div class="tags"><span>DuckDB-WASM</span><span>WebAssembly</span><span>CSV/Parquet</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="slime-simulation.html">
-        <div class="cat">WebGPU · Simulation</div>
-        <h2>Slime Mold Simulation</h2>
-        <p>Millions of agents drop trails and steer toward the strongest scent, building life-like networks in real time. It all runs on your GPU with WebGPU compute shaders. Paint with your mouse, tweak the rules, save a still.</p>
-        <div class="tags"><span>WebGPU</span><span>Compute shaders</span><span>Physarum</span><span>Generative</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="audio-to-text.html">
-        <div class="cat">AI · Speech</div>
-        <h2>Audio to Text</h2>
-        <p>Drop a recording and a real Whisper model transcribes it entirely in your browser. No upload, no minute limits. Export the text plus timestamped SRT and VTT subtitles.</p>
-        <div class="tags"><span>transformers.js</span><span>Whisper</span><span>WebGPU/WASM</span><span>SRT/VTT</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="bg-remover.html">
-        <div class="cat">AI · On-device</div>
-        <h2>AI Background Remover</h2>
-        <p>Drop a photo and a real AI model erases the background, running entirely in your browser. No upload, no sign-up, no watermark. Get a transparent PNG in seconds.</p>
-        <div class="tags"><span>transformers.js</span><span>RMBG-1.4</span><span>WebGPU/WASM</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="cron-generator.html">
-        <div class="cat">Dev tool · Cron</div>
-        <h2>Cron Expression Generator</h2>
-        <p>Type a cron schedule and get a plain-English explanation plus the next run times instantly. Visual fields, presets, and a copy button. Parses live in your browser.</p>
-        <div class="tags"><span>Cron parser</span><span>Next runs</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="quick-poll.html">
-        <div class="cat">App · Live data</div>
-        <h2>Free Poll Maker</h2>
-        <p>Create a poll, share the link, and watch results update live as people vote. No sign-up, no app. Anonymous and instant.</p>
-        <div class="tags"><span>Supabase</span><span>Shareable</span><span>Live results</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="pdf-to-jpg.html">
-        <div class="cat">PDF · Utility</div>
-        <h2>PDF to JPG</h2>
-        <p>Turn every page of a PDF into a JPG or PNG image. Pick the resolution, download pages one by one or all as a ZIP. 100% in your browser, no upload.</p>
-        <div class="tags"><span>pdf.js</span><span>Client-side</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="image-to-pdf.html">
-        <div class="cat">PDF · Utility</div>
-        <h2>Image to PDF</h2>
-        <p>Turn JPG, PNG, and WebP images into a single PDF. Drag to reorder, set page size and margins. 100% in your browser, no upload.</p>
-        <div class="tags"><span>Canvas</span><span>Client-side</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="merge-pdf.html">
-        <div class="cat">PDF · Utility</div>
-        <h2>Merge PDF</h2>
-        <p>Combine multiple PDFs into one. Drag to reorder, rotate, download. 100% in your browser, no upload.</p>
-        <div class="tags"><span>pdf-lib</span><span>Client-side</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="heic-to-jpg.html">
-        <div class="cat">Image · Utility</div>
-        <h2>HEIC to JPG Converter</h2>
-        <p>Turn iPhone HEIC photos into JPG, PNG, or WebP that open everywhere. Batch convert and resize, 100% in your browser.</p>
-        <div class="tags"><span>WASM</span><span>Client-side</span><span>No upload</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <a class="tool" href="image-converter.html">
-        <div class="cat">Image · Utility</div>
-        <h2>Image Converter &amp; Compressor</h2>
-        <p>Convert and compress PNG, JPG, and WebP, resize in bulk, shrink file size. 100% in your browser.</p>
-        <div class="tags"><span>Canvas</span><span>Client-side</span><span>Privacy-first</span></div>
-        <span class="use">Use tool &rarr;</span>
-      </a>
-      <div class="tool soon">
-        <div class="cat">Coming next</div>
-        <h2>A new tool, daily.</h2>
-        <p>I research what people actually need on Reddit, X, and Product Hunt, then build and ship a useful tool. Check back tomorrow.</p>
-        <div class="tags"><span>Building in public</span></div>
-      </div>
+    <nav class="lanes" aria-label="Shelves"><a class="chip" href="#ai-in-your-browser">AI in your browser</a><a class="chip" href="#simulations-art">Simulations &amp; art</a><a class="chip" href="#files-sound-media">Files, sound &amp; media</a><a class="chip" href="#live-together">Live &amp; together</a><a class="chip" href="#developer-tools">Developer tools</a></nav>
+  </header>
+  <section class="lab-shelf" aria-labelledby="ai-in-your-browser">
+    <div class="lab-shelf__head"><h2 class="lab-shelf__label" id="ai-in-your-browser">AI in your browser</h2><span class="lab-shelf__n">22 tools</span></div>
+    <div class="shelf__row">
+      <div class="slot"><a class="tool patch reveal" href="atlas.html"><span class="cat">On-device AI · Semantic map</span><h3>Atlas</h3><p>Paste any list of words or sentences and watch a real AI model lay them out on a map by <em>meaning</em> &mdash; fruit drifts to one corner, animals to another, and a word like &ldquo;bat&rdquo; lands quietly between the animals and the sports gear. Each line is turned into a 384-number vector by all-MiniLM-L6-v2, the same sentence-embedding model behind a lot of production search, running through Transformers.js on WebAssembly inside a Web Worker so the page never freezes. Those 384 dimensions are flattened to a 2D point with principal component analysis written from scratch, so distance on the screen is roughly distance in meaning. The colour groups come from k-means run on the full vectors, and the search box does what a vector database does: it embeds your query into the same space and ranks every item by cosine similarity, so typing &ldquo;something you eat&rdquo; lights up the foods even when they share no letters with your query. Click any point for its nearest neighbours, slide the cluster count and watch the groups re-form instantly, or hit &ldquo;show near-duplicates&rdquo; to catch the items that are really the same thing worded differently. The ~23&nbsp;MB model downloads once and then works offline, and nothing you paste ever leaves your device. Great for making sense of survey answers, feedback, tags, or a messy backlog.</p><div class="tags"><span class="chip">Transformers.js</span><span class="chip">all-MiniLM-L6-v2</span><span class="chip">PCA + k-means from scratch</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="upscale.html"><span class="cat">On-device AI · Super-resolution</span><h3>Upscale</h3><p>Upscale and sharpen any image 2&times; or 4&times; with a real AI super-resolution model that runs entirely on your own device &mdash; no upload, no watermark, no per-image cost. Upscale runs Swin2SR, a Swin Transformer&nbsp;v2 super-resolution network, through Transformers.js on WebGPU where your browser supports it and WebAssembly everywhere else, all inside a Web Worker so the page never stutters. The hard part is doing it to a full-size photo without blowing up memory: the image is cut into overlapping tiles, each tile is upscaled on its own, and the pieces are stitched back with a feathered weighted blend across the overlap so no seams ever show. Three modes &mdash; a fast 2&times; sharpen, a 4&times; maximum enlarge, and a 4&times; mode tuned to strip JPEG blocking out of compressed photos and screenshots. Drag a before/after slider to compare, then download the PNG. Try the built-in sample or drop your own; the model downloads once, then works offline, and nothing you upscale ever leaves your machine.</p><div class="tags"><span class="chip">Transformers.js</span><span class="chip">Swin2SR</span><span class="chip">WebGPU / WASM</span><span class="chip">Tiled + no upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="inquire.html"><span class="cat">On-device AI · Reading comprehension</span><h3>Inquire</h3><p>Paste a contract, report, or article, ask it a question in plain English, and watch a real AI reach into the text and highlight the exact answer &mdash; all without a single byte leaving your machine. Inquire runs a DistilBERT model fine-tuned on SQuAD as ONNX weights through Transformers.js on WebAssembly, in a Web Worker so the page never stutters. Because it does extractive question answering, it never invents facts: it locates the passage that answers you and shows a confidence score, so every answer is traceable back to the source. Documents longer than the model's context are split into overlapping windows, each scored, and the single most confident answer across the whole thing wins. Try the built-in sample lease, drop a .txt / .md / .pdf, and ask away &mdash; the ~65&nbsp;MB model downloads once, then works offline.</p><div class="tags"><span class="chip">Transformers.js</span><span class="chip">DistilBERT SQuAD</span><span class="chip">WebAssembly</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="paint-cam.html"><span class="cat">On-device AI · Neural style transfer</span><h3>Paint Cam</h3><p>A real neural network repaints your webcam into a living painting &mdash; and the whole model runs on your own GPU, right in the tab. Paint Cam loads a tiny fast-neural-style network (about 6.7&nbsp;MB) and runs it with ONNX Runtime Web through WebGPU: every frame, your camera image is turned into a tensor, pushed through the net on your graphics card, and painted back to the canvas at video rate. Pick from five classic styles &mdash; Candy, Mosaic, Rain Princess, Udnie, Pointilism &mdash; dial the style strength from a light filter to a full repaint, then snapshot a PNG or record the canvas to a clip. No camera? Drop in a photo instead. A sample styles itself on load, and nothing you point it at ever leaves your device.</p><div class="tags"><span class="chip">ONNX Runtime Web</span><span class="chip">WebGPU</span><span class="chip">Live webcam</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="distill.html"><span class="cat">On-device AI · Summarization</span><h3>Distill</h3><p>Summarize an article, a transcript, or a whole PDF &mdash; any length &mdash; with a real AI model that runs entirely in your browser. A summarization model only reads about a thousand words at a time, so Distill splits long text into sections, summarizes each one, then summarizes those together, letting it handle documents far longer than the model&rsquo;s own limit. It also highlights the sentences your summary drew from most. Your text is never uploaded, and once the model caches it works offline.</p><div class="tags"><span class="chip">Transformers.js</span><span class="chip">DistilBART</span><span class="chip">Map-reduce</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="spotter.html"><span class="cat">On-device AI · Object detection</span><h3>Spotter</h3><p>Point your camera, or drop in a photo, and a real AI model boxes and labels every object it sees, live. It recognises 80 everyday things &mdash; people, cups, laptops, dogs, cars &mdash; and counts each kind as it appears, keeping a thumbnail of every new object it spots. Built on Google&rsquo;s MediaPipe EfficientDet detector running through WebAssembly and your GPU, so every frame is analysed on your own machine and nothing is ever uploaded.</p><div class="tags"><span class="chip">MediaPipe</span><span class="chip">EfficientDet</span><span class="chip">Real-time</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="translator.html"><span class="cat">On-device AI · Translation</span><h3>Private Translator</h3><p>Translate between 100+ languages with a real 600M-parameter neural model that runs entirely in your browser. Your text is never uploaded, and once the model caches, it keeps translating with your internet off &mdash; on a plane, in a clinic, anywhere. Powered by Meta&rsquo;s open NLLB-200.</p><div class="tags"><span class="chip">Transformers.js</span><span class="chip">NLLB-200</span><span class="chip">WebAssembly</span><span class="chip">Offline</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="chat-with-pdf.html"><span class="cat">On-device AI · Chat with PDF</span><h3>Vellum</h3><p>Drop in a PDF and ask it anything. A real language model and a semantic search index run entirely in your browser on your GPU, so the file is never uploaded. Answers are grounded in the document and cite the pages they came from, and you can click any citation to read the source. Works offline once the models cache.</p><div class="tags"><span class="chip">Local RAG</span><span class="chip">WebLLM + WebGPU</span><span class="chip">Transformers.js</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="ocr.html"><span class="cat">On-device AI · OCR</span><h3>Scribe</h3><p>Drop a photo of handwriting, a receipt, or a screenshot and get clean, editable text. A real OCR transformer runs entirely in your browser — it finds each line and reads it on your own device, so your documents are never uploaded. Handwriting mode keeps the original capitalisation.</p><div class="tags"><span class="chip">Transformers.js</span><span class="chip">TrOCR</span><span class="chip">Line segmentation</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="green-screen.html"><span class="cat">On-device AI · Live camera</span><h3>Green Screen Studio</h3><p>Blur or replace your webcam background in real time, with no green screen and no install. A neural segmentation model runs entirely in your browser to cut you out of your room, so your camera never leaves your device. Drop to a blur, a color, a scene, or your own image, then save a photo or record a clip.</p><div class="tags"><span class="chip">MediaPipe Segmenter</span><span class="chip">WebAssembly + GPU</span><span class="chip">Real-time matte</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="alt-text.html"><span class="cat">On-device AI · Alt text</span><h3>Alt Text Studio</h3><p>Drop in your images and a real image-captioning AI writes the alt text for you, running entirely in your browser. A Vision Transformer reads each picture and a GPT-2 decoder describes it, all on your own CPU, so nothing is uploaded. Edit any description, then export them all as CSV or JSON.</p><div class="tags"><span class="chip">Transformers.js</span><span class="chip">ViT + GPT-2</span><span class="chip">Accessibility</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="voicebox.html"><span class="cat">On-device AI · Text to speech</span><h3>VoiceBox</h3><p>Type anything and hear it spoken in a natural voice — generated by a real 82M-parameter neural TTS model that runs entirely in your browser. 28 voices across American and British English, adjustable speed, instant WAV download. Your text is never uploaded, and after the first load it works offline.</p><div class="tags"><span class="chip">Kokoro 82M</span><span class="chip">Transformers.js</span><span class="chip">WebGPU / WASM</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="face-avatar.html"><span class="cat">On-device AI · Avatar</span><h3>Face Avatar</h3><p>Become a live cartoon. A real face-tracking model runs entirely in your browser, reading 478 points and 52 expressions off your face, and a character mirrors your every blink, smile, and head turn in real time. Pick a character, record a clip — your camera never leaves your device.</p><div class="tags"><span class="chip">MediaPipe Face</span><span class="chip">478 landmarks</span><span class="chip">52 blendshapes</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="redactor.html"><span class="cat">On-device AI · Privacy</span><h3>PII Redactor</h3><p>Paste text or drop a file and strip out personal data before you share it or paste it into an AI. Emails, phones, cards, SSNs, IPs and secrets are caught instantly, and a real BERT-NER model finds names, companies and places — all on your own device. Nothing is uploaded.</p><div class="tags"><span class="chip">Transformers.js</span><span class="chip">BERT-NER</span><span class="chip">Luhn + regex</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="photo-search.html"><span class="cat">On-device AI · Image search</span><h3>Semantic Photo Search</h3><p>Drop in your photos and search them by what's in them — "a dog on the beach", "city at night", "something red" — even if the files are named IMG_4821. A real CLIP model runs entirely in your browser, so your whole photo library is searched privately on your own machine. Click any result to find visually similar shots.</p><div class="tags"><span class="chip">CLIP (ViT-B/16)</span><span class="chip">Transformers.js</span><span class="chip">Embeddings</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="webcam-theremin.html"><span class="cat">AI · Live camera</span><h3>Webcam Theremin</h3><p>Wave your hands at your webcam and play a synth in the air, like a theremin. Your right hand sets the pitch, your left hand rides the volume, and a pinch adds vibrato. A real hand-tracking model runs on your GPU, so your camera never leaves your device. No webcam? Play it with your mouse.</p><div class="tags"><span class="chip">MediaPipe Hands</span><span class="chip">Web Audio</span><span class="chip">21 landmarks</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="pocket-llm.html"><span class="cat">AI · Local LLM</span><h3>Pocket LLM</h3><p>Chat with a real large language model that runs entirely in your browser on your own GPU. No server, no API key, no sign-up. Your messages never leave your device, and once a model downloads it keeps working with your internet off.</p><div class="tags"><span class="chip">WebLLM</span><span class="chip">WebGPU</span><span class="chip">Offline</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="depth-studio.html"><span class="cat">AI · Depth &amp; 3D</span><h3>Depth Studio</h3><p>Drop a photo and a real AI depth model turns it into a 3D parallax animation you can move with your mouse. The model and the 3D rendering both run in your browser, so nothing is uploaded. Export a depth map or a 3D video clip.</p><div class="tags"><span class="chip">transformers.js</span><span class="chip">Depth Anything V2</span><span class="chip">WebGL</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="rep-counter.html"><span class="cat">AI · Live camera</span><h3>AI Rep Counter</h3><p>Point your webcam at yourself and it counts your squats, push-ups, curls, sit-ups and jumping jacks automatically, with live form feedback. A real pose model runs in your browser, so your camera never leaves your device.</p><div class="tags"><span class="chip">MediaPipe Pose</span><span class="chip">WebAssembly</span><span class="chip">33 landmarks</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="theme-finder.html"><span class="cat">AI · Text</span><h3>Theme Finder</h3><p>Paste a pile of survey answers, reviews, or notes and a real AI model groups them into themes by meaning, not keywords. The whole model runs in your browser, so nothing is uploaded. Export the groups as CSV.</p><div class="tags"><span class="chip">transformers.js</span><span class="chip">Embeddings</span><span class="chip">k-means</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="audio-to-text.html"><span class="cat">AI · Speech</span><h3>Audio to Text</h3><p>Drop a recording and a real Whisper model transcribes it entirely in your browser. No upload, no minute limits. Export the text plus timestamped SRT and VTT subtitles.</p><div class="tags"><span class="chip">transformers.js</span><span class="chip">Whisper</span><span class="chip">WebGPU/WASM</span><span class="chip">SRT/VTT</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="bg-remover.html"><span class="cat">AI · On-device</span><h3>AI Background Remover</h3><p>Drop a photo and a real AI model erases the background, running entirely in your browser. No upload, no sign-up, no watermark. Get a transparent PNG in seconds.</p><div class="tags"><span class="chip">transformers.js</span><span class="chip">RMBG-1.4</span><span class="chip">WebGPU/WASM</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
     </div>
-  </div></section>
+  </section>
+  <section class="lab-shelf" aria-labelledby="simulations-art">
+    <div class="lab-shelf__head"><h2 class="lab-shelf__label" id="simulations-art">Simulations &amp; art</h2><span class="lab-shelf__n">16 tools</span></div>
+    <div class="shelf__row">
+      <div class="slot"><a class="tool patch reveal" href="rollback-netcode.html"><span class="cat">Game networking · Explorable</span><h3>Ghostframe</h3><p>Two complete game clients, side by side, connected by a fake internet whose latency, jitter and packet loss you control with sliders. Play one of them and watch the other predict you, get it wrong, and quietly re-simulate the last few frames to catch up. This is <em>rollback netcode</em>, the technique fighting games use so your own inputs never feel late: the client runs ahead using a guess for what you are pressing, snapshots the game state every frame, and when your real input arrives and contradicts the guess it restores the snapshot and re-runs every frame since, all inside one displayed frame. Because both clients are on screen at once you can see the thing that is normally invisible &mdash; the orange ghost marking where the peer was believed to be before a correction, a per-frame timeline colouring each frame as confirmed or predicted with red spikes where rollbacks happened, and live counters for prediction hit rate, rollbacks per second and how many times the simulation actually ran per frame drawn. Flip to delay-based lockstep and the game stops guessing and starts freezing instead; flip to naive and both clients desync on the first frame and never recover. The physics is deliberately integer-only, positions at a 1/64 pixel fixed-point scale with a hand-written integer square root, because re-simulation has to be bit-identical or none of it works &mdash; and both clients hash their state every frame so the page can show you, live, the newest frame it has verified identical on both sides. No server, no account, nothing uploaded.</p><div class="tags"><span class="chip">Rollback + prediction</span><span class="chip">Deterministic fixed-point sim</span><span class="chip">State hash desync check</span><span class="chip">No server</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="gambit.html"><span class="cat">Chess engine · Explorable</span><h3>Gambit</h3><p>Play a chess engine and watch it think while it does. Most chess apps show you the move and throw away the reasoning; this one puts the search on screen. While the engine is working you see the moves it is weighing at the top of its search, each one scored on a live bar, the ranking reshuffling as it looks deeper, and the principal variation &mdash; the line it expects if both sides play the best replies it can find. The engine is written from scratch in plain JavaScript with no chess library: a 0x88 board, full legal move generation with castling, en passant and promotion, alpha-beta search with iterative deepening, quiescence search so it never miscounts a trade halfway through, capture-first move ordering, and an evaluation built on material plus piece-square tables. It runs in a Web Worker, so the board stays responsive while it searches. Move generation in chess is either exactly right or quietly broken, so the page ships a <em>perft</em> panel: press the button and it counts every legal position to a fixed depth from six standard test positions and compares against the counts chess programmers have published, including Kiwipete &mdash; you can check the engine&rsquo;s correctness yourself rather than take it on trust. There are preset positions to load, including a mate in two where you can watch the score jump to M2 the moment the search gets deep enough to see it. No server, no account, and it keeps working offline.</p><div class="tags"><span class="chip">Alpha-beta from scratch</span><span class="chip">Search visualiser</span><span class="chip">Perft verified</span><span class="chip">No dependencies</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="lenia.html"><span class="cat">Artificial life · Continuous CA</span><h3>Lenia</h3><p>A real continuous cellular automaton running live on your GPU. Lenia is Conway&rsquo;s Game of Life taken continuous: every cell holds a value between 0 and 1, the neighbourhood is a soft fuzzy ring instead of eight square cells, and time moves in small steps &mdash; and out of those smooth rules, life-like creatures emerge on their own. Load the famous <em>Orbium</em> and watch a little crescent swim across the grid holding its exact shape, the continuous cousin of the Game of Life glider. Every step is a convolution with the Lenia kernel followed by a bell-shaped growth function, run once per cell in a WebGL2 fragment shader that ping-pongs two floating-point textures each frame, so tens of thousands of cells each summing hundreds of neighbours stay comfortably real time. Grow a primordial soup that self-organizes out of pure noise, nudge the growth centre and width to morph the whole world between isolated blobs, writhing rotors and branching coral, or paint your own blob of life with the brush and see what it becomes. The grid wraps like a torus, so a creature that leaves one edge returns on the other. Nothing is uploaded; the whole simulation runs on your machine.</p><div class="tags"><span class="chip">WebGL2</span><span class="chip">Continuous cellular automata</span><span class="chip">Orbium glider</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="synapse.html"><span class="cat">Explorable · Neural network</span><h3>Synapse</h3><p>Draw two blobs of dots, press play, and watch a real neural network learn to tell them apart in front of you. This is a genuine multilayer perceptron: the forward pass, the cross-entropy loss and the full backpropagation are all written from scratch in plain JavaScript, with no TensorFlow and no library of any kind. The coloured background is the network&rsquo;s live opinion about every point on the plane, redrawn each training step as the boundary bends itself around your data, and half your points are held out as a test set so you can catch it overfitting. Add hidden layers and watch the famously hard two-spiral dataset finally crack; delete a layer and watch it fail because a single layer can only make straight cuts. Every neuron shows a little tile of the feature it has learned, and the edges between them are the weights &mdash; blue pulling the answer one way, orange the other, thickness for strength &mdash; so you can literally see simple edge detectors combine into curves. Switch between tanh, ReLU and sigmoid, between Adam and momentum SGD, dial the learning rate, noise and L2 regularisation, then export the trained weights plus a dependency-free predict() function. Nothing is uploaded; the whole thing trains on your device.</p><div class="tags"><span class="chip">Backprop from scratch</span><span class="chip">No libraries</span><span class="chip">Live boundary</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="morphogen.html"><span class="cat">WebGPU · Reaction-diffusion</span><h3>Morphogen</h3><p>Grow living Turing patterns from a real Gray-Scott reaction-diffusion simulation, solved on your graphics card every frame with WebGPU compute shaders. Two virtual chemicals spread at different speeds while one reacts with the other, and spots, stripes, mazes, coral and self-replicating mitosis fall out of the maths on their own &mdash; the same mechanism Turing proposed for leopard rosettes and seashells. A compute shader runs once per cell in parallel over hundreds of thousands of cells, ping-ponging two buffers each step; because it&rsquo;s a live simulation and not a video, you can reach in and paint chemical B into a disc of cells and the field takes it from there. The clever part is the pattern map: only the feed and kill rates really matter, so the whole space is a little navigator you click through to jump between regimes, including the blends nobody named. Nine presets, six palettes, seamless wrap-around tiling, and PNG export for wallpaper. Nothing is ever uploaded.</p><div class="tags"><span class="chip">WebGPU compute</span><span class="chip">Gray-Scott</span><span class="chip">Turing patterns</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="collapse.html"><span class="cat">Procedural · Wave Function Collapse</span><h3>Collapse</h3><p>Paint a tiny example and watch a Wave Function Collapse solver learn its rules and generate an endless, coherent tilemap in real time. It slides a small window over your drawing, collects every little tile it sees, and works out which tiles are allowed to touch &mdash; then fills a blank grid so every neighbourhood matches, one cell at a time. You literally watch the picture condense out of fog as each choice ripples through its neighbours. Six painterly presets, adjustable pattern size, seamless tiling, and PNG export. The whole solver runs in a Web Worker on your machine; nothing you paint is ever uploaded.</p><div class="tags"><span class="chip">Constraint solver</span><span class="chip">Overlapping model</span><span class="chip">Web Worker</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="splat-studio.html"><span class="cat">3D · Gaussian Splatting</span><h3>Splat Studio</h3><p>A photorealistic 3D scan, captured from a handful of photos, rendering live in a browser tab &mdash; and you can clean it up. Gaussian Splatting represents a scene as millions of tiny translucent 3D blobs; Splat Studio projects every one to the screen, works out its exact elliptical footprint from a covariance matrix, keeps them depth-sorted in a background worker, and blends them front-to-back, all on your GPU with WebGL2. Drop a <code>.splat</code> or a raw 3D Gaussian Splatting <code>.ply</code> (converted in-browser), orbit it, then switch to crop mode and box away the stray floaters that surround every scan and export a smaller, cleaner file. A sample galaxy is built in so it works with zero setup, and nothing is ever uploaded.</p><div class="tags"><span class="chip">WebGL2</span><span class="chip">Gaussian Splatting</span><span class="chip">.splat + .ply</span><span class="chip">Crop &amp; export</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="ripple.html"><span class="cat">Physics · Wave simulation</span><h3>Ripple</h3><p>A real 2D wave equation, solved on your graphics card every single frame. Watch the double-slit experiment build up its striped interference pattern, see one narrow slit spray a wave in every direction, and focus a flat wave to a point through a slow lens &mdash; all live. Ripple stores the wave height in a floating-point texture and runs a finite-difference solver in a WebGL2 fragment shader across hundreds of thousands of cells, stepping the grid several times between frames. Paint walls, carve your own slits, drop single ripples, and change frequency and damping on the fly. Nothing is uploaded; the whole simulation runs on your GPU.</p><div class="tags"><span class="chip">WebGL2</span><span class="chip">Wave equation</span><span class="chip">Double-slit</span><span class="chip">Runs on your GPU</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="gravity.html"><span class="cat">Physics · N-body gravity</span><h3>Gravity</h3><p>A real N-body galaxy simulation running on your GPU. Tens of thousands of stars, each one gravitationally pulling on every other, recomputed every frame with WebGPU compute shaders. Spawn a spiral galaxy, slam two together, or drag your cursor to bend the field.</p><div class="tags"><span class="chip">WebGPU</span><span class="chip">Compute shaders</span><span class="chip">All-pairs N-body</span><span class="chip">Runs on your GPU</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="epicycle.html"><span class="cat">Creative coding · Fourier</span><h3>Fourier Epicycle Machine</h3><p>Draw any shape in one stroke, or type your name, and a chain of spinning circles will retrace it in front of you. It runs a real Discrete Fourier Transform on your path right in the browser, turning it into rotating vectors stacked tip to tail. Drag the circle count down to watch the detail melt into a smooth blob, then back up to snap to your exact line. Record the rebuild as a video to share. No upload, no sign-up, works offline.</p><div class="tags"><span class="chip">Fourier transform</span><span class="chip">Canvas</span><span class="chip">Draw with circles</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="path-tracer.html"><span class="cat">Graphics · Real-time ray tracing</span><h3>WebGPU Path Tracer</h3><p>A real Monte Carlo path tracer running on your GPU, in a browser tab. Drag to orbit and the image accumulates samples live — true global illumination, soft shadows, mirror reflections and glass refraction. Switch the centre sphere between glass, metal and diffuse, or open the Cornell box to watch the walls bleed colour. No install, no upload, every ray is computed on your own machine.</p><div class="tags"><span class="chip">WebGPU</span><span class="chip">WGSL shaders</span><span class="chip">Monte Carlo</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="fractal-lab.html"><span class="cat">Generative art · GPU fractals</span><h3>Fractal Lab</h3><p>Zoom into the Mandelbrot set in real time and watch the matching Julia set appear live as you move your cursor. Every pixel is computed on your GPU with a WebGL2 shader, and emulated double precision keeps the deep zooms sharp. Frame a view, then export it as a 4K wallpaper.</p><div class="tags"><span class="chip">WebGL2 shader</span><span class="chip">Double precision</span><span class="chip">Deep zoom</span><span class="chip">4K export</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="particle-life.html"><span class="cat">WebGPU · Artificial life</span><h3>Particle Life</h3><p>A few thousand particles, a small table of attraction rules, and life-like creatures appear on their own. Edit the rules, roll a new lifeform, and watch it self-organize. Every force between every pair of particles is computed on your GPU in real time, nothing uploaded.</p><div class="tags"><span class="chip">WebGPU</span><span class="chip">Compute shaders</span><span class="chip">Emergent</span><span class="chip">Editable matrix</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="fluid-sim.html"><span class="cat">WebGPU · Fluid</span><h3>Fluid Simulation</h3><p>A real Navier-Stokes fluid solver running on your GPU with WebGPU. Stir glowing ink with your mouse, or drop a photo and melt it into liquid. Every frame is computed on your graphics card, nothing is uploaded. Record a clip or save a still.</p><div class="tags"><span class="chip">WebGPU</span><span class="chip">Compute shaders</span><span class="chip">Stable fluids</span><span class="chip">Photo to liquid</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="attractor-studio.html"><span class="cat">Generative art · WebGL</span><h3>Strange Attractor Studio</h3><p>Turn four numbers into art. A million points iterate on your GPU in real time, building intricate strange-attractor patterns from chaos equations. Tweak the maths, pick a palette, export a 4K wallpaper. Nothing is uploaded.</p><div class="tags"><span class="chip">WebGL2</span><span class="chip">GPGPU</span><span class="chip">1M points</span><span class="chip">4K export</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="slime-simulation.html"><span class="cat">WebGPU · Simulation</span><h3>Slime Mold Simulation</h3><p>Millions of agents drop trails and steer toward the strongest scent, building life-like networks in real time. It all runs on your GPU with WebGPU compute shaders. Paint with your mouse, tweak the rules, save a still.</p><div class="tags"><span class="chip">WebGPU</span><span class="chip">Compute shaders</span><span class="chip">Physarum</span><span class="chip">Generative</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+    </div>
+  </section>
+  <section class="lab-shelf" aria-labelledby="files-sound-media">
+    <div class="lab-shelf__head"><h2 class="lab-shelf__label" id="files-sound-media">Files, sound &amp; media</h2><span class="lab-shelf__n">12 tools</span></div>
+    <div class="shelf__row">
+      <div class="slot"><a class="tool patch reveal" href="retune.html"><span class="cat">Audio DSP · Real-time auto-tune</span><h3>Retune</h3><p>Sing into your mic and hear yourself auto-tuned to a musical key, live, with the whole thing running inside the browser tab. There is no server and nothing is uploaded &mdash; when you press start, the page opens your microphone with the Web Audio API and streams it through an <em>AudioWorklet</em>, a piece of DSP that runs on the browser&rsquo;s real-time audio thread, so the corrected voice comes back with only a few milliseconds of delay. Many times a second it estimates the pitch of your voice with the YIN algorithm, snaps that to the nearest note allowed by the key and scale you picked, and works out the exact ratio between where you are and where you should be. The worklet then pitch-shifts your live audio by that ratio using a granular overlap-add shifter with two crossfaded grains, so the sound stays continuous while it stretches the waveform. The retune-speed knob is the whole trick: at zero it yanks your pitch to the target instantly and holds it, quantizing your singing into hard steps &mdash; the robotic T-Pain sound &mdash; and turned up it glides in gently and fixes flat notes without anyone noticing. A live tuner ribbon draws your raw pitch against the snapped result so you can watch the correction happen, and you can record the corrected output and download the clip. Chromatic, major, minor and pentatonic scales, any key. Nothing you sing ever leaves your device.</p><div class="tags"><span class="chip">Web Audio · AudioWorklet</span><span class="chip">YIN pitch detection</span><span class="chip">Granular pitch-shift</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="cadence.html"><span class="cat">Audio · Chord &amp; key detection</span><h3>Cadence</h3><p>Drop any song and get its chords, musical key, and tempo &mdash; worked out live in your browser, with nothing uploaded. Cadence decodes your audio with the Web Audio API, runs an FFT to build a chromagram of how much of each of the twelve notes is sounding at every moment, then matches each instant against all 24 major and minor triads and smooths the sequence with a Viterbi decoder so the chords hold instead of flickering. The key comes from correlating the song&rsquo;s note profile with the Krumhansl-Schmuckle key profiles, and the tempo from an onset-strength envelope run through autocorrelation. Watch a colour-coded chord map and a live chromagram scroll under the player, click anywhere to seek, and copy the whole progression as a chord sheet. Try the built-in sample or drop an MP3, WAV, M4A, FLAC or OGG &mdash; it works offline, no model to download.</p><div class="tags"><span class="chip">Web Audio</span><span class="chip">Chromagram + FFT</span><span class="chip">Viterbi</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="sonify.html"><span class="cat">Audio · Image to sound</span><h3>Sonify</h3><p>Turn any image, word, or doodle into a sound whose spectrogram <em>is</em> that picture &mdash; the trick Aphex Twin used to hide a face in a track. Sonify reads your image row by row, turns each row into a pure tone and each pixel&rsquo;s brightness into how loud that tone is, then renders the whole stack offline with the browser&rsquo;s own Web Audio engine. Press play and a live FFT redraws your image out of what sounds like noise; download the WAV and open it in any spectrogram viewer to find it hiding there. Nothing is uploaded.</p><div class="tags"><span class="chip">Web Audio</span><span class="chip">Additive synthesis</span><span class="chip">Live FFT</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="framewise.html"><span class="cat">Media · Frame-accurate video</span><h3>Framewise</h3><p>Step through any video one exact frame at a time, right in your browser. A normal player only jumps between keyframes, so it skips the moment you actually want &mdash; the frame a club meets the ball, the single sharp frame in a shaky clip. Framewise demuxes the file and decodes every individual frame with WebCodecs, the browser&rsquo;s own hardware video decoder, all inside a Web Worker so the page never stutters. Onion-skin the previous frame, wipe between any two frames, and save the precise frame you land on as a full-resolution PNG. Your video is never uploaded.</p><div class="tags"><span class="chip">WebCodecs</span><span class="chip">MP4 demux</span><span class="chip">Onion skin</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="midi-player.html"><span class="cat">Music · Web MIDI</span><h3>Pianola</h3><p>Drop a MIDI file and watch it play with Synthesia-style falling notes and a built-in synth, all parsed and rendered in your browser — nothing is uploaded. It reads the raw Standard MIDI File bytes itself: the tempo map, every track, and each note event. Plug in a real MIDI keyboard and play along with the keys lighting up, route a song out to a hardware synth or DAW, or record what you play and save it as a .mid file. Works offline, no sign-up.</p><div class="tags"><span class="chip">Web MIDI API</span><span class="chip">SMF parser</span><span class="chip">Web Audio</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="vocal-range.html"><span class="cat">Audio · Real-time pitch</span><h3>Vocal Range Finder</h3><p>Sing your lowest note, then slide up to your highest, and watch your range fill in live. A real-time pitch tracker reads your voice many times a second right in the browser, then tells you your range, how many octaves you cover, and your closest voice type — bass to soprano. Your mic audio never leaves your device, and you get a shareable result card.</p><div class="tags"><span class="chip">Web Audio</span><span class="chip">McLeod Pitch Method</span><span class="chip">Voice type</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="hum-to-midi.html"><span class="cat">Audio · Real-time</span><h3>Hum to MIDI</h3><p>Hum, sing, or whistle a melody and watch it become MIDI notes in real time on a live piano roll. Then download a MIDI file for your DAW. Pitch detection runs entirely in your browser, so your mic audio never leaves your device.</p><div class="tags"><span class="chip">Web Audio</span><span class="chip">Autocorrelation</span><span class="chip">MIDI export</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="pdf-to-jpg.html"><span class="cat">PDF · Utility</span><h3>PDF to JPG</h3><p>Turn every page of a PDF into a JPG or PNG image. Pick the resolution, download pages one by one or all as a ZIP. 100% in your browser, no upload.</p><div class="tags"><span class="chip">pdf.js</span><span class="chip">Client-side</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="image-to-pdf.html"><span class="cat">PDF · Utility</span><h3>Image to PDF</h3><p>Turn JPG, PNG, and WebP images into a single PDF. Drag to reorder, set page size and margins. 100% in your browser, no upload.</p><div class="tags"><span class="chip">Canvas</span><span class="chip">Client-side</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="merge-pdf.html"><span class="cat">PDF · Utility</span><h3>Merge PDF</h3><p>Combine multiple PDFs into one. Drag to reorder, rotate, download. 100% in your browser, no upload.</p><div class="tags"><span class="chip">pdf-lib</span><span class="chip">Client-side</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="heic-to-jpg.html"><span class="cat">Image · Utility</span><h3>HEIC to JPG Converter</h3><p>Turn iPhone HEIC photos into JPG, PNG, or WebP that open everywhere. Batch convert and resize, 100% in your browser.</p><div class="tags"><span class="chip">WASM</span><span class="chip">Client-side</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="image-converter.html"><span class="cat">Image · Utility</span><h3>Image Converter &amp; Compressor</h3><p>Convert and compress PNG, JPG, and WebP, resize in bulk, shrink file size. 100% in your browser.</p><div class="tags"><span class="chip">Canvas</span><span class="chip">Client-side</span><span class="chip">Privacy-first</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+    </div>
+  </section>
+  <section class="lab-shelf" aria-labelledby="live-together">
+    <div class="lab-shelf__head"><h2 class="lab-shelf__label" id="live-together">Live &amp; together</h2><span class="lab-shelf__n">10 tools</span></div>
+    <div class="shelf__row">
+      <div class="slot"><a class="tool patch reveal" href="ember.html"><span class="cat">Web3 · Live on-chain</span><h3>Ember</h3><p>Watch Ethereum&rsquo;s fee market work in real time: the base fee, how full each block is against its target, and the ETH being burned block by block. Since EIP-1559, every block has a base fee the protocol sets for itself with no auction, and that base fee is <em>burned</em> &mdash; destroyed forever &mdash; instead of paid to a validator. Ember reads it straight from a node in your browser: a gauge shows how full the last block ran, and because a block over the 50% target pushes the base fee up by up to 12.5% while an emptier one pulls it down, you can see cause and effect happen live. It also multiplies base fee by gas to tally the ETH going up in smoke since you opened the tab, and shows what a transfer, a token send, a swap or an NFT mint costs at this exact moment in both gwei and dollars. No wallet, no sign-up, no server &mdash; it only ever reads public chain data, cycling across several nodes so it stays live.</p><div class="tags"><span class="chip">EIP-1559</span><span class="chip">JSON-RPC</span><span class="chip">ETH burn</span><span class="chip">No wallet</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="cowrite.html"><span class="cat">Realtime · Collaborative editor</span><h3>Cowrite</h3><p>A shared Markdown document that any number of people can edit at the same time &mdash; share a link and watch each other's cursors move as the words appear. Getting that right is harder than it looks: when two people type in the same spot at once, naive syncing loses edits. Cowrite uses a CRDT (Yjs) so every keystroke carries enough identity that all the edits merge deterministically into the exact same document on every screen, with nothing lost and no editing lock. Keystrokes become tiny binary deltas relayed over a realtime channel; the relay never sees a stored copy of your text. Markdown renders to a safe, sanitized live preview on the right as everyone types. No sign-up, no database &mdash; the note lives only in the browsers open right now.</p><div class="tags"><span class="chip">CRDT / Yjs</span><span class="chip">Live cursors</span><span class="chip">Supabase Realtime</span><span class="chip">No login</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="pixel-party.html"><span class="cat">Real-time · Multiplayer</span><h3>Pixel Party</h3><p>A shared 64&times;64 pixel-art canvas you paint on together, live. Share a link and anyone who opens it places pixels next to you in real time, with their cursor hopping from cell to cell as they go. Every pixel you place is broadcast over a realtime channel to everyone in the room, and when someone joins late, one person already there hands them the whole grid in a single message. Replay a fast timelapse of how the art was built, or hit Save PNG for a crisp upscaled image. No sign-up, nothing stored by default.</p><div class="tags"><span class="chip">Supabase Realtime</span><span class="chip">Presence + broadcast</span><span class="chip">Live cursors</span><span class="chip">No sign-up</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="quakes-3d.html"><span class="cat">Live data · 3D globe</span><h3>Quakes 3D</h3><p>Every earthquake on Earth, live on a 3D globe straight from the USGS feed. Spin the planet, filter by magnitude, and hit play to watch a whole month of quakes ripple across the map in seconds. Click any dot for its magnitude, depth, and time. Auto-refreshes, no sign-up.</p><div class="tags"><span class="chip">WebGL globe</span><span class="chip">USGS live feed</span><span class="chip">Time-lapse</span><span class="chip">Three.js</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="typing-race.html"><span class="cat">Multiplayer · Typing race</span><h3>Typebolt</h3><p>A typing race you play with friends. Share the link and everyone types the same passage at the same moment, with each racer's car sliding along its lane live as they type. Only your progress and speed are shared, never your keystrokes, and nothing is stored. Alone, it's a clean typing speed test.</p><div class="tags"><span class="chip">Supabase Realtime</span><span class="chip">Presence</span><span class="chip">Live WPM</span><span class="chip">No sign-up</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="beam.html"><span class="cat">Peer-to-peer · File transfer</span><h3>Beam</h3><p>Send a file straight from your browser to someone else's — no upload, no account, no size cap. Drop a file, share the link or scan the QR, and it streams directly between the two browsers over an encrypted peer-to-peer connection. The file bytes never touch a server.</p><div class="tags"><span class="chip">WebRTC</span><span class="chip">Data channels</span><span class="chip">QR share</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="liveboard.html"><span class="cat">Multiplayer · Whiteboard</span><h3>Liveboard</h3><p>A whiteboard you draw on together. Share the link and anyone who opens it lands on the same canvas, with live cursors you can watch move in real time. Sketch, highlight, and drop sticky notes side by side. No sign-up, nothing stored.</p><div class="tags"><span class="chip">Supabase Realtime</span><span class="chip">Live cursors</span><span class="chip">Presence</span><span class="chip">No sign-up</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="ethereum-live.html"><span class="cat">Web3 · Live on-chain</span><h3>Ethereum Live</h3><p>Watch the Ethereum mainnet build itself in real time. Every new block lands within seconds and each transaction is decoded straight from its calldata into a swap, transfer, NFT trade or contract call. No wallet, no sign-up, all in your browser.</p><div class="tags"><span class="chip">JSON-RPC</span><span class="chip">Calldata decode</span><span class="chip">Canvas</span><span class="chip">Live</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="beat-maker.html"><span class="cat">Real-time · Multiplayer</span><h3>Live Beat Maker</h3><p>A drum machine you play with other people. Share the room link and every beat you tap lands on everyone's grid at the same moment, with live cursors. All sound is synthesized in the browser, nothing is stored.</p><div class="tags"><span class="chip">Supabase Realtime</span><span class="chip">Web Audio</span><span class="chip">Presence</span><span class="chip">No sign-up</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="quick-poll.html"><span class="cat">App · Live data</span><h3>Free Poll Maker</h3><p>Create a poll, share the link, and watch results update live as people vote. No sign-up, no app. Anonymous and instant.</p><div class="tags"><span class="chip">Supabase</span><span class="chip">Shareable</span><span class="chip">Live results</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+    </div>
+  </section>
+  <section class="lab-shelf" aria-labelledby="developer-tools">
+    <div class="lab-shelf__head"><h2 class="lab-shelf__label" id="developer-tools">Developer tools</h2><span class="lab-shelf__n">11 tools</span></div>
+    <div class="shelf__row">
+      <div class="slot"><a class="tool patch reveal" href="flexbox-lab.html"><span class="cat">Layout engine · Explorable</span><h3>Freespace</h3><p>A complete CSS flexbox layout engine, written from scratch in plain JavaScript, laying out boxes right next to your browser doing the same job with real <code>display:flex</code> &mdash; so you can see the algorithm that is normally invisible. Move a slider and the panel underneath fills in with the actual numbers the spec asks for: each item&rsquo;s flex base size and where it came from, the line breaking, then the loop that resolves flexible lengths pass by pass, freezing every item that hits a min or a max and redistributing what is left to the others. It is the answer to the two questions everyone has about flexbox. Why does <em>flex-grow: 2</em> not make an item twice as wide? Because grow divides the leftover free space, not the container, and you can watch the ratio drift as you drag the width. Why does an item refuse to shrink and overflow instead? Because <em>min-width</em> defaults to auto on flex items, which resolves to roughly the size of its content rather than to zero, and the trace shows it freezing there. The honest part is the comparison: after every change both layouts are measured box by box and the badge reports the largest difference in pixels, and a fuzz button generates 400 random containers and items and checks every one against your browser, so the engine has to prove itself instead of being taken on trust. Ten presets for the classic puzzles, the CSS to copy, and nothing uploaded.</p><div class="tags"><span class="chip">Flexbox spec from scratch</span><span class="chip">Live diff vs your browser</span><span class="chip">400-case fuzzer</span><span class="chip">No dependencies</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="wasmscope.html"><span class="cat">Developer tool · WebAssembly</span><h3>Wasmscope</h3><p>Drop in any <em>.wasm</em> file and actually read it. You get the full section breakdown with a size bar for each one, so you can see which part of your module is really eating the bundle, plus every import, export, global, data segment and the memory it asks for. Pick a function and you get a real disassembly in WebAssembly text format, with byte offsets down the left and the block structure indented. Then the part browsers won&rsquo;t give you: press Step and run that function one instruction at a time, watching values push and pop off the operand stack while locals, globals, the call stack and a live hex view of linear memory update underneath. The <code>WebAssembly</code> API only hands you a compiled function to call &mdash; there is no way to pause it or read its stack &mdash; so this page carries its own WebAssembly implementation instead: a binary decoder, a disassembler and a stepping interpreter written from scratch in plain JavaScript with no dependencies. To prove the interpreter is honest, every run is also executed by your browser&rsquo;s real engine on the same inputs and the two answers are shown side by side with a match badge. It was checked the same way before shipping, against Node&rsquo;s engine across 128 numeric opcodes and about 28,700 argument combinations, including divide-by-zero traps, integer overflow, float rounding half-to-even and out-of-bounds memory access. There is a sample module built in so you can start without hunting for a file, and nothing you open is ever uploaded.</p><div class="tags"><span class="chip">Interpreter from scratch</span><span class="chip">WAT disassembly</span><span class="chip">No dependencies</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="riscv-studio.html"><span class="cat">Systems · RISC-V CPU</span><h3>RISC-V Studio</h3><p>Write RISC-V assembly, assemble it to real machine code, and single-step a genuine RV32I processor &mdash; all in a browser tab. It is a real fetch-decode-execute core: your text is turned into actual 32-bit instructions laid out in a simulated memory, and the CPU reads each word, decodes the opcode and register fields out of the raw bits, and runs it. Watch all 32 registers, the console, and every byte of memory update live, and see the exact binary encoding of each instruction split into its hardware fields. Loads, stores, branches, jumps, the stack, and the common pseudo-instructions all work, with samples from Fibonacci to a recursive factorial. No install, no toolchain, nothing uploaded.</p><div class="tags"><span class="chip">RV32I</span><span class="chip">Assembler + CPU</span><span class="chip">Step debugger</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="regexlab.html"><span class="cat">Dev tool · Regex internals</span><h3>RegexLab</h3><p>See how a regular expression actually runs. Type a pattern and it compiles, on its own from-scratch engine, into a finite state machine you can watch step through your text character by character, with no backtracking. Then it grows a crafted input and charts the step count to expose catastrophic backtracking &mdash; the ReDoS bug that silently hangs servers. Two engines, side by side, all in your browser, nothing uploaded.</p><div class="tags"><span class="chip">Thompson NFA</span><span class="chip">Backtracking</span><span class="chip">ReDoS detector</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="bundlescope.html"><span class="cat">Dev tool · Bundle analysis</span><h3>Bundle Size Explorer</h3><p>Drop a minified JS bundle and its source map to see a zoomable treemap of exactly which files and npm packages are eating your bundle. It decodes the source map's VLQ mappings and attributes every byte of generated code back to its original file, the same way the source-map-explorer CLI does, but with no install and nothing uploaded. Group node_modules by package to spot the one dependency quietly costing you 200&nbsp;KB, and read the real gzipped size measured in your browser.</p><div class="tags"><span class="chip">Source maps</span><span class="chip">VLQ decode</span><span class="chip">Treemap</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="large-file-viewer.html"><span class="cat">Dev tool · Large files</span><h3>Loupe — Large File Viewer</h3><p>Open and search files too big for your editor — multi-gigabyte logs, CSVs and JSONL, even gzipped. It streams the file so memory stays flat, jumps to line 40 million instantly, and draws a timeline showing where your matches cluster. Nothing is uploaded.</p><div class="tags"><span class="chip">Streams API</span><span class="chip">Web Worker</span><span class="chip">Regex + gzip</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="postgres-playground.html"><span class="cat">Dev tool · WASM Postgres</span><h3>Postgres Playground</h3><p>A real PostgreSQL database, compiled to WebAssembly, running entirely in your browser. Create tables, run joins and window functions, and your data persists locally between visits. Share a query as a link. Nothing is uploaded.</p><div class="tags"><span class="chip">PGlite</span><span class="chip">PostgreSQL 18</span><span class="chip">WebAssembly</span><span class="chip">Persistent</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="secret-note.html"><span class="cat">Security · Zero-knowledge</span><h3>Send a Secret</h3><p>Share a password or private note with a link that self-destructs after one read. It is encrypted in your browser with AES-256, and the key rides in the link, so the server only ever sees ciphertext. No sign-up.</p><div class="tags"><span class="chip">Web Crypto</span><span class="chip">AES-256-GCM</span><span class="chip">Self-destruct</span><span class="chip">Zero-knowledge</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="csv-dashboard.html"><span class="cat">Data · Explorable</span><h3>Instant CSV Dashboard</h3><p>Drop a CSV and get a live dashboard. Click any chart or drag a range and every other chart re-filters in the same instant. Auto-detects columns, handles big files, exports your slice. Nothing is uploaded.</p><div class="tags"><span class="chip">Cross-filter</span><span class="chip">Typed indexes</span><span class="chip">Canvas</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="sql-playground.html"><span class="cat">Data · SQL engine</span><h3>Browser SQL Playground</h3><p>Drop in a CSV, Parquet, or JSON file and query it with real analytical SQL. A full DuckDB database runs in your browser through WebAssembly, so nothing is uploaded. Export results as CSV or JSON.</p><div class="tags"><span class="chip">DuckDB-WASM</span><span class="chip">WebAssembly</span><span class="chip">CSV/Parquet</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+      <div class="slot"><a class="tool patch reveal" href="cron-generator.html"><span class="cat">Dev tool · Cron</span><h3>Cron Expression Generator</h3><p>Type a cron schedule and get a plain-English explanation plus the next run times instantly. Visual fields, presets, and a copy button. Parses live in your browser.</p><div class="tags"><span class="chip">Cron parser</span><span class="chip">Next runs</span><span class="chip">No upload</span></div><span class="use btn">Use tool <b aria-hidden="true">&rarr;</b></span></a></div>
+    </div>
+  </section>
+  <section class="lab-soon" aria-label="Coming next">
+    <div class="tool soon patch reveal"><span class="cat">Coming next</span><h3>A new tool, daily.</h3><p>I research what people actually need on Reddit, X, and Product Hunt, then build and ship a useful tool. Check back tomorrow.</p><div class="tags"><span class="chip">Building in public</span></div></div>
+  </section>
 </main>
-<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack &amp; Applied AI Engineer · Remote</span><a href="index.html">← Portfolio</a></div></footer>
-<script src="enhance.js" defer></script>
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack &amp; Applied AI Engineer · Remote</span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 </body>
 </html>

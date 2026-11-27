@@ -1,6 +1,10 @@
 /* Writing hubs: on top of felt.css. blog.html is a felt bookshelf (a shelf per month, each post a plush book with
    a topic-coloured spine standing on a stitched wooden-felt plank; the back-cover blurb shows on hover or focus).
-   The topic hubs are stitched collections: one patch per post in a column, with the topic's felt ribbon. No 3D. */
+   The topic hubs are stitched collections: one patch per post in a column, with the topic's felt ribbon.
+   lab.html is a toy shelf: a felt plank per kind of tool, each tool a plush card standing on it. No 3D. */
+
+/* lab.html keeps its old color-scheme meta (head metas stay byte-identical); the felt page itself is light */
+:root:has(.hub-page) { color-scheme: light; }
 
 /* topic colours. The kit has no blue, mustard or plum: sky, butter and berry are its nearest felts. */
 [data-topic="web3"] { --t: var(--green); --t-dk: #2c5a3d; }
@@ -46,7 +50,7 @@
 /* each slot carries its stretch of plank; side by side the stretches make one plank under each row.
    The row clips them sideways, so a short last row still gets a full plank. */
 .shelf__row {
-  --gap: 26px; display: grid; grid-template-columns: repeat(auto-fill, minmax(208px, 1fr)); gap: 30px var(--gap);
+  --gap: 26px; display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--col, 208px), 1fr)); gap: 30px var(--gap);
   padding: 0 calc(var(--gap) / 2); overflow-x: clip;
 }
 .slot { position: relative; display: flex; padding-bottom: 18px; }
@@ -111,6 +115,75 @@
 .hub--collection .bcard p { margin: 0; font-size: 16.5px; }
 .hub--collection .bcard .tg { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
 
+/* ---------- the Lab: a toy shelf ---------- */
+.hub--lab .lanes .chip::before { content: "↓"; font-weight: 700; opacity: .55; }
+.lab-shelf { --col: 300px; margin-top: 54px; scroll-margin-top: 24px; }
+.lab-shelf:nth-of-type(1) { --t: var(--coral); --t-dk: var(--coral-dk); }
+.lab-shelf:nth-of-type(2) { --t: var(--berry); --t-dk: #c04a78; }
+.lab-shelf:nth-of-type(3) { --t: var(--sky); --t-dk: #8fb0d0; }
+.lab-shelf:nth-of-type(4) { --t: var(--leaf); --t-dk: var(--green); }
+.lab-shelf:nth-of-type(5) { --t: var(--butter); --t-dk: #d6a43a; }
+/* the shelf's sign: a felt tag in the shelf's colour, hung with two stitched loops, and a sewn count */
+.lab-shelf__head { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; margin: 0 0 26px 10px; }
+.lab-shelf__label {
+  position: relative; margin: 0; padding: 12px 22px 13px; border-radius: 14px; rotate: -1.2deg;
+  font: 600 clamp(24px, 3.2vw, 32px)/1 var(--display); color: var(--ink);
+  background: var(--felt), var(--t); box-shadow: inset 0 2px 0 rgba(255,255,255,.35), 0 3px 0 var(--t-dk), 0 10px 18px rgba(84,46,30,.16);
+  outline: 2px dashed rgba(45,36,64,.3); outline-offset: -6px;
+}
+.lab-shelf:nth-of-type(even) .lab-shelf__label { rotate: 1deg; }
+.lab-shelf__label::before, .lab-shelf__label::after { /* the hanging loops */
+  content: ""; position: absolute; top: -12px; width: 10px; height: 16px; border: 3px solid var(--t-dk); border-bottom: 0; border-radius: 8px 8px 0 0;
+}
+.lab-shelf__label::before { left: 18px; }
+.lab-shelf__label::after { right: 18px; }
+.lab-shelf__n { font: 600 14px/1 var(--display); color: var(--mute); padding: 7px 11px; border-radius: 999px; background: rgba(255,255,255,.7); outline: 1.5px dashed var(--thread); outline-offset: -4px; }
+
+/* a plush tool card: cream felt, stitched, its category sewn on as a coloured tab; it stands on the plank */
+.tool.patch {
+  --r: 22px; position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 0;
+  padding: 30px 24px 24px; color: var(--ink); text-decoration: none; rotate: -.4deg;
+  transition: transform .55s var(--spring-pop), box-shadow .3s ease;
+}
+.slot:nth-child(3n+2) .tool { rotate: .5deg; }
+.slot:nth-child(3n) .tool { rotate: -.15deg; }
+.tool .cat {
+  position: absolute; top: -11px; left: 18px; max-width: calc(100% - 36px); padding: 7px 12px 8px; border-radius: 10px; rotate: -2deg;
+  font: 600 12.5px/1.15 var(--display); letter-spacing: .03em; color: var(--ink);
+  background: var(--felt), color-mix(in srgb, var(--t) 62%, #fff); /* a paler felt keeps small ink text at AA on every shelf colour */
+  box-shadow: 0 2px 0 var(--t-dk), 0 4px 8px rgba(84,46,30,.12); outline: 1.5px dashed rgba(45,36,64,.28); outline-offset: -4px;
+}
+.slot:nth-child(even) .tool .cat { rotate: 1.5deg; }
+.tool h3 { margin: 6px 0 10px; font-size: 24px; line-height: 1.15; }
+.tool p { margin: 0; font-size: 15.5px; line-height: 1.6; }
+.tool code { font: 600 .88em/1 var(--mono); padding: 2px 6px; border-radius: 6px; background: var(--sand); }
+.tool .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 18px; } /* tags and the button sit together at the foot */
+.tool .tags .chip { padding: 6px 10px; font-size: 12px; white-space: normal; line-height: 1.15; }
+/* "Use tool": a plush pill at the foot of the card. It lifts with the card and squishes when the card is pressed. */
+.tool .use { margin-top: 18px; }
+.tool p + .use { margin-top: auto; }
+.tool .use b { display: inline-grid; place-items: center; width: 24px; height: 24px; margin-right: -6px; border-radius: 50%; font-weight: 700; color: var(--ink); background: var(--felt), var(--t); transition: transform .5s var(--spring-pop); }
+@media (hover: hover) {
+  .tool:hover .use { transform: translateY(-2px) scale(1.05); box-shadow: 0 5px 0 #e2cdb0, 0 10px 20px rgba(84,46,30,.18); }
+  .tool:hover .use b { transform: translateX(4px) rotate(-8deg); }
+}
+.tool:active .use { transform: translateY(2px) scale(.94); box-shadow: 0 1px 0 #e2cdb0, 0 2px 4px rgba(84,46,30,.12); transition-duration: .08s; }
+.tool:focus-visible { outline: 3px solid var(--green); outline-offset: 4px; }
+
+/* the next tool is still being sewn: an unfinished patch on its own, pinned on, half its stitches missing */
+.lab-soon { display: grid; justify-items: center; margin-top: 64px; }
+.tool.soon {
+  width: min(560px, 100%); padding: 34px 32px 28px; rotate: 1deg;
+  background: linear-gradient(rgba(255,252,246,.55) 0 0), var(--felt), var(--sand); box-shadow: 0 10px 22px rgba(84,46,30,.12), 0 3px 0 #e6d2b5;
+}
+.tool.soon::before { border: 2.5px dashed var(--coral); border-right-color: transparent; border-bottom-color: transparent; }
+.tool.soon .cat { --t: var(--butter); --t-dk: #d6a43a; }
+.tool.soon::after { /* a pin holding it on */
+  content: ""; position: absolute; top: -14px; right: 34px; width: 18px; height: 18px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff8 0 3px, transparent 4px), var(--felt), var(--coral);
+  box-shadow: 0 3px 0 var(--coral-dk), 0 6px 10px rgba(84,46,30,.25);
+}
+
 /* room under the footer for kit/site.js's floating Menu button */
 .hub-page .site-foot { padding-bottom: 84px; }
 
@@ -127,10 +200,17 @@
   .hub--collection .bcard { padding: 22px 20px 20px 54px; }
   .hub--collection .bcard::after { left: 18px; width: 20px; height: 48px; }
   .hub--collection .bcard p { font-size: 16px; }
+  .lab-shelf { margin-top: 44px; }
+  .lab-shelf__head { margin-left: 4px; }
+  .tool.patch { padding: 28px 20px 22px; }
+  .tool h3 { font-size: 22px; }
+  .tool p { font-size: 15.5px; }
+  .tool.soon { padding: 32px 22px 24px; }
 }
 
 /* calm: no lifts, no spring, the blurb just shows */
 @media (prefers-reduced-motion: reduce) {
-  .book:hover, .book:active, .hub-page a.patch:hover, .hub-page a.patch:active, .lanes a.chip:hover, .lanes a.chip:active { transform: none; }
+  .book:hover, .book:active, .hub-page a.patch:hover, .hub-page a.patch:active, .lanes a.chip:hover, .lanes a.chip:active,
+  .tool .use, .tool:hover .use, .tool:active .use, .tool:hover .use b { transform: none; }
   .book .bnote { translate: none !important; }
 }
