@@ -459,5 +459,8 @@ function frame(now) {
 mark('ready'); window.__boot = boot;
 $('#load').style.opacity = 0;
 requestAnimationFrame((t) => { last = t; $('#fade').classList.add('out'); requestAnimationFrame(frame); });
-if (entry.ask) askScout(entry.ask); // from a case page's "Ask Scout about this job"
+if (entry.ask) { // from a case page's "Ask Scout about this job"
+  askScout(entry.ask).catch(() => say('Hmm, I lost my train of thought. Ask me again?', { hold: 8 }));
+  const u = new URL(location.href); u.searchParams.delete('ask'); history.replaceState(history.state, '', u); // a reload or Back must not re-ask
+}
 window.__world = { player, camera, landmarks, keys, renderer, scene, composer, sun, tickers, askScout, get T() { return T; }, set T(v) { T = v; }, get fps() { return window.__fps; } };

@@ -133,6 +133,15 @@
   </div>
 </section>
 <script type="module" src="world/world.js"></script>
-<script type="module">import { initMotion } from './kit/motion.js'; initMotion({ reduced: matchMedia('(prefers-reduced-motion: reduce)').matches, root: document });</script>
+<script>
+// Cloudflare analytics, as kit/site.js has it; not on local dev hosts (CORS noise)
+if (!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) {
+  const beacon = document.createElement('script');
+  beacon.defer = true;
+  beacon.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+  beacon.setAttribute('data-cf-beacon', JSON.stringify({ token: '67319da24fb341b6bc63d535a3edda18' })); // gitleaks:allow (public site token, already in the live enhance.js)
+  document.head.appendChild(beacon);
+}
+</script>
 </body>
 </html>
