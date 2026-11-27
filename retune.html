@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Retune — real-time auto-tune in your browser (nothing uploaded)</title>
+<meta name="description" content="Sing or talk into your mic and hear yourself auto-tuned live to any key. Real-time browser pitch correction with the classic hard-tune effect. 100% local, no upload, no sign-up." />
+<meta name="keywords" content="auto tune online, autotune your voice, real time autotune, browser autotune, vocal pitch correction, t-pain effect, pitch corrector online, autotune free no download, sing in tune, vocal tuner, live autotune, hard tune" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Retune — real-time auto-tune in your browser" />
+<meta property="og:description" content="Sing into your mic and hear yourself pitch-corrected live to any key. The classic hard-tune effect, running entirely in your browser. No upload, no sign-up." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/retune.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Retune — real-time auto-tune in your browser" />
+<meta name="twitter:description" content="Sing into your mic, hear yourself auto-tuned live to any key. Runs 100% locally, nothing uploaded." />
+<link rel="canonical" href="https://hammyasf.github.io/retune.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Retune","url":"https://hammyasf.github.io/retune.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with microphone)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time auto-tune and vocal pitch corrector that runs entirely in the browser. Sing into your mic and hear yourself snapped to a musical key live, using the Web Audio API. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my voice uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs locally in your browser using the Web Audio API and an AudioWorklet. Your microphone audio is processed on your own device and never leaves it. There is no server, no account, and nothing is stored."}},{"@type":"Question","name":"How do I get the classic T-Pain hard-tune sound?","acceptedAnswer":{"@type":"Answer","text":"Set the retune speed to 0 (instant) and pick a scale like Major or Minor Pentatonic. With instant retune, your pitch is snapped straight to the nearest scale note with no glide, which produces the robotic, stair-stepped auto-tune effect. Slower retune speeds sound natural and transparent instead."}},{"@type":"Question","name":"Does it work in real time?","acceptedAnswer":{"@type":"Answer","text":"Yes. Retune detects your pitch and shifts it to the target note continuously as you sing, with only a few milliseconds of latency. Use headphones so the corrected output does not feed back into your mic."}},{"@type":"Question","name":"Do I need to install anything or sign up?","acceptedAnswer":{"@type":"Answer","text":"No install, no plugin, no DAW, no account. It works in any modern browser on desktop and most phones. You just grant microphone access when you press start."}},{"@type":"Question","name":"How does pitch correction actually work here?","acceptedAnswer":{"@type":"Answer","text":"Retune uses the YIN algorithm to estimate the fundamental frequency of your voice many times a second, finds the nearest note in your chosen key and scale, and then pitch-shifts your live audio by that ratio using a granular overlap-add shifter running in an AudioWorklet on the audio thread."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .stage{position:relative;}
+  canvas#viz{display:block;width:100%;height:320px;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.30));}
+  .readout{position:absolute;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;font-family:var(--mono);}
+  .note{font-family:var(--display);font-weight:700;font-size:clamp(40px,9vw,72px);line-height:.9;letter-spacing:-.02em;color:var(--ink);text-shadow:0 2px 24px rgba(0,0,0,.5);}
+  .note .oct{font-size:.42em;color:var(--muted);vertical-align:super;margin-left:2px;}
+  .cents{font-size:13px;color:var(--muted);margin-top:6px;}
+  .cents b{color:var(--accent);}
+  .tgt{text-align:right;font-size:13px;color:var(--muted);}
+  .tgt .big{font-family:var(--display);font-weight:600;font-size:26px;color:var(--accent-2);display:block;}
+  .idlemsg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;color:var(--muted);pointer-events:none;padding:20px;}
+  .idlemsg .k{font-family:var(--display);font-weight:600;font-size:22px;color:var(--ink);}
+  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:18px 22px;align-items:flex-end;border-top:1px solid var(--line);}
+  .ctl{display:flex;flex-direction:column;gap:7px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  select{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:9px;padding:9px 11px;font-family:var(--mono);font-size:13px;min-width:120px;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;flex-wrap:wrap;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 13px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  input[type=range]{accent-color:var(--accent);width:150px;}
+  .rngwrap{display:flex;align-items:center;gap:10px;}
+  .rngval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:52px;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:16px 22px 22px;border-top:1px solid var(--line);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .btn-rec{background:transparent;border:1px solid rgba(255,90,90,.5);color:#ff8a8a;}
+  .btn-rec.recording{background:#ff5a5a;color:#fff;border-color:#ff5a5a;}
+  .status{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .status b{color:var(--accent);}
+  .toggle{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;}
+  .toggle input{accent-color:var(--accent);width:16px;height:16px;}
+  .hint{font-family:var(--mono);font-size:11.5px;color:var(--faint);padding:0 22px 18px;}
+  .fail{display:none;padding:40px 24px;text-align:center;color:var(--muted);}
+  .fail.show{display:block;}
+  .fail h2{font-family:var(--display);color:var(--ink);font-size:22px;margin-bottom:8px;}
+  .clips{display:grid;gap:10px;padding:0 22px 20px;}
+  .clip{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(var(--surfaceRGB),.4);}
+  .clip audio{height:34px;flex:1;min-width:0;}
+  .clip .dl{font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:7px 12px;border-radius:8px;cursor:pointer;background:transparent;white-space:nowrap;text-decoration:none;}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:560px){.controls{gap:14px 18px;}input[type=range]{width:120px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs in your browser</div>
+    <h1>Retune</h1>
+    <p class="sub">Sing or talk into your mic and hear yourself auto-tuned to any key, live. Dial in the classic hard-tune robot effect or gentle, transparent pitch correction.</p>
+    <span class="priv">&#128274; 100% private — your voice is processed on your device and never uploaded</span>
+  </header>
+
+  <div class="panel">
+    <div class="stage">
+      <canvas id="viz" width="1840" height="640" aria-label="Live pitch tuner"></canvas>
+      <div class="readout" id="readout" style="display:none">
+        <div>
+          <div class="note" id="noteName">—</div>
+          <div class="cents" id="centsLine">listening…</div>
+        </div>
+        <div class="tgt"><span class="big" id="targetName">—</span>target note</div>
+      </div>
+      <div class="idlemsg" id="idle">
+        <div class="k">Press start and sing a note</div>
+        <div>Grant mic access, pick a key, and watch your pitch snap to the grid.</div>
+        <div style="margin-top:6px">No mic handy? Hit <b style="color:var(--accent)">Play demo</b> below.</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="ctl"><label>Key</label>
+        <select id="key">
+          <option value="0">C</option><option value="1">C&#9839;/D&#9837;</option><option value="2">D</option>
+          <option value="3">D&#9839;/E&#9837;</option><option value="4">E</option><option value="5">F</option>
+          <option value="6">F&#9839;/G&#9837;</option><option value="7">G</option><option value="8">G&#9839;/A&#9837;</option>
+          <option value="9" selected>A</option><option value="10">A&#9839;/B&#9837;</option><option value="11">B</option>
+        </select>
+      </div>
+      <div class="ctl"><label>Scale</label>
+        <select id="scale">
+          <option value="chromatic">Chromatic (all notes)</option>
+          <option value="major">Major</option>
+          <option value="minor" selected>Minor</option>
+          <option value="majorPent">Major pentatonic</option>
+          <option value="minorPent">Minor pentatonic</option>
+        </select>
+      </div>
+      <div class="ctl"><label>Retune speed</label>
+        <div class="rngwrap"><input type="range" id="speed" min="0" max="200" value="0" step="1" /><span class="rngval" id="speedV">0 ms</span></div>
+      </div>
+      <div class="ctl"><label>Strength</label>
+        <div class="rngwrap"><input type="range" id="amount" min="0" max="100" value="100" step="1" /><span class="rngval" id="amountV">100%</span></div>
+      </div>
+    </div>
+
+    <div class="bar">
+      <button class="btn" id="start">Start microphone</button>
+      <button class="btn btn-out" id="demo">Play demo</button>
+      <button class="btn btn-rec" id="rec" disabled>&#9679; Record</button>
+      <label class="toggle" title="Hear the corrected sound. Use headphones to avoid feedback."><input type="checkbox" id="mon" /> Monitor (headphones)</label>
+      <span class="status" id="status">Ready</span>
+    </div>
+    <div class="clips" id="clips"></div>
+    <div class="hint">Tip: for the T-Pain robot effect, set retune speed to 0 and strength to 100%. For natural correction, raise retune speed to 60–120 ms. Use headphones when monitoring so the output does not feed back into your mic.</div>
+
+    <div class="fail" id="fail">
+      <h2>This browser can't run Retune</h2>
+      <p id="failMsg">Retune needs the Web Audio API with AudioWorklet and microphone access. Try the latest Chrome, Edge, Firefox, or Safari on a device with a microphone.</p>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>Wait — real auto-tune, running in a browser tab?</h2>
+    <p>Yes. There is no server doing the work and nothing gets uploaded. When you press start, the page opens your microphone with the Web Audio API and streams the audio through an AudioWorklet, which is a small piece of DSP code that runs on the browser's real-time audio thread. That worklet does the pitch shifting sample by sample, so the corrected voice comes back with only a few milliseconds of delay. The whole signal path lives inside the tab.</p>
+    <h2>How the pitch correction works</h2>
+    <p>Many times a second, Retune estimates the fundamental frequency of your voice using the YIN algorithm, a well-known and accurate monophonic pitch detector. It converts that frequency to a musical note, snaps it to the nearest note allowed by your chosen key and scale, and works out the ratio between where you are and where you should be. The AudioWorklet then pitch-shifts your live audio by exactly that ratio using a granular overlap-add shifter with two crossfaded grains, which keeps the sound continuous while it stretches or compresses the waveform.</p>
+    <h2>Getting the sound you want</h2>
+    <p>The retune speed is the whole trick. At 0 milliseconds your pitch is yanked to the target instantly and held there, which quantizes your continuous singing into hard steps. That stair-stepping is the robotic, modern auto-tune sound. Turn the speed up and the correction glides in gently, so it fixes flat and sharp notes without anyone noticing it is on. Chromatic scale corrects to the nearest of all twelve notes, while picking an actual key and scale keeps you locked to notes that fit the song.</p>
+    <h2>A note on honesty</h2>
+    <p>This is a real-time effect, not studio-grade offline tuning. It does not preserve formants perfectly on large jumps, so extreme corrections take on the classic robotic character rather than sounding invisible. For small, in-key corrections it sounds clean. If you sing roughly in tune and pick the right key, it does a genuinely nice job.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my voice uploaded anywhere?</summary><p>No. Everything runs locally in your browser with the Web Audio API. Your microphone audio never leaves your device, there is no account, and nothing is stored.</p></details>
+    <details><summary>How do I get the classic hard-tune robot sound?</summary><p>Set retune speed to 0, strength to 100%, and pick a scale like Minor or Minor Pentatonic. Instant retune with no glide is what produces the stepped, robotic effect.</p></details>
+    <details><summary>Why should I use headphones?</summary><p>If you turn on Monitor to hear the corrected voice through your speakers, that sound will leak back into your microphone and cause feedback and double-tracking. Headphones keep the loop clean.</p></details>
+    <details><summary>Can I save what I record?</summary><p>Yes. Press Record while singing and Retune captures the corrected output. When you stop, a player appears with a download link so you can save the clip.</p></details>
+    <details><summary>Does it work on my phone?</summary><p>It works in most modern mobile browsers that support AudioWorklet and microphone access. Latency is a little higher on phones, and you should still use headphones.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- AudioWorklet DSP: pitch-shifter that runs on the audio thread. Loaded as a Blob URL so this stays a single file. -->
+<script id="worklet-code" type="text/js-worklet">
+class RetuneProcessor extends AudioWorkletProcessor {
+  constructor(){
+    super();
+    this.N = 32768; this.mask = this.N - 1;
+    this.buf = new Float32Array(this.N);
+    this.w = 0;
+    this.grain = Math.max(256, Math.floor(sampleRate * 0.040));
+    this.phase = 0;
+    this.ratio = 1; this.target = 1;
+    this.amount = 1;
+    this.enabled = true;
+    this.setSpeed(0);
+    this.port.onmessage = (e) => {
+      const d = e.data;
+      if (d.target !== undefined) this.target = (d.voiced === false) ? 1 : d.target;
+      else if (d.voiced === false) this.target = 1;
+      if (d.amount !== undefined) this.amount = d.amount;
+      if (d.speedMs !== undefined) this.setSpeed(d.speedMs);
+      if (d.enabled !== undefined) this.enabled = d.enabled;
+    };
+  }
+  setSpeed(ms){
+    if (ms <= 0) this.speedCoef = 1;
+    else this.speedCoef = 1 - Math.exp(-1 / (ms * 0.001 * sampleRate));
+  }
+  read(delay){
+    let idx = this.w - delay;
+    idx = ((idx % this.N) + this.N) % this.N;
+    const i0 = Math.floor(idx), frac = idx - i0;
+    const a = this.buf[i0 & this.mask];
+    const b = this.buf[(i0 + 1) & this.mask];
+    return a + (b - a) * frac;
+  }
+  process(inputs, outputs){
+    const input = inputs[0], output = outputs[0];
+    if (!output || !output[0]) return true;
+    const out0 = output[0];
+    if (!input || !input[0]) { out0.fill(0); return true; }
+    const inCh = input[0];
+    const n = inCh.length, g = this.grain;
+    for (let i = 0; i < n; i++){
+      const x = inCh[i];
+      this.buf[this.w & this.mask] = x;
+      this.ratio += (this.target - this.ratio) * this.speedCoef;
+      let wet;
+      if (!this.enabled || Math.abs(this.ratio - 1) < 0.004){
+        wet = x;
+      } else {
+        this.phase += (1 - this.ratio) / g;
+        if (this.phase >= 1) this.phase -= 1; else if (this.phase < 0) this.phase += 1;
+        const p2 = this.phase >= 0.5 ? this.phase - 0.5 : this.phase + 0.5;
+        const s1 = this.read(this.phase * g);
+        const s2 = this.read(p2 * g);
+        const w1 = 0.5 - 0.5 * Math.cos(2 * Math.PI * this.phase);
+        const w2 = 0.5 - 0.5 * Math.cos(2 * Math.PI * p2);
+        wet = s1 * w1 + s2 * w2;
+      }
+      this.w++;
+      out0[i] = wet * this.amount + x * (1 - this.amount);
+    }
+    for (let c = 1; c < output.length; c++) output[c].set(out0);
+    return true;
+  }
+}
+registerProcessor('retune-processor', RetuneProcessor);
+</script>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  // ---------- music theory helpers ----------
+  var SCALES = {
+    chromatic:[0,1,2,3,4,5,6,7,8,9,10,11],
+    major:[0,2,4,5,7,9,11],
+    minor:[0,2,3,5,7,8,10],
+    majorPent:[0,2,4,7,9],
+    minorPent:[0,3,5,7,10]
+  };
+  var NOTE_NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+  function freqToMidiFloat(f){ return 69 + 12*Math.log2(f/440); }
+  function midiToFreq(m){ return 440*Math.pow(2,(m-69)/12); }
+  function noteInfo(f){
+    var mf = freqToMidiFloat(f);
+    var m = Math.round(mf);
+    var cents = Math.round((mf-m)*100);
+    return { midi:m, name:NOTE_NAMES[((m%12)+12)%12], octave:Math.floor(m/12)-1, cents:cents };
+  }
+  // nearest allowed note (integer midi) to a frequency
+  function nearestScaleMidi(f, rootPc, scaleSemis){
+    var mf = freqToMidiFloat(f);
+    var base = Math.round(mf);
+    var best=null, bestD=1e9;
+    var allowed = {};
+    for(var i=0;i<scaleSemis.length;i++){ allowed[((rootPc+scaleSemis[i])%12+12)%12]=1; }
+    for(var m=base-7;m<=base+7;m++){
+      var pc=((m%12)+12)%12;
+      if(allowed[pc]){ var d=Math.abs(m-mf); if(d<bestD){bestD=d;best=m;} }
+    }
+    return best===null?base:best;
+  }
+  // ---------- YIN pitch detection ----------
+  function yin(buf, sr, threshold){
+    threshold = threshold||0.12;
+    var n = buf.length;
+    var e=0; for(var q=0;q<n;q++){ e+=buf[q]*buf[q]; }
+    if(e < n*1e-8) return {freq:0,prob:0}; // silence guard
+    var tauMax = Math.min(n>>1, Math.floor(sr/70)); // down to ~70Hz
+    var d = new Float32Array(tauMax);
+    for(var tau=1;tau<tauMax;tau++){
+      var sum=0;
+      for(var j=0;j+tau<n;j++){ var diff=buf[j]-buf[j+tau]; sum+=diff*diff; }
+      d[tau]=sum;
+    }
+    var cmnd = new Float32Array(tauMax);
+    cmnd[0]=1; var running=0;
+    for(var t=1;t<tauMax;t++){ running+=d[t]; cmnd[t]= d[t]*t/ (running||1); }
+    var tauEst=-1;
+    for(var t2=2;t2<tauMax;t2++){
+      if(cmnd[t2]<threshold){
+        while(t2+1<tauMax && cmnd[t2+1]<cmnd[t2]) t2++;
+        tauEst=t2; break;
+      }
+    }
+    if(tauEst===-1){
+      // fallback: global min of cmnd
+      var mn=1e9,mi=-1;
+      for(var t3=2;t3<tauMax;t3++){ if(cmnd[t3]<mn){mn=cmnd[t3];mi=t3;} }
+      if(mn<0.5){ tauEst=mi; } else return {freq:0,prob:0};
+    }
+    // parabolic interpolation
+    var x0 = tauEst>1?tauEst-1:tauEst;
+    var x2 = tauEst+1<tauMax?tauEst+1:tauEst;
+    var betterTau=tauEst;
+    if(x0!==tauEst && x2!==tauEst){
+      var s0=cmnd[x0], s1=cmnd[tauEst], s2=cmnd[x2];
+      var denom=(2*(2*s1-s2-s0));
+      if(denom!==0) betterTau = tauEst + (s2-s0)/denom;
+    }
+    return { freq: sr/betterTau, prob: 1-cmnd[tauEst] };
+  }
+
+  // ---------- capability detection ----------
+  var AC = window.AudioContext || window.webkitAudioContext;
+  var okAudio = !!AC && typeof AudioWorkletNode !== "undefined";
+  var okMic = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  var $ = function(id){ return document.getElementById(id); };
+  if(!okAudio){
+    $("fail").classList.add("show");
+    $("failMsg").textContent = "Your browser doesn't support the AudioWorklet API that Retune's real-time pitch shifter needs. Try the latest Chrome, Edge, Firefox, or Safari.";
+    $("start").disabled = true; $("demo").disabled = true;
+  }
+
+  // ---------- state ----------
+  var ctx=null, worklet=null, analyser=null, micStream=null, micSrc=null;
+  var recDest=null, recorder=null, recChunks=[], monGain=null;
+  var demoOsc=null, demoGain=null, demoTimer=null;
+  var running=false, source="none"; // "mic" | "demo"
+  var timeBuf=null;
+  var rootPc=9, scaleKey="minor", amount=1, speedMs=0;
+
+  // ---------- viz ----------
+  var cv=$("viz"), cx=cv.getContext("2d");
+  var history=[]; // {raw, target, voiced}
+  var HISTMAX=180;
+  var lastNoteText="—", lastCents=0, lastTargetName="—", lastVoiced=false;
+
+  function draw(){
+    var W=cv.width, H=cv.height;
+    var css=getComputedStyle(document.documentElement);
+    var accent=(css.getPropertyValue("--accent")||"#2be3b0").trim();
+    var accent2=(css.getPropertyValue("--accent-2")||"#14c3c9").trim();
+    cx.clearRect(0,0,W,H);
+    // pitch window: center around recent target, +/- 14 semitones
+    var center=57; // A3 midi fallback
+    for(var i=history.length-1;i>=0;i--){ if(history[i].voiced){ center=freqToMidiFloat(history[i].target); break; } }
+    center=Math.round(center);
+    var span=15; // semitones each direction
+    var loM=center-span, hiM=center+span;
+    function y(m){ return H - ((m-loM)/(hiM-loM))*H; }
+    // scale grid lines
+    var semis=SCALES[scaleKey];
+    var allowed={}; for(var s=0;s<semis.length;s++){ allowed[((rootPc+semis[s])%12+12)%12]=1; }
+    cx.font="22px "+(css.getPropertyValue("--mono")||"monospace");
+    for(var m=loM;m<=hiM;m++){
+      var pc=((m%12)+12)%12;
+      var isAllowed=allowed[pc];
+      var isRoot=(pc===rootPc);
+      var yy=y(m);
+      cx.strokeStyle= isRoot? "rgba(255,255,255,.22)" : isAllowed? "rgba(255,255,255,.10)":"rgba(255,255,255,.03)";
+      cx.lineWidth= isRoot?2:1;
+      cx.beginPath(); cx.moveTo(0,yy); cx.lineTo(W,yy); cx.stroke();
+      if(isAllowed){
+        cx.fillStyle= isRoot? "rgba(237,242,239,.55)":"rgba(147,168,161,.45)";
+        cx.fillText(NOTE_NAMES[pc]+(Math.floor(m/12)-1), 10, yy-6);
+      }
+    }
+    // history traces
+    var n=history.length;
+    var stepX = W/HISTMAX;
+    // raw (thin, accent2)
+    cx.lineWidth=2; cx.strokeStyle=accent2; cx.globalAlpha=.55;
+    cx.beginPath(); var started=false;
+    for(var i2=0;i2<n;i2++){ var h=history[i2]; if(!h.voiced){started=false;continue;}
+      var mm=freqToMidiFloat(h.raw); var xx=W-(n-i2)*stepX; var yy2=y(mm);
+      if(!started){cx.moveTo(xx,yy2);started=true;} else cx.lineTo(xx,yy2); }
+    cx.stroke();
+    // corrected (thick, accent)
+    cx.globalAlpha=1; cx.lineWidth=4; cx.strokeStyle=accent; cx.lineJoin="round";
+    cx.beginPath(); started=false;
+    for(var i3=0;i3<n;i3++){ var h3=history[i3]; if(!h3.voiced){started=false;continue;}
+      var mm3=freqToMidiFloat(h3.target); var xx3=W-(n-i3)*stepX; var yy3=y(mm3);
+      if(!started){cx.moveTo(xx3,yy3);started=true;} else cx.lineTo(xx3,yy3); }
+    cx.stroke();
+    // now dot
+    if(n>0 && history[n-1].voiced){
+      var last=history[n-1];
+      var yd=y(freqToMidiFloat(last.target));
+      cx.fillStyle=accent; cx.beginPath(); cx.arc(W-6,yd,8,0,7); cx.fill();
+      cx.fillStyle="rgba(43,227,176,.18)"; cx.beginPath(); cx.arc(W-6,yd,18,0,7); cx.fill();
+    }
+  }
+
+  function updateReadout(){
+    $("noteName").innerHTML = lastVoiced ? (lastNoteText.replace(/(-?\d+)$/,'<span class="oct">$1</span>')) : "—";
+    $("centsLine").innerHTML = lastVoiced ? ("you: <b>"+(lastCents>=0?"+":"")+lastCents+"</b> cents") : "listening…";
+    $("targetName").textContent = lastVoiced ? lastTargetName : "—";
+  }
+
+  // ---------- analysis loop ----------
+  var raf=null;
+  function analyze(){
+    if(!running){ return; }
+    analyser.getFloatTimeDomainData(timeBuf);
+    // rms gate
+    var rms=0; for(var i=0;i<timeBuf.length;i++){ rms+=timeBuf[i]*timeBuf[i]; } rms=Math.sqrt(rms/timeBuf.length);
+    var voiced=false, raw=0, targetF=0;
+    if(rms>0.008){
+      var r=yin(timeBuf, ctx.sampleRate, 0.12);
+      if(r.freq>60 && r.freq<1200 && r.prob>0.6){
+        voiced=true; raw=r.freq;
+        var tm=nearestScaleMidi(raw, rootPc, SCALES[scaleKey]);
+        targetF=midiToFreq(tm);
+        var ni=noteInfo(raw);
+        lastNoteText=ni.name+ni.octave;
+        lastCents=Math.round(1200*Math.log2(raw/targetF));
+        lastTargetName=NOTE_NAMES[((tm%12)+12)%12]+(Math.floor(tm/12)-1);
+      }
+    }
+    lastVoiced=voiced;
+    // push to worklet
+    if(worklet){
+      if(voiced){ worklet.port.postMessage({ target: targetF/raw, voiced:true }); }
+      else { worklet.port.postMessage({ voiced:false }); }
+    }
+    history.push({ raw:raw||220, target:targetF||220, voiced:voiced });
+    if(history.length>HISTMAX) history.shift();
+    updateReadout();
+    draw();
+    raf=requestAnimationFrame(analyze);
+  }
+
+  // ---------- audio graph setup ----------
+  function ensureCtx(){
+    return new Promise(function(res,rej){
+      if(ctx){ res(); return; }
+      try{
+        ctx=new AC();
+        var blob=new Blob([document.getElementById("worklet-code").textContent],{type:"application/javascript"});
+        var url=URL.createObjectURL(blob);
+        ctx.audioWorklet.addModule(url).then(function(){
+          worklet=new AudioWorkletNode(ctx,"retune-processor",{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
+          analyser=ctx.createAnalyser(); analyser.fftSize=2048;
+          timeBuf=new Float32Array(analyser.fftSize);
+          monGain=ctx.createGain(); monGain.gain.value=0; // muted unless monitoring
+          recDest=ctx.createMediaStreamDestination();
+          worklet.connect(monGain).connect(ctx.destination);
+          worklet.connect(recDest);
+          pushParams();
+          URL.revokeObjectURL(url);
+          res();
+        }).catch(rej);
+      }catch(e){ rej(e); }
+    });
+  }
+  function pushParams(){
+    if(!worklet) return;
+    worklet.port.postMessage({ amount:amount, speedMs:speedMs });
+  }
+
+  function stopSources(){
+    if(demoTimer){ clearInterval(demoTimer); demoTimer=null; }
+    if(demoOsc){ try{demoOsc.stop();}catch(e){} try{demoOsc.disconnect();}catch(e){} demoOsc=null; }
+    if(demoGain){ try{demoGain.disconnect();}catch(e){} demoGain=null; }
+    if(micSrc){ try{micSrc.disconnect();}catch(e){} micSrc=null; }
+    if(micStream){ micStream.getTracks().forEach(function(t){t.stop();}); micStream=null; }
+  }
+
+  function startMic(){
+    if(!okMic){ $("status").textContent="No microphone available in this browser."; return; }
+    $("status").textContent="Requesting mic…";
+    ensureCtx().then(function(){
+      return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+    }).then(function(stream){
+      stopSources(); source="mic"; micStream=stream;
+      micSrc=ctx.createMediaStreamSource(stream);
+      micSrc.connect(analyser);
+      micSrc.connect(worklet);
+      if(ctx.state==="suspended") ctx.resume();
+      begin();
+      $("status").innerHTML="<b>Live</b> · singing into Retune";
+      $("start").textContent="Stop";
+    }).catch(function(err){
+      if(err && err.name==="NotAllowedError"){ $("status").textContent="Mic permission denied. Allow it and press start again."; }
+      else if(err && err.name==="NotFoundError"){ $("status").textContent="No microphone found on this device."; }
+      else { $("status").textContent="Couldn't start audio: "+(err&&err.message?err.message:err); }
+    });
+  }
+
+  // demo: an oscillator that glides intentionally off key so you SEE and HEAR the snapping
+  function startDemo(){
+    ensureCtx().then(function(){
+      stopSources(); source="demo";
+      demoOsc=ctx.createOscillator(); demoOsc.type="sawtooth";
+      demoGain=ctx.createGain(); demoGain.gain.value=0.14;
+      // gentle vibrato to look voice-like
+      var vib=ctx.createOscillator(); vib.frequency.value=5.2; var vibG=ctx.createGain(); vibG.gain.value=3;
+      vib.connect(vibG).connect(demoOsc.frequency); vib.start();
+      demoOsc.connect(demoGain);
+      demoGain.connect(analyser); demoGain.connect(worklet);
+      // wander between deliberately out-of-tune pitches
+      var melody=[223,247,262,255,294,277,330,311,262,247]; var mi=0;
+      function step(){ var f=melody[mi%melody.length]; mi++;
+        demoOsc.frequency.setTargetAtTime(f, ctx.currentTime, 0.18);
+      }
+      demoOsc.start(); step(); demoTimer=setInterval(step,900);
+      if(ctx.state==="suspended") ctx.resume();
+      // demo plays out loud regardless of monitor toggle
+      monGain.gain.setTargetAtTime(0.9, ctx.currentTime, 0.05);
+      begin();
+      $("status").innerHTML="<b>Demo</b> · a wandering synth voice being retuned";
+      $("demo").textContent="Stop demo";
+    }).catch(function(e){ $("status").textContent="Couldn't start demo: "+(e&&e.message?e.message:e); });
+  }
+
+  function begin(){
+    running=true;
+    $("idle").style.display="none";
+    $("readout").style.display="flex";
+    $("rec").disabled=false;
+    if(!raf) raf=requestAnimationFrame(analyze);
+  }
+  function fullStop(){
+    running=false;
+    if(raf){ cancelAnimationFrame(raf); raf=null; }
+    stopSources();
+    if(recorder && recorder.state==="recording"){ recorder.stop(); }
+    $("readout").style.display="none";
+    $("idle").style.display="flex";
+    $("rec").disabled=true;
+    $("start").textContent="Start microphone";
+    $("demo").textContent="Play demo";
+    $("status").textContent="Stopped";
+    lastVoiced=false; updateReadout(); draw();
+  }
+
+  // ---------- controls ----------
+  $("start").addEventListener("click",function(){
+    if(running && source==="mic"){ fullStop(); }
+    else { if(running) fullStop(); startMic(); }
+  });
+  $("demo").addEventListener("click",function(){
+    if(running && source==="demo"){ fullStop(); }
+    else { if(running) fullStop(); startDemo(); }
+  });
+  $("key").addEventListener("change",function(){ rootPc=parseInt(this.value,10); draw(); });
+  $("scale").addEventListener("change",function(){ scaleKey=this.value; draw(); });
+  $("speed").addEventListener("input",function(){ speedMs=parseInt(this.value,10); $("speedV").textContent=speedMs+" ms"; pushParams(); });
+  $("amount").addEventListener("input",function(){ amount=parseInt(this.value,10)/100; $("amountV").textContent=this.value+"%"; pushParams(); });
+  $("mon").addEventListener("change",function(){
+    if(monGain && source==="mic"){ monGain.gain.setTargetAtTime(this.checked?1:0, ctx.currentTime, 0.03); }
+  });
+
+  // ---------- recording ----------
+  $("rec").addEventListener("click",function(){
+    if(!recDest){ return; }
+    if(recorder && recorder.state==="recording"){ recorder.stop(); return; }
+    recChunks=[];
+    var mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")?"audio/webm;codecs=opus":(MediaRecorder.isTypeSupported("audio/webm")?"audio/webm":"");
+    try{ recorder = mime? new MediaRecorder(recDest.stream,{mimeType:mime}) : new MediaRecorder(recDest.stream); }
+    catch(e){ $("status").textContent="Recording not supported in this browser."; return; }
+    recorder.ondataavailable=function(e){ if(e.data && e.data.size) recChunks.push(e.data); };
+    recorder.onstop=function(){
+      var blob=new Blob(recChunks,{type: recorder.mimeType||"audio/webm"});
+      var url=URL.createObjectURL(blob);
+      var row=document.createElement("div"); row.className="clip";
+      var au=document.createElement("audio"); au.controls=true; au.src=url;
+      var a=document.createElement("a"); a.className="dl"; a.textContent="Download"; a.href=url; a.download="retune-"+Date.now()+".webm";
+      row.appendChild(au); row.appendChild(a);
+      $("clips").insertBefore(row,$("clips").firstChild);
+      $("rec").classList.remove("recording"); $("rec").innerHTML="&#9679; Record";
+    };
+    recorder.start();
+    $("rec").classList.add("recording"); $("rec").innerHTML="&#9632; Stop";
+  });
+
+  draw();
+})();
+</script>
+
+<!-- Monetization slots (left inert for now):
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX"></ins>
+Polar.sh "support this tool" button can drop in here. -->
+
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>

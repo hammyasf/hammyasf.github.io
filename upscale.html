@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Image Upscaler &amp; Enhancer — upscale 2× / 4× in your browser, no upload</title>
+<meta name="description" content="Upscale and enhance images 2× or 4× with a real AI super-resolution model that runs entirely in your browser. No upload, no sign-up, no watermark. Private, free, works offline after load." />
+<meta name="keywords" content="ai image upscaler, upscale image, enhance image ai, super resolution online, upscale image 4x, ai photo enhancer, increase image resolution, upscale image no upload, image upscaler free, sharpen image ai" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="AI Image Upscaler &amp; Enhancer — in your browser" />
+<meta property="og:description" content="Upscale images 2× or 4× with a real AI model running locally. No upload, no watermark, free." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/upscale.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="AI Image Upscaler &amp; Enhancer" />
+<meta name="twitter:description" content="Upscale images 2× or 4× with a real AI model, in your browser. No upload, no watermark." />
+<link rel="canonical" href="https://hammyasf.github.io/upscale.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"AI Image Upscaler & Enhancer","url":"https://hammyasf.github.io/upscale.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebAssembly; WebGPU recommended)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Upscale and enhance images 2x or 4x with a Swin2SR super-resolution model running entirely in the browser. No upload, private, free.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my images uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI model is downloaded to your browser once and runs on your own device with WebAssembly or WebGPU. Your images never leave your computer."}},{"@type":"Question","name":"How much can it upscale?","acceptedAnswer":{"@type":"Answer","text":"2x or 4x, using the Swin2SR super-resolution transformer. A separate 4x mode is tuned to clean up compression artifacts in JPEGs and screenshots."}},{"@type":"Question","name":"Is it free and is there a watermark?","acceptedAnswer":{"@type":"Answer","text":"It is completely free, with no sign-up, no limits and no watermark. Because it runs locally there is no per-image cost."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. After the model downloads and caches the first time, upscaling works with no internet connection."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:40px 0 16px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:46px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .controls{display:flex;flex-wrap:wrap;gap:18px 28px;padding:0 24px 8px;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:6px;}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;flex-wrap:wrap;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 15px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:16px 24px 6px;}
+  .summary{font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .summary b{color:var(--accent);}
+  .backend{font-family:var(--mono);font-size:11px;color:var(--faint);border:1px solid var(--line);border-radius:100px;padding:4px 10px;}
+  .backend b{color:var(--accent);}
+  .prog{margin:6px 24px 0;height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.8);border:1px solid var(--line);overflow:hidden;display:none;}
+  .prog > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s;}
+  .status{padding:4px 24px 0;font-family:var(--mono);font-size:12.5px;color:var(--muted);min-height:18px;}
+  .stage{padding:0 24px 24px;display:none;}
+  .cmp{position:relative;width:100%;max-height:70vh;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#04100c;user-select:none;touch-action:none;}
+  .cmp img,.cmp canvas{display:block;width:100%;height:auto;}
+  .cmp .after{position:absolute;inset:0;}
+  .cmp .after .clip{position:absolute;inset:0;overflow:hidden;width:50%;border-right:2px solid var(--accent);}
+  .cmp .after .clip canvas,.cmp .after .clip img{position:absolute;top:0;left:0;height:100%;width:auto;max-width:none;}
+  .cmp .handle{position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--accent);transform:translateX(-1px);pointer-events:none;box-shadow:0 0 14px rgba(var(--accentRGB),.7);}
+  .cmp .knob{position:absolute;top:50%;left:50%;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;background:var(--accent);color:#07100e;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;pointer-events:none;box-shadow:0 4px 18px rgba(0,0,0,.5);}
+  .lbl{position:absolute;top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:rgba(4,16,12,.72);color:var(--ink);padding:4px 9px;border-radius:6px;pointer-events:none;}
+  .lbl.l{left:10px;} .lbl.r{right:10px;color:var(--accent);}
+  .meta{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:14px;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .meta b{color:var(--accent);}
+  input[type=range]{accent-color:var(--accent);}
+  section.copy{padding:30px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;}
+  .note{margin:6px 24px 0;font-family:var(--mono);font-size:12px;color:var(--faint);}
+  .warn{margin:18px;padding:16px 18px;border:1px solid rgba(255,180,80,.4);background:rgba(255,180,80,.06);border-radius:12px;color:#ffd9a8;font-size:14.5px;display:none;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · a real AI model runs in your browser</div>
+    <h1>AI Image Upscaler &amp; Enhancer</h1>
+    <p class="sub">Upscale and sharpen images 2× or 4× with a real super-resolution neural network that runs entirely on your own device. No upload, no sign-up, no watermark.</p>
+    <span class="priv">&#128274; 100% private — your images never leave your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="warn" id="nowasm"></div>
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add an image">
+      <h2>Drop an image here</h2>
+      <p>or click to choose a file · PNG, JPG, WebP · or try the sample below</p>
+      <input type="file" id="file" accept="image/*" hidden />
+    </div>
+    <div class="controls">
+      <div class="ctl"><label>Enhance mode</label>
+        <div class="seg" id="mode">
+          <button data-m="2x" class="on">2× Sharp</button>
+          <button data-m="4x">4× Max</button>
+          <button data-m="photo4x">4× Photo (de-artifact)</button>
+        </div>
+      </div>
+    </div>
+    <div class="note">First run downloads the model once (roughly 40–130&nbsp;MB depending on mode), then it is cached and works offline. Runs on WebGPU where available, otherwise WebAssembly.</div>
+    <div class="bar">
+      <button class="btn" id="go" disabled>Upscale image</button>
+      <button class="btn btn-out" id="sample">Try a sample</button>
+      <button class="btn btn-out" id="dl" style="display:none">Download result</button>
+      <span class="backend" id="backend" style="display:none">backend: <b id="backendName">—</b></span>
+    </div>
+    <div class="prog" id="prog"><i id="progBar"></i></div>
+    <div class="status" id="status"></div>
+
+    <div class="stage" id="stage">
+      <div class="cmp" id="cmp">
+        <canvas id="afterCanvas" class="baseCanvas"></canvas>
+        <div class="after" id="afterWrap">
+          <div class="clip" id="clip"><canvas id="beforeCanvas"></canvas></div>
+        </div>
+        <div class="handle" id="handle"></div>
+        <div class="knob" id="knob">&#8596;</div>
+        <div class="lbl l">Original</div>
+        <div class="lbl r">AI upscaled</div>
+      </div>
+      <div class="meta" id="meta"></div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>How it works</h2>
+    <p>This runs Swin2SR, a Swin Transformer v2 super-resolution model, directly in your browser through Transformers.js. When you pick an image, the pixels are handed to the model on your own machine, it predicts the missing high-frequency detail, and it paints back an image at two or four times the resolution. Because the whole thing executes locally on WebGPU or WebAssembly, there is no upload, no queue, and no per-image cost. It is the same class of model that paid upscaling services run on a server, except here the server is your own tab.</p>
+    <h2>Why it does not choke on large photos</h2>
+    <p>Running a transformer over a full 12-megapixel photo at once would exhaust memory, so the image is cut into overlapping tiles, each tile is upscaled on its own, and the results are stitched back together with a feathered weighted blend across the overlap so no seams show. Memory stays flat no matter how big the input is, and a progress bar tracks the tiles as they finish. The output is capped at a sensible maximum on the long edge so your browser stays responsive.</p>
+    <h2>Which mode to use</h2>
+    <p>2× Sharp is the fast, high-quality default for cleaning up a slightly small image. 4× Max pushes small images and pixel art up to poster size. 4× Photo is tuned to remove JPEG blocking and compression noise, so reach for it on screenshots, memes, and photos that have already been saved and re-saved a few times. All three run the same way, fully on your device.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Are my images uploaded anywhere?</summary><p>No. The model file downloads to your browser once, then every image is processed locally. Nothing you upscale ever touches a server, which is why it is private and works offline.</p></details>
+    <details><summary>Why is the first run slow?</summary><p>The first time you pick a mode, the browser downloads that model (roughly 40–130&nbsp;MB) and caches it. After that it loads instantly and runs offline. WebGPU, if your browser supports it, makes the actual upscaling several times faster than WebAssembly.</p></details>
+    <details><summary>Is there a size or count limit, or a watermark?</summary><p>No sign-up, no watermark, and no hard limit. Very large images are tiled automatically; the practical ceiling is your device's memory. The output is capped on the long edge to keep the tab responsive.</p></details>
+    <details><summary>Will it invent detail that was not there?</summary><p>Like every neural upscaler, it predicts plausible detail rather than recovering true information, so it is superb for photos, art, and graphics but should not be treated as forensic evidence.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build tools like this every day.</h3>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+})();
+
+(function(){
+  "use strict";
+  var MODELS={
+    "2x":{id:"Xenova/swin2SR-classical-sr-x2-64",scale:2,label:"2× Sharp"},
+    "4x":{id:"Xenova/swin2SR-classical-sr-x4-64",scale:4,label:"4× Max"},
+    "photo4x":{id:"Xenova/swin2SR-compressed-sr-x4-48",scale:4,label:"4× Photo"}
+  };
+  var TILE=176, OVERLAP=32, MAXOUT=4096; // input tile size, overlap, max output long edge
+
+  var drop=document.getElementById("drop"), file=document.getElementById("file"),
+      go=document.getElementById("go"), sampleBtn=document.getElementById("sample"),
+      dlBtn=document.getElementById("dl"), statusEl=document.getElementById("status"),
+      prog=document.getElementById("prog"), progBar=document.getElementById("progBar"),
+      stage=document.getElementById("stage"), meta=document.getElementById("meta"),
+      backendEl=document.getElementById("backend"), backendName=document.getElementById("backendName"),
+      afterCanvas=document.getElementById("afterCanvas"), beforeCanvas=document.getElementById("beforeCanvas"),
+      cmp=document.getElementById("cmp"), clip=document.getElementById("clip"), handle=document.getElementById("handle"), knob=document.getElementById("knob"),
+      warn=document.getElementById("nowasm");
+
+  var mode="2x", srcImg=null, worker=null, busy=false, resultURL=null, reqId=0, pending={};
+
+  document.querySelectorAll("#mode button").forEach(function(b){
+    b.addEventListener("click",function(){ if(busy)return; document.querySelectorAll("#mode button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); mode=b.getAttribute("data-m"); });
+  });
+
+  // ---- worker (module) via Blob URL ----
+  var WORKER_SRC = [
+"import { pipeline, env, RawImage } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1';",
+"env.allowLocalModels=false;",
+"let pipe=null, curId=null, curDevice=null;",
+"async function getPipe(id){",
+"  if(pipe && curId===id) return pipe;",
+"  if(pipe){ try{ if(pipe.dispose) await pipe.dispose(); }catch(e){} pipe=null; }",
+"  let lastErr=null;",
+"  for(const device of ['webgpu','wasm']){",
+"    try{",
+"      pipe = await pipeline('image-to-image', id, { device, progress_callback:(p)=>{ if(p&&p.status==='progress'){ self.postMessage({type:'dl',progress:p.progress||0,loaded:p.loaded||0,total:p.total||0}); } } });",
+"      curId=id; curDevice=device; self.postMessage({type:'backend',device});",
+"      return pipe;",
+"    }catch(e){ lastErr=e; pipe=null; }",
+"  }",
+"  throw lastErr||new Error('could not initialise model');",
+"}",
+"function toRGBA(img){ const d=img.data,w=img.width,h=img.height,c=img.channels; const o=new Uint8ClampedArray(w*h*4);",
+"  if(c===4){ o.set(d); } else if(c===3){ for(let i=0,j=0;i<w*h;i++){ o[j++]=d[i*3];o[j++]=d[i*3+1];o[j++]=d[i*3+2];o[j++]=255; } }",
+"  else if(c===1){ for(let i=0;i<w*h;i++){ const v=d[i]; o[i*4]=v;o[i*4+1]=v;o[i*4+2]=v;o[i*4+3]=255; } }",
+"  else { for(let i=0;i<w*h;i++){ o[i*4]=d[i*c];o[i*4+1]=d[i*c+1]||d[i*c];o[i*4+2]=d[i*c+2]||d[i*c];o[i*4+3]=255; } } return o; }",
+"async function rebuildWasm(id){ try{ if(pipe&&pipe.dispose) await pipe.dispose(); }catch(e){} pipe=null; pipe=await pipeline('image-to-image',id,{device:'wasm'}); curId=id; curDevice='wasm'; self.postMessage({type:'backend',device:'wasm'}); return pipe; }",
+"async function infer(id,img){",
+"  let p=await getPipe(id);",
+"  try{ let o=await p(img); return o; }",
+"  catch(err){ if(curDevice==='webgpu'){ p=await rebuildWasm(id); let o=await p(img); return o; } throw err; }",
+"}",
+"self.onmessage = async (e)=>{",
+"  const m=e.data;",
+"  try{",
+"    if(m.type==='load'){ await getPipe(m.model); self.postMessage({type:'loaded',device:curDevice}); return; }",
+"    if(m.type==='tile'){",
+"      const img=new RawImage(new Uint8ClampedArray(m.data), m.w, m.h, 4).rgb();",
+"      let out=await infer(m.model,img);",
+"      if(Array.isArray(out)) out=out[0];",
+"      const rgba=toRGBA(out);",
+"      self.postMessage({type:'tileDone',id:m.id,data:rgba.buffer,w:out.width,h:out.height},[rgba.buffer]);",
+"    }",
+"  }catch(err){ self.postMessage({type:'error',id:m&&m.id,message:String(err&&err.message||err)}); }",
+"};"
+  ].join("\n");
+
+  function ensureWorker(){
+    if(worker) return worker;
+    var blob=new Blob([WORKER_SRC],{type:"text/javascript"});
+    worker=new Worker(URL.createObjectURL(blob),{type:"module"});
+    worker.onmessage=function(e){
+      var d=e.data;
+      if(d.type==='dl'){ prog.style.display='block'; var pc=Math.max(0,Math.min(100,Math.round(d.progress||0))); progBar.style.width=pc+'%'; setStatus('Downloading model… '+pc+'%'+(d.total?(' ('+fmtMB(d.loaded)+' / '+fmtMB(d.total)+')'):'')); }
+      else if(d.type==='backend'){ backendEl.style.display='inline-block'; backendName.textContent=(d.device==='webgpu'?'WebGPU':'WebAssembly'); }
+      else if(d.type==='loaded'){ prog.style.display='none'; }
+      else if(d.type==='tileDone'){ var cb=pending[d.id]; if(cb){ delete pending[d.id]; cb(null,d); } }
+      else if(d.type==='error'){ if(d.id!=null && pending[d.id]){ var cb2=pending[d.id]; delete pending[d.id]; cb2(new Error(d.message)); } else { fail(d.message); } }
+    };
+    worker.onerror=function(ev){ fail((ev&&ev.message)||'worker error'); };
+    return worker;
+  }
+
+  function runTile(model,data,w,h){
+    return new Promise(function(res,rej){
+      var id=++reqId; pending[id]=function(err,d){ if(err) rej(err); else res(d); };
+      ensureWorker().postMessage({type:'tile',id:id,model:model,data:data,w:w,h:h},[data]);
+    });
+  }
+
+  // ---- helpers ----
+  function fmtMB(b){ if(!b) return '0 MB'; return (b/1048576).toFixed(1)+' MB'; }
+  function setStatus(t){ statusEl.textContent=t||''; }
+  function fail(msg){ busy=false; go.disabled=!srcImg; sampleBtn.disabled=false; prog.style.display='none'; setStatus('Something went wrong: '+msg); }
+
+  function capabilityCheck(){
+    var ok = (typeof WebAssembly==='object');
+    if(!ok){ warn.style.display='block'; warn.textContent='Your browser does not support WebAssembly, which this tool needs. Try a recent version of Chrome, Edge, Firefox, or Safari.'; go.disabled=true; sampleBtn.disabled=true; }
+    return ok;
+  }
+
+  // ---- input handling ----
+  drop.addEventListener("click",function(){ file.click(); });
+  drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();file.click();} });
+  ["dragover","dragenter"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop",function(e){ if(e.dataTransfer.files&&e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
+  file.addEventListener("change",function(){ if(file.files&&file.files[0]) loadFile(file.files[0]); });
+
+  function loadFile(f){
+    if(f.type.indexOf("image/")!==0){ setStatus('That is not an image file.'); return; }
+    var url=URL.createObjectURL(f), img=new Image();
+    img.onload=function(){ URL.revokeObjectURL(url); srcImg=img; go.disabled=false; drop.querySelector('h2').textContent='Loaded: '+(f.name||'image')+' ('+img.naturalWidth+'×'+img.naturalHeight+')'; setStatus('Ready. Pick a mode and press Upscale.'); stage.style.display='none'; dlBtn.style.display='none'; };
+    img.onerror=function(){ URL.revokeObjectURL(url); setStatus('Could not read that image.'); };
+    img.src=url;
+  }
+
+  // ---- sample image (synthetic, same-origin, no CORS) ----
+  sampleBtn.addEventListener("click",function(){
+    var c=document.createElement("canvas"); c.width=150; c.height=100; var x=c.getContext("2d");
+    var g=x.createLinearGradient(0,0,0,100); g.addColorStop(0,"#0b2a4a"); g.addColorStop(.55,"#e8794b"); g.addColorStop(1,"#f4c46a"); x.fillStyle=g; x.fillRect(0,0,150,100);
+    x.fillStyle="#fff3c9"; x.beginPath(); x.arc(112,42,13,0,7); x.fill();
+    x.fillStyle="#0a1f16"; x.beginPath(); x.moveTo(0,100); x.lineTo(0,72); x.lineTo(40,58); x.lineTo(78,74); x.lineTo(112,60); x.lineTo(150,78); x.lineTo(150,100); x.closePath(); x.fill();
+    x.fillStyle="#06140e"; for(var i=0;i<40;i++){ var bx=8+i*3.6; x.fillRect(bx,70+((i*7)%9),2,30); }
+    x.strokeStyle="rgba(255,255,255,.5)"; x.lineWidth=1; for(var k=0;k<6;k++){ x.beginPath(); x.moveTo(4,10+k*3); x.lineTo(60,10+k*3); x.stroke(); }
+    x.fillStyle="#04100c"; x.font="bold 20px monospace"; x.fillText("AI 4K",8,26);
+    var img=new Image(); img.onload=function(){ srcImg=img; go.disabled=false; drop.querySelector('h2').textContent='Sample loaded (150×100) — try 4× Photo'; setStatus('Sample ready. Press Upscale to see the AI reconstruct detail.'); stage.style.display='none'; dlBtn.style.display='none'; }; img.src=c.toDataURL("image/png");
+  });
+
+  // ---- core: upscale with tiling + feathered blend ----
+  go.addEventListener("click",runUpscale);
+
+  async function runUpscale(){
+    if(!srcImg||busy) return;
+    busy=true; go.disabled=true; sampleBtn.disabled=true; dlBtn.style.display='none'; stage.style.display='none';
+    var M=MODELS[mode], scale=M.scale;
+
+    // scale source down first if the output would exceed MAXOUT on the long edge
+    var sw=srcImg.naturalWidth, sh=srcImg.naturalHeight;
+    var longOut=Math.max(sw,sh)*scale, downNote='';
+    var iw=sw, ih=sh;
+    if(longOut>MAXOUT){ var f=MAXOUT/longOut; iw=Math.max(1,Math.round(sw*f)); ih=Math.max(1,Math.round(sh*f)); downNote=' (input scaled to '+iw+'×'+ih+' to keep output under '+MAXOUT+'px)'; }
+
+    var srcC=document.createElement("canvas"); srcC.width=iw; srcC.height=ih;
+    var sx=srcC.getContext("2d"); sx.drawImage(srcImg,0,0,iw,ih);
+
+    var ow=iw*scale, oh=ih*scale;
+    // accumulation buffers for weighted blend
+    var acc=new Float32Array(ow*oh*3), wsum=new Float32Array(ow*oh);
+
+    // build tile grid over the input
+    var step=Math.max(1,TILE-OVERLAP);
+    var xs=axis(iw,TILE,step), ys=axis(ih,TILE,step);
+    var total=xs.length*ys.length, done=0;
+    prog.style.display='block'; progBar.style.width='0%';
+    setStatus('Loading model… first run downloads it once.');
+
+    try{
+      for(var yi=0;yi<ys.length;yi++){
+        for(var xi=0;xi<xs.length;xi++){
+          var tx=xs[xi], ty=ys[yi];
+          var tw=Math.min(TILE,iw-tx), th=Math.min(TILE,ih-ty);
+          var idata=sx.getImageData(tx,ty,tw,th);
+          var buf=idata.data.buffer.slice(0); // copy (transfer)
+          var r=await runTile(M.id,buf,tw,th);
+          var otw=r.w, oth=r.h, od=new Uint8ClampedArray(r.data);
+          blendTile(acc,wsum,ow,oh, tx*scale,ty*scale, otw,oth, od, xi,xs.length, yi,ys.length, OVERLAP*scale);
+          done++;
+          var pc=Math.round(done/total*100); progBar.style.width=pc+'%';
+          setStatus('Upscaling '+M.label+' · tile '+done+' of '+total+downNote);
+        }
+      }
+    }catch(err){ fail(err.message||String(err)); return; }
+
+    // resolve accumulation into an ImageData
+    var outImg=new ImageData(ow,oh);
+    var od2=outImg.data;
+    for(var p=0;p<ow*oh;p++){ var wv=wsum[p]||1e-6; od2[p*4]=clamp8(acc[p*3]/wv); od2[p*4+1]=clamp8(acc[p*3+1]/wv); od2[p*4+2]=clamp8(acc[p*3+2]/wv); od2[p*4+3]=255; }
+
+    afterCanvas.width=ow; afterCanvas.height=oh; afterCanvas.getContext("2d").putImageData(outImg,0,0);
+    // before canvas: original input pixels, drawn at output resolution (nearest) for a fair comparison
+    beforeCanvas.width=ow; beforeCanvas.height=oh; var bx=beforeCanvas.getContext("2d"); bx.imageSmoothingEnabled=false; bx.drawImage(srcC,0,0,ow,oh);
+
+    stage.style.display='block';
+    meta.innerHTML='<span>Input <b>'+iw+'×'+ih+'</b></span><span>&rarr;</span><span>Output <b>'+ow+'×'+oh+'</b></span><span>Mode <b>'+M.label+'</b></span><span>'+total+' tile'+(total>1?'s':'')+'</span>';
+    setStatus('Done. Drag the slider to compare, then download.');
+    setDivider(0.5);
+
+    afterCanvas.toBlob(function(b){ if(resultURL) URL.revokeObjectURL(resultURL); resultURL=URL.createObjectURL(b); dlBtn.style.display='inline-flex'; },"image/png");
+
+    busy=false; go.disabled=false; sampleBtn.disabled=false;
+  }
+
+  function axis(len,tile,step){ var a=[],p=0; if(len<=tile){ return [0]; } while(true){ if(p+tile>=len){ a.push(len-tile); break; } a.push(p); p+=step; } return a; }
+  function clamp8(v){ return v<0?0:v>255?255:v; }
+
+  // feathered weighted blend of one output tile into the accumulation buffers
+  function blendTile(acc,wsum,ow,oh, ox,oy, tw,th, data, xi,nx, yi,ny, feather){
+    for(var yy=0;yy<th;yy++){
+      var gy=oy+yy; if(gy<0||gy>=oh) continue;
+      var wy=edgeWeight(yy,th, yi>0, yi<ny-1, feather);
+      for(var xx=0;xx<tw;xx++){
+        var gx=ox+xx; if(gx<0||gx>=ow) continue;
+        var wx=edgeWeight(xx,tw, xi>0, xi<nx-1, feather);
+        var w=wx*wy; if(w<=0) continue;
+        var si=(yy*tw+xx)*4, gi=(gy*ow+gx);
+        acc[gi*3]+=data[si]*w; acc[gi*3+1]+=data[si+1]*w; acc[gi*3+2]+=data[si+2]*w; wsum[gi]+=w;
+      }
+    }
+  }
+  // ramp 0->1 across `feather` px on an edge only if that edge has a neighbour tile
+  function edgeWeight(i,n,hasStart,hasEnd,feather){
+    var w=1;
+    if(hasStart && i<feather) w=Math.min(w,(i+1)/(feather+1));
+    if(hasEnd && (n-1-i)<feather) w=Math.min(w,(n-i)/(feather+1));
+    return w;
+  }
+
+  // ---- before/after slider ----
+  function setDivider(t){ t=Math.max(0,Math.min(1,t)); clip.style.width=(t*100)+'%'; handle.style.left=(t*100)+'%'; knob.style.left=(t*100)+'%'; }
+  var dragging=false;
+  function pos(e){ var r=cmp.getBoundingClientRect(); var cx=(e.touches?e.touches[0].clientX:e.clientX); return (cx-r.left)/r.width; }
+  cmp.addEventListener("mousedown",function(e){ dragging=true; setDivider(pos(e)); });
+  window.addEventListener("mousemove",function(e){ if(dragging) setDivider(pos(e)); });
+  window.addEventListener("mouseup",function(){ dragging=false; });
+  cmp.addEventListener("touchstart",function(e){ dragging=true; setDivider(pos(e)); },{passive:true});
+  window.addEventListener("touchmove",function(e){ if(dragging) setDivider(pos(e)); },{passive:true});
+  window.addEventListener("touchend",function(){ dragging=false; });
+
+  // ---- download ----
+  dlBtn.addEventListener("click",function(){ if(!resultURL) return; var a=document.createElement("a"); a.href=resultURL; a.download="upscaled-"+mode+".png"; a.click(); });
+
+  capabilityCheck();
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+<!-- AdSense slot (add when approved): <ins class="adsbygoogle" ...></ins> -->
+<!-- Polar.sh / tip slot (optional): pro/batch mode upsell -->
+</body>
+</html>

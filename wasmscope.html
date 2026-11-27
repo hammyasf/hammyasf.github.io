@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wasmscope — WebAssembly disassembler &amp; step debugger in your browser</title>
+<meta name="description" content="Drop in any .wasm file and read it: full section breakdown, exports, memory, and a real WAT disassembly. Then step through the bytecode instruction by instruction and watch the operand stack. Runs entirely in your browser." />
+<meta name="keywords" content="wasm disassembler, webassembly disassembler online, wasm to wat, view wasm file, wasm debugger, webassembly debugger, wasm inspector, wat viewer, webassembly interpreter, step through wasm, wasm bytecode, wasm analyzer" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Wasmscope — WebAssembly disassembler &amp; step debugger" />
+<meta property="og:description" content="Open any .wasm file, read its real disassembly, then single-step the bytecode and watch the operand stack. 100% in your browser, nothing uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/wasmscope.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Wasmscope — WebAssembly disassembler &amp; step debugger" />
+<meta name="twitter:description" content="Open any .wasm file, read its disassembly, then single-step the bytecode and watch the operand stack. 100% in your browser." />
+<link rel="canonical" href="https://hammyasf.github.io/wasmscope.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Wasmscope — WebAssembly disassembler and step debugger","url":"https://hammyasf.github.io/wasmscope.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any modern web browser","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A WebAssembly binary inspector, WAT disassembler and stepping interpreter that runs entirely in the browser. Open any .wasm file, read its sections and disassembly, then execute it one instruction at a time while watching the operand stack, locals and linear memory.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my .wasm file uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The file is read with the FileReader API and parsed in JavaScript on your own machine. There is no server, no API call and no analytics on the file contents. You can load the page once and then use it offline."}},{"@type":"Question","name":"How can it step through WebAssembly? Browsers do not expose that.","acceptedAnswer":{"@type":"Answer","text":"They do not, so this page does not use the browser's WebAssembly engine to step. It contains a second, independent WebAssembly interpreter written from scratch in JavaScript: it decodes the binary into an instruction list, then executes one instruction at a time against its own operand stack, locals, globals and linear memory. That is what makes the stack visible."}},{"@type":"Question","name":"How do I know the interpreter is correct?","acceptedAnswer":{"@type":"Answer","text":"Every run is checked against your browser's real WebAssembly engine. The same module is instantiated natively, the same export is called with the same arguments, and the two results are compared and shown side by side. The interpreter is also differential-tested offline against Node's engine across 128 numeric opcodes and roughly 28,700 value cases, including division traps, float rounding and integer overflow edge cases."}},{"@type":"Question","name":"Which parts of WebAssembly are supported?","acceptedAnswer":{"@type":"Answer","text":"Parsing and disassembly cover the full MVP instruction set plus the saturating-truncation and bulk-memory opcodes. Execution covers integer and floating point arithmetic, comparisons and conversions, locals, globals, all structured control flow including br_table, direct and indirect calls, and linear memory loads and stores. SIMD (v128) and reference-type instructions are decoded but not executed. Imported functions are stubbed and return zero, which the page tells you when it happens."}},{"@type":"Question","name":"Where do I get a .wasm file to try?","acceptedAnswer":{"@type":"Answer","text":"There is a sample module built into the page so you can start immediately. Beyond that, any Rust, C, Go, AssemblyScript or Zig project that targets wasm32 produces one, and most sites that use WebAssembly load a .wasm file you can save from your browser's network panel."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1180px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  .hero{padding:34px 0 8px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:720px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 15px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s,opacity .2s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
+  .load{margin:24px 0 0;border:1px dashed var(--line-2);border-radius:18px;background:rgba(var(--surfaceRGB),.5);padding:20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;transition:.18s;}
+  .load.over{border-color:var(--accent);background:rgba(var(--accentRGB),.08);}
+  .load p{font-family:var(--mono);font-size:12.5px;color:var(--faint);flex:1;min-width:220px;}
+  .app{display:grid;grid-template-columns:280px minmax(0,1fr) 340px;gap:16px;margin:18px 0 8px;align-items:start;}
+  .panel{border:1px solid var(--line);border-radius:16px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .panel h2{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);font-weight:500;padding:12px 14px;border-bottom:1px solid var(--line);}
+  .panel .body{padding:12px 14px;max-height:520px;overflow:auto;}
+  .kv{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:12px;padding:3px 0;color:var(--muted);}
+  .kv b{color:var(--ink);font-weight:500;}
+  .fn{display:block;width:100%;text-align:left;background:transparent;border:none;border-radius:8px;padding:6px 8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .fn:hover{background:rgba(var(--accentRGB),.09);color:var(--ink);}
+  .fn.on{background:rgba(var(--accentRGB),.16);color:var(--accent);}
+  .fn .ix{color:var(--faint);}
+  .fn .ex{color:var(--accent-2);font-size:10px;margin-left:6px;}
+  #code{position:relative;font-family:var(--mono);font-size:12.5px;line-height:1.62;max-height:520px;overflow:auto;padding:10px 0 14px;}
+  .ln{display:flex;gap:0;padding:0 14px;white-space:pre;}
+  .ln:hover{background:rgba(237,242,239,.04);}
+  .ln .off{color:#5d6d67;width:62px;flex:none;user-select:none;}
+  .ln .tx{color:#cdd8d3;}
+  .ln .tx .op{color:var(--accent);}
+  .ln .tx .imm{color:#e6c07b;}
+  .ln .tx .cm{color:#5d6d67;}
+  .ln.cur{background:rgba(var(--accentRGB),.17);}
+  .ln.cur .off{color:var(--accent);}
+  .ln.cur .tx{color:#fff;}
+  .ctlrow{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line);align-items:center;}
+  select,input[type=text]{font-family:var(--mono);font-size:12.5px;background:rgba(4,7,10,.5);color:var(--ink);border:1px solid var(--line-2);border-radius:9px;padding:7px 10px;max-width:100%;}
+  input[type=text]{width:100%;}
+  .sm{font-family:var(--mono);font-size:11px;color:var(--faint);}
+  .stackitem{font-family:var(--mono);font-size:12px;display:flex;justify-content:space-between;gap:10px;padding:4px 8px;border-radius:7px;background:rgba(237,242,239,.04);margin-bottom:4px;}
+  .stackitem b{color:var(--accent);font-weight:500;}
+  .stackitem.top{background:rgba(var(--accentRGB),.14);}
+  .empty{font-family:var(--mono);font-size:11.5px;color:var(--faint);padding:4px 0;}
+  .badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:100px;border:1px solid var(--line-2);color:var(--muted);}
+  .badge.ok{color:var(--accent);border-color:rgba(var(--accentRGB),.4);background:rgba(var(--accentRGB),.1);}
+  .badge.bad{color:#ff8a6a;border-color:rgba(255,138,106,.4);background:rgba(255,138,106,.1);}
+  .res{font-family:var(--mono);font-size:13px;color:var(--ink);word-break:break-all;}
+  #err{display:none;margin:14px 0;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,138,106,.4);background:rgba(255,138,106,.09);color:#ffb9a4;font-family:var(--mono);font-size:12.5px;}
+  #hex{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:#a8b8b2;white-space:pre;overflow:auto;max-height:180px;}
+  #hex .a{color:#5d6d67;}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:820px;}
+  section.copy li{color:#cdd8d3;font-size:16px;margin:6px 0 6px 22px;}
+  section.copy code{font-family:var(--mono);font-size:.92em;background:rgba(var(--accentRGB),.1);padding:1px 6px;border-radius:5px;color:var(--accent);}
+  .faq{border-top:1px solid var(--line);margin-top:14px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @media(max-width:1060px){.app{grid-template-columns:1fr;}.panel .body,#code{max-height:360px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Developer tool · runs on your machine</div>
+    <h1>Wasmscope</h1>
+    <p class="sub">Open any <code style="font-family:var(--mono);font-size:.85em">.wasm</code> file and actually read it — sections, exports, memory, and a real disassembly. Then run it <em>one instruction at a time</em> and watch the operand stack move. The browser can't step WebAssembly, so this page carries its own interpreter.</p>
+    <span class="priv">&#9889; Nothing is uploaded — the file never leaves your machine</span>
+  </header>
+
+  <div class="load" id="drop">
+    <button class="btn" id="btnSample">Load the sample module</button>
+    <button class="btn btn-out" id="btnPick">Open a .wasm file</button>
+    <input type="file" id="file" accept=".wasm,application/wasm" hidden />
+    <p>…or drag a <b>.wasm</b> anywhere onto this page. Parsed locally, no upload.</p>
+  </div>
+
+  <div id="err"></div>
+
+  <div class="app">
+    <div>
+      <div class="panel">
+        <h2>Module</h2>
+        <div class="body" id="overview"><div class="empty">No module loaded yet.</div></div>
+      </div>
+      <div class="panel" style="margin-top:16px">
+        <h2>Functions</h2>
+        <div class="body" id="funcs"><div class="empty">—</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2 id="codeTitle">Disassembly</h2>
+      <div id="code"><div class="empty" style="padding:0 14px">Load a module to see its bytecode.</div></div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2>Run &amp; step</h2>
+        <div class="ctlrow">
+          <select id="expSel" style="flex:1;min-width:130px"><option>—</option></select>
+        </div>
+        <div class="ctlrow" style="flex-direction:column;align-items:stretch;gap:6px">
+          <label class="sm" id="argLabel">Arguments</label>
+          <input type="text" id="args" placeholder="e.g. 20" />
+        </div>
+        <div class="ctlrow">
+          <button class="btn" id="btnRun" disabled>Run</button>
+          <button class="btn btn-out" id="btnStep" disabled>Step</button>
+          <button class="btn btn-out" id="btnStep50" disabled>Step ×50</button>
+          <button class="btn btn-out" id="btnReset" disabled>Reset</button>
+        </div>
+        <div class="body" style="max-height:none;border-top:1px solid var(--line)">
+          <div class="kv"><span>My interpreter</span><b id="outMine">—</b></div>
+          <div class="kv"><span>Your browser's engine</span><b id="outNative">—</b></div>
+          <div style="margin-top:8px"><span class="badge" id="matchBadge">not run yet</span></div>
+          <div class="sm" id="stepInfo" style="margin-top:8px">—</div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <h2>Operand stack</h2>
+        <div class="body" id="stack"><div class="empty">Empty</div></div>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <h2>Locals &amp; call stack</h2>
+        <div class="body" id="locals"><div class="empty">—</div></div>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <h2>Linear memory</h2>
+        <div class="body"><div id="hex" class="empty">No memory in this module.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="copy">
+    <h2>Wait — the browser can't step WebAssembly</h2>
+    <p>That's right, and that's the whole point. <code>WebAssembly.instantiate</code> hands you a compiled function you can call, and nothing else. There is no API to pause it, read its operand stack, or ask what instruction it is on. DevTools can do it because it talks to the engine over a debugger protocol that pages don't get.</p>
+    <p>So this page doesn't ask the browser. It carries a second WebAssembly implementation, written from scratch in about a thousand lines of plain JavaScript: a binary decoder for the module format, a disassembler that prints the text format, and an interpreter with its own operand stack, locals, globals, table and linear memory. Because the stack is just a JavaScript array, it can be drawn on screen after every instruction.</p>
+
+    <h2>How do you know the interpreter is right?</h2>
+    <p>Because your browser is sitting right there as an oracle. Every time you hit Run, the same module is also instantiated with the real <code>WebAssembly</code> API, the same export is called with the same arguments, and the two answers are compared on screen. If they ever disagree, you'll see it.</p>
+    <p>Before shipping, the interpreter was differential-tested the same way against Node's engine: 128 numeric opcodes, roughly 28,700 argument combinations covering signed and unsigned comparison, division by zero, <code>INT_MIN / -1</code> overflow, float rounding half-to-even, NaN propagation, saturating and trapping truncation, and 64-bit shifts and rotates. Plus recursion, loops with <code>br_if</code>, <code>br_table</code> out of nested blocks, <code>call_indirect</code> through a table, <code>memory.grow</code>, data segments and out-of-bounds traps. All of it matched.</p>
+
+    <h2>What you can do with it</h2>
+    <ul>
+      <li>Look inside a <code>.wasm</code> you shipped and see how big each section really is, and which one is bloating your bundle.</li>
+      <li>Read the actual disassembly of a function instead of guessing what the compiler did with your Rust or C.</li>
+      <li>Step an algorithm and watch values enter and leave the stack — it is a very direct way to finally understand a stack machine.</li>
+      <li>Check what a third-party <code>.wasm</code> imports and exports before you trust it, without running it.</li>
+    </ul>
+
+    <h2>Limits, honestly</h2>
+    <p>Decoding covers the MVP instruction set plus saturating truncation and bulk memory. Execution covers arithmetic, comparisons, conversions, locals, globals, all structured control flow, direct and indirect calls, and memory loads and stores. SIMD (<code>v128</code>) instructions are decoded but will stop execution rather than pretend. Imported functions are stubbed to return zero, so a module built for WASI or heavy JS glue will parse and disassemble perfectly but won't run end to end — the page says so when it happens. It is an interpreter, so it's thousands of times slower than the engine next to it; that's the trade for being able to see inside.</p>
+
+    <div class="faq">
+      <details open><summary>Is my file uploaded anywhere?</summary><p>No. It's read with <code>FileReader</code> and parsed in JavaScript on your machine. No server, no API call. Load the page once and it works offline.</p></details>
+      <details><summary>Why is my module's function called <code>f12</code>?</summary><p>Most release builds strip the optional <code>name</code> custom section. When it's present, real function names are used; when it isn't, exports supply names and everything else falls back to its index. Building with debug info keeps the names.</p></details>
+      <details><summary>It says imported functions were stubbed.</summary><p>The module expects functions from its host (JavaScript glue, WASI, an environment import). This page has no host to supply them, so calls to them return zero instead of trapping. Disassembly is unaffected; execution results past that point aren't meaningful.</p></details>
+      <details><summary>Can it handle a large file?</summary><p>Parsing and disassembly handle multi-megabyte modules fine. Stepping is capped so a runaway loop can't hang the tab — Run stops after a large instruction budget and tells you.</p></details>
+      <details><summary>Where can I get a .wasm to try?</summary><p>There's one built into the page. Otherwise, any Rust, C, Zig, Go or AssemblyScript project targeting <code>wasm32</code> emits one, and you can save any <code>.wasm</code> a site loads from your browser's network panel.</p></details>
+    </div>
+
+    <div class="cta">
+      <h3>I build things like this</h3>
+      <p>I'm Harman, a full-stack engineer. This page is a WebAssembly decoder, disassembler and interpreter in one file, with no dependencies. If you need someone who'll go this far down the stack, <a href="index.html#contact">let's talk</a> — or see <a href="lab.html">the rest of the lab</a>.</p>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+/* Wasmscope engine — from-scratch WebAssembly binary parser, WAT disassembler
+   and a stepping interpreter. No dependencies. Runs in a browser or in node. */
+(function (root) {
+'use strict';
+
+/* ---------------------------------------------------------------- reader */
+function Reader(bytes) { this.b = bytes; this.p = 0; }
+Reader.prototype.eof = function () { return this.p >= this.b.length; };
+Reader.prototype.u8 = function () {
+  if (this.p >= this.b.length) throw new Error('unexpected end of input');
+  return this.b[this.p++];
+};
+Reader.prototype.bytes = function (n) {
+  if (this.p + n > this.b.length) throw new Error('unexpected end of input');
+  var s = this.b.subarray(this.p, this.p + n); this.p += n; return s;
+};
+Reader.prototype.u32 = function () {           // unsigned LEB128
+  var r = 0, sh = 0, by;
+  do {
+    by = this.u8();
+    r += (by & 0x7f) * Math.pow(2, sh);
+    sh += 7;
+    if (sh > 35) throw new Error('LEB128 too long');
+  } while (by & 0x80);
+  return r;
+};
+Reader.prototype.i32 = function () {           // signed LEB128 -> number
+  var r = 0, sh = 0, by;
+  do { by = this.u8(); r |= (by & 0x7f) << sh; sh += 7; } while (by & 0x80);
+  if (sh < 32 && (by & 0x40)) r |= (-1 << sh);
+  return r | 0;
+};
+Reader.prototype.i64 = function () {           // signed LEB128 -> BigInt
+  var r = 0n, sh = 0n, by;
+  do { by = this.u8(); r |= BigInt(by & 0x7f) << sh; sh += 7n; } while (by & 0x80);
+  if (sh < 64n && (by & 0x40)) r |= (~0n << sh);
+  return BigInt.asIntN(64, r);
+};
+Reader.prototype.f32 = function () {
+  var d = new DataView(this.bytes(4).slice().buffer); return d.getFloat32(0, true);
+};
+Reader.prototype.f64 = function () {
+  var d = new DataView(this.bytes(8).slice().buffer); return d.getFloat64(0, true);
+};
+Reader.prototype.name = function () {
+  var n = this.u32(), s = this.bytes(n);
+  return new TextDecoder('utf-8').decode(s);
+};
+
+/* --------------------------------------------------------------- opcodes */
+var OPS = {};
+function op(code, name, imm) { OPS[code] = { code: code, name: name, imm: imm || 'none' }; }
+
+op(0x00, 'unreachable'); op(0x01, 'nop');
+op(0x02, 'block', 'block'); op(0x03, 'loop', 'block'); op(0x04, 'if', 'block');
+op(0x05, 'else'); op(0x0b, 'end');
+op(0x0c, 'br', 'u32'); op(0x0d, 'br_if', 'u32'); op(0x0e, 'br_table', 'brtable');
+op(0x0f, 'return'); op(0x10, 'call', 'u32'); op(0x11, 'call_indirect', 'u32x2');
+op(0x1a, 'drop'); op(0x1b, 'select'); op(0x1c, 'select', 'selectt');
+op(0x20, 'local.get', 'u32'); op(0x21, 'local.set', 'u32'); op(0x22, 'local.tee', 'u32');
+op(0x23, 'global.get', 'u32'); op(0x24, 'global.set', 'u32');
+op(0x25, 'table.get', 'u32'); op(0x26, 'table.set', 'u32');
+op(0xd0, 'ref.null', 'u32'); op(0xd1, 'ref.is_null'); op(0xd2, 'ref.func', 'u32');
+
+var MEMOPS = ['i32.load', 'i64.load', 'f32.load', 'f64.load', 'i32.load8_s', 'i32.load8_u',
+  'i32.load16_s', 'i32.load16_u', 'i64.load8_s', 'i64.load8_u', 'i64.load16_s', 'i64.load16_u',
+  'i64.load32_s', 'i64.load32_u', 'i32.store', 'i64.store', 'f32.store', 'f64.store',
+  'i32.store8', 'i32.store16', 'i64.store8', 'i64.store16', 'i64.store32'];
+for (var i = 0; i < MEMOPS.length; i++) op(0x28 + i, MEMOPS[i], 'memarg');
+op(0x3f, 'memory.size', 'u32'); op(0x40, 'memory.grow', 'u32');
+op(0x41, 'i32.const', 'i32'); op(0x42, 'i64.const', 'i64');
+op(0x43, 'f32.const', 'f32'); op(0x44, 'f64.const', 'f64');
+
+var NUM = ('i32.eqz i32.eq i32.ne i32.lt_s i32.lt_u i32.gt_s i32.gt_u i32.le_s i32.le_u i32.ge_s i32.ge_u ' +
+  'i64.eqz i64.eq i64.ne i64.lt_s i64.lt_u i64.gt_s i64.gt_u i64.le_s i64.le_u i64.ge_s i64.ge_u ' +
+  'f32.eq f32.ne f32.lt f32.gt f32.le f32.ge f64.eq f64.ne f64.lt f64.gt f64.le f64.ge ' +
+  'i32.clz i32.ctz i32.popcnt i32.add i32.sub i32.mul i32.div_s i32.div_u i32.rem_s i32.rem_u ' +
+  'i32.and i32.or i32.xor i32.shl i32.shr_s i32.shr_u i32.rotl i32.rotr ' +
+  'i64.clz i64.ctz i64.popcnt i64.add i64.sub i64.mul i64.div_s i64.div_u i64.rem_s i64.rem_u ' +
+  'i64.and i64.or i64.xor i64.shl i64.shr_s i64.shr_u i64.rotl i64.rotr ' +
+  'f32.abs f32.neg f32.ceil f32.floor f32.trunc f32.nearest f32.sqrt f32.add f32.sub f32.mul f32.div f32.min f32.max f32.copysign ' +
+  'f64.abs f64.neg f64.ceil f64.floor f64.trunc f64.nearest f64.sqrt f64.add f64.sub f64.mul f64.div f64.min f64.max f64.copysign ' +
+  'i32.wrap_i64 i32.trunc_f32_s i32.trunc_f32_u i32.trunc_f64_s i32.trunc_f64_u ' +
+  'i64.extend_i32_s i64.extend_i32_u i64.trunc_f32_s i64.trunc_f32_u i64.trunc_f64_s i64.trunc_f64_u ' +
+  'f32.convert_i32_s f32.convert_i32_u f32.convert_i64_s f32.convert_i64_u f32.demote_f64 ' +
+  'f64.convert_i32_s f64.convert_i32_u f64.convert_i64_s f64.convert_i64_u f64.promote_f32 ' +
+  'i32.reinterpret_f32 i64.reinterpret_f64 f32.reinterpret_i32 f64.reinterpret_i64 ' +
+  'i32.extend8_s i32.extend16_s i64.extend8_s i64.extend16_s i64.extend32_s').split(/\s+/);
+for (var j = 0; j < NUM.length; j++) op(0x45 + j, NUM[j]);
+
+var FC = { 0: 'i32.trunc_sat_f32_s', 1: 'i32.trunc_sat_f32_u', 2: 'i32.trunc_sat_f64_s',
+  3: 'i32.trunc_sat_f64_u', 4: 'i64.trunc_sat_f32_s', 5: 'i64.trunc_sat_f32_u',
+  6: 'i64.trunc_sat_f64_s', 7: 'i64.trunc_sat_f64_u', 8: 'memory.init', 9: 'data.drop',
+  10: 'memory.copy', 11: 'memory.fill', 12: 'table.init', 13: 'elem.drop',
+  14: 'table.copy', 15: 'table.grow', 16: 'table.size', 17: 'table.fill' };
+
+var VT = { 0x7f: 'i32', 0x7e: 'i64', 0x7d: 'f32', 0x7c: 'f64', 0x7b: 'v128',
+  0x70: 'funcref', 0x6f: 'externref' };
+
+/* ------------------------------------------------------- decode a body */
+function decodeBody(r, end) {
+  var out = [];
+  while (r.p < end) {
+    var off = r.p, c = r.u8(), spec = OPS[c], ins;
+    if (c === 0xfc) {
+      var sub = r.u32(), nm = FC[sub] || ('fc.' + sub);
+      ins = { off: off, code: 0xfc, sub: sub, name: nm, imm: [] };
+      if (sub === 8 || sub === 12) { ins.imm = [r.u32(), r.u32()]; }
+      else if (sub === 9 || sub === 11 || sub === 13 || sub === 15 || sub === 16 || sub === 17) { ins.imm = [r.u32()]; }
+      else if (sub === 10 || sub === 14) { ins.imm = [r.u32(), r.u32()]; }
+      out.push(ins); continue;
+    }
+    if (c === 0xfd) throw new Error('SIMD (v128) instructions are not supported by this decoder');
+    if (!spec) throw new Error('unknown opcode 0x' + c.toString(16) + ' at byte ' + off);
+    ins = { off: off, code: c, name: spec.name, imm: [] };
+    switch (spec.imm) {
+      case 'none': break;
+      case 'u32': ins.imm = [r.u32()]; break;
+      case 'u32x2': ins.imm = [r.u32(), r.u32()]; break;
+      case 'memarg': { var a = r.u32(); ins.imm = [a, r.u32()]; break; }
+      case 'i32': ins.imm = [r.i32()]; break;
+      case 'i64': ins.imm = [r.i64()]; break;
+      case 'f32': ins.imm = [r.f32()]; break;
+      case 'f64': ins.imm = [r.f64()]; break;
+      case 'block': {
+        var b = r.u8();
+        if (b === 0x40) ins.bt = { kind: 'void' };
+        else if (VT[b]) ins.bt = { kind: 'val', type: VT[b] };
+        else { r.p--; ins.bt = { kind: 'type', index: r.i32() }; }
+        break;
+      }
+      case 'brtable': {
+        var n = r.u32(), t = [];
+        for (var k = 0; k < n; k++) t.push(r.u32());
+        ins.targets = t; ins.imm = [r.u32()];
+        break;
+      }
+      case 'selectt': { var nn = r.u32(); for (var m = 0; m < nn; m++) r.u8(); break; }
+    }
+    out.push(ins);
+  }
+  return out;
+}
+
+/* Match block/loop/if to their else/end, and index by pc. */
+function link(code) {
+  var stack = [];
+  for (var i = 0; i < code.length; i++) {
+    var n = code[i].name;
+    if (n === 'block' || n === 'loop' || n === 'if') { code[i].start = i; stack.push(i); }
+    else if (n === 'else') {
+      var t = stack[stack.length - 1];
+      if (t === undefined || code[t].name !== 'if') throw new Error('stray else');
+      code[t].elsePc = i; code[i].owner = t;
+    } else if (n === 'end') {
+      var s = stack.pop();
+      if (s !== undefined) { code[s].endPc = i; code[i].owner = s; }
+      else code[i].fnEnd = true;
+    }
+  }
+  return code;
+}
+
+/* --------------------------------------------------------------- parse */
+function parse(bytes) {
+  var r = new Reader(bytes);
+  var magic = r.bytes(4);
+  if (!(magic[0] === 0x00 && magic[1] === 0x61 && magic[2] === 0x73 && magic[3] === 0x6d))
+    throw new Error('not a WebAssembly binary (bad magic bytes)');
+  var version = new DataView(r.bytes(4).slice().buffer).getUint32(0, true);
+  if (version !== 1) throw new Error('unsupported wasm version ' + version);
+
+  var mod = {
+    version: version, types: [], imports: [], funcs: [], tables: [], memories: [],
+    globals: [], exports: [], start: null, elems: [], datas: [], customs: [],
+    sections: [], names: { func: {}, local: {}, module: null }, size: bytes.length
+  };
+
+  function limits() {
+    var f = r.u8(), min = r.u32(), max = null;
+    if (f & 1) max = r.u32();
+    return { min: min, max: max, shared: !!(f & 2) };
+  }
+  function globaltype() { var t = VT[r.u8()] || '?'; return { type: t, mutable: r.u8() === 1 }; }
+  function initExpr() {
+    var start = r.p, depth = 0;
+    for (;;) {
+      var c = r.u8();
+      if (c === 0x02 || c === 0x03 || c === 0x04) { depth++; r.u8(); continue; }
+      if (c === 0x0b) { if (depth === 0) break; depth--; continue; }
+      var s = OPS[c];
+      if (!s) { if (c === 0xfc) { r.u32(); continue; } throw new Error('bad init expr opcode 0x' + c.toString(16)); }
+      switch (s.imm) {
+        case 'u32': r.u32(); break; case 'i32': r.i32(); break; case 'i64': r.i64(); break;
+        case 'f32': r.f32(); break; case 'f64': r.f64(); break;
+        case 'u32x2': r.u32(); r.u32(); break; case 'memarg': r.u32(); r.u32(); break;
+      }
+    }
+    var end = r.p;
+    var sub = new Reader(bytes.subarray(start, end - 1));
+    return link(decodeBody(sub, end - 1 - start));
+  }
+
+  while (!r.eof()) {
+    var id = r.u8(), len = r.u32(), secStart = r.p, secEnd = r.p + len;
+    mod.sections.push({ id: id, name: SECNAMES[id] || 'unknown', size: len, offset: secStart });
+    switch (id) {
+      case 1: {
+        var n1 = r.u32();
+        for (var a1 = 0; a1 < n1; a1++) {
+          r.u8(); // 0x60
+          var np = r.u32(), ps = [];
+          for (var b1 = 0; b1 < np; b1++) ps.push(VT[r.u8()] || '?');
+          var nr = r.u32(), rs = [];
+          for (var c1 = 0; c1 < nr; c1++) rs.push(VT[r.u8()] || '?');
+          mod.types.push({ params: ps, results: rs });
+        }
+        break;
+      }
+      case 2: {
+        var n2 = r.u32();
+        for (var a2 = 0; a2 < n2; a2++) {
+          var m = r.name(), nm2 = r.name(), kind = r.u8(), imp = { module: m, name: nm2 };
+          if (kind === 0) { imp.kind = 'func'; imp.typeIndex = r.u32(); mod.funcs.push({ imported: true, typeIndex: imp.typeIndex, name: m + '.' + nm2 }); }
+          else if (kind === 1) { imp.kind = 'table'; imp.elemType = VT[r.u8()]; imp.limits = limits(); mod.tables.push({ imported: true, limits: imp.limits }); }
+          else if (kind === 2) { imp.kind = 'memory'; imp.limits = limits(); mod.memories.push({ imported: true, limits: imp.limits }); }
+          else { imp.kind = 'global'; imp.global = globaltype(); mod.globals.push({ imported: true, gt: imp.global }); }
+          mod.imports.push(imp);
+        }
+        break;
+      }
+      case 3: {
+        var n3 = r.u32();
+        for (var a3 = 0; a3 < n3; a3++) mod.funcs.push({ imported: false, typeIndex: r.u32() });
+        break;
+      }
+      case 4: {
+        var n4 = r.u32();
+        for (var a4 = 0; a4 < n4; a4++) { var et = VT[r.u8()]; mod.tables.push({ imported: false, elemType: et, limits: limits() }); }
+        break;
+      }
+      case 5: {
+        var n5 = r.u32();
+        for (var a5 = 0; a5 < n5; a5++) mod.memories.push({ imported: false, limits: limits() });
+        break;
+      }
+      case 6: {
+        var n6 = r.u32();
+        for (var a6 = 0; a6 < n6; a6++) { var gt = globaltype(); mod.globals.push({ imported: false, gt: gt, init: initExpr() }); }
+        break;
+      }
+      case 7: {
+        var n7 = r.u32();
+        for (var a7 = 0; a7 < n7; a7++) {
+          var en = r.name(), ek = r.u8(), ei = r.u32();
+          mod.exports.push({ name: en, kind: ['func', 'table', 'memory', 'global'][ek], index: ei });
+        }
+        break;
+      }
+      case 8: mod.start = r.u32(); break;
+      case 9: {
+        var n9 = r.u32();
+        for (var a9 = 0; a9 < n9; a9++) {
+          var flags = r.u32(), seg = { flags: flags, tableIndex: 0, offset: null, funcs: [] };
+          if (flags === 0) { seg.offset = initExpr(); var c9 = r.u32(); for (var d9 = 0; d9 < c9; d9++) seg.funcs.push(r.u32()); }
+          else if (flags === 1) { r.u8(); var c9b = r.u32(); for (var d9b = 0; d9b < c9b; d9b++) seg.funcs.push(r.u32()); seg.passive = true; }
+          else if (flags === 2) { seg.tableIndex = r.u32(); seg.offset = initExpr(); r.u8(); var c9c = r.u32(); for (var d9c = 0; d9c < c9c; d9c++) seg.funcs.push(r.u32()); }
+          else { r.p = secEnd; }
+          mod.elems.push(seg);
+        }
+        break;
+      }
+      case 10: {
+        var n10 = r.u32(), fi = 0;
+        for (var a10 = 0; a10 < n10; a10++) {
+          var sz = r.u32(), bodyEnd = r.p + sz;
+          var nLocals = r.u32(), locals = [];
+          for (var b10 = 0; b10 < nLocals; b10++) {
+            var cnt = r.u32(), ty = VT[r.u8()] || '?';
+            for (var c10 = 0; c10 < cnt; c10++) locals.push(ty);
+          }
+          var codeStart = r.p, body = null, derr = null;
+          try { body = link(decodeBody(r, bodyEnd)); }
+          catch (e) { derr = e.message; }        // one odd function must not kill the module
+          r.p = bodyEnd;
+          while (mod.funcs[fi] && mod.funcs[fi].imported) fi++;
+          if (mod.funcs[fi]) { mod.funcs[fi].locals = locals; mod.funcs[fi].body = body; mod.funcs[fi].decodeError = derr; mod.funcs[fi].bodyOffset = codeStart; mod.funcs[fi].bodySize = sz; }
+          fi++;
+        }
+        break;
+      }
+      case 11: {
+        var n11 = r.u32();
+        for (var a11 = 0; a11 < n11; a11++) {
+          var fl = r.u32(), d = { flags: fl, memIndex: 0, offset: null, bytes: null };
+          if (fl === 0) { d.offset = initExpr(); d.bytes = r.bytes(r.u32()).slice(); }
+          else if (fl === 1) { d.passive = true; d.bytes = r.bytes(r.u32()).slice(); }
+          else { d.memIndex = r.u32(); d.offset = initExpr(); d.bytes = r.bytes(r.u32()).slice(); }
+          mod.datas.push(d);
+        }
+        break;
+      }
+      case 0: {
+        var cname = r.name();
+        mod.customs.push({ name: cname, size: secEnd - r.p });
+        if (cname === 'name') { try { parseNames(bytes.subarray(r.p, secEnd), mod); } catch (e) { /* names are optional */ } }
+        r.p = secEnd;
+        break;
+      }
+      default: r.p = secEnd;
+    }
+    if (r.p !== secEnd) r.p = secEnd;
+  }
+
+  // export names take precedence for readability
+  mod.exports.forEach(function (e) { if (e.kind === 'func' && !mod.names.func[e.index]) mod.names.func[e.index] = e.name; });
+  mod.imports.forEach(function (im, idx) {
+    if (im.kind === 'func') {
+      var fidx = mod.imports.slice(0, idx).filter(function (x) { return x.kind === 'func'; }).length;
+      if (!mod.names.func[fidx]) mod.names.func[fidx] = im.module + '.' + im.name;
+    }
+  });
+  return mod;
+}
+
+var SECNAMES = { 0: 'custom', 1: 'type', 2: 'import', 3: 'function', 4: 'table', 5: 'memory',
+  6: 'global', 7: 'export', 8: 'start', 9: 'element', 10: 'code', 11: 'data', 12: 'data count' };
+
+function parseNames(sub, mod) {
+  var r = new Reader(sub);
+  while (!r.eof()) {
+    var id = r.u8(), sz = r.u32(), end = r.p + sz;
+    if (id === 0) mod.names.module = r.name();
+    else if (id === 1) { var n = r.u32(); for (var i = 0; i < n; i++) { var idx = r.u32(); mod.names.func[idx] = r.name(); } }
+    else if (id === 2) {
+      var nf = r.u32();
+      for (var f = 0; f < nf; f++) {
+        var fi = r.u32(), nl = r.u32(), map = {};
+        for (var l = 0; l < nl; l++) { var li = r.u32(); map[li] = r.name(); }
+        mod.names.local[fi] = map;
+      }
+    }
+    r.p = end;
+  }
+}
+
+/* --------------------------------------------------- WAT disassembler */
+function fmtF(v) {
+  if (Number.isNaN(v)) return 'nan';
+  if (v === Infinity) return 'inf';
+  if (v === -Infinity) return '-inf';
+  if (Number.isInteger(v) && Math.abs(v) < 1e21) return String(v);
+  return String(v);
+}
+function btStr(bt, mod) {
+  if (!bt || bt.kind === 'void') return '';
+  if (bt.kind === 'val') return ' (result ' + bt.type + ')';
+  var t = mod.types[bt.index];
+  if (!t) return ' (type ' + bt.index + ')';
+  return (t.params.length ? ' (param ' + t.params.join(' ') + ')' : '') +
+         (t.results.length ? ' (result ' + t.results.join(' ') + ')' : '');
+}
+function insText(ins, mod) {
+  var n = ins.name;
+  if (n === 'block' || n === 'loop' || n === 'if') return n + btStr(ins.bt, mod);
+  if (n === 'br_table') return n + ' ' + ins.targets.join(' ') + ' ' + ins.imm[0];
+  if (n === 'call') { var nm = mod.names.func[ins.imm[0]]; return 'call ' + ins.imm[0] + (nm ? ' (; ' + nm + ' ;)' : ''); }
+  if (n === 'call_indirect') return 'call_indirect (type ' + ins.imm[0] + ')';
+  if (n === 'i32.const' || n === 'i64.const') return n + ' ' + ins.imm[0];
+  if (n === 'f32.const' || n === 'f64.const') return n + ' ' + fmtF(ins.imm[0]);
+  if (OPS[ins.code] && OPS[ins.code].imm === 'memarg') {
+    var s = n, al = ins.imm[0], of = ins.imm[1];
+    if (of) s += ' offset=' + of;
+    if (al !== defaultAlign(n)) s += ' align=' + Math.pow(2, al);
+    return s;
+  }
+  if (n === 'memory.size' || n === 'memory.grow') return n;
+  if (ins.imm && ins.imm.length) return n + ' ' + ins.imm.join(' ');
+  return n;
+}
+function defaultAlign(n) {
+  if (/8_[su]$|store8$/.test(n)) return 0;
+  if (/16_[su]$|store16$/.test(n)) return 1;
+  if (/32_[su]$|store32$/.test(n)) return 2;
+  if (/^i32\.|^f32\./.test(n)) return 2;
+  return 3;
+}
+function disasm(mod, fi) {
+  var f = mod.funcs[fi], t = mod.types[f.typeIndex] || { params: [], results: [] };
+  var lines = [], depth = 1;
+  var nm = mod.names.func[fi];
+  var head = '(func $' + (nm ? nm.replace(/[^\w.$-]/g, '_') : 'f' + fi) +
+    (t.params.length ? ' (param ' + t.params.join(' ') + ')' : '') +
+    (t.results.length ? ' (result ' + t.results.join(' ') + ')' : '');
+  lines.push({ pc: -1, off: f.bodyOffset, depth: 0, text: head });
+  if (f.locals && f.locals.length) lines.push({ pc: -1, off: f.bodyOffset, depth: 1, text: '(local ' + f.locals.join(' ') + ')' });
+  for (var i = 0; i < f.body.length; i++) {
+    var ins = f.body[i], n = ins.name;
+    if (n === 'end' || n === 'else') depth = Math.max(0, depth - 1);
+    lines.push({ pc: i, off: ins.off, depth: depth, text: insText(ins, mod) });
+    if (n === 'block' || n === 'loop' || n === 'if' || n === 'else') depth++;
+  }
+  lines.push({ pc: -1, off: 0, depth: 0, text: ')' });
+  return lines;
+}
+
+/* -------------------------------------------------------- interpreter */
+var PAGE = 65536;
+function Trap(msg) { this.message = msg; this.trap = true; }
+Trap.prototype.toString = function () { return 'trap: ' + this.message; };
+
+function zeroFor(t) { return t === 'i64' ? 0n : 0; }
+
+function Machine(mod, opts) {
+  opts = opts || {};
+  this.mod = mod;
+  this.stack = [];
+  this.frames = [];
+  this.trap = null;
+  this.done = false;
+  this.result = null;
+  this.steps = 0;
+  this.maxSteps = opts.maxSteps || 50000000;
+  this.stubbed = [];
+
+  // memory
+  this.mem = null;
+  var memDef = mod.memories[0];
+  if (memDef) {
+    var min = memDef.limits.min, max = memDef.limits.max;
+    this.mem = { buf: new ArrayBuffer(min * PAGE), max: max == null ? 65536 : max };
+    this.mem.view = new DataView(this.mem.buf);
+    this.mem.u8 = new Uint8Array(this.mem.buf);
+    if (memDef.imported) this.stubbed.push('memory ' + memDef.limits.min + ' pages (imported — a blank one was supplied)');
+  }
+
+  // globals
+  this.globals = [];
+  var self = this;
+  mod.globals.forEach(function (g) {
+    if (g.imported) { self.globals.push(zeroFor(g.gt.type)); self.stubbed.push('global (imported — set to 0)'); }
+    else self.globals.push(self.evalConst(g.init));
+  });
+
+  // table
+  this.table = [];
+  mod.elems.forEach(function (seg) {
+    if (seg.passive || !seg.offset) return;
+    var base = Number(self.evalConst(seg.offset));
+    seg.funcs.forEach(function (fidx, k) { self.table[base + k] = fidx; });
+  });
+
+  // data segments
+  if (this.mem) {
+    mod.datas.forEach(function (d) {
+      if (d.passive || !d.offset) return;
+      var base = Number(self.evalConst(d.offset));
+      if (base + d.bytes.length <= self.mem.u8.length) self.mem.u8.set(d.bytes, base);
+    });
+  }
+
+  var nImp = mod.funcs.filter(function (f) { return f.imported; }).length;
+  if (nImp) this.stubbed.push(nImp + ' imported function' + (nImp === 1 ? '' : 's') + ' (stubbed — they return zero)');
+}
+
+Machine.prototype.evalConst = function (code) {
+  var st = [], self = this;
+  for (var i = 0; i < code.length; i++) {
+    var ins = code[i];
+    if (ins.name === 'i32.const' || ins.name === 'f32.const' || ins.name === 'f64.const') st.push(ins.imm[0]);
+    else if (ins.name === 'i64.const') st.push(ins.imm[0]);
+    else if (ins.name === 'global.get') st.push(self.globals[ins.imm[0]] || 0);
+    else if (ins.name === 'ref.func') st.push(ins.imm[0]);
+    else if (ins.name === 'ref.null') st.push(null);
+    else if (ins.name === 'end') break;
+  }
+  return st.length ? st[st.length - 1] : 0;
+};
+
+Machine.prototype.typeOf = function (fi) {
+  var f = this.mod.funcs[fi];
+  return this.mod.types[f.typeIndex] || { params: [], results: [] };
+};
+
+Machine.prototype.start = function (fi, args) {
+  this.stack = []; this.frames = []; this.trap = null; this.done = false;
+  this.result = null; this.steps = 0;
+  this.pushFrame(fi, args);
+  if (this.done) return this;
+  return this;
+};
+
+Machine.prototype.pushFrame = function (fi, args) {
+  var f = this.mod.funcs[fi], t = this.typeOf(fi);
+  if (f.imported || !f.body) {          // stubbed import: return zeros
+    for (var z = 0; z < t.params.length; z++) this.stack.pop();
+    for (var q = 0; q < t.results.length; q++) this.stack.push(zeroFor(t.results[q]));
+    if (this.frames.length === 0) { this.done = true; this.result = this.stack.slice(); }
+    return;
+  }
+  var locals = args.slice();
+  for (var i = 0; i < (f.locals || []).length; i++) locals.push(zeroFor(f.locals[i]));
+  this.frames.push({ fi: fi, code: f.body, pc: 0, locals: locals, labels: [], base: this.stack.length, arity: t.results.length });
+};
+
+Machine.prototype.frame = function () { return this.frames[this.frames.length - 1]; };
+
+/* Values a branch to this label carries: results for block/if, params for loop. */
+Machine.prototype.blockArity = function (bt, isLoop) {
+  if (!bt || bt.kind === 'void') return 0;
+  if (bt.kind === 'val') return isLoop ? 0 : 1;
+  var t = this.mod.types[bt.index] || { params: [], results: [] };
+  return isLoop ? t.params.length : t.results.length;
+};
+/* Values the block consumes from the stack on entry (multi-value blocks). */
+Machine.prototype.blockParams = function (bt) {
+  if (!bt || bt.kind === 'void' || bt.kind === 'val') return 0;
+  var t = this.mod.types[bt.index] || { params: [] };
+  return t.params.length;
+};
+
+Machine.prototype.doBranch = function (depth) {
+  var fr = this.frame();
+  if (depth >= fr.labels.length) {   // branch out of the function = return
+    return this.doReturn();
+  }
+  var idx = fr.labels.length - 1 - depth, lab = fr.labels[idx];
+  var vals = this.stack.splice(this.stack.length - lab.arity, lab.arity);
+  this.stack.length = lab.height;
+  for (var i = 0; i < vals.length; i++) this.stack.push(vals[i]);
+  if (lab.kind === 'loop') { fr.labels.length = idx + 1; fr.pc = lab.start + 1; }
+  else { fr.labels.length = idx; fr.pc = lab.end + 1; }
+  return true;
+};
+
+Machine.prototype.doReturn = function () {
+  var fr = this.frames.pop();
+  var vals = this.stack.splice(this.stack.length - fr.arity, fr.arity);
+  this.stack.length = fr.base;
+  for (var i = 0; i < vals.length; i++) this.stack.push(vals[i]);
+  if (this.frames.length === 0) { this.done = true; this.result = vals; }
+  return true;
+};
+
+function i32(v) { return v | 0; }
+function u32(v) { return v >>> 0; }
+function i64(v) { return BigInt.asIntN(64, v); }
+function u64(v) { return BigInt.asUintN(64, v); }
+function f32(v) { return Math.fround(v); }
+function nearest(v) {                     // round half to even, like wasm
+  if (!isFinite(v) || Number.isInteger(v)) return v;
+  var f = Math.floor(v), c = Math.ceil(v), r;
+  if (v - f < c - v) r = f;
+  else if (c - v < v - f) r = c;
+  else r = (f % 2 === 0) ? f : c;
+  if (r === 0 && v < 0) return -0;
+  return r;
+}
+function truncChk(v, lo, hi) {
+  if (Number.isNaN(v)) throw new Trap('cannot convert NaN to integer');
+  if (!isFinite(v)) throw new Trap('integer overflow');
+  var t = Math.trunc(v);
+  if (t < lo || t > hi) throw new Trap('integer overflow');
+  return t;
+}
+function satI(v, lo, hi) {
+  if (Number.isNaN(v)) return lo === 0 ? 0 : 0;
+  var t = Math.trunc(v);
+  if (t < lo) return lo; if (t > hi) return hi; return t;
+}
+var SCRATCH = new DataView(new ArrayBuffer(8));
+
+Machine.prototype.memAddr = function (ins, size) {
+  var base = u32(this.stack.pop()), off = ins.imm[1], a = base + off;
+  if (!this.mem) throw new Trap('no memory in this module');
+  if (a + size > this.mem.u8.length) throw new Trap('out of bounds memory access at ' + a);
+  return a;
+};
+
+/* Execute exactly one instruction. Returns false when finished/trapped. */
+Machine.prototype.step = function () {
+  if (this.done || this.trap) return false;
+  var fr = this.frame();
+  if (!fr) { this.done = true; return false; }
+  var ins = fr.code[fr.pc];
+  if (!ins) { this.doReturn(); return !this.done; }
+  var s = this.stack, self = this, adv = true;
+  this.steps++;
+  try {
+    switch (ins.code) {
+      case 0x00: throw new Trap('unreachable executed');
+      case 0x01: break;
+      case 0x02: case 0x03: {                       // block / loop
+        var isLoop = ins.code === 0x03;
+        var ar = this.blockArity(ins.bt, isLoop);
+        fr.labels.push({ kind: isLoop ? 'loop' : 'block', arity: ar, height: s.length - this.blockParams(ins.bt), start: fr.pc, end: ins.endPc });
+        break;
+      }
+      case 0x04: {                                  // if
+        var cond = i32(s.pop());
+        var ar2 = this.blockArity(ins.bt, false), h2 = s.length - this.blockParams(ins.bt);
+        if (cond) { fr.labels.push({ kind: 'if', arity: ar2, height: h2, start: fr.pc, end: ins.endPc }); }
+        else if (ins.elsePc !== undefined) { fr.labels.push({ kind: 'if', arity: ar2, height: h2, start: fr.pc, end: ins.endPc }); fr.pc = ins.elsePc; }
+        else { fr.pc = ins.endPc; }
+        break;
+      }
+      case 0x05: fr.pc = fr.code[ins.owner].endPc; break;   // else -> skip to end
+      case 0x0b: {                                  // end
+        if (fr.labels.length && fr.labels[fr.labels.length - 1].end === fr.pc) fr.labels.pop();
+        else { this.doReturn(); return !this.done && !this.trap; }
+        break;
+      }
+      case 0x0c: this.doBranch(ins.imm[0]); adv = false; break;
+      case 0x0d: { var c2 = i32(s.pop()); if (c2) { this.doBranch(ins.imm[0]); adv = false; } break; }
+      case 0x0e: {
+        var idx = u32(s.pop());
+        var d = idx < ins.targets.length ? ins.targets[idx] : ins.imm[0];
+        this.doBranch(d); adv = false; break;
+      }
+      case 0x0f: this.doReturn(); return !this.done && !this.trap;
+      case 0x10: {
+        var t3 = this.typeOf(ins.imm[0]);
+        var args = s.splice(s.length - t3.params.length, t3.params.length);
+        fr.pc++;
+        if (this.frames.length > 4096) throw new Trap('call stack exhausted');
+        this.pushFrame(ins.imm[0], args);
+        return !this.done && !this.trap;
+      }
+      case 0x11: {
+        var ti = u32(s.pop());
+        var target = this.table[ti];
+        if (target === undefined) throw new Trap('undefined element at table index ' + ti);
+        var t4 = this.typeOf(target);
+        var args2 = s.splice(s.length - t4.params.length, t4.params.length);
+        fr.pc++;
+        this.pushFrame(target, args2);
+        return !this.done && !this.trap;
+      }
+      case 0x1a: s.pop(); break;
+      case 0x1b: case 0x1c: { var cc = i32(s.pop()), b2 = s.pop(), a2 = s.pop(); s.push(cc ? a2 : b2); break; }
+      case 0x20: s.push(fr.locals[ins.imm[0]]); break;
+      case 0x21: fr.locals[ins.imm[0]] = s.pop(); break;
+      case 0x22: fr.locals[ins.imm[0]] = s[s.length - 1]; break;
+      case 0x23: s.push(this.globals[ins.imm[0]]); break;
+      case 0x24: this.globals[ins.imm[0]] = s.pop(); break;
+
+      /* loads */
+      case 0x28: s.push(this.mem.view.getInt32(this.memAddr(ins, 4), true)); break;
+      case 0x29: s.push(this.mem.view.getBigInt64(this.memAddr(ins, 8), true)); break;
+      case 0x2a: s.push(this.mem.view.getFloat32(this.memAddr(ins, 4), true)); break;
+      case 0x2b: s.push(this.mem.view.getFloat64(this.memAddr(ins, 8), true)); break;
+      case 0x2c: s.push(this.mem.view.getInt8(this.memAddr(ins, 1))); break;
+      case 0x2d: s.push(this.mem.view.getUint8(this.memAddr(ins, 1))); break;
+      case 0x2e: s.push(this.mem.view.getInt16(this.memAddr(ins, 2), true)); break;
+      case 0x2f: s.push(this.mem.view.getUint16(this.memAddr(ins, 2), true)); break;
+      case 0x30: s.push(BigInt(this.mem.view.getInt8(this.memAddr(ins, 1)))); break;
+      case 0x31: s.push(BigInt(this.mem.view.getUint8(this.memAddr(ins, 1)))); break;
+      case 0x32: s.push(BigInt(this.mem.view.getInt16(this.memAddr(ins, 2), true))); break;
+      case 0x33: s.push(BigInt(this.mem.view.getUint16(this.memAddr(ins, 2), true))); break;
+      case 0x34: s.push(BigInt(this.mem.view.getInt32(this.memAddr(ins, 4), true))); break;
+      case 0x35: s.push(BigInt(this.mem.view.getUint32(this.memAddr(ins, 4), true))); break;
+      /* stores (value pushed last, address first) */
+      case 0x36: { var v36 = i32(s.pop()); this.mem.view.setInt32(this.memAddr(ins, 4), v36, true); break; }
+      case 0x37: { var v37 = s.pop(); this.mem.view.setBigInt64(this.memAddr(ins, 8), i64(v37), true); break; }
+      case 0x38: { var v38 = s.pop(); this.mem.view.setFloat32(this.memAddr(ins, 4), v38, true); break; }
+      case 0x39: { var v39 = s.pop(); this.mem.view.setFloat64(this.memAddr(ins, 8), v39, true); break; }
+      case 0x3a: { var v3a = i32(s.pop()); this.mem.view.setUint8(this.memAddr(ins, 1), v3a & 0xff); break; }
+      case 0x3b: { var v3b = i32(s.pop()); this.mem.view.setUint16(this.memAddr(ins, 2), v3b & 0xffff, true); break; }
+      case 0x3c: { var v3c = s.pop(); this.mem.view.setUint8(this.memAddr(ins, 1), Number(u64(v3c) & 0xffn)); break; }
+      case 0x3d: { var v3d = s.pop(); this.mem.view.setUint16(this.memAddr(ins, 2), Number(u64(v3d) & 0xffffn), true); break; }
+      case 0x3e: { var v3e = s.pop(); this.mem.view.setUint32(this.memAddr(ins, 4), Number(u64(v3e) & 0xffffffffn), true); break; }
+      case 0x3f: s.push(this.mem ? this.mem.u8.length / PAGE : 0); break;
+      case 0x40: {
+        var delta = u32(s.pop()), old = this.mem.u8.length / PAGE;
+        if (old + delta > this.mem.max) { s.push(-1); break; }
+        var nb = new ArrayBuffer((old + delta) * PAGE);
+        new Uint8Array(nb).set(this.mem.u8);
+        this.mem.buf = nb; this.mem.view = new DataView(nb); this.mem.u8 = new Uint8Array(nb);
+        s.push(old); break;
+      }
+      case 0x41: case 0x42: case 0x43: case 0x44: s.push(ins.imm[0]); break;
+
+      /* i32 comparisons */
+      case 0x45: s.push(i32(s.pop()) === 0 ? 1 : 0); break;
+      case 0x46: { var b = i32(s.pop()), a = i32(s.pop()); s.push(a === b ? 1 : 0); break; }
+      case 0x47: { var b = i32(s.pop()), a = i32(s.pop()); s.push(a !== b ? 1 : 0); break; }
+      case 0x48: { var b = i32(s.pop()), a = i32(s.pop()); s.push(a < b ? 1 : 0); break; }
+      case 0x49: { var b = u32(s.pop()), a = u32(s.pop()); s.push(a < b ? 1 : 0); break; }
+      case 0x4a: { var b = i32(s.pop()), a = i32(s.pop()); s.push(a > b ? 1 : 0); break; }
+      case 0x4b: { var b = u32(s.pop()), a = u32(s.pop()); s.push(a > b ? 1 : 0); break; }
+      case 0x4c: { var b = i32(s.pop()), a = i32(s.pop()); s.push(a <= b ? 1 : 0); break; }
+      case 0x4d: { var b = u32(s.pop()), a = u32(s.pop()); s.push(a <= b ? 1 : 0); break; }
+      case 0x4e: { var b = i32(s.pop()), a = i32(s.pop()); s.push(a >= b ? 1 : 0); break; }
+      case 0x4f: { var b = u32(s.pop()), a = u32(s.pop()); s.push(a >= b ? 1 : 0); break; }
+      /* i64 comparisons */
+      case 0x50: s.push(i64(s.pop()) === 0n ? 1 : 0); break;
+      case 0x51: { var b = i64(s.pop()), a = i64(s.pop()); s.push(a === b ? 1 : 0); break; }
+      case 0x52: { var b = i64(s.pop()), a = i64(s.pop()); s.push(a !== b ? 1 : 0); break; }
+      case 0x53: { var b = i64(s.pop()), a = i64(s.pop()); s.push(a < b ? 1 : 0); break; }
+      case 0x54: { var b = u64(s.pop()), a = u64(s.pop()); s.push(a < b ? 1 : 0); break; }
+      case 0x55: { var b = i64(s.pop()), a = i64(s.pop()); s.push(a > b ? 1 : 0); break; }
+      case 0x56: { var b = u64(s.pop()), a = u64(s.pop()); s.push(a > b ? 1 : 0); break; }
+      case 0x57: { var b = i64(s.pop()), a = i64(s.pop()); s.push(a <= b ? 1 : 0); break; }
+      case 0x58: { var b = u64(s.pop()), a = u64(s.pop()); s.push(a <= b ? 1 : 0); break; }
+      case 0x59: { var b = i64(s.pop()), a = i64(s.pop()); s.push(a >= b ? 1 : 0); break; }
+      case 0x5a: { var b = u64(s.pop()), a = u64(s.pop()); s.push(a >= b ? 1 : 0); break; }
+      /* f32/f64 comparisons */
+      case 0x5b: case 0x61: { var b = s.pop(), a = s.pop(); s.push(a === b ? 1 : 0); break; }
+      case 0x5c: case 0x62: { var b = s.pop(), a = s.pop(); s.push(a !== b ? 1 : 0); break; }
+      case 0x5d: case 0x63: { var b = s.pop(), a = s.pop(); s.push(a < b ? 1 : 0); break; }
+      case 0x5e: case 0x64: { var b = s.pop(), a = s.pop(); s.push(a > b ? 1 : 0); break; }
+      case 0x5f: case 0x65: { var b = s.pop(), a = s.pop(); s.push(a <= b ? 1 : 0); break; }
+      case 0x60: case 0x66: { var b = s.pop(), a = s.pop(); s.push(a >= b ? 1 : 0); break; }
+
+      /* i32 arithmetic */
+      case 0x67: { var x = u32(s.pop()); s.push(x === 0 ? 32 : Math.clz32(x)); break; }
+      case 0x68: { var x = u32(s.pop()); if (x === 0) s.push(32); else { var c = 0; while (!((x >>> c) & 1)) c++; s.push(c); } break; }
+      case 0x69: { var x = u32(s.pop()), c = 0; while (x) { c += x & 1; x >>>= 1; } s.push(c); break; }
+      case 0x6a: { var b = i32(s.pop()), a = i32(s.pop()); s.push((a + b) | 0); break; }
+      case 0x6b: { var b = i32(s.pop()), a = i32(s.pop()); s.push((a - b) | 0); break; }
+      case 0x6c: { var b = i32(s.pop()), a = i32(s.pop()); s.push(Math.imul(a, b)); break; }
+      case 0x6d: { var b = i32(s.pop()), a = i32(s.pop()); if (b === 0) throw new Trap('integer divide by zero'); if (a === -2147483648 && b === -1) throw new Trap('integer overflow'); s.push((a / b) | 0); break; }
+      case 0x6e: { var b = u32(s.pop()), a = u32(s.pop()); if (b === 0) throw new Trap('integer divide by zero'); s.push(((a / b) >>> 0) | 0); break; }
+      case 0x6f: { var b = i32(s.pop()), a = i32(s.pop()); if (b === 0) throw new Trap('integer divide by zero'); s.push(b === -1 ? 0 : (a % b) | 0); break; }
+      case 0x70: { var b = u32(s.pop()), a = u32(s.pop()); if (b === 0) throw new Trap('integer divide by zero'); s.push((a % b) | 0); break; }
+      case 0x71: { var b = i32(s.pop()), a = i32(s.pop()); s.push(a & b); break; }
+      case 0x72: { var b = i32(s.pop()), a = i32(s.pop()); s.push(a | b); break; }
+      case 0x73: { var b = i32(s.pop()), a = i32(s.pop()); s.push(a ^ b); break; }
+      case 0x74: { var b = i32(s.pop()), a = i32(s.pop()); s.push(a << (b & 31)); break; }
+      case 0x75: { var b = i32(s.pop()), a = i32(s.pop()); s.push(a >> (b & 31)); break; }
+      case 0x76: { var b = i32(s.pop()), a = i32(s.pop()); s.push((a >>> (b & 31)) | 0); break; }
+      case 0x77: { var b = i32(s.pop()) & 31, a = u32(s.pop()); s.push(((a << b) | (a >>> ((32 - b) & 31))) | 0); break; }
+      case 0x78: { var b = i32(s.pop()) & 31, a = u32(s.pop()); s.push(((a >>> b) | (a << ((32 - b) & 31))) | 0); break; }
+      /* i64 arithmetic */
+      case 0x79: { var x = u64(s.pop()), c = 0n; if (x === 0n) c = 64n; else { var m = 1n << 63n; while (!(x & m)) { c++; m >>= 1n; } } s.push(BigInt(c)); break; }
+      case 0x7a: { var x = u64(s.pop()), c = 0n; if (x === 0n) c = 64n; else { while (!(x & 1n)) { c++; x >>= 1n; } } s.push(BigInt(c)); break; }
+      case 0x7b: { var x = u64(s.pop()), c = 0n; while (x) { c += x & 1n; x >>= 1n; } s.push(c); break; }
+      case 0x7c: { var b = i64(s.pop()), a = i64(s.pop()); s.push(i64(a + b)); break; }
+      case 0x7d: { var b = i64(s.pop()), a = i64(s.pop()); s.push(i64(a - b)); break; }
+      case 0x7e: { var b = i64(s.pop()), a = i64(s.pop()); s.push(i64(a * b)); break; }
+      case 0x7f: { var b = i64(s.pop()), a = i64(s.pop()); if (b === 0n) throw new Trap('integer divide by zero'); if (a === -(2n ** 63n) && b === -1n) throw new Trap('integer overflow'); s.push(i64(a / b)); break; }
+      case 0x80: { var b = u64(s.pop()), a = u64(s.pop()); if (b === 0n) throw new Trap('integer divide by zero'); s.push(i64(a / b)); break; }
+      case 0x81: { var b = i64(s.pop()), a = i64(s.pop()); if (b === 0n) throw new Trap('integer divide by zero'); s.push(b === -1n ? 0n : i64(a % b)); break; }
+      case 0x82: { var b = u64(s.pop()), a = u64(s.pop()); if (b === 0n) throw new Trap('integer divide by zero'); s.push(i64(a % b)); break; }
+      case 0x83: { var b = i64(s.pop()), a = i64(s.pop()); s.push(i64(a & b)); break; }
+      case 0x84: { var b = i64(s.pop()), a = i64(s.pop()); s.push(i64(a | b)); break; }
+      case 0x85: { var b = i64(s.pop()), a = i64(s.pop()); s.push(i64(a ^ b)); break; }
+      case 0x86: { var b = u64(s.pop()) & 63n, a = i64(s.pop()); s.push(i64(a << b)); break; }
+      case 0x87: { var b = u64(s.pop()) & 63n, a = i64(s.pop()); s.push(i64(a >> b)); break; }
+      case 0x88: { var b = u64(s.pop()) & 63n, a = u64(s.pop()); s.push(i64(a >> b)); break; }
+      case 0x89: { var b = u64(s.pop()) & 63n, a = u64(s.pop()); s.push(b === 0n ? i64(a) : i64(u64((a << b) | (a >> (64n - b))))); break; }
+      case 0x8a: { var b = u64(s.pop()) & 63n, a = u64(s.pop()); s.push(b === 0n ? i64(a) : i64(u64((a >> b) | (a << (64n - b))))); break; }
+      /* f32 */
+      case 0x8b: s.push(Math.abs(s.pop())); break;
+      case 0x8c: case 0x9a: { var v = s.pop(); s.push(v === 0 ? (Object.is(v, -0) ? 0 : -0) : -v); break; }
+      case 0x8d: s.push(f32(Math.ceil(s.pop()))); break;
+      case 0x8e: s.push(f32(Math.floor(s.pop()))); break;
+      case 0x8f: s.push(f32(Math.trunc(s.pop()))); break;
+      case 0x90: s.push(f32(nearest(s.pop()))); break;
+      case 0x91: s.push(f32(Math.sqrt(s.pop()))); break;
+      case 0x92: { var b = s.pop(), a = s.pop(); s.push(f32(a + b)); break; }
+      case 0x93: { var b = s.pop(), a = s.pop(); s.push(f32(a - b)); break; }
+      case 0x94: { var b = s.pop(), a = s.pop(); s.push(f32(a * b)); break; }
+      case 0x95: { var b = s.pop(), a = s.pop(); s.push(f32(a / b)); break; }
+      case 0x96: { var b = s.pop(), a = s.pop(); s.push(f32(fmin(a, b))); break; }
+      case 0x97: { var b = s.pop(), a = s.pop(); s.push(f32(fmax(a, b))); break; }
+      case 0x98: { var b = s.pop(), a = s.pop(); s.push(f32(copysign(a, b))); break; }
+      /* f64 */
+      case 0x99: s.push(Math.abs(s.pop())); break;
+      case 0x9b: s.push(Math.ceil(s.pop())); break;
+      case 0x9c: s.push(Math.floor(s.pop())); break;
+      case 0x9d: s.push(Math.trunc(s.pop())); break;
+      case 0x9e: s.push(nearest(s.pop())); break;
+      case 0x9f: s.push(Math.sqrt(s.pop())); break;
+      case 0xa0: { var b = s.pop(), a = s.pop(); s.push(a + b); break; }
+      case 0xa1: { var b = s.pop(), a = s.pop(); s.push(a - b); break; }
+      case 0xa2: { var b = s.pop(), a = s.pop(); s.push(a * b); break; }
+      case 0xa3: { var b = s.pop(), a = s.pop(); s.push(a / b); break; }
+      case 0xa4: { var b = s.pop(), a = s.pop(); s.push(fmin(a, b)); break; }
+      case 0xa5: { var b = s.pop(), a = s.pop(); s.push(fmax(a, b)); break; }
+      case 0xa6: { var b = s.pop(), a = s.pop(); s.push(copysign(a, b)); break; }
+      /* conversions */
+      case 0xa7: s.push(Number(BigInt.asIntN(32, u64(s.pop())))); break;
+      case 0xa8: case 0xaa: s.push(truncChk(s.pop(), -2147483648, 2147483647) | 0); break;
+      case 0xa9: case 0xab: s.push(truncChk(s.pop(), 0, 4294967295) | 0); break;
+      case 0xac: s.push(BigInt(i32(s.pop()))); break;
+      case 0xad: s.push(BigInt(u32(s.pop()))); break;
+      case 0xae: case 0xb0: { var v = s.pop(); if (Number.isNaN(v)) throw new Trap('cannot convert NaN to integer'); if (!isFinite(v)) throw new Trap('integer overflow'); var bg = BigInt(Math.trunc(v)); if (bg < -(2n ** 63n) || bg > 2n ** 63n - 1n) throw new Trap('integer overflow'); s.push(bg); break; }
+      case 0xaf: case 0xb1: { var v = s.pop(); if (Number.isNaN(v)) throw new Trap('cannot convert NaN to integer'); if (!isFinite(v)) throw new Trap('integer overflow'); var bg = BigInt(Math.trunc(v)); if (bg < 0n || bg > 2n ** 64n - 1n) throw new Trap('integer overflow'); s.push(i64(bg)); break; }
+      case 0xb2: s.push(f32(i32(s.pop()))); break;
+      case 0xb3: s.push(f32(u32(s.pop()))); break;
+      case 0xb4: s.push(f32(Number(i64(s.pop())))); break;
+      case 0xb5: s.push(f32(Number(u64(s.pop())))); break;
+      case 0xb6: s.push(f32(s.pop())); break;
+      case 0xb7: s.push(i32(s.pop())); break;
+      case 0xb8: s.push(u32(s.pop())); break;
+      case 0xb9: s.push(Number(i64(s.pop()))); break;
+      case 0xba: s.push(Number(u64(s.pop()))); break;
+      case 0xbb: s.push(s.pop()); break;
+      case 0xbc: SCRATCH.setFloat32(0, s.pop(), true); s.push(SCRATCH.getInt32(0, true)); break;
+      case 0xbd: SCRATCH.setFloat64(0, s.pop(), true); s.push(SCRATCH.getBigInt64(0, true)); break;
+      case 0xbe: SCRATCH.setInt32(0, i32(s.pop()), true); s.push(SCRATCH.getFloat32(0, true)); break;
+      case 0xbf: SCRATCH.setBigInt64(0, i64(s.pop()), true); s.push(SCRATCH.getFloat64(0, true)); break;
+      case 0xc0: s.push((i32(s.pop()) << 24) >> 24); break;
+      case 0xc1: s.push((i32(s.pop()) << 16) >> 16); break;
+      case 0xc2: s.push(BigInt.asIntN(8, i64(s.pop()))); break;
+      case 0xc3: s.push(BigInt.asIntN(16, i64(s.pop()))); break;
+      case 0xc4: s.push(BigInt.asIntN(32, i64(s.pop()))); break;
+
+      case 0xfc: {
+        switch (ins.sub) {
+          case 0: case 2: s.push(satI(s.pop(), -2147483648, 2147483647) | 0); break;
+          case 1: case 3: s.push(satI(s.pop(), 0, 4294967295) | 0); break;
+          case 4: case 6: { var v = s.pop(); s.push(Number.isNaN(v) ? 0n : i64(clampBig(v, -(2n ** 63n), 2n ** 63n - 1n))); break; }
+          case 5: case 7: { var v = s.pop(); s.push(Number.isNaN(v) ? 0n : i64(clampBig(v, 0n, 2n ** 64n - 1n))); break; }
+          case 10: { var n = u32(s.pop()), src = u32(s.pop()), dst = u32(s.pop());
+            if (dst + n > this.mem.u8.length || src + n > this.mem.u8.length) throw new Trap('out of bounds memory access');
+            this.mem.u8.copyWithin(dst, src, src + n); break; }
+          case 11: { var n = u32(s.pop()), val = i32(s.pop()) & 0xff, dst = u32(s.pop());
+            if (dst + n > this.mem.u8.length) throw new Trap('out of bounds memory access');
+            this.mem.u8.fill(val, dst, dst + n); break; }
+          default: throw new Trap('instruction ' + ins.name + ' is not supported by this interpreter');
+        }
+        break;
+      }
+      default: throw new Trap('instruction ' + ins.name + ' is not supported by this interpreter');
+    }
+  } catch (e) {
+    this.trap = e && e.trap ? e.message : (e && e.message) || String(e);
+    this.done = true;
+    return false;
+  }
+  if (adv && !this.done) fr.pc++;
+  return !this.done && !this.trap;
+};
+
+function clampBig(v, lo, hi) {
+  if (v === Infinity) return hi; if (v === -Infinity) return lo;
+  var b = BigInt(Math.trunc(v));
+  if (b < lo) return lo; if (b > hi) return hi; return b;
+}
+function fmin(a, b) {
+  if (Number.isNaN(a) || Number.isNaN(b)) return NaN;
+  if (a === 0 && b === 0) return (Object.is(a, -0) || Object.is(b, -0)) ? -0 : 0;
+  return a < b ? a : b;
+}
+function fmax(a, b) {
+  if (Number.isNaN(a) || Number.isNaN(b)) return NaN;
+  if (a === 0 && b === 0) return (Object.is(a, 0) || Object.is(b, 0)) ? 0 : -0;
+  return a > b ? a : b;
+}
+function copysign(a, b) {
+  var neg = b < 0 || Object.is(b, -0);
+  return neg ? -Math.abs(a) : Math.abs(a);
+}
+
+Machine.prototype.run = function (limit) {
+  var n = limit || this.maxSteps;
+  for (var i = 0; i < n; i++) { if (!this.step()) break; }
+  if (!this.done && !this.trap) this.trap = 'step limit reached (' + n + ' instructions)';
+  return this;
+};
+
+/* Convenience: call an exported function to completion. */
+function invoke(mod, funcIndex, args, opts) {
+  var m = new Machine(mod, opts);
+  var t = m.typeOf(funcIndex);
+  var vals = args.map(function (a, i) {
+    var ty = t.params[i];
+    if (ty === 'i64') return typeof a === 'bigint' ? a : BigInt(Math.trunc(Number(a)));
+    if (ty === 'f32') return Math.fround(Number(a));
+    if (ty === 'i32') return Number(a) | 0;
+    return Number(a);
+  });
+  m.start(funcIndex, vals);
+  m.run(opts && opts.maxSteps);
+  return m;
+}
+
+var API = { parse: parse, disasm: disasm, Machine: Machine, invoke: invoke, insText: insText, OPS: OPS, SECNAMES: SECNAMES };
+if (typeof module !== 'undefined' && module.exports) module.exports = API;
+root.WasmScope = API;
+})(typeof self !== 'undefined' ? self : this);
+
+</script>
+<script>
+(function(){
+'use strict';
+var WS = window.WasmScope;
+var $ = function(id){ return document.getElementById(id); };
+var SAMPLE_B64 = 'AGFzbQEAAAABEgNgAn9/AX9gAX8Bf2ACfHwBfwMHBgABAQECAQUEAQEBAgc+BwNhZGQAAANmaWIAAQZzdW1fdG8AAghpc19wcmltZQADBmVzY2FwZQAECGNoZWNrc3VtAAUGbWVtb3J5AgAKpAIGBwAgACABagscACAAQQJIBH8gAAUgAEEBaxABIABBAmsQAWoLCxsBAX8DQCABIABqIQEgAEEBayEAIAANAAsgAQtBAQF/An8gAEECSARAQQAMAQtBAiEBA0AgASABbCAASgRAQQEMAgsgACABcEUEQEEADAILIAFBAWohAQwAC0EBCwtyAgF/AnxBACECRAAAAAAAAAAAIQNEAAAAAAAAAAAhBAJAA0AgAyADoiAEIASioSAAoCADIASiRAAAAAAAAABAoiABoCEEIQMgAyADoiAEIASioEQAAAAAAAAQQGQNASACQQFqIQIgAkHIAUgNAAsLIAILLAECf0EAIQFBACECA0AgAkEfbCABLQAAaiECIAFBAWohASABIABIDQALIAILCxwBAEEACxZIZWxsbyBmcm9tIFdlYkFzc2VtYmx5';
+
+var state = { bytes:null, mod:null, native:null, sel:0, machine:null, running:false };
+
+function showErr(msg){ var e=$('err'); e.textContent = msg; e.style.display = msg? 'block':'none'; }
+function esc(s){ return String(s).replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+function fmtBytes(n){ return n<1024? n+' B' : n<1048576? (n/1024).toFixed(1)+' KB' : (n/1048576).toFixed(2)+' MB'; }
+function hex(n,w){ var s=(n>>>0).toString(16); while(s.length<(w||6)) s='0'+s; return s; }
+
+function b64ToBytes(b64){
+  var bin = atob(b64), out = new Uint8Array(bin.length);
+  for (var i=0;i<bin.length;i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+/* ---------------- load ---------------- */
+function load(bytes, label){
+  showErr('');
+  try {
+    state.bytes = bytes;
+    state.mod = WS.parse(bytes);
+  } catch(e){
+    state.mod = null;
+    showErr('Could not parse this file: ' + e.message);
+    return;
+  }
+  state.label = label || 'module';
+  state.native = null;
+  try {
+    var m = new WebAssembly.Module(bytes);
+    var imports = {};
+    WebAssembly.Module.imports(m).forEach(function(im){
+      imports[im.module] = imports[im.module] || {};
+      if (im.kind === 'function') imports[im.module][im.name] = function(){ return 0; };
+      else if (im.kind === 'memory') imports[im.module][im.name] = new WebAssembly.Memory({initial:1});
+      else if (im.kind === 'global') imports[im.module][im.name] = 0;
+      else if (im.kind === 'table') imports[im.module][im.name] = new WebAssembly.Table({initial:1, element:'anyfunc'});
+    });
+    state.native = new WebAssembly.Instance(m, imports).exports;
+  } catch(e){ state.native = null; state.nativeErr = e.message; }
+
+  renderOverview();
+  renderFuncs();
+  var firstExport = state.mod.exports.filter(function(x){ return x.kind==='func'; })[0];
+  select(firstExport ? firstExport.index : firstNonImported());
+  renderExports();
+  reset();
+}
+function firstNonImported(){
+  for (var i=0;i<state.mod.funcs.length;i++) if(!state.mod.funcs[i].imported) return i;
+  return 0;
+}
+
+/* ---------------- overview ---------------- */
+function renderOverview(){
+  var m = state.mod, h = [];
+  function kv(k,v){ h.push('<div class="kv"><span>'+k+'</span><b>'+v+'</b></div>'); }
+  kv('file', esc(state.label));
+  kv('size', fmtBytes(m.size));
+  kv('functions', m.funcs.length + (m.imports.filter(function(i){return i.kind==='func';}).length ? ' ('+m.imports.filter(function(i){return i.kind==='func';}).length+' imported)' : ''));
+  kv('exports', m.exports.length);
+  kv('imports', m.imports.length);
+  if (m.memories.length) {
+    var mm = m.memories[0].limits;
+    kv('memory', mm.min + ' page' + (mm.min===1?'':'s') + ' (' + fmtBytes(mm.min*65536) + ')' + (mm.max!=null? ' max '+mm.max : ''));
+  }
+  if (m.globals.length) kv('globals', m.globals.length);
+  if (m.datas.length) kv('data segments', m.datas.length);
+  kv('names section', m.customs.some(function(c){return c.name==='name';}) ? 'yes' : 'stripped');
+
+  h.push('<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px"></div>');
+  h.push('<div class="sm" style="margin-bottom:6px">SECTIONS BY SIZE</div>');
+  var tot = m.sections.reduce(function(a,s){ return a+s.size; },0) || 1;
+  m.sections.slice().sort(function(a,b){ return b.size-a.size; }).forEach(function(s){
+    var pct = Math.round(s.size/tot*100);
+    h.push('<div style="margin:5px 0"><div class="kv" style="padding:0"><span>'+esc(s.name)+'</span><b>'+fmtBytes(s.size)+'</b></div>'+
+      '<div style="height:4px;border-radius:3px;background:rgba(237,242,239,.08);overflow:hidden"><div style="height:100%;width:'+Math.max(pct,1)+'%;background:var(--accent);opacity:.8"></div></div></div>');
+  });
+
+  if (m.imports.length){
+    h.push('<div class="sm" style="margin:12px 0 6px">IMPORTS</div>');
+    m.imports.slice(0,40).forEach(function(im){
+      h.push('<div class="kv"><span style="overflow:hidden;text-overflow:ellipsis">'+esc(im.module)+'.'+esc(im.name)+'</span><b>'+im.kind+'</b></div>');
+    });
+    if (m.imports.length>40) h.push('<div class="sm">…and '+(m.imports.length-40)+' more</div>');
+  }
+  $('overview').innerHTML = h.join('');
+}
+
+function renderFuncs(){
+  var m = state.mod, h = [];
+  var exportedIdx = {};
+  m.exports.forEach(function(e){ if(e.kind==='func') exportedIdx[e.index]=1; });
+  m.funcs.forEach(function(f, i){
+    var t = m.types[f.typeIndex] || {params:[],results:[]};
+    var nm = m.names.func[i] || ('f'+i);
+    h.push('<button class="fn" data-i="'+i+'"><span class="ix">'+i+'</span> '+esc(nm)+
+      '<span class="ix">('+t.params.join(', ')+')'+(t.results.length? ' → '+t.results.join(', '):'')+'</span>'+
+      (exportedIdx[i]?'<span class="ex">export</span>':'')+(f.imported?'<span class="ex">import</span>':'')+'</button>');
+  });
+  $('funcs').innerHTML = h.join('') || '<div class="empty">none</div>';
+  Array.prototype.forEach.call($('funcs').querySelectorAll('.fn'), function(b){
+    b.onclick = function(){ select(+b.dataset.i); };
+  });
+}
+
+function renderExports(){
+  var m = state.mod, sel = $('expSel'), h = [];
+  m.exports.filter(function(e){ return e.kind==='func'; }).forEach(function(e){
+    var t = m.types[(m.funcs[e.index]||{}).typeIndex] || {params:[],results:[]};
+    h.push('<option value="'+e.index+'">'+esc(e.name)+'('+t.params.join(', ')+')</option>');
+  });
+  if (!h.length) {
+    m.funcs.forEach(function(f,i){ if(!f.imported) h.push('<option value="'+i+'">f'+i+' (not exported)</option>'); });
+  }
+  sel.innerHTML = h.join('') || '<option>—</option>';
+  sel.onchange = function(){ select(+sel.value); reset(); };
+  syncArgHint();
+}
+
+function syncArgHint(){
+  var fi = +$('expSel').value;
+  var f = state.mod && state.mod.funcs[fi];
+  var t = f ? (state.mod.types[f.typeIndex] || {params:[]}) : {params:[]};
+  $('argLabel').textContent = t.params.length ? 'Arguments (' + t.params.join(', ') + ')' : 'No arguments';
+  $('args').placeholder = t.params.map(function(p){ return p==='f64'||p==='f32' ? '1.5' : '10'; }).join(', ');
+  $('args').disabled = !t.params.length;
+}
+
+/* ---------------- disassembly ---------------- */
+function select(i){
+  state.sel = i;
+  Array.prototype.forEach.call($('funcs').querySelectorAll('.fn'), function(b){
+    b.classList.toggle('on', +b.dataset.i === i);
+  });
+  var m = state.mod, f = m.funcs[i];
+  $('codeTitle').textContent = 'Disassembly — ' + (m.names.func[i] || ('f'+i));
+  if (!f || f.imported || !f.body){
+    var why = f && f.decodeError
+      ? 'This function could not be decoded: ' + esc(f.decodeError) + ' — the rest of the module is unaffected.'
+      : 'This function is imported — its body lives in the host, not in this module.';
+    $('code').innerHTML = '<div class="empty" style="padding:0 14px">' + why + '</div>';
+    state.lines = [];
+    return;
+  }
+  var lines = WS.disasm(m, i), truncated = false;
+  if (lines.length > 20000){ lines = lines.slice(0, 20000); truncated = true; }
+  state.lines = lines;
+  var h = lines.map(function(l, ix){
+    var off = l.pc >= 0 ? hex(l.off) : '';
+    return '<div class="ln" data-pc="'+l.pc+'" id="ln'+ix+'"><span class="off">'+off+'</span>'+
+      '<span class="tx">'+'  '.repeat(l.depth)+colorize(l.text)+'</span></div>';
+  }).join('');
+  $('code').innerHTML = h + (truncated ? '<div class="empty" style="padding:8px 14px">Showing the first 20,000 instructions of this function.</div>' : '');
+  highlight();
+}
+function colorize(text){
+  var m = text.match(/^([a-z_0-9.]+)(.*)$/i);
+  if (!m) return esc(text);
+  var rest = esc(m[2]).replace(/\(;([^;]*);\)/g, '<span class="cm">(;$1;)</span>');
+  return '<span class="op">'+esc(m[1])+'</span><span class="imm">'+rest+'</span>';
+}
+
+/* ---------------- execution ---------------- */
+function parseArgs(types){
+  var raw = $('args').value.trim();
+  var parts = raw.length ? raw.split(/[\s,]+/) : [];
+  return types.map(function(t, i){
+    var v = parts[i] === undefined ? '0' : parts[i];
+    if (t === 'i64') { try { return BigInt(v); } catch(e){ return 0n; } }
+    if (t === 'i32') return parseInt(v, 10) | 0;
+    var f = parseFloat(v); return isNaN(f) ? 0 : (t==='f32' ? Math.fround(f) : f);
+  });
+}
+function showVal(v){
+  if (typeof v === 'bigint') return v.toString() + 'n';
+  if (typeof v === 'number' && !Number.isInteger(v)) return String(v);
+  return String(v);
+}
+function reset(){
+  state.machine = null; state.running = false;
+  $('outMine').textContent = '—'; $('outNative').textContent = '—';
+  $('matchBadge').className = 'badge'; $('matchBadge').textContent = 'not run yet';
+  $('stepInfo').textContent = '—';
+  ['btnRun','btnStep','btnStep50','btnReset'].forEach(function(id){ $(id).disabled = !state.mod; });
+  renderStack(); renderLocals(); renderMem(); highlight();
+  syncArgHint();
+}
+function newMachine(){
+  var fi = +$('expSel').value;
+  var f = state.mod.funcs[fi];
+  var t = state.mod.types[f.typeIndex] || {params:[],results:[]};
+  var args = parseArgs(t.params);
+  var m = new WS.Machine(state.mod);
+  m.start(fi, args);
+  state.machine = m;
+  state.args = args;
+  state.fi = fi;
+  select(fi);
+  if (m.stubbed.length) $('stepInfo').textContent = 'Note: ' + m.stubbed.join('; ');
+  return m;
+}
+function callNative(){
+  if (!state.native) return { err: 'engine could not instantiate: ' + (state.nativeErr||'unknown') };
+  var name = null;
+  state.mod.exports.forEach(function(e){ if (e.kind==='func' && e.index===state.fi) name = e.name; });
+  if (!name || typeof state.native[name] !== 'function') return { err: 'not exported — can only compare exported functions' };
+  try { return { val: state.native[name].apply(null, state.args) }; }
+  catch(e){ return { trap: e.message || 'trap' }; }
+}
+function finish(){
+  var m = state.machine;
+  var mine = m.trap ? ('trap: ' + m.trap) : (m.result && m.result.length ? showVal(m.result[0]) : '(no result)');
+  $('outMine').textContent = mine;
+  var nat = callNative();
+  var natTxt = nat.err ? nat.err : nat.trap ? ('trap: ' + nat.trap) : showVal(nat.val === undefined ? '(no result)' : nat.val);
+  $('outNative').textContent = natTxt;
+  var b = $('matchBadge');
+  if (nat.err) { b.className = 'badge'; b.textContent = 'no comparison available'; }
+  else if (m.trap && nat.trap) { b.className = 'badge ok'; b.textContent = '✓ both trapped'; }
+  else if (!m.trap && !nat.trap && String(mine) === String(natTxt)) { b.className = 'badge ok'; b.textContent = '✓ matches your browser’s engine'; }
+  else { b.className = 'badge bad'; b.textContent = '✗ mismatch'; }
+  $('stepInfo').textContent = m.steps.toLocaleString() + ' instructions executed' + (m.stubbed.length? ' · ' + m.stubbed.join('; ') : '');
+}
+function run(){
+  var m = newMachine();
+  var budget = 3000000, t0 = performance.now();
+  while (m.step() && m.steps < budget) {}
+  if (!m.done && !m.trap) m.trap = 'stopped after ' + budget.toLocaleString() + ' instructions (runaway loop?)';
+  finish();
+  $('stepInfo').textContent += ' · ' + (performance.now()-t0).toFixed(1) + ' ms';
+  renderStack(); renderLocals(); renderMem(); highlight();
+}
+function step(n){
+  if (!state.machine || state.machine.done) newMachine();
+  var m = state.machine;
+  for (var i=0;i<(n||1);i++){ if(!m.step()) break; }
+  if (m.done || m.trap) finish();
+  else {
+    $('outMine').textContent = 'running…';
+    $('stepInfo').textContent = m.steps.toLocaleString() + ' instructions · depth ' + m.frames.length;
+  }
+  renderStack(); renderLocals(); renderMem(); highlight();
+}
+function highlight(){
+  Array.prototype.forEach.call(document.querySelectorAll('.ln.cur'), function(e){ e.classList.remove('cur'); });
+  var m = state.machine;
+  if (!m || m.done || !m.frames.length) return;
+  var fr = m.frames[m.frames.length-1];
+  if (fr.fi !== state.sel) select(fr.fi);
+  var el = document.querySelector('.ln[data-pc="'+fr.pc+'"]');
+  if (el){
+    el.classList.add('cur');
+    var box = $('code');
+    var top = el.offsetTop - box.clientHeight/2;
+    if (Math.abs(box.scrollTop - top) > box.clientHeight/2) box.scrollTop = Math.max(0, top);
+  }
+}
+function renderStack(){
+  var m = state.machine, el = $('stack');
+  if (!m || !m.stack.length){ el.innerHTML = '<div class="empty">Empty</div>'; return; }
+  var h = [];
+  for (var i = m.stack.length-1; i>=0; i--){
+    h.push('<div class="stackitem'+(i===m.stack.length-1?' top':'')+'"><span>'+(i===m.stack.length-1?'top':i)+'</span><b>'+esc(showVal(m.stack[i]))+'</b></div>');
+  }
+  el.innerHTML = h.join('');
+}
+function renderLocals(){
+  var m = state.machine, el = $('locals');
+  if (!m || !m.frames.length){ el.innerHTML = '<div class="empty">—</div>'; return; }
+  var fr = m.frames[m.frames.length-1], h = [];
+  fr.locals.forEach(function(v,i){
+    h.push('<div class="stackitem"><span>local '+i+'</span><b>'+esc(showVal(v))+'</b></div>');
+  });
+  if (!fr.locals.length) h.push('<div class="empty">no locals</div>');
+  if (m.globals.length){
+    h.push('<div class="sm" style="margin:8px 0 4px">GLOBALS</div>');
+    m.globals.forEach(function(v,i){ h.push('<div class="stackitem"><span>global '+i+'</span><b>'+esc(showVal(v))+'</b></div>'); });
+  }
+  h.push('<div class="sm" style="margin:8px 0 4px">CALL STACK</div>');
+  for (var i=m.frames.length-1;i>=0;i--){
+    var nm = state.mod.names.func[m.frames[i].fi] || ('f'+m.frames[i].fi);
+    h.push('<div class="stackitem"><span>'+(i===m.frames.length-1?'▸':' ')+'</span><b>'+esc(nm)+'</b></div>');
+  }
+  el.innerHTML = h.join('');
+}
+function renderMem(){
+  var m = state.machine, el = $('hex');
+  if (!m || !m.mem){ el.className='empty'; el.textContent = 'No memory in this module.'; return; }
+  el.className = '';
+  var u8 = m.mem.u8, rows = [], N = Math.min(u8.length, 160);
+  for (var r=0;r<N;r+=16){
+    var hexs='', asc='';
+    for (var c=0;c<16;c++){
+      var v = u8[r+c];
+      hexs += (v<16?'0':'') + v.toString(16) + ' ';
+      asc += (v>=32 && v<127) ? String.fromCharCode(v) : '.';
+    }
+    rows.push('<span class="a">'+hex(r,4)+'</span>  '+hexs+' '+esc(asc));
+  }
+  el.innerHTML = rows.join('\n');
+}
+
+/* ---------------- wiring ---------------- */
+$('btnSample').onclick = function(){ load(b64ToBytes(SAMPLE_B64), 'sample.wasm'); };
+$('btnPick').onclick = function(){ $('file').click(); };
+$('file').onchange = function(e){ var f = e.target.files[0]; if (f) readFile(f); };
+$('btnRun').onclick = run;
+$('btnStep').onclick = function(){ step(1); };
+$('btnStep50').onclick = function(){ step(50); };
+$('btnReset').onclick = reset;
+$('args').oninput = function(){ if (state.machine) reset(); };
+
+function readFile(f){
+  if (f.size > 64*1024*1024){ showErr('That file is larger than 64 MB — too big to parse comfortably in a tab.'); return; }
+  var fr = new FileReader();
+  fr.onload = function(){ load(new Uint8Array(fr.result), f.name); };
+  fr.onerror = function(){ showErr('Could not read that file.'); };
+  fr.readAsArrayBuffer(f);
+}
+var drop = $('drop');
+['dragenter','dragover'].forEach(function(ev){
+  document.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('over'); });
+});
+['dragleave','drop'].forEach(function(ev){
+  document.addEventListener(ev, function(e){ e.preventDefault(); if (ev==='dragleave' && e.relatedTarget) return; drop.classList.remove('over'); });
+});
+document.addEventListener('drop', function(e){
+  e.preventDefault();
+  var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) readFile(f);
+});
+
+if (typeof WebAssembly === 'undefined'){
+  showErr('This browser has no WebAssembly support, so results cannot be cross-checked. The disassembler still works.');
+}
+
+/* first-run: load the sample so there is something to look at immediately */
+load(b64ToBytes(SAMPLE_B64), 'sample.wasm');
+$('args').value = '20';
+$('expSel').value = String((state.mod.exports.filter(function(e){return e.kind==='func'&&e.name==='fib';})[0]||{}).index || 0);
+select(+$('expSel').value); syncArgHint();
+window.__wasmscopeBoot = true;
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon. -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+<!-- Ad slot / Polar.sh support slot can go here later. -->
+</body>
+</html>

@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rollback Netcode Playground — see prediction and rollback happen live</title>
+<meta name="description" content="Two real game clients, one fake internet you control. Dial in latency, jitter and packet loss and watch rollback netcode predict, mispredict and re-simulate frames." />
+<meta name="keywords" content="rollback netcode, delay based netcode, GGPO, netcode explained, deterministic simulation, lockstep netcode, game networking, prediction and rollback, fighting game netcode" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Ghostframe — a rollback netcode playground" />
+<meta property="og:description" content="Two game clients, one fake internet you control. Watch rollback netcode predict, mispredict and re-simulate frames in real time." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/rollback-netcode.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Ghostframe — a rollback netcode playground" />
+<meta name="twitter:description" content="Dial in latency, jitter and packet loss and watch rollback netcode re-simulate frames live." />
+<link rel="canonical" href="https://hammyasf.github.io/rollback-netcode.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Ghostframe — Rollback Netcode Playground","url":"https://hammyasf.github.io/rollback-netcode.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"An interactive sandbox that runs two independent game clients with their own netcode stacks, connected by a simulated network with adjustable latency, jitter and packet loss, so you can watch delay-based and rollback netcode behave differently.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is rollback netcode?","acceptedAnswer":{"@type":"Answer","text":"Rollback netcode runs the game forward immediately using a guess for what the other player is doing, usually that they are still holding whatever they held last. When their real input arrives and it does not match the guess, the client restores a saved copy of the game state from that frame and re-simulates every frame since, this time with the correct input. The correction happens in a single frame, so your own controls always feel instant."}},{"@type":"Question","name":"How is rollback different from delay-based netcode?","acceptedAnswer":{"@type":"Answer","text":"Delay-based netcode holds your own input back by a fixed number of frames so both clients can run the same frame at the same time with both real inputs. Nothing is ever wrong, but everything you do is late, and if a packet arrives after its frame is due the game has to freeze until it turns up. Rollback never delays and never freezes, at the cost of occasionally showing you a frame that turns out to be wrong."}},{"@type":"Question","name":"Does anything get uploaded or sent to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Both clients, the network simulator and the game run entirely inside this one browser tab. There is no server and no account, and the page keeps working with the network disconnected."}},{"@type":"Question","name":"Why does the simulation avoid floating point?","acceptedAnswer":{"@type":"Answer","text":"Rollback only works if re-simulating the same frames with the same inputs produces exactly the same state. This simulation uses 32-bit integers with a 1/64 pixel fixed-point scale and an integer square root, so there is no floating point anywhere in the game step and no room for a rounding difference to creep in."}},{"@type":"Question","name":"What is a desync?","acceptedAnswer":{"@type":"Answer","text":"A desync is when two clients that should be showing the same match have quietly ended up with different game states. This page hashes both clients' state every frame and compares them, so you can watch the naive mode desync within seconds while rollback stays verified frame for frame."}},{"@type":"Question","name":"Why does rollback use more CPU?","acceptedAnswer":{"@type":"Answer","text":"Every rollback re-simulates all the frames between the corrected frame and the present. At 100 ms of latency a client can be re-running six or seven frames of game logic several times a second, so the simulation step has to stay cheap. The playground shows the real multiplier live."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--warm:#ff9a4d;--bad:#ff5f56;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a{color:var(--muted);}nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 12px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:700px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;padding:18px;}
+  .screens{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:820px){.screens{grid-template-columns:1fr;}}
+  .screen{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#050c0a;}
+  .screen .hd{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+  .screen .hd b{color:var(--ink);font-weight:500;}
+  .screen .hd .st{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;}
+  .screen canvas{display:block;width:100%;height:auto;background:#050c0a;}
+  .wire{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.25);padding:8px 12px 4px;}
+  .wire .lb{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .wire canvas,.tl canvas{display:block;width:100%;height:auto;}
+  .tl{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.25);padding:8px 12px 6px;}
+  .tl .lb{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  .tl .key{display:flex;gap:12px;color:var(--faint);text-transform:none;letter-spacing:0;}
+  .tl .key i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px;font-style:normal;}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;margin-top:14px;}
+  .stat{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(var(--surfaceRGB),.5);}
+  .stat .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
+  .stat .v{font-family:var(--mono);font-size:19px;color:var(--accent);margin-top:4px;}
+  .stat .v.warn{color:var(--warm);}.stat .v.bad{color:var(--bad);}
+  .stat .n{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:2px;}
+  .modes{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px;}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
+  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;font-family:var(--mono);font-size:12.5px;padding:9px 14px;}
+  .ctls{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px 22px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);}
+  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;gap:8px;}
+  .ctl label span{color:var(--accent);}
+  .ctl input[type=range]{accent-color:var(--accent);width:100%;margin-top:6px;}
+  .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  .presets button{background:transparent;border:1px solid var(--line-2);color:var(--muted);font-family:var(--mono);font-size:12px;padding:7px 12px;border-radius:100px;cursor:pointer;}
+  .presets button:hover{border-color:rgba(var(--accentRGB),.5);color:var(--ink);}
+  .hint{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:12px;}
+  .hint kbd{border:1px solid var(--line-2);border-radius:5px;padding:1px 6px;color:var(--ink);font-size:11px;}
+  .explain{margin-top:14px;border:1px solid rgba(var(--accentRGB),.22);border-radius:14px;padding:14px 16px;background:rgba(var(--accentRGB),.05);font-size:15px;color:#cdd8d3;}
+  .explain b{color:var(--ink);}
+  section.copy{padding:26px 0 10px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
+  section.copy h3{font-family:var(--display);font-weight:600;font-size:19px;margin:22px 0 6px;}
+  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  section.copy ol,section.copy ul{color:#cdd8d3;font-size:16.5px;margin:12px 0 12px 22px;}
+  section.copy li{margin:7px 0;}
+  code{font-family:var(--mono);font-size:.9em;color:var(--accent);}
+  .faq{border-top:1px solid var(--line);margin-top:10px;}
+  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
+  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
+  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
+  .cta p{color:#cdd8d3;margin-top:8px;}
+  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="blog.html">Writing</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Ghostframe · runs entirely in your browser</div>
+    <h1>Rollback netcode, live</h1>
+    <p class="sub">Two complete game clients, each with its own netcode stack, connected by a fake internet whose latency, jitter and packet loss you control. Play one of them and watch the other client predict you, get it wrong, and quietly re-simulate the last few frames to catch up.</p>
+    <span class="priv">&#128274; No server, no account &mdash; both clients and the network live in this tab</span>
+  </header>
+
+  <div class="panel">
+    <div class="screens">
+      <div class="screen">
+        <div class="hd"><b>Your screen</b><span class="st" id="stA">&mdash;</span></div>
+        <canvas id="cA" width="640" height="360" aria-label="Your client's view of the match"></canvas>
+      </div>
+      <div class="screen">
+        <div class="hd"><b>Peer's screen</b><span class="st" id="stB">&mdash;</span></div>
+        <canvas id="cB" width="640" height="360" aria-label="The remote client's view of the same match"></canvas>
+      </div>
+    </div>
+
+    <div class="wire">
+      <div class="lb">The fake internet &mdash; every dot is a packet of inputs in flight</div>
+      <canvas id="cW" width="960" height="66" aria-label="Packets travelling between the two clients"></canvas>
+    </div>
+
+    <div class="tl">
+      <div class="lb"><span>Your client's frame timeline</span>
+        <span class="key"><span><i style="background:#2be3b0"></i>confirmed</span><span><i style="background:#ff9a4d"></i>predicted</span><span><i style="background:#ff5f56"></i>rollback</span></span>
+      </div>
+      <canvas id="cT" width="960" height="90" aria-label="Per-frame timeline showing confirmed, predicted and rolled back frames"></canvas>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">Round trip</div><div class="v" id="sRtt">&mdash;</div><div class="n" id="sRttN">simulated</div></div>
+      <div class="stat"><div class="k">Input lag</div><div class="v" id="sLag">&mdash;</div><div class="n">your press &rarr; your screen</div></div>
+      <div class="stat"><div class="k">Rollbacks</div><div class="v" id="sRb">&mdash;</div><div class="n" id="sRbN">per second</div></div>
+      <div class="stat"><div class="k">Prediction hit rate</div><div class="v" id="sHit">&mdash;</div><div class="n">guesses that were right</div></div>
+      <div class="stat"><div class="k">Sim cost</div><div class="v" id="sCost">&mdash;</div><div class="n">steps per displayed frame</div></div>
+      <div class="stat"><div class="k">Frozen frames</div><div class="v" id="sStall">&mdash;</div><div class="n">waiting on the peer</div></div>
+      <div class="stat"><div class="k">Packets lost</div><div class="v" id="sLoss">&mdash;</div><div class="n" id="sLossN">of sent</div></div>
+      <div class="stat"><div class="k">State check</div><div class="v" id="sSync">&mdash;</div><div class="n" id="sSyncN">both clients hashed</div></div>
+    </div>
+
+    <div class="modes">
+      <div class="seg" id="mode">
+        <button data-m="naive">Naive</button>
+        <button data-m="delay">Delay-based</button>
+        <button data-m="rollback" class="on">Rollback</button>
+      </div>
+      <button class="btn" id="play">Pause</button>
+      <button class="btn-out" id="reset">Reset match</button>
+      <button class="btn-out" id="hand">Take the controls</button>
+      <button class="btn-out" id="share">Copy link to this setup</button>
+    </div>
+
+    <div class="explain" id="explain"></div>
+
+    <div class="presets">
+      <button data-p="lan">LAN &middot; 5 ms</button>
+      <button data-p="near">Same country &middot; 35 ms</button>
+      <button data-p="far">Cross continent &middot; 90 ms</button>
+      <button data-p="wifi">Bad wifi &middot; 70 ms + jitter + loss</button>
+      <button data-p="sea">Overseas &middot; 180 ms</button>
+    </div>
+
+    <div class="ctls">
+      <div class="ctl"><label>One-way latency <span id="vLat">45 ms</span></label><input type="range" id="lat" min="0" max="250" value="45" /></div>
+      <div class="ctl"><label>Jitter <span id="vJit">8 ms</span></label><input type="range" id="jit" min="0" max="80" value="8" /></div>
+      <div class="ctl"><label>Packet loss <span id="vLos">2 %</span></label><input type="range" id="los" min="0" max="30" value="2" /></div>
+      <div class="ctl"><label>Input delay <span id="vDel">1 frame</span></label><input type="range" id="del" min="0" max="8" value="1" /></div>
+      <div class="ctl"><label>Max rollback <span id="vMax">8 frames</span></label><input type="range" id="max" min="1" max="16" value="8" /></div>
+      <div class="ctl"><label>Inputs per packet <span id="vRed">8</span></label><input type="range" id="red" min="1" max="16" value="8" /></div>
+    </div>
+
+    <div class="hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrow keys to move &middot; <kbd>space</kbd> to dash &middot; knock the ball into the right-hand goal. Press a key and you take over the green player; leave it alone and two bots play each other.</div>
+  </div>
+
+  <!-- ad-slot: leaderboard (AdSense) goes here once approved -->
+  <!-- monetise-slot: Polar.sh checkout for a "drop-in rollback session for your own game" pack -->
+
+  <section class="copy">
+    <h2>What you are actually looking at</h2>
+    <p>Most explanations of netcode are a diagram with arrows. This is the real thing running twice. The page holds two entirely separate game clients. Each one has its own copy of the match, its own input history, its own predictions, and no privileged knowledge of what the other is doing. Everything they know about each other arrives as packets over a simulated link, and that link is yours to abuse: turn latency up, add jitter until packets overtake each other, drop one in five and see what survives.</p>
+    <p>Because both clients are on screen at once, you can see the thing that is normally invisible. In rollback mode the two views drift apart for a few frames and then snap back into agreement, and the state check stays green a handful of frames behind the present. In naive mode they are already disagreeing on frame one, and by the time you notice they are playing different matches with different scores. That divergence is what a desync actually is, and it is why "just send the positions" quietly stops working the moment two players disagree about anything.</p>
+
+    <h2>Delay-based netcode in one paragraph</h2>
+    <p>The safest way to keep two clients identical is to never let either of them guess. Delay-based netcode holds your own input back by a few frames before applying it, which gives your opponent's input time to arrive, so every frame is simulated once with both real inputs and the two machines can never disagree. The price is that the delay is permanent and it is felt by both players even on a good connection, and if a single packet arrives late the game has nothing to simulate and has to freeze until it turns up. Set the mode to delay-based, put latency at 90 ms with input delay at 1 frame, and watch the frozen frame counter climb.</p>
+
+    <h2>Rollback netcode in one paragraph</h2>
+    <p>Rollback refuses to wait. It applies your input immediately and, for the opponent, it guesses: assume they are still holding whatever they held last frame, which for a human on a 60 Hz timeline is right most of the time. The client saves a snapshot of the game state every frame. When the opponent's real input finally arrives for a frame that has already been simulated, the client compares it against the guess it used. If they match, nothing happens at all. If they differ, the client restores the snapshot from that frame, re-simulates every frame from there to the present with the corrected input, and shows the result on the very next frame. Your own controls never lag, and the correction is usually so small that all you see is the opponent shifting slightly.</p>
+
+    <h3>The loop, step by step</h3>
+    <ol>
+      <li>Sample your local input for this frame and store it in a ring buffer.</li>
+      <li>Send it to the peer, along with the last few inputs you already sent, so one lost packet does not cost anything.</li>
+      <li>Read whatever inputs have arrived. If any of them contradicts a guess you already used, remember the earliest frame that went wrong.</li>
+      <li>If there is such a frame, load the snapshot saved before it and re-simulate forward to the present with the corrected inputs.</li>
+      <li>Snapshot the current state, then simulate one new frame, using the peer's real input if you have it and their last known input if you do not.</li>
+      <li>Draw. If you are running too far ahead of what the peer has confirmed, skip a frame instead so the rollback distance stays bounded.</li>
+    </ol>
+
+    <h2>Why guessing works</h2>
+    <p>The prediction here is deliberately dumb: repeat the last input. Watch the hit rate counter and against these two bots it sits in the mid eighties, and a human is easier to predict than that, because people hold a direction for many frames at a time. A player who holds a direction for 8 frames only produces two frames where the input actually changes, and only those two frames can possibly cause a rollback. That is the whole reason rollback is cheap enough to ship: you are not predicting the future of the game, you are predicting a value that stays the same most of the time.</p>
+
+    <h2>The bit nobody draws in the diagram</h2>
+    <p>Rollback has a limit, and the limit is what makes a 200 ms match feel different from a 60 ms one even with perfect rollback. A client can only run so far ahead of what the peer has confirmed before the rollbacks would get longer than its snapshot history, so past that point it stops and waits instead. That is the max rollback slider. If you set latency to 180 ms while max rollback is 8 frames, the peer's input is arriving about 11 frames late, the limit is hit constantly, and the frozen frame counter climbs even in rollback mode. Push max rollback to 14 and the freezing disappears, at the cost of longer re-simulations. Real implementations pick a number around 7 or 8 and accept the hitching beyond it.</p>
+    <p>The other unglamorous detail is retransmission. Every packet here carries the last few inputs rather than just the newest one, and it also carries an acknowledgement of the newest input received from the peer, so the sender can stretch its window back over anything that has not been acknowledged yet. Turn packet loss up to 25 percent and the match keeps running. Without that, one unlucky packet stalls a lockstep match forever.</p>
+
+    <h2>What rollback costs you</h2>
+    <p>Correctness comes out of the CPU budget. The sim cost counter shows how many times the game step actually runs per frame displayed. On a clean local connection that number is 1.0. Push latency to 150 ms and it climbs, because every mispredicted input drags the client back several frames and makes it re-run all of them. This is the real design constraint in a rollback game: the simulation step has to be fast and it has to be fully snapshot-able, which usually means a fixed timestep, a state you can copy in one memcpy, and no hidden state in your renderer, your audio, or your animation system.</p>
+
+    <h2>Is the simulation really deterministic?</h2>
+    <p>It has to be, or the whole thing falls apart. Re-simulating frames 100 through 106 has to produce bit-identical results to the first time they ran, on both machines, or the two clients drift. So the game step in this page uses 32-bit integers only, with positions stored at a 1/64 pixel fixed-point scale, an integer square root written out by hand for the collision normals, and no floating point anywhere in the update. The state is 16 integers, which is what makes a snapshot per frame free.</p>
+    <p>To prove it rather than claim it, both clients hash their state every frame with FNV-1a and the page compares the two hashes for every frame that both clients have confirmed. The state check panel shows the newest frame that was verified identical on both sides. Switch to naive mode and watch how quickly that guarantee dies. I wrote more about the determinism traps in the browser specifically in <a href="rollback-netcode-browser-determinism.html">determinism in browser games</a>.</p>
+
+    <h2>Things worth trying</h2>
+    <ul>
+      <li>Rollback at 180 ms with max rollback at 14. Your own movement stays crisp while the orange player visibly corrects. That asymmetry is the whole point.</li>
+      <li>The same thing with max rollback back down at 8. The corrections stop being free and the frozen frame counter starts moving, because the client keeps hitting its own limit.</li>
+      <li>Delay-based at 180 ms with input delay 1. It becomes unplayable through freezing, not through lag.</li>
+      <li>Delay-based at 180 ms with input delay 8. The freezing stops and the sluggishness begins.</li>
+      <li>Naive at any latency. The state check goes red immediately and the two scoreboards eventually disagree.</li>
+      <li>Packet loss at 25 percent with inputs per packet set to 1, then set it back to 8. Redundant input packets are the cheapest reliability you will ever buy.</li>
+      <li>Jitter at 60 ms. Packets arrive out of order, which is exactly why inputs are addressed by frame number rather than trusted to arrive in sequence.</li>
+    </ul>
+  </section>
+
+  <div class="faq">
+    <details open><summary>What is rollback netcode, in short?</summary><p>It runs the game forward immediately using a guess for the other player's input, then restores a saved state and re-simulates the affected frames when the real input turns out to be different. Your own input is never delayed.</p></details>
+    <details><summary>Is this a real game engine or a video?</summary><p>It is a real simulation. Two independent clients, two netcode stacks, a simulated link, and a deterministic integer physics step, all running live in your browser. Nothing is pre-recorded.</p></details>
+    <details><summary>Does anything leave my device?</summary><p>No. There is no server involved and no data is sent anywhere. The page works offline once loaded.</p></details>
+    <details><summary>Why does naive mode desync?</summary><p>Because it applies the peer's input on whatever frame it happens to arrive, so the two clients end up running different inputs on different frames. Once the states differ there is nothing to pull them back together.</p></details>
+    <details><summary>Can I play a friend over the real internet here?</summary><p>Not in this build. The point of the sandbox is to control latency, jitter and loss precisely, which you cannot do against a real peer. The netcode itself is the same code you would run over a data channel.</p></details>
+    <details><summary>Which games use rollback?</summary><p>It became standard in fighting games through GGPO and the rollback implementations that followed it, and the same idea shows up anywhere input latency matters more than perfect agreement on every single frame.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I build things like this every day.</h3>
+    <p>Senior full-stack engineer, open to senior or contract work, fully remote. There is a lot more in <a href="lab.html">the lab</a> &mdash; a <a href="gambit.html">chess engine that shows its search</a>, a <a href="wasmscope.html">WebAssembly interpreter you can single-step</a> &mdash; or just <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>&copy; 2026 Harman Kamboj</span>
+  <span>Built in the browser &middot; <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<script>
+(function(){
+"use strict";
+/* ---------- match the portfolio's saved theme ---------- */
+try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+  var th=T[localStorage.getItem("siteTheme")]; if(th){var r=document.documentElement.style; r.setProperty("--accent",th[0]);r.setProperty("--accent-2",th[1]);r.setProperty("--accentRGB",th[2]);r.setProperty("--surfaceRGB",th[3]);r.setProperty("--bg",th[4]);r.setProperty("--bg-2",th[5]);} }catch(e){}
+var CSS=getComputedStyle(document.documentElement);
+function cvar(n,f){ var v=CSS.getPropertyValue(n); return v?v.trim():f; }
+var COL_ME=cvar("--accent","#2be3b0"), COL_YOU=cvar("--warm","#ff9a4d"), COL_BAD=cvar("--bad","#ff5f56");
+
+/* =======================================================================
+   1. THE GAME — deterministic, integers only, 16-int state
+   ======================================================================= */
+var FP=64;                       // 64 fixed-point units = 1 pixel
+var AW=640*FP, AH=360*FP;        // arena
+var PR=15*FP, BR=9*FP;           // player + ball radius
+var ACC=26, DASH=430, DASHCD=48;
+var GOAL=72*FP;                  // half-height of a goal mouth
+var NS=16;                       // state size, in int32s
+
+/* integer square root — no floating point in the game step */
+function isqrt(n){ if(n<=0) return 0; var x=n, y=(x+1)>>1; while(y<x){ x=y; y=(x+((n/x)|0))>>1; } return x; }
+/* >> rounds towards negative infinity, which would make leftward motion decay slower
+   than rightward and quietly bias the whole match. These round towards zero instead. */
+function fmul(v,k){ return v>=0 ? (v*k)>>8 : -(((-v)*k)>>8); }
+function half(v){ return v>=0 ? v>>1 : -((-v)>>1); }
+function quarter(v){ return v>=0 ? v>>2 : -((-v)>>2); }
+
+function newState(){
+  var s=new Int32Array(NS);
+  s[0]=160*FP; s[1]=180*FP; s[5]=480*FP; s[6]=180*FP;
+  s[10]=320*FP; s[11]=180*FP;
+  return s;
+}
+function kickoff(s,dir){
+  s[0]=160*FP;s[1]=180*FP;s[2]=0;s[3]=0;s[4]=0;
+  s[5]=480*FP;s[6]=180*FP;s[7]=0;s[8]=0;s[9]=0;
+  s[10]=320*FP;s[11]=180*FP;s[12]=dir*90;s[13]=0;
+}
+/* one frame of game logic. inp0/inp1 are 5-bit input masks. */
+function step(s,i0,i1){
+  var p,o,i,ax,ay,sp;
+  for(p=0;p<2;p++){
+    o=p*5; i=(p===0?i0:i1);
+    ax=((i&8)?1:0)-((i&4)?1:0);
+    ay=((i&2)?1:0)-((i&1)?1:0);
+    s[o+2]+=ax*ACC; s[o+3]+=ay*ACC;
+    if(s[o+4]>0) s[o+4]--;
+    if((i&16)&&s[o+4]===0&&(ax!==0||ay!==0)){ s[o+2]+=ax*DASH; s[o+3]+=ay*DASH; s[o+4]=DASHCD; }
+    s[o+2]=fmul(s[o+2],243); s[o+3]=fmul(s[o+3],243);
+    if(s[o+2]>900)s[o+2]=900; if(s[o+2]<-900)s[o+2]=-900;
+    if(s[o+3]>900)s[o+3]=900; if(s[o+3]<-900)s[o+3]=-900;
+    s[o]+=s[o+2]; s[o+1]+=s[o+3];
+    if(s[o]<PR){s[o]=PR;s[o+2]=-half(s[o+2]);} else if(s[o]>AW-PR){s[o]=AW-PR;s[o+2]=-half(s[o+2]);}
+    if(s[o+1]<PR){s[o+1]=PR;s[o+3]=-half(s[o+3]);} else if(s[o+1]>AH-PR){s[o+1]=AH-PR;s[o+3]=-half(s[o+3]);}
+  }
+  /* players push each other apart */
+  var dx=s[5]-s[0], dy=s[6]-s[1], R=PR+PR, d2, d, nx, ny;
+  if(dx<R&&dx>-R&&dy<R&&dy>-R){
+    d2=dx*dx+dy*dy;
+    if(d2<R*R&&d2>0){
+      d=isqrt(d2); if(d<1) d=1;
+      nx=((dx*256/d)|0); ny=((dy*256/d)|0);
+      var push=((R-d)>>1)+1;
+      s[0]-=fmul(nx,push); s[1]-=fmul(ny,push);
+      s[5]+=fmul(nx,push); s[6]+=fmul(ny,push);
+      s[2]-=fmul(nx,90); s[3]-=fmul(ny,90);
+      s[7]+=fmul(nx,90); s[8]+=fmul(ny,90);
+    }
+  }
+  /* ball */
+  s[12]=fmul(s[12],253); s[13]=fmul(s[13],253);
+  if(s[12]>880)s[12]=880; if(s[12]<-880)s[12]=-880;
+  if(s[13]>880)s[13]=880; if(s[13]<-880)s[13]=-880;
+  s[10]+=s[12]; s[11]+=s[13];
+  if(s[11]<BR){s[11]=BR;s[13]=-s[13];} else if(s[11]>AH-BR){s[11]=AH-BR;s[13]=-s[13];}
+  var inGoal=(s[11]>(AH>>1)-GOAL)&&(s[11]<(AH>>1)+GOAL);
+  if(s[10]<BR){
+    if(inGoal){ s[15]++; kickoff(s,1); } else { s[10]=BR; s[12]=-s[12]; }
+  } else if(s[10]>AW-BR){
+    if(inGoal){ s[14]++; kickoff(s,-1); } else { s[10]=AW-BR; s[12]=-s[12]; }
+  }
+  /* Players hit the ball. Both contacts are resolved against the same pre-collision
+     state and then combined, so a ball trapped between two players is not silently
+     awarded to whichever player the loop happened to visit second. */
+  var hits=0, sx=0, sy=0, nvx=0, nvy=0;
+  for(p=0;p<2;p++){
+    o=p*5; dx=s[10]-s[o]; dy=s[11]-s[o+1]; R=PR+BR;
+    if(dx<R&&dx>-R&&dy<R&&dy>-R){
+      d2=dx*dx+dy*dy;
+      if(d2<R*R&&d2>0){
+        d=isqrt(d2); if(d<1) d=1;
+        nx=((dx*256/d)|0); ny=((dy*256/d)|0);
+        sp=520+(((s[o+2]<0?-s[o+2]:s[o+2])+(s[o+3]<0?-s[o+3]:s[o+3]))>>1);
+        sx+=fmul(nx,R-d); sy+=fmul(ny,R-d);
+        nvx+=fmul(nx,sp)+quarter(s[o+2]); nvy+=fmul(ny,sp)+quarter(s[o+3]);
+        hits++;
+      }
+    }
+  }
+  if(hits===1){ s[10]+=sx; s[11]+=sy; s[12]=nvx; s[13]=nvy; }
+  else if(hits===2){ s[10]+=half(sx); s[11]+=half(sy); s[12]=half(nvx); s[13]=half(nvy); }
+}
+/* FNV-1a over the state, so both clients can be compared frame for frame */
+function hash(s){ var h=0x811c9dc5|0; for(var i=0;i<NS;i++){ var v=s[i]; for(var b=0;b<4;b++){ h=(h^((v>>>(b*8))&255))>>>0; h=Math.imul(h,16777619)>>>0; } } return h>>>0; }
+
+/* A bot that reacts to its own client's view of the world. The two bots deliberately
+   have different rhythms — identical bots on symmetric physics just stalemate, and a
+   player who never changes input is never mispredicted, which would make the whole
+   point of this page invisible. */
+function botInput(s,p,frame){
+  var o=p*5, px=s[o], py=s[o+1], bx=s[10], by=s[11];
+  var per=(p===0?97:131), amp=(p===0?24*FP:31*FP), ph=(p===0?0:37);
+  var osc=((((frame+ph)%per)*2)<per)?1:-1;
+  var behind=(p===0?-1:1)*((PR+BR)*7/8|0);
+  var tx=bx+behind, ty=by+osc*amp;
+  var defending=(p===0)? (bx>AW*3/4) : (bx<AW/4);
+  if(defending){ tx=(p===0? 90*FP : AW-90*FP); ty=(AH>>1)+half(by-(AH>>1)); }
+  var dz=(p===0?7*FP:6*FP), i=0;
+  if(tx-px>dz) i|=8; else if(px-tx>dz) i|=4;
+  if(ty-py>dz) i|=2; else if(py-ty>dz) i|=1;
+  var ddx=tx-px, ddy=ty-py; if(ddx<0)ddx=-ddx; if(ddy<0)ddy=-ddy;
+  if(s[o+4]===0&&(ddx+ddy)>150*FP&&(frame%(p===0?23:29))===0) i|=16;
+  return i;
+}
+
+/* =======================================================================
+   2. RING BUFFERS — bounded memory, no allocation in the hot loop
+   ======================================================================= */
+var RN=1024;
+function Ring(n){ this.n=n; this.v=new Int32Array(n); this.f=new Int32Array(n); for(var i=0;i<n;i++) this.f[i]=-1; }
+Ring.prototype.set=function(f,v){ var i=((f%this.n)+this.n)%this.n; this.v[i]=v; this.f[i]=f; };
+Ring.prototype.has=function(f){ var i=((f%this.n)+this.n)%this.n; return this.f[i]===f; };
+Ring.prototype.get=function(f){ var i=((f%this.n)+this.n)%this.n; return this.f[i]===f?this.v[i]:-1; };
+Ring.prototype.clear=function(){ for(var i=0;i<this.n;i++) this.f[i]=-1; };
+
+var SN=64;
+function Snaps(){ this.a=[]; this.f=new Int32Array(SN); for(var i=0;i<SN;i++){ this.a.push(new Int32Array(NS)); this.f[i]=-1; } }
+Snaps.prototype.save=function(f,s){ var i=((f%SN)+SN)%SN; this.a[i].set(s); this.f[i]=f; };
+Snaps.prototype.load=function(f,s){ var i=((f%SN)+SN)%SN; if(this.f[i]!==f) return false; s.set(this.a[i]); return true; };
+Snaps.prototype.clear=function(){ for(var i=0;i<SN;i++) this.f[i]=-1; };
+
+/* =======================================================================
+   3. A CLIENT — its own state, its own input history, its own guesses
+   ======================================================================= */
+function Client(id){ this.id=id; this.reset(); }
+Client.prototype.reset=function(){
+  this.state=newState();
+  this.frame=0;
+  this.mine=new Ring(RN);      // my inputs by frame
+  this.theirs=new Ring(RN);    // peer inputs by frame
+  this.used=new Ring(RN);      // what I actually simulated for the peer
+  this.guessed=new Ring(RN);   // 1 if that was a guess
+  this.hAll=new Ring(RN);      // hash of the state after every frame, rewritten on rollback
+  this.kind=new Ring(RN);      // 0 confirmed, 1 predicted (for the timeline)
+  this.rbAt=new Ring(RN);      // rollback depth recorded at a frame
+  this.snaps=new Snaps();
+  this.lastRemote=0;           // newest peer input value seen (naive + prediction)
+  this.confirmed=-1;           // highest frame with a contiguous run of peer inputs
+  this.newestRemote=-1;
+  this.peerAck=-1;             // newest frame of mine the peer has told me it holds
+  this.needRb=-1;
+  this.ghost=null; this.ghostT=0;
+  this.stalls=0; this.stallFlash=0; this.rollbacks=0; this.rbFrames=0; this.steps=0; this.ticks=0;
+  this.pOk=0; this.pBad=0;
+};
+Client.prototype.recvInputs=function(newest,arr,ack){
+  var base=newest-arr.length+1;
+  if(ack>this.peerAck) this.peerAck=ack;
+  for(var k=0;k<arr.length;k++){
+    var f=base+k; if(f<0) continue;
+    if(this.theirs.has(f)) continue;
+    var v=arr[k];
+    this.theirs.set(f,v);
+    if(f>this.newestRemote){ this.newestRemote=f; this.lastRemote=v; }
+    if(f<=this.frame-1&&this.guessed.has(f)&&this.guessed.get(f)===1){
+      if(this.used.get(f)===v){ this.pOk++; }
+      else { this.pBad++; if(this.needRb<0||f<this.needRb) this.needRb=f; }
+    }
+  }
+  while(this.theirs.has(this.confirmed+1)) this.confirmed++;
+};
+Client.prototype.stepOnce=function(guessAllowed){
+  var f=this.frame;
+  var mi=this.mine.has(f)?this.mine.get(f):0;
+  var ti, g=0;
+  if(this.theirs.has(f)){ ti=this.theirs.get(f); }
+  else if(guessAllowed){ ti=this.lastRemote; g=1; }
+  else { ti=0; }
+  this.used.set(f,ti); this.guessed.set(f,g); this.kind.set(f,g);
+  this.snaps.save(f,this.state);
+  var i0=this.id===0?mi:ti, i1=this.id===0?ti:mi;
+  step(this.state,i0,i1);
+  this.steps++;
+  this.hAll.set(f,hash(this.state));
+  this.frame=f+1;
+};
+/* The newest frame whose hash is final: every peer input up to it is known, and no
+   repair is still outstanding for an earlier frame. */
+Client.prototype.safeTo=function(){
+  var s=this.confirmed;
+  if(this.needRb>=0&&this.needRb-1<s) s=this.needRb-1;
+  if(s>this.frame-1) s=this.frame-1;
+  return s;
+};
+
+/* =======================================================================
+   4. THE FAKE INTERNET
+   ======================================================================= */
+var link={ q:[], sent:0, lost:0, drops:[] };
+function linkSend(to,pkt,now){
+  link.sent++;
+  if(Math.random()*100<cfg.loss){ link.lost++; link.drops.push({to:to,t:now,at:Math.random()}); if(link.drops.length>40) link.drops.shift(); return; }
+  var lat=cfg.lat+(Math.random()*2-1)*cfg.jit;
+  if(lat<0) lat=0;
+  link.q.push({to:to,pkt:pkt,sent:now,at:now+lat});
+}
+function linkPump(now,clients){
+  for(var i=link.q.length-1;i>=0;i--){
+    if(link.q[i].at<=now){
+      var m=link.q[i]; link.q.splice(i,1);
+      clients[m.to].recvInputs(m.pkt.f,m.pkt.a,m.pkt.ack);
+    }
+  }
+}
+
+/* =======================================================================
+   5. CONFIG + WIRING
+   ======================================================================= */
+var cfg={ mode:"rollback", lat:45, jit:8, loss:2, delay:1, maxRb:8, red:8 };
+var A=new Client(0), B=new Client(1), clients=[A,B];
+var referee={ verified:-1, desyncAt:-1 };
+var running=true, taken=false, simTime=0, keys=0;
+
+/* Every tick a client sends its newest input plus a redundancy window. The window
+   also stretches back to cover anything the peer has not acknowledged yet, which is
+   what stops a single unlucky packet from stalling the match forever. */
+function sendFrom(c,newest){
+  var start=newest-cfg.red+1;
+  if(c.peerAck+1<start) start=c.peerAck+1;
+  if(start<0) start=0;
+  if(newest-start>63) start=newest-63;
+  var arr=[];
+  for(var f=start;f<=newest;f++) arr.push(c.mine.has(f)?c.mine.get(f):0);
+  linkSend(1-c.id,{f:newest,a:arr,ack:c.confirmed},simTime);
+}
+
+function advance(c,localInput){
+  c.ticks++;
+  if(c.stallFlash>0) c.stallFlash--;
+  var target=c.frame+(cfg.mode==="naive"?0:cfg.delay);
+  if(!c.mine.has(target)) c.mine.set(target,localInput);
+  sendFrom(c,target);
+
+  if(cfg.mode==="naive"){
+    /* apply whatever peer input arrived most recently, on whatever frame we are on */
+    c.theirs.set(c.frame,c.lastRemote);
+    c.stepOnce(false);
+    return;
+  }
+  if(cfg.mode==="delay"){
+    if(!c.theirs.has(c.frame)){ c.stalls++; c.stallFlash=10; return; }
+    c.stepOnce(false);
+    return;
+  }
+  /* rollback */
+  if(c.frame-c.confirmed>cfg.maxRb){ c.stalls++; c.stallFlash=10; return; }
+  if(c.needRb>=0){
+    var from=c.needRb; c.needRb=-1;
+    if(from<c.frame&&from>c.frame-SN+2){
+      var here=c.frame;
+      if(c.id===0) c.ghost={x2:c.state[5],y2:c.state[6],bx:c.state[10],by:c.state[11]};
+      if(c.snaps.load(from,c.state)){
+        c.frame=from;
+        while(c.frame<here) c.stepOnce(true);
+        c.rollbacks++; c.rbFrames+=(here-from);
+        c.rbAt.set(here,here-from);
+        if(c.id===0) c.ghostT=14;
+      } else { c.frame=here; }
+    }
+  }
+  c.stepOnce(true);
+}
+
+function refereeCheck(){
+  var sa=A.safeTo(), sb=B.safeTo(), lim=sa<sb?sa:sb, scanned=0;
+  while(referee.verified<lim&&scanned<240){
+    var f=referee.verified+1;
+    if(!A.hAll.has(f)||!B.hAll.has(f)) break;
+    if(A.hAll.get(f)!==B.hAll.get(f)){ if(referee.desyncAt<0) referee.desyncAt=f; break; }
+    referee.verified=f; scanned++;
+  }
+}
+
+/* =======================================================================
+   6. INPUT
+   ======================================================================= */
+var down={};
+var GK={"ArrowUp":1,"ArrowDown":2,"ArrowLeft":4,"ArrowRight":8," ":16,"w":1,"s":2,"a":4,"d":8,"W":1,"S":2,"A":4,"D":8};
+window.addEventListener("keydown",function(e){
+  var b=GK[e.key]; if(b===undefined) return;
+  if(!taken){ taken=true; document.getElementById("hand").textContent="Bot takes over"; }
+  down[b]=1; rebuild();
+  if(e.key===" "||e.key.indexOf("Arrow")===0) e.preventDefault();
+});
+window.addEventListener("keyup",function(e){ var b=GK[e.key]; if(b===undefined) return; down[b]=0; rebuild(); });
+window.addEventListener("blur",function(){ down={}; keys=0; });
+function rebuild(){ var k=0; for(var b in down){ if(down[b]) k|=parseInt(b,10); } keys=k; }
+
+/* =======================================================================
+   7. LOOP
+   ======================================================================= */
+var DT=1000/60, acc=0, last=0;
+var win={ rb:0, st:0, steps:0, frames:0, ok:0, bad:0, t:0 };
+var shown={ rb:0, st:0, cost:1, hit:-1 };
+
+function tickSim(){
+  simTime+=DT;
+  /* pOk/pBad are updated by arriving packets, so snapshot the counters before the pump */
+  var f0=A.frame, s0=A.steps, r0=A.rollbacks, st0=A.stalls, ok0=A.pOk, bd0=A.pBad;
+  linkPump(simTime,clients);
+  var la=taken?keys:botInput(A.state,0,A.frame);
+  var lb=botInput(B.state,1,B.frame);
+  advance(A,la); advance(B,lb);
+  win.frames+=(A.frame-f0); win.steps+=(A.steps-s0); win.rb+=(A.rollbacks-r0);
+  win.st+=(A.stalls-st0); win.ok+=(A.pOk-ok0); win.bad+=(A.pBad-bd0); win.t++;
+  if(A.ghostT>0) A.ghostT--;
+  refereeCheck();
+}
+
+function loop(now){
+  requestAnimationFrame(loop);
+  if(!last) last=now;
+  var dt=now-last; last=now;
+  if(running){
+    acc+=dt; if(acc>250) acc=250;
+    var guard=0;
+    while(acc>=DT&&guard<12){ acc-=DT; tickSim(); guard++; }
+    if(win.t>=60){
+      shown.rb=win.rb; shown.st=win.st;
+      shown.cost=win.frames>0?(win.steps/win.frames):1;
+      var tot=win.ok+win.bad; shown.hit=tot>0?Math.round(win.ok*100/tot):100;
+      win={rb:0,st:0,steps:0,frames:0,ok:0,bad:0,t:0};
+      updateStats();
+    }
+  }
+  draw();
+}
+
+/* =======================================================================
+   8. DRAWING
+   ======================================================================= */
+var ctxA=document.getElementById("cA").getContext("2d");
+var ctxB=document.getElementById("cB").getContext("2d");
+var ctxW=document.getElementById("cW").getContext("2d");
+var ctxT=document.getElementById("cT").getContext("2d");
+
+function drawArena(g,c,label){
+  var W=640,H=360, s=c.state;
+  g.clearRect(0,0,W,H);
+  g.fillStyle="#050c0a"; g.fillRect(0,0,W,H);
+  g.strokeStyle="rgba(237,242,239,.10)"; g.lineWidth=1;
+  g.strokeRect(.5,.5,W-1,H-1);
+  g.beginPath(); g.moveTo(W/2,0); g.lineTo(W/2,H); g.stroke();
+  g.beginPath(); g.arc(W/2,H/2,44,0,6.2832); g.stroke();
+  /* goals */
+  var gh=GOAL/FP;
+  g.fillStyle="rgba(255,154,77,.13)"; g.fillRect(0,H/2-gh,7,gh*2);
+  g.fillStyle="rgba(43,227,176,.13)"; g.fillRect(W-7,H/2-gh,7,gh*2);
+  /* ghost of the pre-rollback view */
+  if(c.ghost&&c.ghostT>0){
+    g.globalAlpha=c.ghostT/26;
+    g.strokeStyle=COL_YOU; g.lineWidth=2;
+    g.beginPath(); g.arc(c.ghost.x2/FP,c.ghost.y2/FP,PR/FP,0,6.2832); g.stroke();
+    g.strokeStyle="#cdd8d3";
+    g.beginPath(); g.arc(c.ghost.bx/FP,c.ghost.by/FP,BR/FP,0,6.2832); g.stroke();
+    g.globalAlpha=1;
+  }
+  /* players */
+  drawBlob(g,s[0]/FP,s[1]/FP,COL_ME,s[4]);
+  drawBlob(g,s[5]/FP,s[6]/FP,COL_YOU,s[9]);
+  /* ball */
+  g.fillStyle="#edf2ef";
+  g.beginPath(); g.arc(s[10]/FP,s[11]/FP,BR/FP,0,6.2832); g.fill();
+  /* score + frame */
+  g.font='600 26px ui-monospace,monospace'; g.textAlign="center";
+  g.fillStyle="rgba(237,242,239,.22)";
+  g.fillText(s[14]+" : "+s[15],W/2,40);
+  g.font='11px ui-monospace,monospace'; g.textAlign="left";
+  g.fillStyle="rgba(237,242,239,.32)";
+  g.fillText(label+"  frame "+c.frame,10,H-10);
+  /* predicted badge */
+  var g1=c.guessed.has(c.frame-1)&&c.guessed.get(c.frame-1)===1;
+  if(g1&&cfg.mode==="rollback"){
+    g.fillStyle=COL_YOU; g.textAlign="right";
+    g.fillText("predicting peer",W-10,H-10);
+  }
+  if(cfg.mode==="delay"&&c.stallFlash>0){
+    g.fillStyle=COL_BAD; g.textAlign="right"; g.fillText("waiting for input",W-10,H-10);
+  }
+}
+function drawBlob(g,x,y,col,cd){
+  var r=PR/FP;
+  g.fillStyle=col; g.globalAlpha=.9;
+  g.beginPath(); g.arc(x,y,r,0,6.2832); g.fill(); g.globalAlpha=1;
+  if(cd>0){
+    g.strokeStyle="rgba(237,242,239,.35)"; g.lineWidth=2;
+    g.beginPath(); g.arc(x,y,r+4,-1.5708,-1.5708+6.2832*(1-cd/DASHCD)); g.stroke();
+  } else {
+    g.strokeStyle="rgba(237,242,239,.55)"; g.lineWidth=1.5;
+    g.beginPath(); g.arc(x,y,r+4,0,6.2832); g.stroke();
+  }
+}
+
+function drawWire(){
+  var W=960,H=66,g=ctxW;
+  g.clearRect(0,0,W,H);
+  g.strokeStyle="rgba(237,242,239,.10)";
+  g.beginPath(); g.moveTo(0,20.5); g.lineTo(W,20.5); g.moveTo(0,45.5); g.lineTo(W,45.5); g.stroke();
+  g.font='10px ui-monospace,monospace'; g.fillStyle="rgba(237,242,239,.30)"; g.textAlign="left";
+  g.fillText("you → peer",6,14); g.fillText("peer → you",6,62);
+  for(var i=0;i<link.q.length;i++){
+    var m=link.q[i], span=m.at-m.sent;
+    var p=span>0?(simTime-m.sent)/span:1; if(p<0)p=0; if(p>1)p=1;
+    var toB=(m.to===1);
+    var x=toB?(20+p*(W-40)):(W-20-p*(W-40));
+    var y=toB?20.5:45.5;
+    g.fillStyle=toB?COL_ME:COL_YOU;
+    g.beginPath(); g.arc(x,y,3.2,0,6.2832); g.fill();
+  }
+  for(var k=0;k<link.drops.length;k++){
+    var d=link.drops[k], age=simTime-d.t;
+    if(age>900) continue;
+    var yy=(d.to===1)?20.5:45.5, xx=20+d.at*(W-40);
+    g.globalAlpha=1-age/900; g.strokeStyle=COL_BAD; g.lineWidth=2;
+    g.beginPath(); g.moveTo(xx-4,yy-4); g.lineTo(xx+4,yy+4); g.moveTo(xx+4,yy-4); g.lineTo(xx-4,yy+4); g.stroke();
+    g.globalAlpha=1;
+  }
+}
+
+function drawTimeline(){
+  var W=960,H=90,g=ctxT,N=160;
+  g.clearRect(0,0,W,H);
+  var cw=W/N, base=H-18;
+  for(var i=0;i<N;i++){
+    var f=A.frame-N+i; if(f<0) continue;
+    var x=i*cw;
+    var k=A.kind.has(f)?A.kind.get(f):-1;
+    if(k<0) continue;
+    g.fillStyle=(k===1)?"rgba(255,154,77,.75)":"rgba(43,227,176,.65)";
+    g.fillRect(x,base-16,Math.max(1,cw-1),16);
+    if(A.rbAt.has(f)){
+      var d=A.rbAt.get(f);
+      var hgt=Math.min(52,4+d*6);
+      g.fillStyle="rgba(255,95,86,.85)";
+      g.fillRect(x,base-16-hgt,Math.max(1,cw-1),hgt);
+    }
+  }
+  g.strokeStyle="rgba(237,242,239,.14)";
+  g.beginPath(); g.moveTo(0,base+.5); g.lineTo(W,base+.5); g.stroke();
+  g.font='10px ui-monospace,monospace'; g.fillStyle="rgba(237,242,239,.32)"; g.textAlign="left";
+  g.fillText("older",4,H-4); g.textAlign="right"; g.fillText("now · frame "+A.frame,W-4,H-4);
+}
+
+function draw(){
+  drawArena(ctxA,A,"your client");
+  drawArena(ctxB,B,"peer client");
+  drawWire();
+  drawTimeline();
+  document.getElementById("stA").textContent=modeLabel();
+  document.getElementById("stB").textContent=modeLabel();
+}
+function modeLabel(){ return cfg.mode==="rollback"?"prediction + rollback":cfg.mode==="delay"?"delay-based lockstep":"naive, no reconciliation"; }
+
+/* =======================================================================
+   9. STATS + UI
+   ======================================================================= */
+function el(id){ return document.getElementById(id); }
+function updateStats(){
+  var rtt=Math.round(cfg.lat*2);
+  el("sRtt").textContent=rtt+" ms";
+  el("sRttN").textContent=(cfg.jit>0?"±"+cfg.jit+" ms jitter":"no jitter");
+  var lagFrames=(cfg.mode==="naive")?0:cfg.delay;
+  el("sLag").textContent=Math.round(lagFrames*16.7)+" ms";
+  var rbEl=el("sRb");
+  rbEl.textContent=(cfg.mode==="rollback")?String(shown.rb):"n/a";
+  rbEl.className="v"+(shown.rb>18?" warn":"");
+  el("sRbN").textContent=(cfg.mode==="rollback")?"per second":"only rollback re-simulates";
+  el("sHit").textContent=(cfg.mode!=="rollback")?"n/a":(shown.hit<0?"—":shown.hit+" %");
+  el("sCost").textContent=shown.cost.toFixed(2)+"×";
+  var stEl=el("sStall");
+  stEl.textContent=String(shown.st);
+  stEl.className="v"+(shown.st>6?" bad":shown.st>0?" warn":"");
+  var lostPct=link.sent>0?Math.round(link.lost*100/link.sent):0;
+  el("sLoss").textContent=link.lost;
+  el("sLossN").textContent=lostPct+"% of "+link.sent+" sent";
+  var sy=el("sSync");
+  if(referee.desyncAt>=0){ sy.textContent="desynced"; sy.className="v bad"; el("sSyncN").textContent="diverged at frame "+referee.desyncAt; }
+  else if(referee.verified<0){ sy.textContent="checking"; sy.className="v"; el("sSyncN").textContent="no frames confirmed yet"; }
+  else { sy.textContent="in sync"; sy.className="v"; el("sSyncN").textContent="verified to frame "+referee.verified; }
+}
+
+var EXPLAIN={
+  naive:"<b>Naive.</b> Each client applies the peer's input on whatever frame it happens to arrive on. No delay, no rollback, no agreement. The state hashes disagree from the very first frame and there is nothing that can pull them back, so watch the two screens slowly end up playing different matches.",
+  delay:"<b>Delay-based.</b> Your input is held back by the input delay slider so both clients can simulate every frame with two real inputs. They can never disagree. But if a packet has not arrived by the time its frame is due, the game freezes &mdash; raise latency and watch the frozen frame counter.",
+  rollback:"<b>Rollback.</b> Your input applies instantly and the peer's is guessed as \"same as last frame\". When the guess turns out wrong, the client reloads a snapshot and re-simulates to the present, which is what the red spikes on the timeline are. The orange ghost is where the peer was before the correction."
+};
+function setMode(m){
+  cfg.mode=m;
+  var bs=document.querySelectorAll("#mode button");
+  for(var i=0;i<bs.length;i++) bs[i].classList.toggle("on",bs[i].getAttribute("data-m")===m);
+  el("explain").innerHTML=EXPLAIN[m];
+  hardReset();
+}
+function hardReset(){
+  A.reset(); B.reset();
+  link.q.length=0; link.drops.length=0; link.sent=0; link.lost=0;
+  referee.verified=-1; referee.desyncAt=-1;
+  simTime=0; acc=0;
+  win={rb:0,st:0,steps:0,frames:0,ok:0,bad:0,t:0};
+  shown={rb:0,st:0,cost:1,hit:-1};
+  updateStats();
+}
+
+var SL=[["lat","vLat"," ms"],["jit","vJit"," ms"],["los","vLos"," %"],["del","vDel",""],["max","vMax",""],["red","vRed",""]];
+function syncSliders(){
+  el("lat").value=cfg.lat; el("jit").value=cfg.jit; el("los").value=cfg.loss;
+  el("del").value=cfg.delay; el("max").value=cfg.maxRb; el("red").value=cfg.red;
+  el("vLat").textContent=cfg.lat+" ms"; el("vJit").textContent=cfg.jit+" ms"; el("vLos").textContent=cfg.loss+" %";
+  el("vDel").textContent=cfg.delay+(cfg.delay===1?" frame":" frames");
+  el("vMax").textContent=cfg.maxRb+" frames";
+  el("vRed").textContent=String(cfg.red);
+}
+function bindSlider(id,key,fmt,reset){
+  el(id).addEventListener("input",function(){
+    cfg[key]=parseInt(el(id).value,10);
+    syncSliders();
+    if(reset) hardReset(); else updateStats();
+  });
+}
+bindSlider("lat","lat",0,false); bindSlider("jit","jit",0,false); bindSlider("los","loss",0,false);
+bindSlider("del","delay",0,true); bindSlider("max","maxRb",0,false); bindSlider("red","red",0,false);
+
+var bs=document.querySelectorAll("#mode button");
+for(var bi=0;bi<bs.length;bi++){ (function(b){ b.addEventListener("click",function(){ setMode(b.getAttribute("data-m")); }); })(bs[bi]); }
+
+var PRESETS={ lan:{lat:5,jit:1,loss:0}, near:{lat:35,jit:6,loss:0}, far:{lat:90,jit:12,loss:1}, wifi:{lat:70,jit:35,loss:8}, sea:{lat:180,jit:20,loss:2} };
+var ps=document.querySelectorAll(".presets button");
+for(var pi=0;pi<ps.length;pi++){ (function(b){ b.addEventListener("click",function(){
+  var p=PRESETS[b.getAttribute("data-p")]; cfg.lat=p.lat; cfg.jit=p.jit; cfg.loss=p.loss; syncSliders(); updateStats();
+}); })(ps[pi]); }
+
+el("play").addEventListener("click",function(){ running=!running; el("play").textContent=running?"Pause":"Play"; last=0; });
+el("reset").addEventListener("click",hardReset);
+el("hand").addEventListener("click",function(){ taken=!taken; el("hand").textContent=taken?"Bot takes over":"Take the controls"; down={}; keys=0; });
+el("share").addEventListener("click",function(){
+  var q="#m="+cfg.mode+"&l="+cfg.lat+"&j="+cfg.jit+"&p="+cfg.loss+"&d="+cfg.delay+"&r="+cfg.maxRb+"&k="+cfg.red;
+  var url=location.origin+location.pathname+q;
+  try{ history.replaceState(null,"",q); }catch(e){}
+  var done=function(){ el("share").textContent="Copied"; setTimeout(function(){ el("share").textContent="Copy link to this setup"; },1600); };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done,function(){ prompt("Copy this link",url); }); }
+  else prompt("Copy this link",url);
+});
+
+function readHash(){
+  var h=location.hash.replace(/^#/,""); if(!h) return;
+  var parts=h.split("&"), m={};
+  for(var i=0;i<parts.length;i++){ var kv=parts[i].split("="); m[kv[0]]=kv[1]; }
+  function num(k,lo,hi,d){ var v=parseInt(m[k],10); return (isNaN(v)||v<lo||v>hi)?d:v; }
+  if(m.m==="naive"||m.m==="delay"||m.m==="rollback") cfg.mode=m.m;
+  cfg.lat=num("l",0,250,cfg.lat); cfg.jit=num("j",0,80,cfg.jit); cfg.loss=num("p",0,30,cfg.loss);
+  cfg.delay=num("d",0,8,cfg.delay); cfg.maxRb=num("r",1,16,cfg.maxRb); cfg.red=num("k",1,16,cfg.red);
+}
+
+/* boot */
+readHash();
+syncSliders();
+setMode(cfg.mode);
+updateStats();
+requestAnimationFrame(loop);
+})();
+</script>
+<!-- Analytics: Cloudflare Web Analytics beacon -->
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
+</body>
+</html>

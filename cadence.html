@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cadence — Find the Chords, Key &amp; Tempo of Any Song (in your browser)</title>
+<meta name="description" content="Drop any song and Cadence detects its chords, musical key, and tempo right in your browser. Nothing is uploaded. A free, private chord finder and key detector powered by real audio analysis." />
+<meta name="keywords" content="chord finder, chord detector, find chords of a song, key finder, song key detector, what key is this song, bpm counter, detect chords from mp3, chord recognition, chord analyzer, key detection, tempo detector, chords from audio" />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta name="color-scheme" content="dark" />
+<meta property="og:title" content="Cadence — Find the Chords, Key &amp; Tempo of Any Song" />
+<meta property="og:description" content="Drop any song and get its chords, key, and tempo — computed entirely in your browser. Nothing is uploaded." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://hammyasf.github.io/cadence.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Cadence — Find the Chords, Key &amp; Tempo of Any Song" />
+<meta name="twitter:description" content="A free, private chord + key + tempo detector that runs entirely in your browser." />
+<link rel="canonical" href="https://hammyasf.github.io/cadence.html" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Cadence — Chord, Key & Tempo Detector","url":"https://hammyasf.github.io/cadence.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Detect the chords, key and tempo of any song entirely in your browser with real audio analysis. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my music uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Cadence decodes and analyses your audio entirely in your browser using the Web Audio API. The file never leaves your device."}},{"@type":"Question","name":"How does it find the chords?","acceptedAnswer":{"@type":"Answer","text":"It computes a chromagram — the energy in each of the 12 pitch classes over time — using an FFT, then matches every moment against major and minor chord templates and smooths the result with a Viterbi decoder so the chords are stable."}},{"@type":"Question","name":"How accurate is it?","acceptedAnswer":{"@type":"Answer","text":"It is an estimate. It does very well on clear pop, folk and piano recordings, and can slip on dense mixes, jazz voicings or heavy distortion. It detects major and minor triads and the overall key, and tempo can occasionally land on half or double time."}},{"@type":"Question","name":"What files can I use?","acceptedAnswer":{"@type":"Answer","text":"Any audio your browser can decode — MP3, WAV, M4A, FLAC, OGG and more. You can also try the built-in sample with no file at all."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. There is no model to download and no server call. Once the page has loaded it runs with your internet off."}}]}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
+  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:960px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
+  nav .r a:hover{color:var(--ink);}
+  .hero{padding:34px 0 12px;}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
+  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,54px);margin:12px 0 0;}
+  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
+  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
+  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+  .drop{padding:44px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
+  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .drop .or{margin-top:16px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-out{background:transparent;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);}
+  .prog{display:none;padding:8px 24px 22px;}
+  .prog.on{display:block;}
+  .bar-track{height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line);overflow:hidden;}
+  .bar-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s;}
+  .prog .lbl{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:10px;}
+  .results{display:none;padding:4px 20px 24px;}
+  .results.on{display:block;}
+  .stats{display:flex;flex-wrap:wrap;gap:12px;margin:6px 0 18px;}
+  .stat{flex:1;min-width:150px;border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(var(--surfaceRGB),.5);}
+  .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:28px;margin-top:4px;color:var(--ink);}
+  .stat .v small{font-size:14px;color:var(--muted);font-family:var(--mono);font-weight:400;}
+  .nowbox{display:flex;align-items:center;gap:20px;flex-wrap:wrap;border:1px solid var(--line);border-radius:16px;padding:18px 20px;background:rgba(var(--surfaceRGB),.5);margin-bottom:16px;}
+  .nowchord{font-family:var(--display);font-weight:700;font-size:54px;line-height:1;letter-spacing:-.02em;min-width:120px;}
+  .nextlist{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .nextlist .c{font-family:var(--mono);font-size:14px;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:5px 10px;}
+  .nextlist .c.hot{color:#07100e;font-weight:600;}
+  canvas{display:block;width:100%;border-radius:12px;background:#05100d;border:1px solid var(--line);}
+  .canvlabel{font-family:var(--mono);font-size:11px;color:var(--faint);margin:14px 0 6px;letter-spacing:.06em;text-transform:uppercase;}
+  audio{width:100%;margin-top:14px;}
+  .rbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+  .filemeta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:10px;}
+  .note{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:10px;line-height:1.7;}
+  section.copy{padding:14px 0 8px;}
+  section.copy h2{font-family:var(--display);font-weight:600;font-size:24px;margin:26px 0 10px;letter-spacing:-.01em;}
+  section.copy p{color:#c4d0cb;max-width:760px;margin-bottom:10px;}
+  section.copy code{font-family:var(--mono);font-size:.9em;background:rgba(var(--surfaceRGB),.8);padding:1px 6px;border-radius:5px;color:var(--accent);}
+  .faq{padding:8px 0 6px;}
+  .faq details{border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px;background:rgba(var(--surfaceRGB),.5);}
+  .faq summary{font-family:var(--display);font-weight:500;font-size:16px;cursor:pointer;color:var(--ink);}
+  .faq p{color:var(--muted);margin-top:10px;font-size:15px;}
+  .cta{border:1px solid var(--line);border-radius:18px;padding:26px;margin:26px 0 40px;background:rgba(var(--surfaceRGB),.5);}
+  .cta h3{font-family:var(--display);font-weight:600;font-size:22px;}
+  .cta p{color:var(--muted);margin-top:8px;}
+  footer{border-top:1px solid var(--line);padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .hidden{display:none!important;}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
+  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="tag">Free tool · runs 100% in your browser</div>
+    <h1>Cadence</h1>
+    <p class="sub">Drop any song and get its <strong>chords</strong>, <strong>key</strong>, and <strong>tempo</strong> — computed live in your browser with real audio analysis. No upload, no sign-up, no account.</p>
+    <span class="priv">&#128274; 100% private — your audio never leaves your device</span>
+  </header>
+
+  <div class="panel">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add a song">
+      <h2>Drop a song here</h2>
+      <p>or click to choose a file · MP3, WAV, M4A, FLAC, OGG</p>
+      <div class="or"><button class="btn" id="sampleBtn" type="button">▶ Try a sample track</button></div>
+      <input type="file" id="file" accept="audio/*" hidden />
+    </div>
+    <div class="prog" id="prog">
+      <div class="bar-track"><div class="bar-fill" id="barFill"></div></div>
+      <div class="lbl" id="progLbl">Decoding…</div>
+    </div>
+    <div class="results" id="results">
+      <div class="stats">
+        <div class="stat"><div class="k">Key</div><div class="v" id="keyVal">—</div></div>
+        <div class="stat"><div class="k">Tempo</div><div class="v" id="tempoVal">—</div></div>
+        <div class="stat"><div class="k">Chords found</div><div class="v" id="countVal">—</div></div>
+      </div>
+      <div class="nowbox">
+        <div class="nowchord" id="nowChord">—</div>
+        <div>
+          <div class="k" style="font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint)">Progression</div>
+          <div class="nextlist" id="nextList"></div>
+        </div>
+      </div>
+      <div class="canvlabel">Chord map — click to seek</div>
+      <canvas id="ribbon" height="66"></canvas>
+      <div class="canvlabel">Chromagram — energy in each of the 12 pitch classes over time</div>
+      <canvas id="chroma" height="150"></canvas>
+      <audio id="audio" controls></audio>
+      <div class="filemeta" id="fileMeta"></div>
+      <div class="rbtns">
+        <button class="btn btn-out" id="copyBtn" type="button">Copy chord sheet</button>
+        <button class="btn btn-out" id="resetBtn" type="button">Analyse another</button>
+      </div>
+      <div class="note">Cadence estimates major and minor triads and the overall key. It shines on clear pop, folk and piano, and can slip on dense or heavily distorted mixes. Tempo may occasionally land on half or double time. Analysis assumes standard A=440&nbsp;Hz tuning.</div>
+    </div>
+  </div>
+
+  <div id="unsupported" class="panel hidden" style="padding:24px;">
+    <p style="color:var(--muted)">This browser doesn't support the Web Audio API that Cadence needs. Try the latest Chrome, Edge, Firefox or Safari.</p>
+  </div>
+
+  <section class="copy">
+    <h2>How does it find the chords in a browser?</h2>
+    <p>When you drop a song, your browser decodes it to raw audio samples with the Web Audio API. Cadence downmixes it to mono, then slides a window across it and runs a <strong>Fast Fourier Transform</strong> on each chunk to see which frequencies are present. Every frequency is folded onto one of the twelve notes of the octave, building a <code>chromagram</code>: a picture of how much C, C#, D and so on is sounding at every moment. All of this happens on your machine — there is no server and nothing is uploaded.</p>
+    <p>To name the chords, each moment of the chromagram is matched against templates for all 24 major and minor triads, and the best fit wins. Raw frame-by-frame guesses flicker, so a <strong>Viterbi decoder</strong> smooths the sequence, preferring to hold a chord rather than jump around — the same idea speech recognisers use. The overall key comes from correlating the song's average note profile with the Krumhansl-Schmuckle key profiles, and the tempo from an onset-strength envelope run through autocorrelation.</p>
+    <h2>What it is good for</h2>
+    <p>Learning a song by ear, transposing to a friendlier key, jamming along, checking the tempo for a remix, or just being curious about what is going on harmonically in a track you love. Because it is instant and private, you can throw voice memos, practice takes, and half-finished demos at it without uploading anything.</p>
+    <h2>Reading the result</h2>
+    <p>The <strong>chord map</strong> is the whole song at a glance, each block a chord coloured by its root; click anywhere to jump the player there. The <strong>chromagram</strong> underneath is the raw evidence — bright bands are the notes ringing out. The big letter is the chord playing right now, and the row beside it is the progression. Hit <em>Copy chord sheet</em> to grab the whole thing as text.</p>
+  </section>
+
+  <div class="faq">
+    <details open><summary>Is my music uploaded anywhere?</summary><p>No. Everything runs locally in your browser with the Web Audio API. Your file never touches a server, which is why it is instant and completely private.</p></details>
+    <details><summary>How accurate is it?</summary><p>It is a solid estimate, not a transcription. It does well on clear pop, folk, piano and singer-songwriter material, and can struggle with dense mixes, jazz extensions, or heavy distortion. It reports major and minor triads plus the overall key.</p></details>
+    <details><summary>What file types work?</summary><p>Anything your browser can decode — MP3, WAV, M4A/AAC, FLAC, and OGG all work. There is no length or size limit beyond your device's memory.</p></details>
+    <details><summary>Why is the tempo sometimes doubled or halved?</summary><p>Rhythm is ambiguous: a beat and its half-beat both fit the music, so automatic tempo detection can land an octave off. If it reads 75 and feels fast, it's probably 150.</p></details>
+    <details><summary>Does it need internet?</summary><p>Only to load the page. There is no model download and no API call, so once it's open it works offline.</p></details>
+  </div>
+
+  <div class="cta">
+    <h3>I ship a tool like this every day.</h3>
+    <p>Senior full-stack engineer, open to senior or contract roles, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <span>© 2026 Harman Kamboj</span>
+  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
+</div></footer>
+
+<!-- ===================== ANALYSIS WORKER (not executed inline) ===================== -->
+<script id="worker-src" type="javascript/worker">
+"use strict";
+function fft(re, im) {
+  const n = re.length;
+  for (let i = 1, j = 0; i < n; i++) {
+    let bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) { const tr = re[i]; re[i] = re[j]; re[j] = tr; const ti = im[i]; im[i] = im[j]; im[j] = ti; }
+  }
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = -2 * Math.PI / len;
+    const wpr = Math.cos(ang), wpi = Math.sin(ang);
+    for (let i = 0; i < n; i += len) {
+      let wr = 1, wi = 0;
+      for (let k = 0; k < len / 2; k++) {
+        const a = i + k, b = i + k + len / 2;
+        const tr = wr * re[b] - wi * im[b];
+        const ti = wr * im[b] + wi * re[b];
+        re[b] = re[a] - tr; im[b] = im[a] - ti;
+        re[a] += tr; im[a] += ti;
+        const nwr = wr * wpr - wi * wpi; wi = wr * wpi + wi * wpr; wr = nwr;
+      }
+    }
+  }
+}
+const FFT_N = 8192;
+function makeHann(n){ const w=new Float32Array(n); for(let i=0;i<n;i++) w[i]=0.5-0.5*Math.cos(2*Math.PI*i/(n-1)); return w; }
+function computeChroma(samples, sr, hop) {
+  const N = FFT_N;
+  hop = hop || Math.floor(sr * 0.093);
+  const win = makeHann(N);
+  const fmin = 55, fmax = 2093;
+  const kmin = Math.max(1, Math.floor(fmin * N / sr));
+  const kmax = Math.min(N/2 - 1, Math.ceil(fmax * N / sr));
+  const pc = new Int8Array(N/2);
+  for (let k = kmin; k <= kmax; k++) {
+    const f = k * sr / N;
+    const midi = 69 + 12 * Math.log2(f / 440);
+    let p = Math.round(midi) % 12; if (p < 0) p += 12;
+    pc[k] = p;
+  }
+  const frames = [], times = [], powers = [];
+  const re = new Float64Array(N), im = new Float64Array(N);
+  for (let start = 0; start + N <= samples.length; start += hop) {
+    for (let i = 0; i < N; i++) { re[i] = samples[start + i] * win[i]; im[i] = 0; }
+    fft(re, im);
+    const ch = new Float64Array(12);
+    for (let k = kmin; k <= kmax; k++) {
+      const mag = Math.sqrt(re[k]*re[k] + im[k]*im[k]);
+      ch[pc[k]] += mag;
+    }
+    let s = 0; for (let i=0;i<12;i++) s += ch[i]*ch[i];
+    s = Math.sqrt(s);
+    powers.push(s);
+    if (s > 1e-9) for (let i=0;i<12;i++) ch[i] /= s;
+    frames.push(Array.from(ch));
+    times.push(start / sr);
+  }
+  return { frames, times, powers, fps: sr / hop, hop };
+}
+const NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+function normVec(a){ let s=0; for(const x of a) s+=x*x; s=Math.sqrt(s)||1; return a.map(x=>x/s); }
+function buildChordTemplates() {
+  const tpl = [];
+  for (let r = 0; r < 12; r++) { const m=new Array(12).fill(0); m[r]=1; m[(r+4)%12]=1; m[(r+7)%12]=1; tpl.push({ name: NAMES[r], quality:'maj', vec: normVec(m), root:r }); }
+  for (let r = 0; r < 12; r++) { const m=new Array(12).fill(0); m[r]=1; m[(r+3)%12]=1; m[(r+7)%12]=1; tpl.push({ name: NAMES[r]+'m', quality:'min', vec: normVec(m), root:r }); }
+  return tpl;
+}
+function dot(a,b){ let s=0; for(let i=0;i<12;i++) s+=a[i]*b[i]; return s; }
+function chordScores(frames, tpl) { return frames.map(ch => tpl.map(t => dot(ch, t.vec))); }
+function viterbiChords(scores, selfBonus) {
+  const T = scores.length; if (!T) return [];
+  const S = scores[0].length;
+  selfBonus = selfBonus == null ? 0.25 : selfBonus;
+  const dp = new Float64Array(S), ndp = new Float64Array(S);
+  const back = []; for (let t=0;t<T;t++) back.push(new Int16Array(S));
+  for (let s=0;s<S;s++) dp[s] = scores[0][s];
+  for (let t=1;t<T;t++) {
+    for (let s=0;s<S;s++) {
+      let bestPrev=0, bestVal=-Infinity;
+      for (let p=0;p<S;p++){ const v = dp[p] + (p===s?selfBonus:0); if (v>bestVal){bestVal=v;bestPrev=p;} }
+      ndp[s] = bestVal + scores[t][s];
+      back[t][s] = bestPrev;
+    }
+    dp.set(ndp);
+  }
+  let last=0,bv=-Infinity; for(let s=0;s<S;s++) if(dp[s]>bv){bv=dp[s];last=s;}
+  const path=new Array(T); path[T-1]=last;
+  for(let t=T-1;t>0;t--) path[t-1]=back[t][path[t]];
+  return path;
+}
+const KS_MAJ = [6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88];
+const KS_MIN = [6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
+function pearson(a,b){ const n=a.length; let ma=0,mb=0; for(let i=0;i<n;i++){ma+=a[i];mb+=b[i];} ma/=n;mb/=n; let num=0,da=0,db=0; for(let i=0;i<n;i++){const x=a[i]-ma,y=b[i]-mb;num+=x*y;da+=x*x;db+=y*y;} return num/(Math.sqrt(da*db)||1); }
+function pearsonRot(x, profile, rot){ const p=new Array(12); for(let i=0;i<12;i++) p[i]=profile[(i-rot+12)%12]; return pearson(x,p); }
+function detectKey(frames){
+  const avg=new Array(12).fill(0);
+  for (const f of frames) for (let i=0;i<12;i++) avg[i]+=f[i];
+  const results=[];
+  for (let r=0;r<12;r++){ results.push({ name: NAMES[r]+' major', tonic:r, mode:'major', score: pearsonRot(avg, KS_MAJ, r) }); results.push({ name: NAMES[r]+' minor', tonic:r, mode:'minor', score: pearsonRot(avg, KS_MIN, r) }); }
+  results.sort((a,b)=>b.score-a.score); return results[0];
+}
+function onsetEnvelope(samples, sr){
+  const N=1024, hop=256; const win=makeHann(N);
+  const re=new Float64Array(N), im=new Float64Array(N);
+  let prev=null; const flux=[];
+  for (let start=0; start+N<=samples.length; start+=hop){
+    for (let i=0;i<N;i++){ re[i]=samples[start+i]*win[i]; im[i]=0; }
+    fft(re,im);
+    const mag=new Float64Array(N/2);
+    for (let k=0;k<N/2;k++) mag[k]=Math.log1p(Math.sqrt(re[k]*re[k]+im[k]*im[k]));
+    if (prev){ let f=0; for(let k=0;k<N/2;k++){ const d=mag[k]-prev[k]; if(d>0) f+=d; } flux.push(f); }
+    prev=mag;
+  }
+  const W=16; const env=new Float64Array(flux.length);
+  for (let i=0;i<flux.length;i++){ let lo=Math.max(0,i-W), hi=Math.min(flux.length-1,i+W), s=0; for(let j=lo;j<=hi;j++) s+=flux[j]; env[i]=Math.max(0, flux[i]-s/(hi-lo+1)); }
+  return { env, ofps: sr/hop };
+}
+function acFrac(env, lag){ const l0=Math.floor(lag), frac=lag-l0; let s0=0,s1=0; for(let i=0;i+l0+1<env.length;i++){ s0+=env[i]*env[i+l0]; s1+=env[i]*env[i+l0+1]; } return s0*(1-frac)+s1*frac; }
+function detectTempo(samples, sr){
+  const { env, ofps } = onsetEnvelope(samples, sr);
+  if (env.length < 8) return 0;
+  let best={bpm:0,score:-1};
+  for (let bpm=50; bpm<=200; bpm+=0.25){
+    const lag=ofps*60/bpm; if (lag<2 || lag>=env.length) continue;
+    const s = acFrac(env,lag) + 0.5*acFrac(env,lag*2);
+    const prior=Math.exp(-0.5*Math.pow(Math.log2(bpm/120)/0.9,2));
+    const v=s*prior; if (v>best.score) best={bpm,score:v};
+  }
+  return Math.round(best.bpm);
+}
+function buildSegments(path, times, tpl, powers){
+  const fdur = times.length>1 ? (times[1]-times[0]) : 0.093;
+  let maxPow=0; for(const p of powers) if(p>maxPow) maxPow=p;
+  const silent = powers.map(p=> p < 0.06*maxPow);
+  const raw=[]; let cur=path[0], start=times[0], sil0=silent[0];
+  for (let i=1;i<path.length;i++){
+    const isSil = silent[i];
+    if (path[i]!==cur || isSil!==sil0){ raw.push({chord: sil0?'N.C.':tpl[cur].name, root: sil0?-1:tpl[cur].root, quality: sil0?'':tpl[cur].quality, start, end: times[i]}); cur=path[i]; start=times[i]; sil0=isSil; }
+  }
+  raw.push({chord: sil0?'N.C.':tpl[cur].name, root: sil0?-1:tpl[cur].root, quality: sil0?'':tpl[cur].quality, start, end: times[times.length-1]+fdur});
+  // merge tiny segments into a neighbour, then coalesce equals
+  const minDur=0.45; const merged=[];
+  for (const s of raw){ const last=merged[merged.length-1];
+    if (last && s.chord===last.chord){ last.end=s.end; }
+    else if (last && (s.end-s.start)<minDur){ last.end=s.end; }
+    else merged.push(Object.assign({}, s));
+  }
+  const out=[]; for(const s of merged){ const last=out[out.length-1]; if(last&&last.chord===s.chord){ last.end=s.end; } else out.push(s); }
+  return out;
+}
+onmessage = function(e){
+  const { pcm, sr } = e.data;
+  const samples = pcm;
+  postMessage({ type:'status', msg:'Building chromagram…' });
+  const { frames, times, powers } = computeChroma(samples, sr);
+  postMessage({ type:'status', msg:'Matching chords…' });
+  const tpl = buildChordTemplates();
+  const scores = chordScores(frames, tpl);
+  const path = viterbiChords(scores, 0.35);
+  const segments = buildSegments(path, times, tpl, powers);
+  postMessage({ type:'status', msg:'Finding key & tempo…' });
+  const key = detectKey(frames);
+  const tempo = detectTempo(samples, sr);
+  // downsample chroma frames for viz (cap ~900 columns)
+  const step = Math.max(1, Math.ceil(frames.length/900));
+  const viz=[]; for(let i=0;i<frames.length;i+=step) viz.push(frames[i]);
+  postMessage({ type:'done', key, tempo, segments, viz, dur: times.length? (times[times.length-1]+ (times[1]-times[0]||0.093)) : 0 });
+};
+</script>
+
+<!-- ===================== MAIN ===================== -->
+<script>
+(function(){
+  // match the portfolio's saved theme
+  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
+    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC || typeof Worker==="undefined" || typeof Blob==="undefined"){
+    document.getElementById("unsupported").classList.remove("hidden");
+    document.querySelector(".panel").classList.add("hidden");
+    return;
+  }
+  var WORK_SR = 11025;
+  var $ = function(id){ return document.getElementById(id); };
+  var drop=$("drop"), file=$("file"), sampleBtn=$("sampleBtn"),
+      prog=$("prog"), barFill=$("barFill"), progLbl=$("progLbl"),
+      results=$("results"), keyVal=$("keyVal"), tempoVal=$("tempoVal"), countVal=$("countVal"),
+      nowChord=$("nowChord"), nextList=$("nextList"), ribbon=$("ribbon"), chroma=$("chroma"),
+      audio=$("audio"), fileMeta=$("fileMeta"), copyBtn=$("copyBtn"), resetBtn=$("resetBtn");
+  var worker=null, state=null, audioURL=null;
+
+  function makeWorker(){
+    var src=document.getElementById("worker-src").textContent;
+    var blob=new Blob([src],{type:"application/javascript"});
+    return new Worker(URL.createObjectURL(blob));
+  }
+  function rootColor(root, q){ if(root<0) return "#33403b"; var h=(root*30)%360; return "hsl("+h+","+(q==="min"?"45%":"62%")+","+(q==="min"?"46%":"56%")+")"; }
+  function fmtTime(s){ s=Math.max(0,s|0); var m=(s/60)|0, ss=s%60; return m+":"+(ss<10?"0":"")+ss; }
+
+  // ---------- WAV encode for the sample so it can play in <audio> ----------
+  function encodeWav(f32, sr){
+    var n=f32.length, buf=new ArrayBuffer(44+n*2), dv=new DataView(buf), p=0;
+    function str(s){ for(var i=0;i<s.length;i++) dv.setUint8(p++, s.charCodeAt(i)); }
+    function u32(v){ dv.setUint32(p,v,true); p+=4; } function u16(v){ dv.setUint16(p,v,true); p+=2; }
+    str("RIFF"); u32(36+n*2); str("WAVE"); str("fmt "); u32(16); u16(1); u16(1); u32(sr); u32(sr*2); u16(2); u16(16); str("data"); u32(n*2);
+    for(var i=0;i<n;i++){ var v=Math.max(-1,Math.min(1,f32[i])); dv.setInt16(p, v<0?v*0x8000:v*0x7FFF, true); p+=2; }
+    return new Blob([buf],{type:"audio/wav"});
+  }
+
+  // ---------- sample track: I–V–vi–IV in C with a metronome ----------
+  function makeSample(){
+    var sr=WORK_SR, secPer=2, chords=[[60,64,67],[55,59,62],[57,60,64],[53,57,60]];
+    var per=sr*secPer, n=per*chords.length, s=new Float32Array(n);
+    chords.forEach(function(notes,ci){
+      var off=ci*per, bass=notes[0]-12;
+      for(var i=0;i<per;i++){ var t=i/sr, env=Math.min(1,t*5)*Math.exp(-t*0.25);
+        var v=0.20*Math.sin(2*Math.PI*440*Math.pow(2,(bass-69)/12)*t);
+        for(var j=0;j<notes.length;j++){ var f=440*Math.pow(2,(notes[j]-69)/12); v+=0.13*Math.sin(2*Math.PI*f*t)+0.045*Math.sin(2*Math.PI*2*f*t); }
+        s[off+i]+=v*env*0.6;
+      }
+    });
+    var period=sr*60/100;
+    for(var b=0;b*period<n;b++){ var st=Math.floor(b*period); for(var i=0;i<380&&st+i<n;i++){ s[st+i]+=0.22*Math.exp(-i/110)*Math.sin(2*Math.PI*1200*i/sr); } }
+    var mx=0; for(var i=0;i<n;i++){ var a=Math.abs(s[i]); if(a>mx)mx=a; } if(mx>0){ var g=0.95/mx; for(var i2=0;i2<n;i2++) s[i2]*=g; }
+    return { pcm:s, sr:sr };
+  }
+
+  // ---------- audio helpers ----------
+  function toMono(buf){ var ch=buf.numberOfChannels, L=buf.length, out=new Float32Array(L); for(var c=0;c<ch;c++){ var d=buf.getChannelData(c); for(var i=0;i<L;i++) out[i]+=d[i]/ch; } return out; }
+  function resample(x, srIn, srOut){ if(srIn===srOut) return x; var ratio=srOut/srIn, m=Math.floor(x.length*ratio), out=new Float32Array(m); for(var i=0;i<m;i++){ var tt=i/ratio, i0=tt|0, fr=tt-i0, a=x[i0]||0, bb=x[i0+1]||0; out[i]=a+(bb-a)*fr; } return out; }
+
+  function setProg(pct, msg){ prog.classList.add("on"); barFill.style.width=Math.round(pct*100)+"%"; if(msg) progLbl.textContent=msg; }
+  function hideProg(){ prog.classList.remove("on"); }
+
+  function analyzePCM(pcm, sr, playURL, meta){
+    results.classList.remove("on");
+    setProg(0.55,"Analysing…");
+    if(worker) worker.terminate();
+    worker=makeWorker();
+    worker.onmessage=function(ev){
+      var d=ev.data;
+      if(d.type==="status"){ setProg(0.75, d.msg); }
+      else if(d.type==="done"){ hideProg(); render(d, playURL, meta); }
+    };
+    worker.onerror=function(){ hideProg(); progLbl.textContent="Something went wrong analysing that file."; prog.classList.add("on"); };
+    // pcm is already at WORK_SR
+    worker.postMessage({ pcm: pcm, sr: sr }, [pcm.buffer]);
+  }
+
+  function handleFile(f){
+    if(!f) return;
+    setProg(0.15,"Decoding "+f.name+"…");
+    if(audioURL){ URL.revokeObjectURL(audioURL); audioURL=null; }
+    var url=URL.createObjectURL(f);
+    var meta={ name:f.name, size:f.size };
+    f.arrayBuffer().then(function(ab){
+      setProg(0.35,"Decoding audio…");
+      var ctx=new AC();
+      return ctx.decodeAudioData(ab).then(function(buf){ ctx.close&&ctx.close(); return buf; });
+    }).then(function(buf){
+      var mono=toMono(buf);
+      var pcm=resample(mono, buf.sampleRate, WORK_SR);
+      meta.dur=buf.duration;
+      analyzePCM(pcm, WORK_SR, url, meta);
+    }).catch(function(err){
+      hideProg(); progLbl.textContent="Couldn't decode that file. Try an MP3, WAV, M4A, FLAC or OGG."; prog.classList.add("on");
+    });
+  }
+
+  function runSample(){
+    setProg(0.2,"Rendering sample…");
+    var s=makeSample();
+    var wav=encodeWav(s.pcm, s.sr);
+    if(audioURL){ URL.revokeObjectURL(audioURL); }
+    audioURL=URL.createObjectURL(wav);
+    var meta={ name:"Sample — I–V–vi–IV in C (100 BPM)", size:wav.size, dur:s.pcm.length/s.sr };
+    // clone pcm because we transfer its buffer to the worker
+    var copy=new Float32Array(s.pcm);
+    analyzePCM(copy, s.sr, audioURL, meta);
+  }
+
+  // ---------- rendering ----------
+  function render(d, playURL, meta){
+    state={ segments:d.segments, viz:d.viz, dur:d.dur||(meta&&meta.dur)||0, key:d.key, tempo:d.tempo };
+    keyVal.innerHTML = d.key ? d.key.name.replace(/ (major|minor)/, function(_,m){ return ' <small>'+m+'</small>'; }) : "—";
+    tempoVal.innerHTML = d.tempo ? (d.tempo+' <small>BPM</small>') : "—";
+    var realChords = d.segments.filter(function(s){ return s.chord!=="N.C."; });
+    var uniq={}; realChords.forEach(function(s){ uniq[s.chord]=1; });
+    countVal.textContent = Object.keys(uniq).length + " unique";
+    // progression chips: dedupe consecutive
+    var seq=[]; d.segments.forEach(function(s){ if(seq[seq.length-1]!==s.chord) seq.push(s.chord); });
+    nextList.innerHTML="";
+    seq.slice(0,16).forEach(function(c,i){ var el=document.createElement("span"); el.className="c"; el.textContent=c; el.setAttribute("data-chord",c); nextList.appendChild(el); });
+    if(seq.length>16){ var m=document.createElement("span"); m.className="c"; m.textContent="+"+(seq.length-16); nextList.appendChild(m); }
+    audio.src=playURL;
+    fileMeta.textContent=(meta?meta.name:"")+(meta&&meta.dur?"  ·  "+fmtTime(meta.dur):"")+(state.tempo?"  ·  "+state.tempo+" BPM":"")+(d.key?"  ·  "+d.key.name:"");
+    results.classList.add("on");
+    drop.classList.add("hidden");
+    sizeCanvases(); drawRibbon(); drawChroma(); drawPlayheads(0);
+    nowChord.textContent = d.segments.length? d.segments[0].chord : "—";
+  }
+
+  function sizeCanvases(){
+    var w=ribbon.parentElement.clientWidth - 0;
+    [ribbon,chroma].forEach(function(cv){ var dpr=Math.min(2,window.devicePixelRatio||1); cv.width=Math.floor(w*dpr); cv.style.width=w+"px"; cv.__dpr=dpr; });
+  }
+  function drawRibbon(){
+    if(!state) return; var g=ribbon.getContext("2d"), W=ribbon.width, H=ribbon.height, dur=state.dur||1;
+    g.clearRect(0,0,W,H); g.fillStyle="#05100d"; g.fillRect(0,0,W,H);
+    state.segments.forEach(function(s){
+      var x0=s.start/dur*W, x1=s.end/dur*W;
+      g.fillStyle=rootColor(s.root,s.quality); g.fillRect(x0,0,Math.max(1,x1-x0-1),H);
+      var bw=x1-x0;
+      if(bw>26 && s.chord!=="N.C."){ g.fillStyle="rgba(6,16,13,.92)"; g.font="600 13px "+getComputedStyle(document.body).getPropertyValue("--mono"); g.textAlign="center"; g.textBaseline="middle"; g.fillText(s.chord, (x0+x1)/2, H/2); }
+    });
+  }
+  function drawChroma(){
+    if(!state) return; var g=chroma.getContext("2d"), W=chroma.width, H=chroma.height, viz=state.viz, cols=viz.length||1;
+    g.clearRect(0,0,W,H); g.fillStyle="#05100d"; g.fillRect(0,0,W,H);
+    var cw=W/cols, rh=H/12;
+    var acc=(getComputedStyle(document.documentElement).getPropertyValue("--accentRGB")||"43,227,176").trim();
+    for(var x=0;x<cols;x++){ var f=viz[x]; for(var p=0;p<12;p++){ var v=Math.min(1,f[p]*1.6); if(v<0.04) continue; g.fillStyle="rgba("+acc+","+v.toFixed(3)+")"; g.fillRect(x*cw, H-(p+1)*rh, Math.ceil(cw), Math.ceil(rh)); } }
+    // pitch labels
+    g.fillStyle="rgba(237,242,239,.30)"; g.font="10px "+getComputedStyle(document.body).getPropertyValue("--mono"); g.textAlign="left"; g.textBaseline="middle";
+    var NM=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+    for(var p2=0;p2<12;p2++){ g.fillText(NM[p2], 3, H-(p2+0.5)*rh); }
+  }
+  var lastPh=-1;
+  function drawPlayheads(tsec){
+    if(!state) return; var dur=state.dur||1, fr=Math.max(0,Math.min(1,tsec/dur));
+    drawRibbon(); drawChroma();
+    [ribbon,chroma].forEach(function(cv){ var g=cv.getContext("2d"), x=fr*cv.width; g.strokeStyle="rgba(255,255,255,.9)"; g.lineWidth=Math.max(1,(cv.__dpr||1)); g.beginPath(); g.moveTo(x,0); g.lineTo(x,cv.height); g.stroke(); });
+    // current chord
+    var cur=null; for(var i=0;i<state.segments.length;i++){ var s=state.segments[i]; if(tsec>=s.start && tsec<s.end){ cur=s; break; } }
+    if(!cur && state.segments.length) cur=state.segments[tsec<=0?0:state.segments.length-1];
+    if(cur){ nowChord.textContent=cur.chord; nowChord.style.color=cur.root<0?"var(--muted)":rootColor(cur.root,cur.quality);
+      // highlight chip
+      var chips=nextList.querySelectorAll(".c"); chips.forEach(function(ch){ ch.classList.remove("hot"); ch.style.background=""; ch.style.borderColor=""; if(ch.getAttribute("data-chord")===cur.chord){ ch.classList.add("hot"); ch.style.background=cur.root<0?"":rootColor(cur.root,cur.quality); ch.style.borderColor="transparent"; } });
+    }
+  }
+
+  audio.addEventListener("timeupdate", function(){ drawPlayheads(audio.currentTime); });
+  audio.addEventListener("seeked", function(){ drawPlayheads(audio.currentTime); });
+  function seekFromCanvas(cv, ev){ if(!state||!audio.duration) return; var rect=cv.getBoundingClientRect(); var fr=(ev.clientX-rect.left)/rect.width; audio.currentTime=Math.max(0,Math.min(state.dur, fr*state.dur)); }
+  ribbon.addEventListener("click", function(ev){ seekFromCanvas(ribbon, ev); });
+  chroma.addEventListener("click", function(ev){ seekFromCanvas(chroma, ev); });
+  window.addEventListener("resize", function(){ if(state){ sizeCanvases(); drawPlayheads(audio.currentTime||0); } });
+
+  copyBtn.addEventListener("click", function(){
+    if(!state) return;
+    var lines=["# Chords — "+(state.key?state.key.name:"")+(state.tempo?"  ·  "+state.tempo+" BPM":""),""];
+    state.segments.forEach(function(s){ lines.push(fmtTime(s.start)+"  "+s.chord); });
+    var txt=lines.join("\n");
+    try{ navigator.clipboard.writeText(txt); copyBtn.textContent="Copied ✓"; setTimeout(function(){copyBtn.textContent="Copy chord sheet";},1600); }
+    catch(e){ copyBtn.textContent="Copy failed"; }
+  });
+  resetBtn.addEventListener("click", function(){ results.classList.remove("on"); drop.classList.remove("hidden"); hideProg(); try{audio.pause();}catch(e){} });
+
+  // ---------- input wiring ----------
+  drop.addEventListener("click", function(e){ if(e.target===sampleBtn) return; file.click(); });
+  drop.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); file.click(); } });
+  file.addEventListener("change", function(){ if(file.files[0]) handleFile(file.files[0]); });
+  sampleBtn.addEventListener("click", function(e){ e.stopPropagation(); runSample(); });
+  ["dragenter","dragover"].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop", function(e){ var f=e.dataTransfer.files[0]; if(f) handleFile(f); });
+  window.addEventListener("dragover", function(e){ e.preventDefault(); });
+  window.addEventListener("drop", function(e){ e.preventDefault(); });
+
+  // expose for automated verification
+  window.__cadence = { makeSample: makeSample, runSample: runSample, getState: function(){ return state; } };
+})();
+</script>
+<!-- AdSense / Polar.sh monetization slot — intentionally left for later
+<div class="ad-slot"></div>
+-->
+<script src="enhance.js" defer></script>
+</body>
+</html>
