@@ -19,6 +19,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="world/world.css">
+<script src="kit/transitions.js"></script>
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
@@ -132,5 +133,6 @@
   </div>
 </section>
 <script type="module" src="world/world.js"></script>
+<script type="module">import { initMotion } from './kit/motion.js'; initMotion({ reduced: matchMedia('(prefers-reduced-motion: reduce)').matches, root: document });</script>
 </body>
 </html>

@@ -14,7 +14,8 @@ import { V2, V3, PI, TAU, mesh, felt, pops, spring, tickers } from './felt.js';
 import { buildWorld } from './props.js';
 import { buildHarman, buildScout } from './characters.js';
 import { sfx, toggleSound } from './audio.js';
-import { SPAWN, SCOUT, clampWalkable, route, groundHeight, regionAt } from './layout.js';
+import { parseEntry } from './entry.js';
+import { SITES, SPAWN, SCOUT, clampWalkable, route, groundHeight, regionAt } from './layout.js';
 import { plan } from './agent.js';
 import { buildIndex } from '../recruit/keyword.js';
 import { createGuide } from '../recruit/guide.js';
@@ -22,7 +23,6 @@ import { createEmbedder } from '../recruit/embedder.js';
 
 const $ = (s) => document.querySelector(s);
 const boot = { start: performance.now() }; const mark = (k) => { boot[k] = Math.round(performance.now() - boot.start); };
-const params = new URLSearchParams(location.search);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const MAIL = 'mailto:playcivil@gmail.com?subject=Recruiting%20Harman';
@@ -124,12 +124,13 @@ const loadAI = () => (aiLoading ??= get('embeddings.json').then((v) => { guide.s
   .catch(() => { aiChip.dataset.state = 'failed'; aiChip.textContent = 'Scout is in keyword mode'; }));
 
 // ---------- state ----------
-const at = byId.get(params.get('at'));
+const entry = parseEntry(location.search, SITES.map((x) => x.id));
+const at = byId.get(entry.at);
 const player = { pos: new V3(SPAWN.x, 0, SPAWN.z), vel: new V3(), y: 9, vy: 0, ground: false, yaw: 0.6, phase: 0, squash: 0, squashV: 0, blinkAt: 2, path: [], pending: null, auto: false, dropped: false };
 if (at) player.pos.copy(at.door).add(new V3(0.3, 0, 0.3));
 const keys = { f: false, b: false, l: false, r: false };
 let T = reduced || at ? 6.5 : 0, last = performance.now(), controls = false, nearId = null, cardOpen = false, companion = !!at;
-const camPos = new V3(), camLook = new V3(), camZoom = Number(params.get('zoom')) || 1;
+const camPos = new V3(), camLook = new V3(), camZoom = entry.zoom;
 
 // ---------- DOM ----------
 const title = $('#title'), hud = $('#hud'), hint = $('#hint'), ask = $('#ask'), card = $('#card'), live = $('#say-live');
@@ -177,11 +178,13 @@ function openCard(L) {
     <div class="row">${d.recruit
       ? `<a class="btn hot" href="${MAIL}">Email Harman</a><a class="btn" href="Harman-Kamboj-Resume.pdf">Download résumé</a>`
       : d.link ? `<a class="btn hot" href="${esc(d.link)}">Read the full case</a>` : ''}<button class="btn" type="button" data-close>Back outside</button></div>`;
+  // pageswap names the element whose data-morph matches the destination: the whole card morphs into the case header
+  if (!d.recruit && d.link) card.dataset.morph = d.link; else delete card.dataset.morph;
   card.classList.add('on'); document.body.classList.add('reading');
   card.querySelector('[data-close]').addEventListener('click', closeCard);
   setTimeout(() => card.querySelector('.btn')?.focus({ preventScroll: true }), 60);
 }
-function closeCard() { cardOpen = false; card.classList.remove('on'); document.body.classList.remove('reading'); sfx.close(); returnFocus?.focus?.({ preventScroll: true }); }
+function closeCard() { delete card.dataset.morph; cardOpen = false; card.classList.remove('on'); document.body.classList.remove('reading'); sfx.close(); returnFocus?.focus?.({ preventScroll: true }); }
 
 // ---------- walking: keys, taps, and Scout's walk_to ----------
 function walkTo(dest, pending = null, auto = false) {
@@ -456,4 +459,5 @@ function frame(now) {
 mark('ready'); window.__boot = boot;
 $('#load').style.opacity = 0;
 requestAnimationFrame((t) => { last = t; $('#fade').classList.add('out'); requestAnimationFrame(frame); });
+if (entry.ask) askScout(entry.ask); // from a case page's "Ask Scout about this job"
 window.__world = { player, camera, landmarks, keys, renderer, scene, composer, sun, tickers, askScout, get T() { return T; }, set T(v) { T = v; }, get fps() { return window.__fps; } };
