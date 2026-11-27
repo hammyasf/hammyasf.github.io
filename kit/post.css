@@ -16,25 +16,30 @@
   box-shadow: 0 2px 0 rgba(150,51,31,.35);
 }
 
-/* header patch: the hub's felt colour, a sewing button in the corner */
-.post-hero { --r: 28px; --patch-bg: var(--cream); padding: 30px 52px 32px; rotate: -.35deg; }
-.post-hero[data-hub="ai"] { --patch-bg: color-mix(in srgb, var(--sky) 70%, var(--cream)); }
-.post-hero[data-hub="web3"] { --patch-bg: color-mix(in srgb, var(--leaf) 34%, var(--cream)); }
-.post-hero[data-hub="game-dev"] { --patch-bg: color-mix(in srgb, var(--butter) 42%, var(--cream)); }
-.post-hero[data-hub="career"] { --patch-bg: color-mix(in srgb, var(--berry) 26%, var(--cream)); }
-.post-hero[data-hub="full-stack"] { --patch-bg: color-mix(in srgb, var(--coral) 24%, var(--cream)); }
+/* the sticky header must not cover a jump target */
+html:has(.post-page) { scroll-padding-top: 100px; }
+
+/* header patch: the hub's topic felt, the same map and tint as the hub headers in hub.css (tests/contrast.test.mjs pins both),
+   a sewing button in the corner. Posts with no topic hub (Writing, hire pages) stay cream. */
+.post-hero { --r: 28px; --patch-bg: color-mix(in srgb, var(--t, var(--cream)) 18%, var(--cream)); padding: 30px 52px 32px; rotate: -.35deg; }
+.post-hero[data-hub="web3"] { --t: var(--green); }
+.post-hero[data-hub="ai"] { --t: var(--coral); }
+.post-hero[data-hub="full-stack"] { --t: var(--sky); }
+.post-hero[data-hub="game-dev"] { --t: var(--butter); }
+.post-hero[data-hub="career"] { --t: var(--berry); }
 .post-hero::after { /* a felt sewing button, four holes */
   content: ""; position: absolute; top: -9px; right: 34px; width: 30px; height: 30px; border-radius: 50%; rotate: 12deg;
   box-shadow: inset 0 -3px 0 rgba(0,0,0,.16), 0 3px 0 rgba(84,46,30,.22), 0 6px 10px rgba(84,46,30,.18);
   background: radial-gradient(circle at 37% 37%, var(--ink) 0 2px, transparent 2.6px), radial-gradient(circle at 63% 37%, var(--ink) 0 2px, transparent 2.6px),
     radial-gradient(circle at 37% 63%, var(--ink) 0 2px, transparent 2.6px), radial-gradient(circle at 63% 63%, var(--ink) 0 2px, transparent 2.6px), var(--felt), var(--coral);
 }
-.crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font: 600 14px/1.2 var(--display); color: var(--mute); }
-.crumb a { color: var(--coral-dk); text-decoration: none; }
+/* crumb and meta sit on the tint: ink and the deep coral keep them at 4.5:1 or better on every topic */
+.crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font: 600 14px/1.2 var(--display); color: var(--ink); }
+.crumb a { color: #96331f; text-decoration: none; }
 .crumb a:hover { text-decoration: underline; }
 h1.ptitle { margin: 16px 0 14px; font-size: clamp(32px, 5vw, 50px); line-height: 1.08; }
 /* a french knot before each bit; the row is pulled left and clipped by one knot, so a line never starts with one */
-.pmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 0; margin-left: -25px; clip-path: inset(-4px -4px -4px 25px); font: 600 15px/1.3 var(--display); color: var(--mute); }
+.pmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 0; margin-left: -25px; clip-path: inset(-4px -4px -4px 25px); font: 600 15px/1.3 var(--display); color: var(--ink); }
 .pmeta span::before {
   content: ""; display: inline-block; width: 7px; height: 7px; margin: 0 9px; vertical-align: .12em; border-radius: 50%;
   background: var(--felt), var(--coral); box-shadow: 0 1px 0 var(--coral-dk);
@@ -67,7 +72,7 @@ h1.ptitle { margin: 16px 0 14px; font-size: clamp(32px, 5vw, 50px); line-height:
 .post-body h3 { margin: 1.5em 0 .4em; }
 .post-body strong { font-weight: 750; }
 .post-body ul, .post-body ol { margin: 0 0 1.2em; padding: 0; display: grid; gap: 10px; }
-.post-body ul { list-style: none; }
+.post-body ul { list-style: ""; } /* not none: Safari/VoiceOver keep the list role */
 .post-body ol { padding-left: 1.4em; }
 .post-body ol li::marker { font: 700 1em var(--display); color: var(--coral-dk); }
 .post-body ul li { position: relative; padding-left: 28px; }
@@ -131,7 +136,7 @@ h1.ptitle { margin: 16px 0 14px; font-size: clamp(32px, 5vw, 50px); line-height:
 .pager .btn:only-child { margin-left: auto; }
 .more-in { margin: 26px 0 0; text-align: center; }
 .more-in .btn { background: var(--felt), var(--butter); box-shadow: 0 3px 0 #d6a43a, 0 6px 14px rgba(84,46,30,.16); }
-.more-in .btn::after { content: "→" / ""; }
+.more-in .btn::after { content: "→"; content: "→" / ""; }
 
 /* room under the footer for kit/site.js's floating Menu button */
 .post-page .site-foot { padding-bottom: 84px; }
@@ -140,6 +145,8 @@ h1.ptitle { margin: 16px 0 14px; font-size: clamp(32px, 5vw, 50px); line-height:
   .cta-final .btn:hover { box-shadow: 0 5px 0 #96331f, 0 10px 20px rgba(84,46,30,.3); }
   .more-in .btn:hover { box-shadow: 0 5px 0 #d6a43a, 0 10px 20px rgba(84,46,30,.2); }
 }
+
+@media print { .read-progress { display: none; } }
 
 @media (max-width: 600px) {
   .post-main { margin-top: 20px; }
