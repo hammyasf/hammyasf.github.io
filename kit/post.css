@@ -1,0 +1,148 @@
+/* Blog posts: a reading page on top of felt.css. A felt header patch (tinted by the post's hub), the body sewn
+   onto one paper patch at a ~68ch measure, the coral ask, related posts as small stitched cards, felt pager
+   buttons, and a knit row across the top that fills as you read (kit/progress.js). No 3D. */
+
+.post-main { width: min(760px, 100% - 32px); margin: 26px auto 0; }
+
+/* reading progress: an unknit thread across the top of the screen, knitted in coral as the body scrolls past.
+   It sits in the gap above the sticky header; --p is set by kit/progress.js, with no transition. */
+.read-progress {
+  position: fixed; inset: 0 0 auto; z-index: 60; height: 9px; pointer-events: none;
+  background: repeating-linear-gradient(90deg, var(--thread) 0 6px, transparent 6px 11px) 0 50% / 100% 2px no-repeat;
+}
+.read-progress span {
+  display: block; height: 100%; width: calc(var(--p, 0) * 100%); border-radius: 0 999px 999px 0;
+  background: var(--knit), linear-gradient(#f07a66, var(--coral) 60%, #d4513e); background-size: 8px 11px, auto;
+  box-shadow: 0 2px 0 rgba(150,51,31,.35);
+}
+
+/* header patch: the hub's felt colour, a sewing button in the corner */
+.post-hero { --r: 28px; --patch-bg: var(--cream); padding: 30px 52px 32px; rotate: -.35deg; }
+.post-hero[data-hub="ai"] { --patch-bg: color-mix(in srgb, var(--sky) 70%, var(--cream)); }
+.post-hero[data-hub="web3"] { --patch-bg: color-mix(in srgb, var(--leaf) 34%, var(--cream)); }
+.post-hero[data-hub="game-dev"] { --patch-bg: color-mix(in srgb, var(--butter) 42%, var(--cream)); }
+.post-hero[data-hub="career"] { --patch-bg: color-mix(in srgb, var(--berry) 26%, var(--cream)); }
+.post-hero[data-hub="full-stack"] { --patch-bg: color-mix(in srgb, var(--coral) 24%, var(--cream)); }
+.post-hero::after { /* a felt sewing button, four holes */
+  content: ""; position: absolute; top: -9px; right: 34px; width: 30px; height: 30px; border-radius: 50%; rotate: 12deg;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,.16), 0 3px 0 rgba(84,46,30,.22), 0 6px 10px rgba(84,46,30,.18);
+  background: radial-gradient(circle at 37% 37%, var(--ink) 0 2px, transparent 2.6px), radial-gradient(circle at 63% 37%, var(--ink) 0 2px, transparent 2.6px),
+    radial-gradient(circle at 37% 63%, var(--ink) 0 2px, transparent 2.6px), radial-gradient(circle at 63% 63%, var(--ink) 0 2px, transparent 2.6px), var(--felt), var(--coral);
+}
+.crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font: 600 14px/1.2 var(--display); color: var(--mute); }
+.crumb a { color: var(--coral-dk); text-decoration: none; }
+.crumb a:hover { text-decoration: underline; }
+h1.ptitle { margin: 16px 0 14px; font-size: clamp(32px, 5vw, 50px); line-height: 1.08; }
+/* a french knot before each bit; the row is pulled left and clipped by one knot, so a line never starts with one */
+.pmeta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 0; margin-left: -25px; clip-path: inset(-4px -4px -4px 25px); font: 600 15px/1.3 var(--display); color: var(--mute); }
+.pmeta span::before {
+  content: ""; display: inline-block; width: 7px; height: 7px; margin: 0 9px; vertical-align: .12em; border-radius: 50%;
+  background: var(--felt), var(--coral); box-shadow: 0 1px 0 var(--coral-dk);
+}
+.ptags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.ptags .chip { background: rgba(255,255,255,.7); }
+
+/* the body: one paper patch, a calm weave and a reading measure */
+.post-body {
+  --r: 24px; margin-top: 26px; padding: 52px 56px 46px; /* 648px of text at 18px: about 68 characters a line */
+  background: linear-gradient(rgba(255,251,244,.8) 0 0), var(--felt), var(--cream);
+  font-size: 18px; line-height: 1.75;
+}
+.post-body > :last-child { margin-bottom: 0; }
+.post-body p { margin: 0 0 1.15em; }
+.post-body > p:first-child::first-letter { /* a felt drop cap */
+  float: left; margin: .1em .12em 0 0; font: 700 3.3em/.8 var(--display); color: var(--coral);
+  text-shadow: 0 2px 0 #fff, 0 4px 0 var(--line);
+}
+.post-body h2 { display: flex; align-items: baseline; gap: 12px; margin: 1.9em 0 .55em; font-size: clamp(23px, 3vw, 29px); }
+.post-body h2::before { /* a sewing button, a different felt each section */
+  content: ""; flex: none; align-self: center; width: 20px; height: 20px; border-radius: 50%; box-shadow: inset 0 -2px 0 rgba(0,0,0,.16), 0 2px 0 rgba(84,46,30,.18);
+  background: radial-gradient(circle at 36% 36%, var(--ink) 0 1.4px, transparent 1.9px), radial-gradient(circle at 64% 36%, var(--ink) 0 1.4px, transparent 1.9px),
+    radial-gradient(circle at 36% 64%, var(--ink) 0 1.4px, transparent 1.9px), radial-gradient(circle at 64% 64%, var(--ink) 0 1.4px, transparent 1.9px), var(--felt), var(--b, var(--coral));
+}
+.post-body h2:nth-of-type(5n+2) { --b: var(--leaf); }
+.post-body h2:nth-of-type(5n+3) { --b: var(--butter); }
+.post-body h2:nth-of-type(5n+4) { --b: var(--sky); }
+.post-body h2:nth-of-type(5n+5) { --b: var(--berry); }
+.post-body h3 { margin: 1.5em 0 .4em; }
+.post-body strong { font-weight: 750; }
+.post-body ul, .post-body ol { margin: 0 0 1.2em; padding: 0; display: grid; gap: 10px; }
+.post-body ul { list-style: none; }
+.post-body ol { padding-left: 1.4em; }
+.post-body ol li::marker { font: 700 1em var(--display); color: var(--coral-dk); }
+.post-body ul li { position: relative; padding-left: 28px; }
+.post-body ul li::before { /* a french knot */
+  content: ""; position: absolute; left: 5px; top: .62em; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--felt), var(--coral); box-shadow: 0 1.5px 0 var(--coral-dk);
+}
+/* inline code comes from the kit; blocks are the kit's dark felt code patch */
+.post-body pre {
+  margin: 0 0 1.3em; max-width: 100%; padding: 20px 22px; overflow-x: auto; tab-size: 2; color: #f6ead6; background: var(--felt), var(--ink);
+  font: 500 14px/1.65 var(--mono); border-radius: 18px; box-shadow: 0 14px 30px rgba(45,36,64,.28), 0 3px 0 #1b1527;
+  outline: 2px dashed rgba(246,234,214,.22); outline-offset: -7px;
+}
+.post-body pre code { font: inherit; color: inherit; background: none; padding: 0; }
+/* a pull quote: a butter felt pocket with a big stitched quote mark */
+.post-body blockquote {
+  position: relative; margin: 1.4em 0; padding: 22px 26px 22px 64px; border-radius: 18px; rotate: .4deg;
+  font: 600 1.08em/1.5 var(--display); background: var(--felt), color-mix(in srgb, var(--butter) 30%, var(--cream));
+  box-shadow: var(--sunk); outline: 2px dashed rgba(45,36,64,.2); outline-offset: -7px;
+}
+.post-body blockquote::before { content: "“"; position: absolute; left: 18px; top: 6px; font: 700 64px/1 var(--display); color: var(--coral); }
+.post-body blockquote > :last-child { margin-bottom: 0; }
+/* some posts carry their own short related list in the body: a sunk pocket */
+.post-body .rel { margin-top: 2em; padding: 22px 24px 20px; border-radius: 18px; background: rgba(255,255,255,.55); box-shadow: var(--sunk); outline: 2px dashed var(--line); outline-offset: -7px; }
+.post-body .rel h2 { margin: 0 0 .6em; font-size: 20px; }
+.post-body .rel ul { margin: 0; font-size: 16.5px; }
+
+/* the ask: a coral patch with white thread */
+.cta-final {
+  --patch-bg: var(--coral-btn); --patch-thread: rgba(255,255,255,.6); --r: 26px;
+  margin: 34px 10px 0; padding: 34px 38px; color: #fff; rotate: -.6deg;
+}
+.cta-final h3 { font-size: clamp(24px, 3vw, 31px); }
+.cta-final p { margin-bottom: 20px; font-size: 17px; max-width: 58ch; }
+.cta-final__row { display: flex; flex-wrap: wrap; gap: 12px; }
+.cta-final .btn { color: var(--coral-dk); padding: 14px 20px; font-size: 16px; box-shadow: 0 3px 0 #96331f, 0 6px 14px rgba(84,46,30,.25); }
+
+/* related posts: small stitched cards, each tilted its own way, with a felt tab on top */
+.related { margin-top: 46px; }
+.related h2 { margin: 0 4px 16px; font-size: clamp(21px, 2.6vw, 25px); }
+.related__cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+.related .related__card { --r: 16px; display: flex; flex-direction: column; gap: 10px; padding: 24px 20px 18px; rotate: -.8deg; }
+.related__card:nth-child(2) { rotate: .7deg; --tab: var(--leaf); }
+.related__card:nth-child(3) { rotate: -.3deg; --tab: var(--sky); }
+.related__card::after { content: ""; position: absolute; top: -7px; left: 22px; width: 38px; height: 14px; border-radius: 6px; background: var(--felt), var(--tab, var(--butter)); box-shadow: 0 2px 0 rgba(84,46,30,.18); }
+.related__card span { font: 600 17px/1.3 var(--display); }
+.related__card em { margin-top: auto; font: 600 13px/1 var(--display); font-style: normal; color: var(--mute); }
+
+/* previous and next: felt buttons that can hold a long title */
+.pager { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 40px; }
+.pager .btn { max-width: calc(50% - 6px); padding: 14px 20px; line-height: 1.3; text-align: left; justify-content: flex-start; }
+.pager .btn:last-child:not(:first-child) { text-align: right; justify-content: flex-end; }
+.pager .btn:only-child { margin-left: auto; }
+.more-in { margin: 26px 0 0; text-align: center; }
+.more-in .btn { background: var(--felt), var(--butter); box-shadow: 0 3px 0 #d6a43a, 0 6px 14px rgba(84,46,30,.16); }
+.more-in .btn::after { content: "→" / ""; }
+
+/* room under the footer for kit/site.js's floating Menu button */
+.post-page .site-foot { padding-bottom: 84px; }
+
+@media (hover: hover) {
+  .cta-final .btn:hover { box-shadow: 0 5px 0 #96331f, 0 10px 20px rgba(84,46,30,.3); }
+  .more-in .btn:hover { box-shadow: 0 5px 0 #d6a43a, 0 10px 20px rgba(84,46,30,.2); }
+}
+
+@media (max-width: 600px) {
+  .post-main { margin-top: 20px; }
+  .post-hero { --r: 22px; padding: 24px 20px 24px; }
+  .post-hero::after { right: 20px; width: 26px; height: 26px; }
+  .post-body { --r: 20px; padding: 30px 20px 28px; font-size: 17px; }
+  .post-body h2 { gap: 10px; }
+  .post-body blockquote { padding: 18px 18px 18px 52px; }
+  .post-body blockquote::before { left: 12px; font-size: 52px; }
+  .cta-final { margin-inline: 4px; padding: 26px 22px; rotate: -.4deg; }
+  .cta-final__row .btn { flex: 1 1 auto; }
+  .pager { flex-direction: column; }
+  .pager .btn, .pager .btn:last-child:not(:first-child) { max-width: none; }
+}
