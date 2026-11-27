@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rollback netcode in the browser: determinism is the hard part — Harman Kamboj</title>
+<meta name="description" content="Rollback netcode in the browser is not the hard part. Determinism is. Why your game desyncs, what breaks in JavaScript, and whether you even need rollback." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Rollback netcode in the browser: determinism is the hard part — Harman Kamboj" />
+<meta property="og:description" content="Rollback netcode in the browser is not the hard part. Determinism is. Why your game desyncs, what breaks in JavaScript, and whether you even need rollback." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/rollback-netcode-browser-determinism.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Rollback netcode in the browser: determinism is the hard part — Harman Kamboj" />
+<meta name="twitter:description" content="Rollback netcode in the browser is not the hard part. Determinism is. Why your game desyncs, what breaks in JavaScript, and whether you even need rollback." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/rollback-netcode-browser-determinism.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Rollback netcode in the browser: determinism is the hard part","description":"Rollback netcode in the browser is not the hard part. Determinism is. Why your game desyncs, what breaks in JavaScript, and whether you even need rollback.","datePublished":"2026-07-14","dateModified":"2026-07-14","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/rollback-netcode-browser-determinism.html","url":"https://hammyasf.github.io/rollback-netcode-browser-determinism.html","keywords":"Game dev, Netcode, Multiplayer, Determinism","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .rel{margin:40px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin-bottom:6px;}
+  .rel a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Rollback netcode in the browser: determinism is the hard part</h1>
+   <div class="pmeta"><span>July 14, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Game dev</span><span>Netcode</span><span>Multiplayer</span><span>Determinism</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>Every few months rollback netcode goes around the game dev timelines again, usually right after someone posts a buttery clip of a fighting game holding up fine on a bad connection. Then the indie crowd, me included a few years back, decides the next little browser game needs rollback too. I want to save you a couple of weekends. Rollback netcode in the browser is not the hard part. Determinism is, and if you jump straight to the netcode you will build something that desyncs in ways you cannot reproduce.</p>
+<p>Quick refresher, because the two common models get muddled. Lockstep waits. Every client sends its inputs for a frame, and nobody advances until all of them arrive, so the whole game stalls for the slowest player and feels awful the moment someone's ping climbs. Rollback fixes the feel by guessing. It predicts the remote player's input, keeps simulating, and when the real input lands a few frames later it rewinds, replays the missing frames, and corrects. Done well you never see it happen. Done on a shaky foundation it is one of the worst things you will ever try to debug.</p>
+<h2>Rollback netcode is not your first problem</h2>
+<p>Here is the bit the flashy demo skips. Rollback only works if your game is deterministic. The same starting state plus the same sequence of inputs has to produce the exact same result on every machine, every time, frame for frame. If it does not, the rewind-and-replay step rebuilds a slightly different world than the one your opponent is running, and the two games quietly drift apart. That drift is a desync, and desyncs from nondeterminism are the nastiest bugs I have chased, because they only appear between two specific machines after a specific run of events, and never when you are watching.</p>
+<p>So the real work was never the rollback buffer or the input prediction. Those are a known pattern you can lift from any decent write-up. The work is building a game loop that spits out identical output from identical input, and the browser makes that harder than most places you could be writing a game. It is the same trap I keep pointing at with <a href="webgpu-slow-browser-game.html">WebGPU not fixing a slow browser game</a>. The shiny layer is not where your problem lives.</p>
+<h2>Where JavaScript makes determinism harder</h2>
+<p>If I sit down to make a browser game reproducible, these are the places it tends to leak.</p>
+<ul>
+  <li><strong>Floating point.</strong> JavaScript numbers are doubles, and functions like <code>Math.sin</code>, <code>Math.sqrt</code> and friends are not guaranteed to return the same last bit across engines or platforms. One player on an old phone and one on a laptop can diverge on the third decimal, and three seconds later they are in different fights. Fixed point math or a shared deterministic math library is the usual escape.</li>
+  <li><strong>Iteration order.</strong> If you resolve collisions or apply forces while looping over a <code>Set</code>, a <code>Map</code>, or object keys, and the order is not identical on both machines, the result changes. Keep gameplay entities in an explicit array with a stable order you control.</li>
+  <li><strong>Time and randomness.</strong> <code>Date.now</code>, <code>Math.random</code>, and the raw delta from <code>requestAnimationFrame</code> are all poison inside the simulation. Drive the sim off a fixed timestep and a seeded generator that both clients share, and keep wall-clock time out of gameplay entirely.</li>
+  <li><strong>Anything that sneaks in async.</strong> A promise that resolves whenever, a bit of state touched by a loading callback, garbage collection nudging your timing. If it can happen at a different moment on the other machine, it does not belong in the deterministic core.</li>
+</ul>
+<h2>Do you even need rollback</h2>
+<p>Before any of that, ask whether your game needs rollback at all. Rollback earns its complexity in fast, input-heavy games where a few frames of delay wrecks the feel, so fighting games, platform fighters, tight action. A turn-based game does not need it. A card game does not. A slow co-op puzzle does not. For a lot of browser games the honest answer is an authoritative server with client-side prediction on movement, or even plain lockstep with a small input delay that players never notice because the game is not twitchy. I have shipped enough small games during <a href="what-game-jams-teach-shipping.html">game jams</a> to trust the model I can actually finish and debug over the theoretically best one I abandon on Sunday night.</p>
+<h2>How I would actually approach it</h2>
+<p>If I were building a browser game that genuinely wants rollback, I would not open with the netcode. I would build it single player first, with a strict fixed timestep, a seeded random source, and every scrap of gameplay math routed through one place I own. Then, before touching a socket, I would write a determinism test: run the same input log twice and assert the final state hashes match. If they do not match on one machine, they will never match across two. That single test has caught more trouble for me than any amount of squinting at the network layer.</p>
+<p>Only once the simulation is provably deterministic would I add the rollback layer on top: a ring buffer of past states, prediction for the remote input, and a rewind that re-simulates from the last confirmed frame. By then the netcode is almost boring, which is exactly the goal. The interesting failures are already dead because you spent your budget on the foundation instead of the buzzword.</p>
+<p>The version of this I believe: rollback netcode is a solved pattern wearing a scary reputation, and the genuinely scary part lives one layer down in determinism. Get the game loop deterministic, prove it with a replay test, and the netcode falls into place. Skip that and you will spend your weekends bisecting desyncs instead of shipping. Keeping game state clean and predictable, which is most of what I argue for in <a href="ecs-explained.html">structuring game state with an ECS</a>, is what makes the whole thing tractable. More of how I think about building small games lives in my <a href="game-dev.html">game dev notes</a>.</p>
+   <div class="rel">
+     <h2>Related in game dev</h2>
+     <ul>
+       <li><a href="ecs-explained.html">ECS explained: how I keep game state from turning into spaghetti</a></li>
+       <li><a href="webgpu-slow-browser-game.html">WebGPU will not fix your slow browser game</a></li>
+       <li><a href="what-game-jams-teach-shipping.html">What game jams taught me about shipping software</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If the performance or the hard part of your product is fighting you, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="x402-payments-api.html">Adding x402 payments to an API: the HTTP 402 flow →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>

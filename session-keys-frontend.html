@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Session keys and the frontend: the session ends before your UI notices — Harman Kamboj</title>
+<meta name="description" content="Session keys make a dapp frontend feel like a normal app until the session quietly dies. The four ways it ends, why your UI finds out last, and how I handle it." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Session keys and the frontend: the session ends before your UI notices — Harman Kamboj" />
+<meta property="og:description" content="Session keys make a dapp frontend feel like a normal app until the session quietly dies. The four ways it ends, why your UI finds out last, and how I handle it." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/session-keys-frontend.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Session keys and the frontend: the session ends before your UI notices — Harman Kamboj" />
+<meta name="twitter:description" content="Session keys make a dapp frontend feel like a normal app until the session quietly dies. The four ways it ends, why your UI finds out last, and how I handle it." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/session-keys-frontend.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Session keys and the frontend: the session ends before your UI notices","description":"Session keys make a dapp frontend feel like a normal app until the session quietly dies. The four ways it ends, why your UI finds out last, and how I handle it.","datePublished":"2026-07-27","dateModified":"2026-07-27","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/session-keys-frontend.html","url":"https://hammyasf.github.io/session-keys-frontend.html","keywords":"Session keys, Account Abstraction, Web3, Frontend","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .rel{margin:44px 0 0;padding:26px 30px;border:1px solid var(--line);border-radius:18px;background:rgba(237,242,239,.02);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin:0 0 6px;}
+  .rel ul{margin:10px 0 0;display:grid;gap:9px;list-style:none;}
+  .rel li{position:relative;padding-left:18px;font-size:15.5px;}
+  .rel li::before{content:"→";position:absolute;left:0;color:var(--accent);}
+  .rel a{color:var(--muted);}.rel a:hover{color:var(--accent);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Session keys and the frontend: the session ends before your UI notices</h1>
+   <div class="pmeta"><span>July 27, 2026</span><span>6 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>Session keys</span><span>Account Abstraction</span><span>Web3</span><span>Frontend</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>Every swap and bridge screen I have shipped collected the same complaint. Too many wallet popups. You click a thing, a modal slides in, you squint at a hex string, you approve, and then twenty seconds later you do it again. Session keys are the answer the ecosystem landed on, and they work: a temporary key with narrow permissions signs on the user's behalf so the app stops interrupting them. What almost nobody designs for is the ending. Your frontend is the last part of the system to learn that a session key stopped working.</p>
+<p>I have not shipped a session-key flow at Shiba Inu scale, so take this as an opinion formed from the thing session keys replace. I built the <a href="token-swap-frontend-pitfalls.html">swap frontends</a> and the <a href="shiba-inu.html">bridge UI</a> where every action meant a signature, and I have spent enough time in that code to know exactly which assumption is about to bite people.</p>
+<h2>What a session key actually hands your frontend</h2>
+<p>The mechanics are simple enough. The app generates a keypair, the user authorizes it once against their smart account under constraints, and from then on the app signs locally and submits without a prompt. The constraints usually cover an expiry time, a spend cap, a list of contracts or function selectors it can touch, and sometimes a call count.</p>
+<p>Notice what moved. Signing authority used to live in the wallet, which is a thing your app can query and which fires events when it changes. Now a slice of that authority lives in a temporary credential your app is holding, governed by rules enforced on-chain, in a contract your frontend is not subscribed to. You have taken over responsibility for state you have no reliable way to observe.</p>
+<h2>Why session keys break the frontend state model</h2>
+<p>Most dapp state machines have one boolean that means everything: connected. Wallet connected, therefore user can act. It is wrong now, and it was already getting wrong when <a href="eip-7702-frontend.html">EIP-7702 made a plain address able to carry code</a>. With session keys the gap widens, because a connected wallet and a working session are two different facts and only one of them has an event listener.</p>
+<p>A session can die in at least four ways, and your app sees none of them directly.</p>
+<ul><li>Time runs out. The validity window closes. This one is at least predictable if you stored the expiry, which plenty of implementations do not bother to surface.</li><li>The user revokes it. Maybe from their wallet's permission screen, maybe on a different device, maybe from a security tool. Your tab has no idea.</li><li>The budget is spent. The spend cap or the call count is exhausted, so validation now fails on a session your UI still considers healthy.</li><li>The account changed underneath you. The user upgraded their account, swapped a validator module, or re-delegated. The session key was attached to a configuration that no longer exists.</li></ul>
+<p>In every case the first signal your frontend gets is a failed user operation, and bundler rejections are famously unhelpful. A validation failure code does not tell you whether the session expired, got revoked, or ran out of allowance. So the user sees a generic red toast and reloads the page, which is the worst possible outcome for a feature whose entire purpose was to make the app feel calm.</p>
+<h2>The standardisation gap makes this worse</h2>
+<p>If session keys were one standard you could write one handler. They are not. What a session key is allowed to do, how it is stored, and how it gets revoked all vary by SDK. A revoke button in one wallet may not touch a session your app created through a different stack. You cannot assume the user's wallet and your session logic agree about what is currently permitted.</p>
+<p>Practical consequence: never treat a wallet-side revoke as the whole revocation story. If the session key can be killed from your side too, build that path, and build the check that notices when someone else killed it.</p>
+<h2>What I would build instead of a connected boolean</h2>
+<p>Treat the session as a lease with a visible remaining balance, not a login. Concretely, the things I would insist on:</p>
+<ul><li>Store the full permission envelope, not just the key. Expiry, cap, spent so far, allowed targets. If you cannot render what the session is still permitted to do, you cannot warn the user before it fails.</li><li>Check permissions before you sign, not after the bundler rejects you. Cheap local checks against the stored envelope catch the common cases with zero latency.</li><li>Use a safety margin on expiry. A session with forty seconds left will pass a local timestamp check and still be past its validity window by the time it lands on-chain. I would refuse anything inside a minute or two of expiry and re-authorise instead.</li><li>Re-authorise proactively. Ask for a fresh session while the user is idle or between actions, not in the middle of the transaction they care about.</li><li>Reconcile on focus. When the tab wakes up, re-read the on-chain permission state before letting the user act. That is where a revoke from another device gets caught.</li></ul>
+<p>On storage, I would keep the session key as a non-extractable WebCrypto key in IndexedDB rather than a string in localStorage. Same convenience, but a script that gets into your page can use the key while the tab is open instead of walking away with it. Given that a stolen session key lets someone act without ever touching the main key, that difference is worth the extra hour of work.</p>
+<h2>The scope people get wrong</h2>
+<p>The temptation is to ask for a wide session once so you never have to ask again. Broad target lists, generous caps, long expiry. It tests beautifully and it is how a small bug becomes a large withdrawal.</p>
+<p>There is a second cost that is easier to miss. Session keys usually ship alongside sponsored gas, and I have already written about how <a href="gasless-transactions-paymaster.html">a paymaster is not actually free</a>. Stack the two and the user stops feeling anything at all: no prompt, no fee, no friction. That is the goal right up until the moment small amounts start leaking and nobody notices because nothing ever asked. Somewhere in that flow the app still owes the user a running total of what it has spent on their behalf.</p>
+<h2>What I tell teams now</h2>
+<p>Design the ending first. Before you write the code that creates a session, write the screen that appears when the session is gone, and decide how you detect each of the four deaths above. Sessions are a UX feature whose hard part is failure, the same way an <a href="intent-based-swaps-frontend.html">intent-based swap UI</a> stops being about the happy path the moment a solver does not fill.</p>
+<p>Get that right and session keys are the best onboarding improvement this ecosystem has produced in years. Get it wrong and you have built an app that occasionally, silently, stops working with no explanation. More of my notes on this stuff live in my <a href="web3.html">Web3 writing</a>.</p>
+   <div class="rel">
+     <h2>Related in Web3</h2>
+     <ul>
+       <li><a href="eip-7702-frontend.html">EIP-7702 changed what your frontend can assume about a wallet</a></li>
+       <li><a href="gasless-transactions-paymaster.html">Gasless transactions are not free: what a paymaster costs</a></li>
+       <li><a href="token-swap-frontend-pitfalls.html">Token swap frontend pitfalls</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If your wallet flows or the hard part of your product is fighting you, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="dynamic-tool-selection-agents.html">Dynamic tool selection: why loading every tool wrecks your agent's accuracy →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>

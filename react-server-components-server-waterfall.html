@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>React Server Components did not kill the waterfall, they moved it to the server — Harman Kamboj</title>
+<meta name="description" content="React Server Components do not delete the data waterfall, they move it server-side where it hides. How the server-side waterfall forms and how I unwind it." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="React Server Components did not kill the waterfall, they moved it to the server — Harman Kamboj" />
+<meta property="og:description" content="React Server Components do not delete the data waterfall, they move it server-side where it hides. How the server-side waterfall forms and how I unwind it." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/react-server-components-server-waterfall.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="React Server Components did not kill the waterfall, they moved it to the server — Harman Kamboj" />
+<meta name="twitter:description" content="React Server Components do not delete the data waterfall, they move it server-side where it hides. How the server-side waterfall forms and how I unwind it." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/react-server-components-server-waterfall.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"React Server Components did not kill the waterfall, they moved it to the server","description":"React Server Components do not delete the data waterfall, they move it server-side where it hides. How the server-side waterfall forms and how I unwind it.","datePublished":"2026-07-23","dateModified":"2026-07-23","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/react-server-components-server-waterfall.html","url":"https://hammyasf.github.io/react-server-components-server-waterfall.html","keywords":"React, Next.js, React Server Components, Waterfall, Performance, Full-stack","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  .rel{margin:40px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin-bottom:6px;}
+  .rel a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">React Server Components did not kill the waterfall, they moved it to the server</h1>
+   <div class="pmeta"><span>July 23, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>React</span><span>Next.js</span><span>RSC</span><span>Performance</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The first time I shipped a page built almost entirely from React Server Components, it was slower than the client version it replaced. Not by a rounding error. By close to a second on first load, warm cache, fast box. I had done what the migration guide asked. The fetching lived in async server components, no <code>useEffect</code> was chasing an endpoint, and the network tab looked clean. It was still slow, and it took me an embarrassingly long afternoon to see why. The React Server Components waterfall had not gone away. It had moved to the server, where devtools no longer showed it to me.</p>
+<p>That is the part nobody puts in the migration notes. Moving a fetch to the server changes where it runs. It does nothing about whether it blocks the fetch that comes after it.</p>
+<h2>What the waterfall used to look like</h2>
+<p>On the client the pattern was at least honest, because you could watch it happen. A component mounts, fires a request in an effect, waits, sets state, and only then does the child mount and fire its own request. Open the network panel and there is the staircase. Request one finishes at 200ms, request two starts at 210ms and finishes at 450ms, and the thing the user actually came for shows up at half a second even though neither call was slow by itself. We spent years learning to hoist those fetches up and colocate data with routes so the requests could leave together.</p>
+<p>RSC promised to make a lot of that disappear, and it does remove the client roundtrip. What it quietly keeps is the shape of the dependency.</p>
+<h2>The same staircase, now invisible</h2>
+<p>Here is the version that got me. A server component awaits the user, then renders a child server component that awaits that user's projects, which renders a grandchild that awaits the activity for those projects. Each await runs on the server, each one is fast, and each one still waits for the one above it to finish before it even starts. Three fetches that could have gone out at the same moment are standing in a line instead.</p>
+<p>What makes this nastier than the client version is not the raw latency. It is that you cannot see it. On the client the network panel was screaming the staircase at you. On the server the whole thing collapses into one slow response and a flame graph you have to go looking for. Nothing errors. Nothing warns. The page just takes 900ms to stream its first byte, and you shrug and decide that is the cost of server rendering.</p>
+<p>I have watched sharp engineers stare at exactly this and conclude that RSC is slow. It is not. Their fetches are queued behind each other for no reason at all.</p>
+<h2>async and await is doing what you told it to</h2>
+<p>This is worth sitting with, because the fix drops out of it. <code>await</code> means stop here until this resolves. When you await the user in the parent and then render a child that awaits the projects, you have written, in plain code, "do not even begin loading projects until the user has come back." JavaScript is honouring that to the letter. The tree structure of your components has quietly become the execution order of your data, and most of the time that ordering is an accident of where you dropped the fetch, not a real dependency.</p>
+<p>Real dependencies do exist. If you truly need the user's team id before you can ask for the team's projects, that await has earned its place. But most of the waterfalls I find are the other kind. The child needs nothing from the parent's fetch. It just happens to sit inside it in the JSX.</p>
+<h2>How I actually unwind it</h2>
+<p>The first thing I do is pull apart two questions that get tangled together. Does this fetch depend on data from another fetch, or does it only depend on a prop I could have passed down from higher up? Nearly every accidental waterfall is the second one.</p>
+<p>For fetches that do not depend on each other, I start them together. Kick off the promises in the parent without awaiting them one at a time, then hand them down or resolve them side by side with <code>Promise.all</code>. The requests all leave at once, so your slowest call sets the floor instead of your sum. On the page that first embarrassed me, that single change took first load from around 900ms to a little over 300, because the three calls I had lined up were each roughly 250ms and now overlapped.</p>
+<p>For fetches that genuinely are dependent, I stop trying to force them parallel and instead stop them from blocking the shell. Wrap the slow branch in Suspense, send the rest of the page straight away, and let the dependent part stream in when it lands. The user sees something at 150ms rather than a blank screen until the deepest fetch returns. Where you put that boundary changes what the user actually feels, which I got into in <a href="suspense-boundary-cls-streaming.html">the piece on Suspense boundaries and layout shift</a>, because a boundary in the wrong spot trades one problem for another.</p>
+<p>The mental switch that made this click was to treat data fetching as its own graph, drawn on purpose, and to stop letting it fall out of the component tree by default. The tree is how you compose UI. It is a poor way to decide the order your network calls run in.</p>
+<h2>What I check before I trust a server page</h2>
+<p>When a server-rendered route feels sluggish, caching is not where I start. I look at the fetch dependency shape first. A quick way to surface it is to log a timestamp at the start and end of each fetch on one request, then read them back in order. If call B starts a few milliseconds after call A ends, and B never needed anything A returned, you have found free latency you get to delete. Do that before you cache anything, because caching a waterfall only gives you a fast waterfall, and the first uncached visitor still pays the whole bill. Most of my <a href="nextjs-performance-real.html">Next.js performance work</a> starts here rather than at the CDN.</p>
+<p>None of this is an argument against React Server Components. I like them and I would reach for them again tomorrow. It is an argument against believing the model fixed a problem it only relocated. The waterfall is a data-dependency problem, and data-dependency problems do not care which side of the network they run on. Draw the graph, run the independent things together, stream the rest behind a boundary, and the server page finally gets as fast as you expected it to be the first time. On a product like <a href="gatheredhere.html">GatheredHere</a>, where the data was the product, that difference is the whole experience.</p>
+   <div class="rel">
+     <h2>Related in Full-stack</h2>
+     <ul>
+       <li><a href="nextjs-performance-real.html">Next.js performance, the parts that actually move the needle</a></li>
+       <li><a href="suspense-boundary-cls-streaming.html">Streaming made my CLS worse: the Suspense boundary was in the wrong place</a></li>
+       <li><a href="serverless-postgres-connection-pool.html">Why serverless keeps exhausting your Postgres connection pool</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If your product's hard part is performance under real users, the data layer, or the parts that quietly break in production, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="websocket-backpressure-browser.html">Websocket backpressure in the browser →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>

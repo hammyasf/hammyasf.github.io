@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Streaming made my CLS worse: the Suspense boundary was in the wrong place — Harman Kamboj</title>
+<meta name="description" content="Streaming fixed my LCP and hurt CLS. Why matching skeleton heights does not work, and how Suspense boundary placement decides your layout shift." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Streaming made my CLS worse: the Suspense boundary was in the wrong place — Harman Kamboj" />
+<meta property="og:description" content="Streaming fixed my LCP and hurt CLS. Why matching skeleton heights does not work, and how Suspense boundary placement decides your layout shift." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/suspense-boundary-cls-streaming.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Streaming made my CLS worse: the Suspense boundary was in the wrong place — Harman Kamboj" />
+<meta name="twitter:description" content="Streaming fixed my LCP and hurt CLS. Why matching skeleton heights does not work, and how Suspense boundary placement decides your layout shift." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/suspense-boundary-cls-streaming.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Streaming made my CLS worse: the Suspense boundary was in the wrong place","description":"Streaming fixed my LCP and hurt CLS. Why matching skeleton heights does not work, and how Suspense boundary placement decides your layout shift.","datePublished":"2026-07-19","dateModified":"2026-07-19","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/suspense-boundary-cls-streaming.html","url":"https://hammyasf.github.io/suspense-boundary-cls-streaming.html","keywords":"Suspense, CLS, Core Web Vitals, Streaming, React, Next.js, Performance","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  .rel{margin:40px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin-bottom:6px;}
+  .rel a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Streaming made my CLS worse: the Suspense boundary was in the wrong place</h1>
+   <div class="pmeta"><span>July 19, 2026</span><span>6 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>React</span><span>Next.js</span><span>Core Web Vitals</span><span>Performance</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>The pitch for streaming is easy to like. Stop blocking the whole page on your slowest query, send the shell immediately, let the slow parts arrive when they are ready. First paint gets faster, LCP drops, the demo looks great on a fast laptop. Then the field data comes back a week later and your layout shift score is worse than before you touched anything. If your Suspense boundary CLS numbers went up after you added streaming, the boundary itself is rarely the problem. Where you put it is.</p>
+<p>I have shipped a fair amount of Next.js and React work where this exact tradeoff decided whether a page felt fast or felt broken, and I keep seeing teams optimise the wrong half of it. So here is how I think about it now.</p>
+<h2>What is actually moving</h2>
+<p>When a boundary resolves, React swaps your fallback out and drops the real content in its place. The browser reflows. If the skeleton was 180 pixels tall and the thing that arrives is 460, every element below it jumps down by 280 pixels. That jump is a layout shift, and the browser scores it by how much of the viewport moved and how far it travelled. Nobody clicked anything, nobody scrolled, the page just rearranged itself under the user's thumb.</p>
+<p>The advice you will find everywhere is to make your skeleton the same size as the content it replaces. That is correct and it is also the part most teams cannot actually do.</p>
+<h2>Why matching skeleton heights falls apart</h2>
+<p>Matching works when the content has a known fixed size. An avatar, a price, a chart with a set aspect ratio. It stops working the moment the server decides how much comes back.</p>
+<ul>
+  <li>A list of results is however long the query says it is. Your skeleton renders five rows and the API sends nine.</li>
+  <li>Text wraps differently at every breakpoint. A skeleton you tuned on a 1440 pixel monitor can be sixty pixels off on a phone, and CLS is measured on the phone.</li>
+  <li>Content that appears conditionally, like a warning banner or an empty state, exists in one branch and not the other.</li>
+  <li>Fonts land at different times. Your skeleton uses the fallback metrics, the real text uses the web font, and the line count changes.</li>
+</ul>
+<p>You can chase all of that. I have chased it. You end up with skeleton components that carry more layout logic than the components they stand in for, and they drift out of sync the first time someone edits the real one and forgets the fake one.</p>
+<h2>Position decides the damage, not height</h2>
+<p>Here is the thing that changed how I place boundaries. A layout shift only counts if it moves content that is currently visible. Everything below the fold contributes nothing, because it was never on screen to move.</p>
+<p>So the same 280 pixel mismatch is either a disaster or completely free depending on where it sits. Put that boundary in a hero section and it drags the entire page down while the user is reading. Put it in a section three screens down, and the fallback resolves long before anyone scrolls to it. Same skeleton, same mismatch, one of them costs you the metric and the other one does not.</p>
+<p>Which gives a rule I actually apply: stream the things below the fold, and block on the things above it. If a query is slow and its output has to be at the top of the page, streaming it is usually the wrong call. Waiting a little longer for a page that arrives whole beats a page that arrives fast and then rearranges itself. Users forgive a slightly slower load. They do not forgive tapping a button that moved.</p>
+<h2>How I place boundaries now</h2>
+<p>First question is whether the slow content needs to be above the fold at all. A lot of the time it got there because of a design decision nobody has revisited, and moving it down solves the performance problem and nothing else changes.</p>
+<p>If it has to stay at the top and the query is slow, I fix the query rather than hide it behind a skeleton. Cache it, precompute it, split it so the part that renders first is cheap. Streaming is a way to reorder work, not a way to make slow work fast, which is roughly the argument I made in my notes on <a href="nextjs-performance-real.html">what actually makes a Next.js app fast</a>.</p>
+<p>Below the fold I stream freely and I stop agonising over exact skeleton dimensions. I still give the container a sensible <code>min-height</code> so the page does not collapse and then expand, but I am no longer trying to match pixel for pixel, because it does not pay for itself down there.</p>
+<p>And I never use <code>fallback={null}</code>. That is a boundary with no reserved space at all, so whatever arrives pushes everything after it. It looks tidy in the code and it is the worst option for the metric.</p>
+<h2>Streaming is not your only source of shift</h2>
+<p>Worth checking before you blame Suspense. Content that renders differently after hydration will shift too. A date formatted in the user's locale, a nav bar that swaps once auth resolves, a client-only widget that renders nothing on the server. None of that shows up while you are developing on a fast machine with warm caches, and all of it lands in field data.</p>
+<p>Re-render behaviour feeds into this as well, since a component that recalculates and resizes on every state change is doing small shifts continuously rather than one big one. I wrote separately about <a href="react-rerenders.html">why React components re-render more than you think</a>, and the debugging approach carries over.</p>
+<h2>Measure it where it happens</h2>
+<p>A Lighthouse run gives you one scripted load on a simulated connection with no scrolling and no interaction. Field CLS is collected across the whole page lifetime, including shifts that happen when a real person scrolls into a boundary that had not resolved yet. Those two numbers can disagree loudly, and the field one is what ranks.</p>
+<p>The tools I reach for are the Chrome DevTools performance panel with layout shift regions turned on, which literally paints a box over what moved, and the web-vitals library built with attribution, which hands you the specific element responsible instead of a score. Once you know which element it is, the fix is usually obvious and usually takes ten minutes. Finding it is the whole job.</p>
+<h2>The short version</h2>
+<p>Streaming trades one problem for another. You get a faster first paint and you accept that parts of the page will arrive late and move things. That trade is good below the fold and bad above it, and no amount of skeleton tuning changes which side of the fold you are on. Decide where the boundary goes first, then worry about what the fallback looks like.</p>
+<p>If you want the rest of how I approach this kind of work, it is collected in my <a href="full-stack.html">full-stack and performance notes</a>, and the <a href="gatheredhere.html">GatheredHere build</a> is a decent example of the Next.js side of it in production.</p>
+   <div class="rel">
+     <h2>Related in Full-stack</h2>
+     <ul>
+       <li><a href="nextjs-performance-real.html">What actually makes a Next.js app fast</a></li>
+       <li><a href="react-rerenders.html">Why your React components re-render more than you think</a></li>
+       <li><a href="real-time-ui-stale-data.html">Why your real-time UI lies after a websocket reconnect</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If your product's hard part is performance under real users, the data layer, or the parts that quietly break in production, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="intent-based-swaps-frontend.html">What an intent-based swaps frontend has to stop promising →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>

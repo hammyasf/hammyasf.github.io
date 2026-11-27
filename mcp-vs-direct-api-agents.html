@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MCP or a direct API call? When I skip the tool server — Harman Kamboj</title>
+<meta name="description" content="MCP vs direct API for an AI agent: when the tool server earns its place, when a plain API call is less code and fewer failure modes, and the test I use." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="MCP or a direct API call? When I skip the tool server — Harman Kamboj" />
+<meta property="og:description" content="MCP vs direct API for an AI agent: when the tool server earns its place, when a plain API call is less code and fewer failure modes, and the test I use." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/mcp-vs-direct-api-agents.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="MCP or a direct API call? When I skip the tool server — Harman Kamboj" />
+<meta name="twitter:description" content="MCP vs direct API for an AI agent: when the tool server earns its place, when a plain API call is less code and fewer failure modes, and the test I use." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/mcp-vs-direct-api-agents.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"MCP or a direct API call? When I skip the tool server","description":"MCP vs direct API for an AI agent: when the tool server earns its place, when a plain API call is less code and fewer failure modes, and the test I use.","datePublished":"2026-07-06","dateModified":"2026-07-06","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/mcp-vs-direct-api-agents.html","url":"https://hammyasf.github.io/mcp-vs-direct-api-agents.html","keywords":"AI, Agents, MCP, Tooling","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .related{margin:46px 0 0;padding:26px 0 0;border-top:1px solid var(--line);}
+  .related h4{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:14px;}
+  .related a{display:block;color:var(--muted);font-family:var(--body);font-size:16px;padding:7px 0;border-bottom:1px solid rgba(237,242,239,.05);}
+  .related a:hover{color:var(--accent);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a> / <a href="ai.html">AI &amp; agents</a></div>
+   <h1 class="ptitle">MCP or a direct API call? When I skip the tool server</h1>
+   <div class="pmeta"><span>July 6, 2026</span><span>5 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>AI</span><span>Agents</span><span>MCP</span><span>Tooling</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>I have wired agents to tools a few different ways over the last couple of years, and the honest answer nobody wants at the start of a project is that the MCP vs direct API question is not a moral choice. It is a plumbing decision. Half the teams I talk to reach for an MCP server the moment they hear the word agent, then spend a week debugging a transport layer they never needed.</p>
+<p>So let me lay out what the Model Context Protocol is good at, because it is good at real things, and then when I quietly skip it and just call the API.</p>
+<h2>What MCP actually buys you</h2>
+<p>MCP standardizes how an agent discovers and calls tools. You write a server once, and any MCP-aware client can use it without you hand-rolling a fresh integration each time. That pays off when you have many clients, or many tools, or when people outside your team will plug into the surface you expose. For a platform play it is the right shape, and the discovery story is genuinely nice once you have five agents and twenty tools sharing the same catalog.</p>
+<p>The catch is that all of that generality has a price, and you pay it whether or not you actually need the generality.</p>
+<h2>When I skip MCP and call the API directly</h2>
+<p>If my agent talks to one or two services that I own, I skip the server and call the API straight from the tool function. No separate process, no transport to babysit, no schema handshake over the wire. The model gets a small set of typed functions, each one a thin wrapper over an HTTP call or a database query, and that is the whole thing.</p>
+<p>Here is why I lean this way more often than the current hype suggests:</p>
+<ul><li>One less moving part. An MCP server is another process to run and deploy and watch. When it hangs, your agent hangs, and now you are debugging two systems instead of one.</li><li>Tighter schemas. When I own the tool function I shape the input and the output exactly for this agent. A generic MCP surface tends to hand the model everything, and that bloats the context window fast. I got into this in <a href="mcp-server-context-window.html">your MCP server is eating the context window</a>. A hand-written tool returns the three fields the model needs, not the forty the API happens to send back.</li><li>Faster iteration. Changing a direct tool means editing a function. Changing an MCP tool means editing a function, restarting a server, and re-checking that the client picked up the new schema.</li><li>Error handling I control. I can catch the specific failure, retry against a budget, and give the model a clean message instead of a raw stack trace. That is much easier when the call lives inside my own code.</li></ul>
+<h2>The test I actually use</h2>
+<p>Before I add an MCP server I ask one question: will this tool be reused by clients I do not own? If yes, MCP earns its place, because a standard interface is the entire point of it. If the answer is no, and early on it usually is, a direct call is less code and fewer ways to fail.</p>
+<p>The second question is about count. One agent hitting a couple of internal services does not need a protocol sitting in front of it. A fleet of agents pulling from a growing library of tools across several teams does, because at that scale the standard saves you from writing the same glue over and over. Between those two worlds there is a real line, and most projects live well below it for a long time.</p>
+<h2>Where an MCP server is worth it</h2>
+<p>I do not want this to read as anti-MCP, because it is not. When I built product surfaces on top of on-chain data at Shiba Inu, the value of a shared, well-described interface was obvious the moment more than one thing needed to read the same data. That is the situation MCP is built for: many consumers, one contract, and a discovery mechanism so nobody has to memorize your endpoints. If you are shipping a tool platform other developers will build against, reaching for the protocol early is the correct call, not premature.</p>
+<p>The mistake is adopting it for the future you imagine instead of the system you have. Teams stand up a server, wrap one internal API in it, and now every request takes an extra hop through a process that exists to solve a problem they will not have for months. You can always move a direct tool behind an MCP server later. Ripping out a protocol you leaned on too early is the expensive direction.</p>
+<h2>The part that matters either way</h2>
+<p>There is a subtler trap worth naming. Wrapping an API in MCP does not make that API ready for an agent. If the underlying endpoint returns a giant blob, paginates awkwardly, or fails in ways the model cannot read, the protocol passes all of that straight through. The work of making a tool good for an agent, meaning small inputs, small outputs, readable errors, and <a href="idempotent-tool-calls-agents.html">idempotent writes</a>, is the same work no matter how the call is transported. I care far more about that than about which side of the MCP line I land on.</p>
+<h2>How I would start today</h2>
+<p>If I were beginning a new agent this week, I would write the tools as plain functions, get the <a href="agent-architecture-basics.html">loop working end to end</a>, and feel where it actually hurts. Most projects never outgrow that setup. The ones that do, usually because tools need to be shared across teams or handed to outside developers, are exactly the cases where MCP stops being overhead and turns into leverage. You will know when you get there without guessing, because maintaining the same integration in three places gets loud in a hurry.</p>
+<p>MCP is a strong answer to a specific question. Just make sure you are asking that question before you build for it. For more of how I think about this stuff, the <a href="ai.html">AI and agents</a> hub collects the rest.</p>
+   <div class="cta-final">
+  <h3>Building agents that touch real systems?</h3>
+  <p>I am open to senior full-stack, AI, or Web3 engineering roles, fully remote and any timezone. If the tooling layer or the hard part of your agent is fighting you, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="related">
+     <h4>Related in AI &amp; agents</h4>
+     <a href="mcp-server-context-window.html">Your MCP server is eating the context window</a>
+     <a href="multi-agent-systems-overhead.html">Most multi-agent systems do not need to be multi-agent</a>
+     <a href="agent-architecture-basics.html">Agent architecture basics, minus the hype</a>
+   </div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="ai-agent-onchain-data.html">Giving an AI agent on-chain data? Do not start with raw RPC →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>

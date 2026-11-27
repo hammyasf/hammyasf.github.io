@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dynamic tool selection: why loading every tool wrecks your agent's accuracy — Harman Kamboj</title>
+<meta name="description" content="Dynamic tool selection keeps an agent accurate. Why loading every tool at once tanks tool-calling accuracy, and how I filter the toolset at runtime." />
+<meta name="author" content="Harman Kamboj" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#07100e" />
+<meta property="og:title" content="Dynamic tool selection: why loading every tool wrecks your agent's accuracy — Harman Kamboj" />
+<meta property="og:description" content="Dynamic tool selection keeps an agent accurate. Why loading every tool at once tanks tool-calling accuracy, and how I filter the toolset at runtime." />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Harman Kamboj" />
+<meta property="og:url" content="https://hammyasf.github.io/dynamic-tool-selection-agents.html" />
+<meta property="og:image" content="https://hammyasf.github.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Dynamic tool selection: why loading every tool wrecks your agent's accuracy — Harman Kamboj" />
+<meta name="twitter:description" content="Dynamic tool selection keeps an agent accurate. Why loading every tool at once tanks tool-calling accuracy, and how I filter the toolset at runtime." />
+<meta name="twitter:image" content="https://hammyasf.github.io/og-image.png" />
+<link rel="canonical" href="https://hammyasf.github.io/dynamic-tool-selection-agents.html" />
+<link rel="alternate" type="application/rss+xml" title="Harman Kamboj — Writing" href="https://hammyasf.github.io/feed.xml" />
+<link rel="icon" href="favicon.svg" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Dynamic tool selection: why loading every tool wrecks your agent's accuracy","description":"Dynamic tool selection keeps an agent accurate. Why loading every tool at once tanks tool-calling accuracy, and how I filter the toolset at runtime.","datePublished":"2026-07-25","dateModified":"2026-07-25","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"publisher":{"@type":"Person","name":"Harman Kamboj"},"mainEntityOfPage":"https://hammyasf.github.io/dynamic-tool-selection-agents.html","url":"https://hammyasf.github.io/dynamic-tool-selection-agents.html","keywords":"AI, Agents, Tool calling, MCP","image":"https://hammyasf.github.io/og-image.png"}</script>
+<style>
+  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#5f726b;
+  --line:rgba(237,242,239,.10);--line-2:rgba(237,242,239,.20);--accent:#2be3b0;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--accent-2:#14c3c9;
+  --display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.09),transparent 55%);background-attachment:fixed;}
+  a{color:inherit;text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
+  body::after{content:"";position:fixed;inset:0;z-index:55;pointer-events:none;opacity:.3;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");}
+  .wrap{max-width:760px;margin:0 auto;padding:0 40px;}@media(max-width:640px){.wrap{padding:0 22px;}}
+  nav{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(var(--surfaceRGB),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav-in{max-width:1080px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
+  .nav-r{display:flex;gap:22px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .nav-r a:hover{color:var(--ink);}
+  .nav-btn{background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:13px;padding:9px 16px;border-radius:100px;}
+  .phead{padding:150px 0 30px;}
+  .crumb{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase;}
+  .crumb a{color:var(--accent);}
+  .pmeta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--faint);display:flex;gap:16px;flex-wrap:wrap;}
+  h1.ptitle{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.05;font-size:clamp(34px,5.5vw,60px);margin-top:14px;}
+  .ptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .ptags span{font-family:var(--mono);font-size:11.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:4px 10px;border-radius:7px;}
+  article.post{padding:24px 0 10px;}
+  article.post p{font-size:18px;color:#d3ded9;margin:22px 0;}
+  article.post h2{font-family:var(--display);font-weight:600;font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;margin:44px 0 4px;}
+  article.post ul{margin:18px 0;display:grid;gap:11px;list-style:none;}
+  article.post li{position:relative;padding-left:24px;font-size:17px;color:#d3ded9;}
+  article.post li::before{content:"";position:absolute;left:2px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  article.post strong{color:var(--ink);font-weight:700;}
+  article.post code{font-family:var(--mono);font-size:.86em;background:rgba(237,242,239,.06);border:1px solid var(--line);padding:2px 6px;border-radius:5px;}
+  article.post a{color:var(--accent);border-bottom:1px solid rgba(var(--accentRGB),.4);}
+  .rel{margin:44px 0 0;padding:26px 30px;border:1px solid var(--line);border-radius:18px;background:rgba(237,242,239,.02);}
+  .rel h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;margin:0 0 6px;}
+  .rel ul{margin:10px 0 0;display:grid;gap:9px;list-style:none;}
+  .rel li{position:relative;padding-left:18px;font-size:15.5px;}
+  .rel li::before{content:"→";position:absolute;left:0;color:var(--accent);}
+  .rel a{color:var(--muted);}.rel a:hover{color:var(--accent);}
+  .cta-final{margin:48px 0 0;padding:38px;border:1px solid rgba(var(--accentRGB),.28);border-radius:22px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
+  .cta-final h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;}
+  .cta-final p{margin-top:10px;color:#cdd8d3;font-size:16px;}
+  .btn{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:var(--body);font-weight:700;font-size:15px;padding:13px 24px;border-radius:100px;background:var(--accent);color:#07100e;transition:transform .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .pager{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:46px;padding:30px 0 10px;font-family:var(--mono);font-size:13px;}
+  .pager a{color:var(--muted);}.pager a:hover{color:var(--accent);}
+  footer{border-top:1px solid var(--line);margin-top:60px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
+  footer .wrap{max-width:1080px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;}}
+</style>
+</head>
+<body>
+<nav><div class="nav-in"><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="nav-r"><a href="index.html#work">Work</a><a href="blog.html">Writing</a><a href="index.html#about">About</a><a class="nav-btn" href="index.html#contact">Hire me</a></div></div></nav>
+<main>
+ <header class="phead"><div class="wrap">
+   <div class="crumb"><a href="index.html">Home</a> / <a href="blog.html">Writing</a></div>
+   <h1 class="ptitle">Dynamic tool selection: why loading every tool wrecks your agent's accuracy</h1>
+   <div class="pmeta"><span>July 25, 2026</span><span>6 min read</span><span>By Harman Kamboj</span></div>
+   <div class="ptags"><span>AI</span><span>Agents</span><span>Tool calling</span><span>MCP</span></div>
+ </div></header>
+ <article class="post"><div class="wrap">
+   <p>Give an agent one tool and it uses it well. Give it eighty and it starts guessing. I ran into this the first time I wired a support agent to what felt like a sensible kit, maybe thirty tools spread across a couple of MCP servers, and watched it call the wrong one with total confidence. It did not fail loudly. It picked a plausible neighbour, borrowed half the arguments from a different tool's schema, and handed back something that read fine until I actually checked it. The fix was not a smarter model. It was dynamic tool selection: at each step, only show the agent the few tools that step could plausibly need.</p>
+<p>I have been putting LLM features and small agents into real products for a while now, and this one surprised me because it runs against the obvious instinct. More capability should mean a more capable agent. With tools it goes the other way past a certain point, and the drop is steeper than you would expect.</p>
+<h2>The accuracy cliff nobody warns you about</h2>
+<p>A 2026 study that benchmarked this put numbers on what I had been feeling. Tool-calling accuracy sat around 78 percent with ten tools in the prompt and fell to roughly 14 percent once the catalog crossed a hundred. On a narrower slice, scheduling tasks, going from four tools to about fifty dragged accuracy down into the low single digits. Same model, same questions. The only thing that changed was how many tools it had to choose between.</p>
+<p>That is not a gentle slope you can ignore until later. It is a cliff, and most teams walk off it without noticing because nothing throws an error. The agent keeps answering. It just answers wrong a little more often, and each wrong call is a whole round trip of latency and tokens spent on a mistake.</p>
+<h2>Why more tools make the model worse</h2>
+<p>When I looked at the bad calls, three things kept showing up, and none of them are mysterious once you see them.</p>
+<ul><li>Attention spreads thin. The model has to weigh every tool description against the request. Add forty near-identical descriptions and the signal for the right one gets buried under the noise of the almost-right ones.</li><li>Similar tools blur together. Two tools named <code>search_orders</code> and <code>find_order</code> with overlapping descriptions are a coin flip. The model does not know your naming history. It only has the text you gave it.</li><li>Arguments bleed across schemas. This was the sneaky one. The model would pick the correct tool and then fill a field with a parameter that belonged to a sibling tool, because both schemas were sitting in the same prompt and it stitched them together.</li></ul>
+<p>None of these are the model being dumb. They are what happens when you ask anything to discriminate between dozens of options that were written to sound alike.</p>
+<h2>This is the same disease as context bloat</h2>
+<p>If you have read my piece on how <a href="mcp-server-context-window.html">an MCP server eats the context window</a>, this will feel familiar, because it is the same problem wearing a different hat. Every tool you register ships its full schema into the prompt on every call. That is permanent rent on your context, and it feeds the slow decay I wrote about in <a href="context-rot-long-running-agents.html">context rot</a>. The tool selection failure and the context bloat failure are two symptoms of one habit: handing the model everything you have instead of the little it needs right now.</p>
+<p>So the fix is the same shape too. Stop treating the tool list as a fixed manifest you set once at startup, and start treating it as something you assemble per step.</p>
+<h2>How I actually filter the toolset</h2>
+<p>The pattern that works for me is to keep the full catalog outside the prompt and retrieve into it. Embed the tool descriptions once, embed the user's request plus the current plan, and pull only the top handful of tools that match before each decision. The research world calls this tool retrieval or tool RAG, but the instinct is old. Return a tight slice, not the whole dataset. It is exactly the discipline I leaned on building the query layer behind <a href="elasticswap.html">ElasticSwap</a>, where the difference between a fast product and a frozen one was refusing to hand back everything at once.</p>
+<p>A few things I have learned doing this:</p>
+<ul><li>Retrieve on the evolving plan, not just the first message. What the agent needs at step five is not what it needed at step one, so I re-select as the task moves rather than picking a fixed set up front.</li><li>Pin a small core. A few tools get used constantly. Those I always include so retrieval never has to rediscover them, and I let the search fill the rest of the slots.</li><li>Group by phase when the work is stateful. If the agent is clearly in a read phase versus a write phase, I gate the write tools behind that state instead of paying to embed them every turn. This pairs well with the <a href="mcp-vs-direct-api-agents.html">skip the tool server</a> call for the boring, always-safe stuff.</li></ul>
+<p>The reported gains line up with what I have seen. That same benchmark moved from about 14 percent accuracy with the full catalog exposed to around 43 percent once it filtered the toolset by retrieval, and cut prompt tokens by more than half at the same time. Cheaper and sharper, from the same model.</p>
+<h2>Where retrieval bites back</h2>
+<p>I am not going to pretend this is free. The moment the right tool lives behind a retrieval step, a retrieval miss means the agent literally cannot see the tool it needs, and then it does something worse than pick wrong: it gives up or hallucinates a tool that does not exist. So the failure mode moves rather than vanishing, and you have to watch the new one.</p>
+<p>What that changes in practice is where the care goes. Tool descriptions matter more now, not less, because the retriever reads them the same way the model used to. Your similarity threshold needs tuning against real traffic, since too tight drops the right tool and too loose brings the noise back. And you want to log the misses, the times the correct tool was not in the retrieved set, because that number tells you whether your descriptions and threshold are honest. I treat that like any other reliability metric, the same way I think about <a href="idempotent-tool-calls-agents.html">retries not corrupting real data</a>.</p>
+<h2>The rule I follow now</h2>
+<p>Register few, expose fewer. When I am building an agent I still keep the full toolset available, but the prompt on any given step sees only what that step could use. The cheap test before you reach for a bigger model: count the tools in active rotation. If it is past fifteen or twenty and accuracy is soft, the model is not the problem, the menu is. Trim what it sees and the same model gets its judgement back.</p>
+<p>Most agent failures I get called in to untangle are this, or its cousin the overstuffed context. Not a weak model, a model buried under options nobody curated. I keep more notes like this in my <a href="ai.html">AI writing</a>, and the rest of the work is on the <a href="index.html">homepage</a>.</p>
+   <div class="rel">
+     <h2>Related in AI</h2>
+     <ul>
+       <li><a href="mcp-server-context-window.html">Your MCP server is eating the context window</a></li>
+       <li><a href="mcp-vs-direct-api-agents.html">MCP or a direct API call? When I skip the tool server</a></li>
+       <li><a href="multi-agent-systems-overhead.html">Most multi-agent systems do not need to be multi-agent</a></li>
+     </ul>
+   </div>
+   <div class="cta-final">
+  <h3>Building something where this matters?</h3>
+  <p>I am open to senior full-stack, Web3, or AI engineering roles, fully remote and any timezone. If your agent is fumbling its tools or the hard part of your product is fighting you, that is the work I like.</p>
+  <a class="btn" href="index.html#contact">Get in touch →</a>
+</div>
+   <div class="pager">
+     <a href="blog.html">← All writing</a>
+     <a href="react-server-components-server-waterfall.html">React Server Components moved the waterfall to the server →</a>
+   </div>
+ </div></article>
+</main>
+<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Patiala, India · Remote</span><a href="index.html">← Portfolio</a></div></footer><script>(function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});})();</script>
+<script src="enhance.js" defer></script>
+</body></html>
