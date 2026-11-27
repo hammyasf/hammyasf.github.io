@@ -105,6 +105,14 @@ h1.ptitle { margin: 16px 0 14px; font-size: clamp(32px, 5vw, 50px); line-height:
 .cta-final__row { display: flex; flex-wrap: wrap; gap: 12px; }
 .cta-final .btn { color: var(--coral-dk); padding: 14px 20px; font-size: 16px; box-shadow: 0 3px 0 #96331f, 0 6px 14px rgba(84,46,30,.25); }
 
+/* hire pages: the lede under the title, proof links as chips, and the ask on cream so the coral recruit button (.btn.hot) reads */
+.bhero.lede { margin: 0; max-width: 62ch; font-size: 19px; line-height: 1.6; }
+.proof { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.proof .chip { text-decoration: none; }
+.cta-final--hire { --patch-bg: color-mix(in srgb, var(--coral) 14%, var(--cream)); --patch-thread: var(--coral-dk); color: var(--ink); }
+.cta-final--hire .btn { color: var(--coral-dk); }
+.cta-final--hire .btn.hot { color: #fff; }
+
 /* related posts: small stitched cards, each tilted its own way, with a felt tab on top */
 .related { margin-top: 46px; }
 .related h2 { margin: 0 4px 16px; font-size: clamp(21px, 2.6vw, 25px); }
