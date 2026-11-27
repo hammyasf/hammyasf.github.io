@@ -76,6 +76,8 @@ export function route(from, to) {
 
 export const site = (id) => SITES.find((s) => s.id === id);
 export const islandById = islandOf;
+/** The building model for a case id, or null when there is none. */
+export const kindFor = (id) => site(id)?.kind ?? null;
 
 export const BRIDGE_SAG = 0.28;
 /** Height of the walking surface: 0 on the islands, a gentle sag along the rope bridge. */

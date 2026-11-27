@@ -336,6 +336,8 @@ function buildShop() {
 }
 
 const BUILDERS = { arcade: buildArcade, tower: buildTower, theater: buildTheater, camp: buildCamp, cottage: buildCottage, pavilion: buildPavilion, kiosk: buildKiosk, studio: buildStudio, toybox: buildToybox, shop: buildShop };
+/** One building on its own, for the case-page vignette: { g, depth, height }. */
+export const buildBuilding = (kind) => BUILDERS[kind]();
 const SHORT = { koji: 'Gometa (Koji)', 'arch-mhf': 'Mental Health Foundation', aftertutor: 'Aftertutor · Bewakoof', openspeaker: 'Endeavor (OpenSpeaker)' };
 const RECRUIT_CARD = { kind: 'Recruit', title: 'Recruit Harman', role: 'Applied AI and full-stack engineer · Chandigarh, remote',
   items: ['13+ years of production work across AI, crypto, enterprise, healthcare and e-commerce.', 'Starts now. Full-time with the right team; short contracts meanwhile.'], recruit: true };

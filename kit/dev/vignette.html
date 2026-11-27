@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vignette dev page</title>
+<link rel="icon" href="data:,">
+<meta name="robots" content="noindex">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<style>
+  body { margin: 0; background: #fdf4e6; font: 14px system-ui; color: #2d2440; }
+  #v, img { display: block; width: 1200px; max-width: 100%; height: 700px; object-fit: cover; }
+  .pad { height: 120vh; padding: 24px; }
+</style>
+</head>
+<body>
+<!-- Dev page: ?id=<case id> mounts that case's building. &still=1 forces reduced motion (used to capture kit/case/<id>.webp). -->
+<canvas id="v"></canvas>
+<div class="pad">Scroll away: the turning pauses. Back up: it resumes.</div>
+<script type="module">
+import { mountVignette } from '../vignette.js';
+const q = new URLSearchParams(location.search), id = q.get('id') || 'codewisp';
+const v = await mountVignette(document.getElementById('v'), {
+  caseId: id, reduced: q.has('still') || matchMedia('(prefers-reduced-motion: reduce)').matches, fallbackSrc: `../case/${id}.webp`,
+});
+window.__vignette = v;
+document.title += v.fallback ? ' (fallback)' : ' (live)';
+</script>
+</body>
+</html>
