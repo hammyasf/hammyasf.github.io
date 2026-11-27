@@ -20,7 +20,7 @@ export async function mountVignette(canvas, { caseId, reduced, fallbackSrc, load
     const kind = layout.kindFor(caseId);
     if (!kind) throw new Error(`no building for ${caseId}`);
     const { TAU, mesh, stitches, ring, pillowCyl, tickers } = felt;
-    const { g: building, depth, height } = props.buildBuilding(kind);
+    const { g: building, depth } = props.buildBuilding(kind);
 
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -40,18 +40,62 @@ export async function mountVignette(canvas, { caseId, reduced, fallbackSrc, load
     mesh(new THREE.LatheGeometry([[r, -0.5], [r + 0.05, -0.2], [r - 0.3, 0], [0, 0]].map(([x, y]) => new THREE.Vector2(x, y)), 96), felt.felt('#8fbf6a', { rep: 6 }), 0, 0, 0, stage);
     stitches(ring(r - 0.05, -0.25, 96), stage, 0.2);
     stage.add(building);
+    // additive light (the theater's searchlights) vanishes on a see-through canvas and is too tall for this frame:
+    // here it is half length, normally blended, so the poster and the live page show the same beams
+    building.traverse((o) => {
+      if (o.material?.blending !== THREE.AdditiveBlending) return;
+      o.material = Object.assign(o.material.clone(), { blending: THREE.NormalBlending, opacity: 0.16 });
+      o.scale.y *= 0.5; o.position.y *= 0.5;
+    });
     [[-1, -0.8, 0.9, '#5f9e57'], [1, 0.55, 0.8, '#76b05e']].forEach(([sx, sz, s, col]) => {
       const t = new THREE.Group(); t.position.set(sx * (r - 1.1), 0, sz * (r - 1.4)); stage.add(t);
       mesh(pillowCyl(0.13 * s, 0.9 * s, 0.05, 12), felt.felt('#86573a', { rep: 1 }), 0, 0, 0, t);
       mesh(new THREE.SphereGeometry(0.75 * s, 24, 16), felt.felt(col, { rep: 2 }), 0, 1.35 * s, 0, t);
     });
 
-    const camera = new THREE.PerspectiveCamera(30, 1, 0.5, 100);
+    // Frame fit: every vertex, at any turn of the stage and any pose its tickers sweep through, stays inside the
+    // frame with a margin. Same aspect, same framing, so the still poster (captured here) and the live first frame match.
+    // Each height band keeps its widest radius from the turning axis; the camera then fits those rings.
+    const BANDS = 32, EL = 0.4, MARGIN = 0.84, v = new THREE.Vector3(), samples = [];
+    for (const at of [8, 6, 4, 2, 0]) { // ends on t = 0, the pose of the first frame
+      for (const f of tickers) f(at, 0);
+      stage.updateMatrixWorld(true);
+      stage.traverse((o) => {
+        const pos = o.geometry?.attributes?.position;
+        if (!pos || o.isInstancedMesh) return; // instanced stitches sit on the disc rim, inside the disc
+        for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld); if (v.y > -1) samples.push(v.y, Math.hypot(v.x, v.z)); } // below the disc: parked, hidden props
+      });
+    }
+    let y0 = Infinity, y1 = -Infinity;
+    for (let i = 0; i < samples.length; i += 2) { y0 = Math.min(y0, samples[i]); y1 = Math.max(y1, samples[i]); }
+    const band = new Float32Array(BANDS), bh = (y1 - y0) / BANDS || 1;
+    for (let i = 0; i < samples.length; i += 2) { const b = Math.min(BANDS - 1, Math.floor((samples[i] - y0) / bh)); band[b] = Math.max(band[b], samples[i + 1]); }
+    const cy = (y0 + y1) / 2, ce = Math.cos(EL), se = Math.sin(EL), rings = [];
+    band.forEach((rad, b) => { if (rad) rings.push([rad, y0 + b * bh - cy], [rad, y0 + (b + 1) * bh - cy]); });
+    const camera = new THREE.PerspectiveCamera(30, 1, 0.5, 200);
+    // closest distance at which every ring point projects inside MARGIN of the frame, with the view nudged up or
+    // down (s, along screen-up) so the top and bottom margins come out even
+    const fit = (aspect) => {
+      const tv = Math.tan((camera.fov * Math.PI) / 360), th = tv * aspect, pts = [];
+      for (const [rad, y] of rings) for (let k = 0; k < 48; k++) {
+        const a = (k / 48) * TAU, x = rad * Math.cos(a), z = rad * Math.sin(a);
+        pts.push([x, y * se + z * ce, y * ce - z * se]); // across, along the view, screen-up
+      }
+      let d = 0, s = 0;
+      for (let i = 0; i < 6; i++) {
+        d = 0;
+        for (const [x, depth, up] of pts) d = Math.max(d, depth + Math.abs(x) / (th * MARGIN), depth + Math.abs(up - s) / (tv * MARGIN));
+        let lo = Infinity, hi = -Infinity;
+        for (const [, depth, up] of pts) { const n = (up - s) / ((d - depth) * tv); lo = Math.min(lo, n); hi = Math.max(hi, n); }
+        s += ((lo + hi) / 2) * d * tv;
+      }
+      return { d, s };
+    };
     const resize = () => {
       const w = Math.max(1, canvas.clientWidth), h = Math.max(1, canvas.clientHeight);
       renderer.setSize(w, h, false); camera.aspect = w / h;
-      const d = Math.max(height * 1.9, r * 2.0) * Math.max(1, 1.5 / camera.aspect) * 1.5; // wider fit for narrow canvases
-      camera.position.set(0, height * 0.9 + 1.6, d); camera.lookAt(0, height * 0.3, 0); camera.updateProjectionMatrix();
+      const { d, s } = fit(camera.aspect), ty = cy + s * ce, tz = -s * se; // target, moved s along screen-up
+      camera.position.set(0, ty + d * se, tz + d * ce); camera.lookAt(0, ty, tz); camera.updateProjectionMatrix();
     };
     resize();
     stage.rotation.y = 0.5;

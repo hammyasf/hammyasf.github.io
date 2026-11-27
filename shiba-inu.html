@@ -38,11 +38,12 @@
 </script>
 <script type="module">
 import './kit/site.js';
-// the building, live: three.js loads lazily inside; any failure leaves the still image in the canvas's place
+// the building, live, over its still poster: three.js loads lazily inside; the first frame is drawn when this
+// resolves, and only then does the canvas fade in over the poster. Any failure leaves the poster.
 const art = document.getElementById('case-art');
 import('./kit/vignette.js').then(({ mountVignette }) => mountVignette(art, {
   caseId: art.dataset.case, reduced: matchMedia('(prefers-reduced-motion: reduce)').matches, fallbackSrc: art.dataset.still,
-})).catch(() => {});
+})).then((v) => { if (!v.fallback) art.parentElement.classList.add('is-live'); }).catch(() => {});
 </script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"CreativeWork","name":"Shiba Inu — the web platform","about":"Web3 · Top-10 crypto","creator":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"},"url":"https://hammyasf.github.io/shiba-inu.html","keywords":"Go, Node.js, TypeScript, React, Svelte, Subsquid"}</script>
 </head>
@@ -60,8 +61,8 @@ import('./kit/vignette.js').then(({ mountVignette }) => mountVignette(art, {
 <main class="case-main">
   <header class="case-hero patch" id="case-hero" data-morph-target="case-shiba-inu">
     <div class="case-hero__art">
-      <canvas class="case-art" id="case-art" data-case="shiba-inu" data-still="kit/case/shiba-inu.webp" width="1200" height="700" aria-hidden="true"></canvas>
-      <noscript><img class="case-art" src="kit/case/shiba-inu.webp" alt="" width="1200" height="700"></noscript>
+      <img class="case-poster" src="kit/case/shiba-inu.webp" alt="" width="1200" height="1000" fetchpriority="high">
+      <canvas class="case-art" id="case-art" data-case="shiba-inu" data-still="kit/case/shiba-inu.webp" width="1200" height="1000" aria-hidden="true"></canvas>
     </div>
     <div class="case-hero__text">
       <nav class="crumb" aria-label="Breadcrumb"><a href="index.html?at=shiba-inu">Back to the world</a> <span aria-hidden="true">/</span> <span>shiba-inu</span></nav>
@@ -95,7 +96,7 @@ import('./kit/vignette.js').then(({ mountVignette }) => mountVignette(art, {
     <p>Available now for senior full-stack, Web3, or AI roles — fully remote, any timezone.</p>
     <div class="cta-final__row">
       <a class="btn" href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Get in touch →</a>
-      <a class="btn cta-final__ask" href="index.html?at=shiba-inu&amp;ask=Tell%20me%20about%20Shiba%20Inu%20%C2%B7%20top-10%20cryptocurrency">Ask Scout about this job</a>
+      <a class="btn cta-final__ask" href="index.html?at=shiba-inu&amp;ask=Tell%20me%20about%20Shiba%20Inu%20%E2%80%94%20the%20web%20platform">Ask Scout about this job</a>
     </div>
   </aside>
   <nav class="pager" aria-label="More case studies">
