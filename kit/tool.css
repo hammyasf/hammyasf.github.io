@@ -1,0 +1,200 @@
+/* Lab tool pages: on top of felt.css. A hero patch tinted by the tool's Lab shelf with its plush kind icon sewn on,
+   the tool's own UI in one wide felt patch, the copy at a reading measure, the FAQ as felt accordions, the coral ask.
+   The old pages' variable names are re-pointed at felt here, so each tool's own CSS and canvas code read felt colours.
+   Sections: aliases · frame · hero · tool patch · shared tool vocabulary · copy · faq · ask · phones */
+
+/* ---------- aliases: the old design's names, felt values (tests/contrast.test.mjs pins them) ----------
+   --ink, --line, --display, --body and --mono already mean the same thing in felt.css. Plain values only:
+   canvas code reads these with getPropertyValue, and rgba(var(--accentRGB),.5) needs a bare r,g,b triple. */
+:root {
+  --bg: #fff7ea;          /* cream */
+  --bg-2: #f3e8d6;        /* sand */
+  --muted: #6c6380;       /* felt's --mute: 5.29:1 on cream, 4.64:1 on sand */
+  --faint: #7a6450;       /* a warm thread brown: 5.24:1 on cream, 4.60:1 on sand */
+  --line-2: #dcc4a0;      /* a stronger seam than --line */
+  --accent: #b9442f;      /* felt's --coral-dk: 5.02:1 on cream, white on it 5.34:1 */
+  --accent-2: #3f7a55;    /* felt's --green */
+  --accentRGB: 185,68,47;
+  --surfaceRGB: 255,255,255; /* the old dark panels become white pockets laid over the felt */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --white: #fff;          /* felt's white pill (felt.css .btn), for tools' own buttons: the old pages' #fff was light text */
+}
+/* some tools keep a color-scheme: dark meta (head metas stay byte-identical); the felt page itself is light */
+:root:has(.tool-page) { color-scheme: light; }
+html:has(.tool-page) { scroll-padding-top: 100px; }
+
+/* ---------- frame ---------- */
+.tool { width: min(1120px, 100% - 32px); margin: 26px auto 0; }
+/* the Lab shelf colours (hub.css .lab-shelf), so a card and its tool page are the same felt */
+.tool[data-kind="ai"] { --t: var(--coral); --t-dk: var(--coral-dk); }
+.tool[data-kind="sim"] { --t: var(--berry); --t-dk: #c04a78; }
+.tool[data-kind="media"] { --t: var(--sky); --t-dk: #8fb0d0; }
+.tool[data-kind="live"] { --t: var(--leaf); --t-dk: var(--green); }
+.tool[data-kind="dev"] { --t: var(--butter); --t-dk: #d6a43a; }
+.tool-page .site-foot { padding-bottom: 84px; } /* room for kit/site.js's floating Menu button */
+
+/* ---------- hero: crumb, chip, title, sub and the privacy badge, with the kind's plush toy sewn on at the right ---------- */
+.tool > .hero {
+  --r: 28px; --patch-bg: color-mix(in srgb, var(--t, var(--cream)) 18%, var(--cream));
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 32px; align-items: start;
+  padding: 30px 44px 34px; rotate: -.3deg;
+}
+.tool > .hero > * { grid-column: 1; }
+.tool > .hero::after { /* a felt sewing button, four holes */
+  content: ""; position: absolute; top: -9px; left: 46px; width: 30px; height: 30px; border-radius: 50%; rotate: -14deg;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,.16), 0 3px 0 rgba(84,46,30,.22), 0 6px 10px rgba(84,46,30,.18);
+  background: radial-gradient(circle at 37% 37%, var(--ink) 0 2px, transparent 2.6px), radial-gradient(circle at 63% 37%, var(--ink) 0 2px, transparent 2.6px),
+    radial-gradient(circle at 37% 63%, var(--ink) 0 2px, transparent 2.6px), radial-gradient(circle at 63% 63%, var(--ink) 0 2px, transparent 2.6px), var(--felt), var(--t, var(--coral));
+}
+.crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font: 600 14px/1.2 var(--display); color: var(--ink); }
+.crumb a { color: #96331f; text-decoration: none; } /* 4.5:1 or better on every kind's tint (tests/contrast.test.mjs) */
+.crumb a:hover { text-decoration: underline; }
+/* the kind icon: a round felt badge in the shelf colour, a plush toy stitched onto it */
+.tool > .hero > .kind {
+  grid-column: 2; grid-row: 1 / span 5; align-self: center; position: relative; display: grid; place-items: center;
+  width: 148px; height: 148px; border-radius: 50%; rotate: 6deg;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.55), transparent 60%), var(--felt), color-mix(in srgb, var(--t, var(--coral)) 42%, var(--cream));
+  box-shadow: inset 0 3px 0 rgba(255,255,255,.55), inset 0 -6px 12px rgba(84,46,30,.12), 0 4px 0 var(--t-dk, var(--coral-dk)), 0 14px 26px rgba(84,46,30,.2);
+  outline: 2px dashed rgba(45,36,64,.28); outline-offset: -9px;
+}
+.tool > .hero > .kind svg { width: 104px; height: 104px; filter: drop-shadow(0 4px 0 rgba(84,46,30,.18)); transition: transform .7s var(--spring-bounce); }
+@media (hover: hover) { .tool > .hero:hover > .kind svg { transform: rotate(-8deg) scale(1.06); } }
+.tool > .hero .tag {
+  justify-self: start; margin-top: 18px; font: 600 12.5px/1.2 var(--display); letter-spacing: .08em; text-transform: uppercase; white-space: normal;
+  color: var(--ink); background: var(--felt), #fff; padding: 8px 13px; box-shadow: 0 2px 0 #e2cdb0;
+  outline: 1.5px dashed rgba(45,36,64,.3); outline-offset: -4px; rotate: -1.2deg;
+}
+.tool > .hero h1 { margin: 14px 0 12px; font-size: clamp(36px, 5.6vw, 60px); line-height: 1.04; }
+.tool > .hero .sub { max-width: 64ch; margin: 0; font-size: 18px; line-height: 1.6; }
+/* the privacy line: a stitched badge, a little felt label sewn on with a thread loop */
+.tool > .hero .priv {
+  justify-self: start; display: inline-flex; align-items: center; gap: 8px; margin: 20px 0 0; padding: 10px 16px 10px 14px; border-radius: 12px;
+  font: 600 14.5px/1.35 var(--display); color: var(--ink); background: var(--felt), rgba(255,255,255,.82); rotate: .6deg;
+  box-shadow: 0 2px 0 #e2cdb0, 0 6px 12px rgba(84,46,30,.1); outline: 2px dashed var(--t-dk, var(--coral-dk)); outline-offset: -5px;
+}
+
+/* ---------- the tool patch: wider than the reading measure, with a felt tab in the shelf colour ---------- */
+.tool-ui.patch { --r: 26px; margin-top: 30px; padding: 30px 30px 32px; color: var(--ink); }
+.tool-ui.patch::after {
+  content: ""; position: absolute; top: -8px; left: 34px; width: 58px; height: 17px; border-radius: 7px;
+  background: var(--felt), var(--t, var(--butter)); box-shadow: 0 2px 0 rgba(84,46,30,.2);
+}
+
+/* ---------- the shared tool vocabulary, scoped to the tool patch ----------
+   Look only (colour, felt, seams, type): each tool's own rules keep their layout.
+   In a tool's own <style data-tool>, write the felt as url(kit/felt-texture.webp): var(--felt) there resolves against the page and 404s. */
+:where(.tool-ui) * { margin: 0; padding: 0; } /* the old pages' reset, at zero specificity so every real rule wins */
+.tool-ui :where(h1, h2, h3, h4, p) { margin: 0; } /* felt.css's prose margins would push the tools' layouts apart */
+.tool-ui :where(h2, h3) { line-height: 1.2; }
+
+/* a panel is a pocket sewn into the patch; a lone panel is the patch itself */
+.tool-ui .panel { border: 0; border-radius: 20px; background: rgba(255,255,255,.5); box-shadow: var(--sunk); outline: 2px dashed var(--line); outline-offset: -7px; }
+.tool-ui > .panel:only-child { margin: 0; border-radius: 0; background: none; box-shadow: none; outline: 0; }
+
+/* .btn is the main action (coral felt, white thread); .btn-out the plain white felt pill */
+.tool-ui .btn {
+  font-family: var(--display); font-weight: 600; color: #fff; background: var(--felt), var(--coral-btn); border: 0; border-radius: 999px;
+  box-shadow: 0 3px 0 #96331f, 0 6px 14px rgba(185,68,47,.3);
+}
+.tool-ui .btn::before { content: ""; position: absolute; inset: 3px; border: 1.5px dashed rgba(255,255,255,.55); border-radius: inherit; pointer-events: none; }
+.tool-ui .btn-out { color: var(--ink); background: var(--felt), #fff; box-shadow: var(--shadow-btn); }
+.tool-ui .btn-out::before { content: none; }
+@media (hover: hover) {
+  .tool-ui .btn:hover { box-shadow: 0 5px 0 #96331f, 0 10px 20px rgba(185,68,47,.34); }
+  .tool-ui .btn-out:hover { box-shadow: 0 5px 0 #e2cdb0, 0 10px 20px rgba(84,46,30,.18); }
+}
+.tool-ui .btn:active { box-shadow: 0 1px 0 #96331f, 0 2px 4px rgba(185,68,47,.25); }
+.tool-ui .btn-out:active { box-shadow: 0 1px 0 #e2cdb0, 0 2px 4px rgba(84,46,30,.12); }
+
+/* the drop zone: a stitched felt pocket that puffs up while a file hovers (.over) */
+.tool-ui .drop {
+  color: var(--mute); border: 3px dashed rgba(232,96,76,.45); border-radius: 22px; background: var(--felt), var(--cream);
+  box-shadow: inset 0 8px 16px rgba(84,46,30,.1); transition: transform .6s var(--spring-pop), border-color .2s, background-color .2s, box-shadow .3s, color .2s;
+}
+.tool-ui .drop :where(h2, h3) { color: var(--ink); }
+.tool-ui .drop.over {
+  transform: scale(1.02) rotate(-.5deg); color: var(--coral-dk); border-color: var(--coral); border-style: solid;
+  background: var(--felt), #fff; box-shadow: inset 0 2px 0 #fff, 0 18px 34px rgba(84,46,30,.2);
+}
+@media (hover: hover) { .tool-ui .drop:hover:not(.over) { border-color: rgba(232,96,76,.75); } }
+
+/* status lines: plum thread, coral for the bold bits; a status that appears (.show) pops in */
+.tool-ui .status { color: var(--mute); }
+.tool-ui .status b { color: var(--coral-dk); }
+.tool-ui .status.show { animation: rise .6s var(--spring-pop) both; }
+
+/* a progress bar (.prog with an <i> fill): a sunk sand track knitted in coral */
+.tool-ui .prog:has(> i) { border: 0; border-radius: 999px; background: var(--sand); box-shadow: var(--sunk); }
+.tool-ui .prog > i { border-radius: 999px; background: var(--knit), linear-gradient(#f07a66, var(--coral) 60%, #d4513e); background-size: 8px 11px, auto; }
+
+/* details: felt accordions, here and in the FAQ */
+.tool-ui details, .tool-faq details {
+  position: relative; border-radius: 18px; background: var(--calm), var(--felt), var(--cream);
+  box-shadow: 0 2px 0 rgba(255,255,255,.6) inset, 0 8px 18px rgba(84,46,30,.12), 0 3px 0 #e6d2b5;
+  outline: 2px dashed var(--thread); outline-offset: -6px;
+}
+.tool-ui summary, .tool-faq summary {
+  position: relative; display: block; list-style: none; cursor: pointer; padding: 17px 62px 17px 24px; border-radius: 18px;
+  font: 600 17px/1.35 var(--display); color: var(--ink);
+}
+.tool-ui summary::-webkit-details-marker, .tool-faq summary::-webkit-details-marker { display: none; }
+.tool-ui summary::after, .tool-faq summary::after { /* a plush pom-pom that turns + into × */
+  content: ""; position: absolute; right: 18px; top: 50%; width: 30px; height: 30px; margin-top: -15px; border-radius: 50%;
+  background: linear-gradient(var(--ink) 0 0) center / 12px 3px no-repeat, linear-gradient(var(--ink) 0 0) center / 3px 12px no-repeat, var(--felt), var(--t, var(--coral));
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,.14), 0 2px 0 var(--t-dk, var(--coral-dk));
+  transition: transform .55s var(--spring-pop);
+}
+.tool-ui details[open] > summary::after, .tool-faq details[open] > summary::after { transform: rotate(45deg); }
+.tool-ui summary:focus-visible, .tool-faq summary:focus-visible { outline: 3px solid var(--green); outline-offset: -3px; }
+.tool-faq details > :not(summary) { margin: 0 24px; }
+.tool-faq details > :last-child:not(summary) { margin-bottom: 20px; }
+.tool-faq details p { margin-top: 0; margin-bottom: .8em; font-size: 16px; line-height: 1.7; }
+
+/* ---------- copy: a paper patch at a reading measure ---------- */
+.tool-copy, .tool-faq, .tool-cta { width: min(780px, 100%); margin-inline: auto; }
+.tool-copy {
+  --r: 24px; margin-top: 46px; padding: 46px 56px 40px; font-size: 17.5px; line-height: 1.75;
+  background: linear-gradient(rgba(255,251,244,.8) 0 0), var(--felt), var(--cream);
+}
+.tool-copy > :last-child { margin-bottom: 0; }
+.tool-copy p { margin: 0 0 1.1em; }
+.tool-copy h2 { display: flex; align-items: baseline; gap: 12px; margin: 1.7em 0 .5em; font-size: clamp(22px, 2.8vw, 28px); }
+.tool-copy h2:first-child { margin-top: 0; }
+.tool-copy h2::before { /* a sewing button, a different felt each section */
+  content: ""; flex: none; align-self: center; width: 20px; height: 20px; border-radius: 50%; box-shadow: inset 0 -2px 0 rgba(0,0,0,.16), 0 2px 0 rgba(84,46,30,.18);
+  background: radial-gradient(circle at 36% 36%, var(--ink) 0 1.4px, transparent 1.9px), radial-gradient(circle at 64% 36%, var(--ink) 0 1.4px, transparent 1.9px),
+    radial-gradient(circle at 36% 64%, var(--ink) 0 1.4px, transparent 1.9px), radial-gradient(circle at 64% 64%, var(--ink) 0 1.4px, transparent 1.9px), var(--felt), var(--b, var(--t, var(--coral)));
+}
+.tool-copy h2:nth-of-type(4n+2) { --b: var(--leaf); }
+.tool-copy h2:nth-of-type(4n+3) { --b: var(--butter); }
+.tool-copy h2:nth-of-type(4n+4) { --b: var(--sky); }
+.tool-copy b, .tool-copy strong { font-weight: 750; }
+
+/* ---------- faq ---------- */
+.tool-faq { display: grid; gap: 14px; margin-top: 34px; }
+.tool-faq > details:nth-child(odd) { rotate: -.25deg; }
+.tool-faq > details:nth-child(even) { rotate: .3deg; }
+
+/* ---------- the ask: a coral patch with white thread ---------- */
+.tool-cta { --patch-bg: var(--coral-btn); --patch-thread: rgba(255,255,255,.6); --r: 26px; margin-top: 40px; padding: 34px 40px; color: #fff; rotate: -.6deg; }
+.tool-cta h3 { font-size: clamp(24px, 3vw, 31px); margin-bottom: 10px; }
+.tool-cta p { margin: 0; font-size: 17px; max-width: 60ch; }
+.tool-cta a { color: #fff; font-weight: 700; text-decoration-color: rgba(255,255,255,.55); }
+
+/* ---------- phones ---------- */
+@media (max-width: 720px) {
+  .tool > .hero { column-gap: 14px; padding: 26px 22px 26px; }
+  .tool > .hero > .kind { grid-row: 1 / span 2; align-self: start; width: 82px; height: 82px; margin-top: -2px; outline-offset: -6px; }
+  .tool > .hero > .kind svg { width: 52px; height: 52px; }
+  .tool > .hero h1, .tool > .hero .sub, .tool > .hero .priv { grid-column: 1 / -1; }
+  .tool > .hero .sub { font-size: 17px; }
+}
+@media (max-width: 600px) {
+  .tool { margin-top: 20px; }
+  .tool-ui.patch { --r: 22px; padding: 22px 14px 18px; }
+  .tool-ui.patch::after { left: 24px; }
+  .tool-copy { --r: 20px; padding: 30px 22px 26px; font-size: 16.5px; }
+  .tool-cta { padding: 28px 24px; rotate: -.4deg; }
+  .tool-ui summary, .tool-faq summary { padding: 15px 56px 15px 18px; font-size: 16px; }
+  .tool-faq details > :not(summary) { margin-inline: 18px; }
+}

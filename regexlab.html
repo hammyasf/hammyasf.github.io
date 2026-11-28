@@ -8,7 +8,7 @@
 <meta name="keywords" content="regex visualizer, regex debugger, regex tester, nfa, finite automaton, regular expression, redos, catastrophic backtracking, regex backtracking, thompson construction, regex engine, regex performance, regex security" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="RegexLab — see how your regex really runs" />
 <meta property="og:description" content="Visualize a regex as an automaton, step through matching live, and catch catastrophic backtracking (ReDoS). Runs entirely in your browser." />
@@ -20,139 +20,125 @@
 <meta name="twitter:description" content="Regex → automaton visualizer + live step debugger + catastrophic-backtracking (ReDoS) profiler. 100% in your browser." />
 <link rel="canonical" href="https://hammyasf.github.io/regexlab.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"RegexLab","url":"https://hammyasf.github.io/regexlab.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Visualize a regular expression as a finite automaton, step through matching live, and detect catastrophic backtracking (ReDoS), all in the browser on a from-scratch regex engine.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does this run entirely in my browser?","acceptedAnswer":{"@type":"Answer","text":"RegexLab ships its own regular-expression engine written in JavaScript. When you type a pattern it is parsed into a syntax tree, compiled to a Thompson NFA for the automaton view and linear-time matching, and run through a separate backtracking matcher for the step profiler. There is no server and nothing is uploaded."}},{"@type":"Question","name":"What is catastrophic backtracking (ReDoS)?","acceptedAnswer":{"@type":"Answer","text":"Some patterns, like nested quantifiers such as (a+)+$, cause a backtracking engine to try an exponential number of ways to match a crafted input. A few dozen characters can lock up a CPU for seconds or minutes. This is the basis of a ReDoS (regular-expression denial of service) attack. RegexLab grows an adversarial input and charts the step count so you can see the blow-up."}},{"@type":"Question","name":"Is my data uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. Your pattern and test text never leave your device. Everything runs locally in JavaScript, so you can use it on private logs and data safely."}},{"@type":"Question","name":"Which regex features are supported?","acceptedAnswer":{"@type":"Answer","text":"Literals and escapes, the dot, character classes with ranges and shorthands, anchors ^ $ \\b \\B, groups and non-capturing groups, alternation, and quantifiers * + ? {m} {m,} {m,n} including lazy forms, with the i, m and s flags. Backreferences and lookaround are not part of the visual engine by design."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);--bad:#ff5c6a;--warn:#ffb454;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 6px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,50px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:17.5px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .pad{padding:22px 24px;}
-  label.lab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:7px;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  :root{--bad:#b3263c;--warn:#8a5a00;}
+  .pad{padding:0 0 22px;}
+  label.lab{font:600 12.5px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:9px;}
   .rxrow{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;}
-  .rxfield{flex:1;min-width:260px;display:flex;align-items:center;border:1px solid var(--line-2);border-radius:12px;background:rgba(var(--surfaceRGB),.6);overflow:hidden;}
-  .rxfield .slash{font-family:var(--mono);color:var(--faint);padding:0 12px;font-size:18px;}
-  #pattern{flex:1;background:transparent;border:none;color:var(--ink);font-family:var(--mono);font-size:17px;padding:14px 6px;outline:none;}
+  .rxfield{flex:1;min-width:260px;display:flex;align-items:center;border-radius:999px;background:var(--white);box-shadow:var(--sunk),0 0 0 2px var(--line);overflow:hidden;transition:box-shadow .2s;}
+  .rxfield:focus-within{box-shadow:var(--sunk),0 0 0 3px rgba(63,122,85,.35);outline:2px dashed var(--green);outline-offset:-6px;}
+  .rxfield .slash{font:600 20px var(--mono);color:var(--coral);padding:0 14px;}
+  #pattern{flex:1;min-width:0;background:transparent;border:none;color:var(--ink);font-family:var(--mono);font-size:17px;padding:14px 4px;outline:none;}
   .flags{display:flex;gap:6px;}
-  .flagbtn{font-family:var(--mono);font-size:14px;width:42px;border:1px solid var(--line-2);background:transparent;color:var(--muted);border-radius:10px;cursor:pointer;transition:.15s;}
-  .flagbtn.on{background:var(--accent);color:#07100e;border-color:var(--accent);font-weight:600;}
-  .flagbtn:hover{color:var(--ink);}
-  #test{width:100%;margin-top:16px;min-height:92px;resize:vertical;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);border-radius:12px;color:var(--ink);font-family:var(--mono);font-size:14.5px;padding:13px 14px;outline:none;line-height:1.7;}
-  .err{display:none;margin-top:12px;color:var(--bad);font-family:var(--mono);font-size:13px;border:1px solid rgba(255,92,106,.35);background:rgba(255,92,106,.08);padding:9px 12px;border-radius:10px;}
+  .flagbtn{font:600 16px var(--mono);width:46px;min-height:46px;border:0;background:url(kit/felt-texture.webp),var(--white);color:var(--muted);border-radius:16px;cursor:pointer;box-shadow:var(--shadow-btn);transition:transform .45s var(--spring-pop),background-color .2s,color .2s;}
+  .flagbtn.on{background:url(kit/felt-texture.webp),var(--green);color:var(--white);box-shadow:0 3px 0 #2c5a3d,0 6px 14px rgba(63,122,85,.25);outline:1.5px dashed rgba(255,247,234,.55);outline-offset:-5px;}
+  .flagbtn:hover{color:var(--ink);transform:translateY(-2px);}
+  .flagbtn.on:hover{color:var(--white);}
+  #test{width:100%;min-height:92px;font-family:var(--mono);font-size:14.5px;padding:14px 18px;line-height:1.7;}
+  .err{display:none;margin-top:12px;color:var(--bad);font:600 13px var(--mono);background:color-mix(in srgb,var(--bad) 9%,var(--cream));padding:10px 14px;border-radius:14px;outline:2px dashed color-mix(in srgb,var(--bad) 45%,transparent);outline-offset:-5px;}
   .status{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center;}
-  .pill{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);padding:5px 11px;border-radius:100px;}
-  .pill.ok{color:var(--accent);border-color:rgba(var(--accentRGB),.4);}
-  .pill.bad{color:var(--bad);border-color:rgba(255,92,106,.4);}
-  .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
-  .preset{font-family:var(--mono);font-size:12.5px;color:var(--ink);border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.5);padding:7px 12px;border-radius:9px;cursor:pointer;transition:.15s;}
-  .preset:hover{border-color:rgba(var(--accentRGB),.5);background:rgba(var(--accentRGB),.06);}
-  .preset.evil{color:var(--bad);border-color:rgba(255,92,106,.4);}
-  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);padding:0 12px;flex-wrap:wrap;}
-  .tabbtn{font-family:var(--body);font-weight:600;font-size:14px;color:var(--muted);background:transparent;border:none;border-bottom:2px solid transparent;padding:14px 16px;cursor:pointer;transition:.15s;}
-  .tabbtn.on{color:var(--ink);border-bottom-color:var(--accent);}
+  .pill{font:600 13px/1 var(--display);color:var(--muted);background:rgba(var(--surfaceRGB),.75);padding:8px 12px;border-radius:999px;outline:1.5px dashed var(--line-2);outline-offset:-4px;}
+  .pill.ok{color:var(--green);background:url(kit/felt-texture.webp),var(--mint);outline-color:rgba(63,122,85,.35);}
+  .pill.bad{color:var(--bad);outline-color:color-mix(in srgb,var(--bad) 45%,transparent);}
+  .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;}
+  .preset{font:600 13.5px/1.1 var(--display);color:var(--green);border:0;background:url(kit/felt-texture.webp),var(--mint);padding:9px 13px;border-radius:999px;cursor:pointer;outline:1.5px dashed rgba(63,122,85,.3);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .2s;}
+  .preset:hover{transform:translateY(-1px) rotate(-2deg) scale(1.04);background:url(kit/felt-texture.webp),#e1ecd8;}
+  .preset.evil{color:var(--bad);background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 16%,var(--cream));outline-color:color-mix(in srgb,var(--bad) 35%,transparent);}
+  .tabs{display:flex;gap:4px;padding:0 6px;flex-wrap:wrap;}
+  .tabbtn.on{color:var(--ink);background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 -6px 14px rgba(84,46,30,.08),inset 0 2px 0 rgba(255,255,255,.7);}
+  .tabbtn.on::after{content:"";position:absolute;left:16px;right:16px;bottom:7px;height:3px;border-radius:3px;background:var(--coral);animation:thread-in .5s var(--spring-pop) both;}
   .tabbtn:hover{color:var(--ink);}
-  .tabpanel{padding:22px 24px;}
-  #matchOut{font-family:var(--mono);font-size:15px;line-height:1.9;white-space:pre-wrap;word-break:break-word;background:rgba(var(--surfaceRGB),.5);border:1px solid var(--line);border-radius:12px;padding:16px;min-height:60px;}
-  mark{background:rgba(var(--accentRGB),.28);color:var(--ink);border-radius:4px;padding:1px 1px;box-shadow:inset 0 -2px 0 rgba(var(--accentRGB),.6);}
-  mark.mk1{background:rgba(20,195,201,.28);box-shadow:inset 0 -2px 0 rgba(20,195,201,.7);}
-  mark.mk2{background:rgba(255,180,84,.26);box-shadow:inset 0 -2px 0 rgba(255,180,84,.7);}
-  mark.mk3{background:rgba(176,124,255,.26);box-shadow:inset 0 -2px 0 rgba(176,124,255,.7);}
-  .zw{color:var(--accent);font-style:italic;opacity:.8;}
+  .tabpanel{padding:22px 0 0;}
+  #matchOut{font-family:var(--mono);font-size:15px;line-height:1.9;white-space:pre-wrap;word-break:break-word;background:rgba(var(--surfaceRGB),.7);border-radius:18px;padding:18px 20px;min-height:60px;box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;}
+  mark{background:rgba(var(--accentRGB),.18);color:var(--ink);border-radius:5px;padding:1px 1px;box-shadow:inset 0 -3px 0 rgba(var(--accentRGB),.55);}
+  mark.mk1{background:rgba(63,122,85,.16);box-shadow:inset 0 -3px 0 rgba(63,122,85,.6);}
+  mark.mk2{background:rgba(242,193,78,.32);box-shadow:inset 0 -3px 0 rgba(214,164,58,.85);}
+  mark.mk3{background:rgba(232,106,154,.2);box-shadow:inset 0 -3px 0 rgba(192,74,120,.7);}
+  .zw{color:var(--accent);font-style:italic;opacity:.85;}
   .dim{color:var(--faint);}
   .mlist{margin-top:14px;display:grid;gap:6px;max-height:240px;overflow:auto;}
-  .mrow{display:flex;gap:12px;align-items:center;font-family:var(--mono);font-size:13px;border:1px solid var(--line);border-radius:8px;padding:7px 11px;}
-  .mrow .mi{color:var(--accent);}
+  .mrow{display:flex;gap:12px;align-items:center;font-family:var(--mono);font-size:13px;background:rgba(var(--surfaceRGB),.55);border-radius:12px;padding:8px 13px;box-shadow:0 2px 0 var(--line);}
+  .mrow .mi{color:var(--accent);font-weight:600;}
   .mrow .mtxt{flex:1;color:var(--ink);word-break:break-all;}
   .mrow .mspan{color:var(--faint);}
-  #nfaCaption{font-size:14px;color:var(--muted);margin-bottom:14px;}
+  #nfaCaption{font-size:15px;color:var(--muted);margin-bottom:14px;}
   #nfaCaption b{color:var(--accent);}
-  .nfaWrap{overflow:auto;border:1px solid var(--line);border-radius:12px;background:rgba(var(--surfaceRGB),.35);padding:6px;}
-  svg .edge{stroke:var(--faint);stroke-width:1.4;opacity:.7;}
-  svg .edge.eps{stroke-dasharray:4 4;opacity:.5;}
+  .nfaWrap{overflow:auto;border-radius:18px;background:url(kit/felt-texture.webp),rgba(var(--surfaceRGB),.6);padding:8px;box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;}
+  svg .edge{stroke:var(--faint);stroke-width:1.6;opacity:.75;}
+  svg .edge.eps{stroke-dasharray:4 4;opacity:.55;}
   svg .elabel{fill:var(--ink);font-family:var(--mono);font-size:12px;}
   svg .elabel.assert{fill:var(--accent-2);}
-  svg .ncirc{fill:rgba(var(--surfaceRGB),.95);stroke:var(--line-2);stroke-width:1.5;transition:.2s;}
+  svg .ncirc{fill:var(--cream);stroke:var(--line-2);stroke-width:2;transition:.2s;}
   svg .ninner{stroke:var(--accent);stroke-width:1.5;}
   svg .nlabel{fill:var(--muted);font-family:var(--mono);font-size:12px;}
   svg .node.accept .ncirc{stroke:var(--accent);}
-  svg .node.start .ncirc{stroke:var(--accent-2);stroke-width:2;}
-  svg .node.on .ncirc{fill:var(--accent);stroke:var(--accent);filter:drop-shadow(0 0 7px rgba(var(--accentRGB),.7));}
-  svg .node.on .nlabel{fill:#07100e;font-weight:600;}
-  svg .node.on .ninner{stroke:#07100e;}
+  svg .node.start .ncirc{stroke:var(--accent-2);stroke-width:2.5;}
+  svg .node.on .ncirc{fill:var(--accent);stroke:var(--coral-dk);filter:drop-shadow(0 2px 0 rgba(150,51,31,.45));}
+  svg .node.on .nlabel{fill:var(--white);font-weight:600;}
+  svg .node.on .ninner{stroke:var(--white);}
   .execRow{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap;}
-  .execRow input[type=range]{accent-color:var(--accent);flex:1;min-width:160px;}
-  .playbtn{font-family:var(--mono);font-size:13px;color:var(--ink);border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.6);padding:8px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;}
-  .playbtn:hover{border-color:rgba(var(--accentRGB),.5);}
-  #execLabel{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  #execLabel b{color:var(--accent);}#execLabel .ok{color:var(--accent);}
-  .execChars{margin-top:14px;font-family:var(--mono);font-size:18px;line-height:1.7;white-space:pre-wrap;word-break:break-word;background:rgba(var(--surfaceRGB),.5);border:1px solid var(--line);border-radius:12px;padding:14px;}
-  .ec{padding:1px 0;border-radius:3px;}
+  .execRow input[type=range]{flex:1;width:auto;min-width:160px;}
+  .playbtn{font:600 14.5px/1 var(--display);color:var(--white);border:0;background:url(kit/felt-texture.webp),var(--coral-btn);padding:12px 18px;border-radius:999px;cursor:pointer;white-space:nowrap;box-shadow:0 3px 0 #96331f,0 6px 14px rgba(185,68,47,.3);transition:transform .45s var(--spring-pop);}
+  .playbtn:hover{transform:translateY(-2px) scale(1.04);}
+  .playbtn:active{transform:translateY(2px) scale(.95);transition-duration:.08s;}
+  #execLabel{font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:8px;}
+  #execLabel b{color:var(--accent);}
+  #execLabel .ok{color:var(--green);}
+  .execChars{margin-top:14px;font-family:var(--mono);font-size:18px;line-height:1.7;white-space:pre-wrap;word-break:break-word;background:rgba(var(--surfaceRGB),.7);border-radius:18px;padding:16px 18px;box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;}
+  .ec{padding:1px 0;border-radius:4px;}
   .ec.done{color:var(--faint);}
-  .ec.cur{background:var(--accent);color:#07100e;box-shadow:0 0 10px rgba(var(--accentRGB),.6);}
+  .ec.cur{background:var(--accent);color:var(--white);box-shadow:0 2px 0 #96331f;}
   .ec.end{color:var(--faint);}
-  .verdict{border-radius:14px;padding:16px 18px;border:1px solid var(--line);margin-bottom:16px;}
-  .verdict .vlabel{font-family:var(--display);font-weight:600;font-size:20px;}
-  .verdict.good{border-color:rgba(var(--accentRGB),.45);background:rgba(var(--accentRGB),.07);}
-  .verdict.good .vlabel{color:var(--accent);}
-  .verdict.warn{border-color:rgba(255,180,84,.45);background:rgba(255,180,84,.07);}
+  .verdict{border-radius:18px;padding:16px 20px;margin-bottom:16px;background:url(kit/felt-texture.webp),rgba(var(--surfaceRGB),.7);outline:2px dashed var(--line-2);outline-offset:-6px;}
+  .verdict .vlabel{font-family:var(--display);font-weight:600;font-size:21px;}
+  .verdict.good{background:url(kit/felt-texture.webp),var(--mint);outline-color:rgba(63,122,85,.35);}
+  .verdict.good .vlabel{color:var(--green);}
+  .verdict.warn{background:url(kit/felt-texture.webp),color-mix(in srgb,var(--butter) 26%,var(--cream));outline-color:rgba(138,90,0,.35);}
   .verdict.warn .vlabel{color:var(--warn);}
-  .verdict.bad{border-color:rgba(255,92,106,.5);background:rgba(255,92,106,.08);}
+  .verdict.bad{background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 14%,var(--cream));outline-color:color-mix(in srgb,var(--bad) 45%,transparent);}
   .verdict.bad .vlabel{color:var(--bad);}
-  #redosExplain{font-size:15px;color:#cdd8d3;margin-bottom:14px;}
+  #redosExplain{font-size:15.5px;color:var(--ink);margin-bottom:14px;}
   #redosExplain b{color:var(--ink);}
   #redosExplain .probe{margin-top:10px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  #redosExplain code{background:rgba(var(--surfaceRGB),.8);border:1px solid var(--line);padding:1px 6px;border-radius:5px;color:var(--ink);}
-  #redosChart{width:100%;height:220px;border:1px solid var(--line);border-radius:12px;background:rgba(var(--surfaceRGB),.4);}
+  #redosChart{width:100%;height:220px;border-radius:18px;background:url(kit/felt-texture.webp),rgba(var(--surfaceRGB),.75);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;}
   #liveSteps{margin-top:14px;font-family:var(--mono);font-size:13px;color:var(--muted);}
   #liveSteps b{color:var(--accent);}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  section.copy code{font-family:var(--mono);background:rgba(var(--surfaceRGB),.8);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:14px;}
-  .faq{border-top:1px solid var(--line);margin-top:14px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){#pattern{font-size:15px;}.execChars{font-size:16px;}}
+  @media(max-width:560px){#pattern{font-size:15px;}.execChars{font-size:16px;}.rxfield{min-width:0;flex-basis:100%;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"RegexLab","url":"https://hammyasf.github.io/regexlab.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Visualize a regular expression as a finite automaton, step through matching live, and detect catastrophic backtracking (ReDoS), all in the browser on a from-scratch regex engine.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does this run entirely in my browser?","acceptedAnswer":{"@type":"Answer","text":"RegexLab ships its own regular-expression engine written in JavaScript. When you type a pattern it is parsed into a syntax tree, compiled to a Thompson NFA for the automaton view and linear-time matching, and run through a separate backtracking matcher for the step profiler. There is no server and nothing is uploaded."}},{"@type":"Question","name":"What is catastrophic backtracking (ReDoS)?","acceptedAnswer":{"@type":"Answer","text":"Some patterns, like nested quantifiers such as (a+)+$, cause a backtracking engine to try an exponential number of ways to match a crafted input. A few dozen characters can lock up a CPU for seconds or minutes. This is the basis of a ReDoS (regular-expression denial of service) attack. RegexLab grows an adversarial input and charts the step count so you can see the blow-up."}},{"@type":"Question","name":"Is my data uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. Your pattern and test text never leave your device. Everything runs locally in JavaScript, so you can use it on private logs and data safely."}},{"@type":"Question","name":"Which regex features are supported?","acceptedAnswer":{"@type":"Answer","text":"Literals and escapes, the dot, character classes with ranges and shorthands, anchors ^ $ \\b \\B, groups and non-capturing groups, alternation, and quantifiers * + ? {m} {m,} {m,n} including lazy forms, with the i, m and s flags. Backreferences and lookaround are not part of the visual engine by design."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free dev tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="dev">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-regexlab">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">RegexLab</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-dev"/></svg></span>
+    <span class="tag chip">Free dev tool · runs in your browser</span>
     <h1>RegexLab</h1>
     <p class="sub">See how a regular expression actually runs. Visualize it as a state machine, step through matching character by character, and catch the catastrophic backtracking that hangs servers — on a regex engine built from scratch, all in your browser.</p>
-    <span class="priv">&#9889; 100% local — your pattern and text never leave your device</span>
+    <p class="priv">&#9889; 100% local — your pattern and text never leave your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="pad">
       <label class="lab" for="pattern">Regular expression</label>
@@ -204,8 +190,8 @@
       <div id="liveSteps"></div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>RegexLab ships its own regular-expression engine. When you type a pattern, it is parsed into a syntax tree and compiled two ways. The first is a <b>Thompson NFA</b>, the classic construction that turns a regex into a finite state machine. The automaton view draws that machine, and the play button runs it as a real linear-time simulation: at each character it keeps a <i>set</i> of states the engine could be in, so it never has to guess or backtrack. That is how tools like grep and RE2 stay fast no matter what you throw at them.</p>
     <p>The second compilation is a <b>backtracking matcher</b>, the same family of algorithm that JavaScript, Python, Java and PCRE use. It is more flexible, but on certain patterns it explores an exponential number of paths. The profiler tab feeds the engine a crafted, ever-longer input and charts how many steps it takes, so a dangerous pattern reveals itself as a curve that shoots straight up.</p>
@@ -216,32 +202,18 @@
     <h2>Things to try</h2>
     <p>Load the <code>(a+)+$</code> preset and watch the profiler curve. Then change the pattern to <code>a+$</code> or <code>a{1,20}$</code> and see the same input become safe. Switch to the NFA tab with <code>gr(a|e)y</code> to see alternation as two branches, or <code>a(b|c)*d</code> to see a star become a loop in the graph. Share any pattern with the URL — the link carries your regex, flags and test string.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Does my pattern or text get uploaded?</summary><p>No. RegexLab runs entirely in your browser on its own engine. Nothing is sent to a server, so it is safe to use on private logs and data.</p></details>
     <details><summary>Which regex features are supported?</summary><p>Literals and escapes (<code>\d \w \s</code> and friends), the dot, character classes with ranges, anchors <code>^ $ \b \B</code>, groups and <code>(?:…)</code>, alternation, and quantifiers <code>* + ? {m} {m,} {m,n}</code> including lazy <code>*?</code> forms, plus the <code>i</code>, <code>m</code> and <code>s</code> flags. Backreferences and lookaround are intentionally out of scope for the visual engine, because the NFA view exists to show the regular core of regular expressions.</p></details>
     <details><summary>Is the ReDoS verdict authoritative?</summary><p>It is an empirical probe: RegexLab grows an adversarial input and measures real step counts, then classifies the growth as linear, polynomial or exponential. It is excellent at catching the common catastrophic patterns, but treat it as a strong warning, not a formal proof. A clean result is not a security guarantee.</p></details>
     <details><summary>Why are there two engines?</summary><p>To show the trade-off. The NFA is fast and immune to catastrophic backtracking but can't do features like backreferences. The backtracking engine is flexible but can blow up. Seeing both side by side is the whole point.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build a tool like this every day.</h3>
-    <p>Senior full-stack engineer, open to senior or staff roles and contract work, fully remote. Browse the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, open to senior or staff roles and contract work, fully remote. Browse the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<script>
-(function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 /* RegexLab engine — a from-scratch regular-expression engine.
    Two independent matchers over the same parsed AST:
@@ -1122,8 +1094,8 @@
     var ctx = cv.getContext("2d"); ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, w, h);
     var css = getComputedStyle(document.documentElement);
-    var accent = css.getPropertyValue("--accent").trim() || "#2be3b0";
-    var faint = "rgba(150,170,160,.5)", grid = "rgba(150,170,160,.15)";
+    var accent = css.getPropertyValue("--accent").trim() || "#b9442f";
+    var faint = "rgba(108,99,128,.85)", grid = "rgba(108,99,128,.18)";
     var padL = 54, padB = 28, padT = 14, padR = 12;
     var pw = w - padL - padR, ph = h - padT - padB;
     var maxN = points[points.length - 1].n;
@@ -1271,10 +1243,5 @@
 })();
 
 </script>
-<!-- Monetization slots (left inert for now):
-<ins class="adsbygoogle" data-ad-client="ca-pub-XXneeds-setupXX"></ins>
-Polar.sh "support this tool" embed can go here. -->
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

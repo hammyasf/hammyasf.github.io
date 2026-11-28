@@ -8,7 +8,7 @@
 <meta name="keywords" content="n-body simulation, gravity simulation, galaxy simulation, webgpu, galaxy collision simulation, particle gravity simulation, n body simulation browser, gpu compute, real time physics, galaxy formation simulation" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Gravity — a real N-body galaxy simulation on your GPU" />
 <meta property="og:description" content="Tens of thousands of stars, each pulling on every other, simulated in real time in your browser with WebGPU. Collide galaxies, drag to bend gravity." />
@@ -20,86 +20,70 @@
 <meta name="twitter:description" content="A real all-pairs N-body gravity simulation running entirely in your browser via WebGPU." />
 <link rel="canonical" href="https://hammyasf.github.io/gravity.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the simulation stays a night sky (its star colours are shader constants); it sits in the felt as a stitched window, the controls sewn on below */
+  .stage{position:relative;margin:0;}
+  #sim{display:block;width:100%;height:68vh;min-height:420px;touch-action:none;cursor:crosshair;border-radius:22px;background:url(kit/felt-texture.webp),var(--ink);box-shadow:0 4px 0 #1b1527,0 16px 30px rgba(45,36,64,.3);outline:2px dashed rgba(246,234,214,.28);outline-offset:-9px;}
+  .presetbar{position:absolute;top:0;left:0;right:0;display:flex;gap:8px;flex-wrap:wrap;padding:18px 18px 26px;border-radius:22px 22px 0 0;background:linear-gradient(180deg,rgba(45,36,64,.72),rgba(45,36,64,0));z-index:3;pointer-events:none;}
+  .presetbar .pchip{pointer-events:auto;}
+  .pchip{font:600 13.5px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--cream);border:0;padding:9px 14px;border-radius:999px;cursor:pointer;box-shadow:0 2px 0 #b9a58a,0 4px 10px rgba(27,21,39,.25);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .2s,color .2s;}
+  .pchip:hover{transform:translateY(-2px) rotate(-2deg);}
+  .pchip.on{background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);box-shadow:0 2px 0 #96331f,0 4px 10px rgba(27,21,39,.25);outline-color:rgba(255,247,234,.55);}
+  .pchip:focus-visible{outline:3px solid var(--butter);outline-offset:2px;}
+  .stats{position:absolute;top:18px;right:18px;z-index:3;font-family:var(--mono);font-size:11.5px;color:var(--ink);background:url(kit/felt-texture.webp),rgba(255,247,234,.94);border-radius:12px;padding:9px 13px;line-height:1.7;text-align:right;rotate:1.5deg;box-shadow:0 3px 0 #b9a58a,0 6px 14px rgba(27,21,39,.3);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;pointer-events:none;}
+  .stats b{color:var(--coral-dk);}
+  .dock{display:flex;gap:16px 26px;flex-wrap:wrap;align-items:flex-end;padding:22px 6px 0;}
+  .dock .grp{display:flex;flex-direction:column;gap:7px;}
+  .dock label{font:600 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .dock .row{display:flex;align-items:center;gap:10px;}
+  .dock input[type=range]{width:132px;}
+  .dock select{width:auto;min-width:128px;padding:10px 40px 10px 16px;font-size:14px;}
+  .iconbtn{font:600 14.5px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--white);border:0;padding:12px 18px;border-radius:999px;cursor:pointer;box-shadow:var(--shadow-btn);transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .iconbtn:hover{transform:translateY(-2px) scale(1.04);}
+  .iconbtn:active{transform:translateY(2px) scale(.95);transition-duration:.08s;}
+  .iconbtn.primary{background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);box-shadow:0 3px 0 #96331f,0 6px 14px rgba(185,68,47,.3);}
+  .vval{font:600 13px var(--mono);color:var(--coral-dk);min-width:30px;}
+  .hint{position:absolute;left:18px;top:calc(max(68vh, 420px) - 44px);z-index:3;font:600 12px/1 var(--display);color:var(--cream);background:rgba(45,36,64,.7);padding:7px 11px;border-radius:999px;pointer-events:none;transition:opacity .4s;}
+  .fallback{display:none;position:absolute;inset:0;z-index:5;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;border-radius:22px;color:var(--cream);background:url(kit/felt-texture.webp),radial-gradient(120% 100% at 50% 30%,#4a3d66,var(--ink));outline:2px dashed rgba(246,234,214,.28);outline-offset:-9px;}
+  .fallback h3{font-family:var(--display);font-weight:600;font-size:26px;margin-bottom:10px;color:var(--cream);}
+  .fallback p{color:rgba(255,247,234,.82);font-size:15px;max-width:460px;}
+  .fallback .stars{position:absolute;inset:0;z-index:-1;opacity:.9;background-image:radial-gradient(3px 3px at 20% 30%,var(--butter),transparent),radial-gradient(2px 2px at 70% 60%,var(--sky),transparent),radial-gradient(3px 3px at 40% 80%,var(--cream),transparent),radial-gradient(2px 2px at 85% 25%,var(--berry),transparent),radial-gradient(2px 2px at 55% 45%,var(--cream),transparent);}
+  @media(max-width:640px){#sim{height:58vh;}.hint{top:calc(max(58vh, 420px) - 44px);}.dock{gap:14px 18px;}.stats{top:auto;bottom:calc(100% - max(58vh, 420px) + 54px);font-size:10.5px;}}
+</style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Gravity — N-body Galaxy Simulation","url":"https://hammyasf.github.io/gravity.html","applicationCategory":"GameApplication","operatingSystem":"Any (web browser with WebGPU)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time all-pairs N-body gravity simulation running on the GPU in the browser via WebGPU. Spawn and collide galaxies, watch structure form under gravity.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this a real N-body simulation?","acceptedAnswer":{"@type":"Answer","text":"Yes. Every star gravitationally attracts every other star using Newton's inverse-square law with Plummer softening. There is no fake field or pre-baked animation — the forces are recomputed from scratch every single frame on your GPU."}},{"@type":"Question","name":"How does it run so many bodies in real time?","acceptedAnswer":{"@type":"Answer","text":"It uses WebGPU compute shaders. The all-pairs force calculation is parallelised across thousands of GPU threads and tiled through fast workgroup shared memory, the same technique used in GPU physics engines. Nothing is uploaded — all the math happens on your own graphics card."}},{"@type":"Question","name":"Why does it say my browser is not supported?","acceptedAnswer":{"@type":"Answer","text":"The simulation needs WebGPU, which is available in recent Chrome, Edge, and other Chromium browsers, and in Safari 26+. If you see the fallback message, update your browser or try it on a desktop with a GPU."}},{"@type":"Question","name":"Is anything uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. There is no server and no account. The entire simulation runs locally on your device."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,54px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
-  .stage{position:relative;margin:22px 0 0;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#02040a;box-shadow:0 30px 80px -40px rgba(0,0,0,.9);}
-  #sim{display:block;width:100%;height:68vh;min-height:420px;touch-action:none;cursor:crosshair;}
-  .presetbar{position:absolute;top:0;left:0;right:0;display:flex;gap:8px;flex-wrap:wrap;padding:14px;background:linear-gradient(180deg,rgba(2,4,10,.78),rgba(2,4,10,0));z-index:3;pointer-events:none;}
-  .presetbar .pchip{pointer-events:auto;}
-  .pchip{font-family:var(--mono);font-size:12px;color:var(--ink);background:rgba(12,22,30,.72);border:1px solid var(--line-2);padding:7px 13px;border-radius:100px;cursor:pointer;transition:.15s;backdrop-filter:blur(6px);}
-  .pchip:hover{border-color:rgba(var(--accentRGB),.6);}
-  .pchip.on{background:var(--accent);color:#04120d;border-color:var(--accent);font-weight:600;}
-  .stats{position:absolute;top:14px;right:14px;z-index:3;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(2,4,10,.6);border:1px solid var(--line);border-radius:10px;padding:8px 11px;line-height:1.7;text-align:right;backdrop-filter:blur(6px);pointer-events:none;}
-  .stats b{color:var(--accent);}
-  .dock{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;gap:18px 22px;flex-wrap:wrap;align-items:center;padding:14px 16px;background:linear-gradient(0deg,rgba(2,4,10,.86),rgba(2,4,10,0));}
-  .dock .grp{display:flex;flex-direction:column;gap:5px;}
-  .dock label{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .dock .row{display:flex;align-items:center;gap:9px;}
-  input[type=range]{accent-color:var(--accent);width:118px;}
-  select{background:rgba(12,22,30,.85);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:7px 9px;font-family:var(--mono);font-size:12px;}
-  .iconbtn{font-family:var(--mono);font-size:12.5px;color:var(--ink);background:rgba(12,22,30,.72);border:1px solid var(--line-2);padding:8px 14px;border-radius:100px;cursor:pointer;transition:.15s;}
-  .iconbtn:hover{border-color:rgba(var(--accentRGB),.6);}
-  .iconbtn.primary{background:var(--accent);color:#04120d;border-color:var(--accent);font-weight:700;}
-  .vval{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:30px;}
-  .hint{position:absolute;left:14px;bottom:78px;z-index:3;font-family:var(--mono);font-size:11px;color:var(--faint);background:rgba(2,4,10,.5);padding:5px 9px;border-radius:8px;pointer-events:none;}
-
-  .fallback{display:none;position:absolute;inset:0;z-index:5;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;background:radial-gradient(120% 100% at 50% 30%,rgba(20,30,50,.5),#02040a);}
-  .fallback h3{font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:10px;}
-  .fallback p{color:var(--muted);font-size:14.5px;max-width:460px;}
-  .fallback .stars{position:absolute;inset:0;z-index:-1;opacity:.5;background-image:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 60%,#cfe,transparent),radial-gradient(1px 1px at 40% 80%,#fff,transparent),radial-gradient(1px 1px at 85% 25%,#aef,transparent),radial-gradient(1px 1px at 55% 45%,#fff,transparent);}
-
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:760px;}
-  .faq{border-top:1px solid var(--line);margin-top:14px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:640px){#sim{height:58vh;}.dock{gap:12px 16px;}.stats{font-size:10.5px;}}
-</style>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">WebGPU · runs on your GPU</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="sim">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-gravity">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Gravity</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-sim"/></svg></span>
+    <span class="tag chip">WebGPU · runs on your GPU</span>
     <h1>Gravity</h1>
     <p class="sub">A real N-body simulation. Tens of thousands of stars, each one pulling on every other, recomputed every single frame on your graphics card. Spawn a galaxy, slam two together, or drag your cursor to bend the field.</p>
-    <span class="priv">&#9889; 100% on-device — your GPU does the physics, nothing is uploaded</span>
+    <p class="priv">&#9889; 100% on-device — your GPU does the physics, nothing is uploaded</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="stage">
     <canvas id="sim"></canvas>
 
@@ -153,8 +137,8 @@
       <p id="fbmsg">Your browser can't run the simulation yet. WebGPU works in recent Chrome, Edge, and other Chromium browsers, and in Safari 26+. Open this page on a desktop with a GPU for the full effect.</p>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>What you're looking at</h2>
     <p>This is a gravitational <em>N-body</em> simulation. Each glowing point is a star with mass, position, and velocity. On every frame the simulation works out the gravitational pull between each star and every other star using Newton's inverse-square law, adds it all up, and nudges each star along. Run it long enough and a flat disk winds itself into spiral arms, two galaxies tear each other into tidal streams, and a cold cloud collapses into knots — all from nothing but gravity.</p>
     <h2>How does this run in a browser tab?</h2>
@@ -162,30 +146,21 @@
     <h2>Things to try</h2>
     <p>Hit <b>Galaxy collision</b> and watch the two cores swing past each other and fling out long tidal tails. Drop the <b>Speed</b> to zero, then nudge it up to step through the dynamics slowly. Press and drag anywhere on the canvas to drop a moving gravity well and stir the stars by hand. Crank <b>Stars</b> up to 65,536 if you've got a real GPU, or pull it down if your fans start spinning. Everything is live — change gravity mid-collision and watch the whole system respond.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is this a real simulation or just an animation?</summary><p>Real. There's no pre-baked path and no fake force field. Every frame, the actual gravitational force between each star and every other star is computed from their current positions and the result moves them. That's why it never repeats and why small changes cascade.</p></details>
     <details><summary>How many stars can it handle?</summary><p>From 4,096 up to 65,536, each one a full participant in the all-pairs gravity. The cap is your GPU, not a server. If it stutters, drop the star count a notch.</p></details>
     <details><summary>My browser shows a "needs WebGPU" message.</summary><p>WebGPU is the capability this relies on. It's in recent Chrome, Edge, Brave, Arc and other Chromium browsers, and in Safari 26 and up. Update your browser, or open the page on a desktop with a dedicated or integrated GPU.</p></details>
     <details><summary>Does any of this get uploaded?</summary><p>No. There's no account, no backend, no telemetry of your simulation. The physics and rendering happen entirely on your own device.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build things like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Simulated on your GPU · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Simulated on your GPU · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 })();
 
 (async function(){
@@ -576,12 +551,5 @@ fn fs(in: VSOut) -> @location(0) vec4<f32> {
   requestAnimationFrame(frame);
 })();
 </script>
-
-<!-- Monetization slots (left intentionally inert):
-     AdSense: <ins class="adsbygoogle" ...></ins>
-     Polar.sh: support / pro-features link -->
-
-<!-- Analytics: Cloudflare Web Analytics beacon -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>
