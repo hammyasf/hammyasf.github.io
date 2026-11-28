@@ -139,7 +139,6 @@ h1.ptitle { margin: 16px 0 14px; font-size: clamp(32px, 5vw, 50px); line-height:
 .more-in .btn::after { content: "→"; content: "→" / ""; }
 
 /* room under the footer for kit/site.js's floating Menu button */
-.post-page .site-foot { padding-bottom: 84px; }
 
 @media (hover: hover) {
   .cta-final .btn:hover { box-shadow: 0 5px 0 #96331f, 0 10px 20px rgba(84,46,30,.3); }

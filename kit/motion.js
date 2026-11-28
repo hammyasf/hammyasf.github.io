@@ -4,7 +4,7 @@ export const morphNameFor = (...a) => globalThis.feltTransitions.morphNameFor(..
 export const navDirection = (...a) => globalThis.feltTransitions.navDirection(...a);
 
 export function initMotion({ reduced = false, root = document } = {}) {
-  const reveals = [...root.querySelectorAll('.reveal')];
+  const reveals = [...root.querySelectorAll('.reveal:not(.tool-ui .reveal)')];
   if (reduced) { reveals.forEach((el) => el.classList.add('in')); return; }
 
   try {

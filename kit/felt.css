@@ -293,9 +293,9 @@ label:has(> .switch), .tool-ui label:has(> input[type=checkbox]) { display: inli
 
 /* scroll reveal: kit/motion.js puts .motion-ready on <html>, then adds .in to each .reveal (and may set
    --delay for a stagger). Until that class exists nothing hides, so a failed or blocked script shows everything. */
-.motion-ready .reveal:not(.in) { opacity: 0; }
-.reveal.in { animation: rise .8s var(--spring-pop) var(--delay, 0s) backwards; }
-.reveal.in.reveal-now { animation: none; } /* already on screen at load: no pop, no blink */
+.motion-ready .reveal:not(.in):not(.tool-ui .reveal) { opacity: 0; } /* tools' own .reveal classes are theirs */
+.reveal.in:not(.tool-ui .reveal) { animation: rise .8s var(--spring-pop) var(--delay, 0s) backwards; }
+.reveal.in.reveal-now:not(.tool-ui .reveal) { animation: none; } /* already on screen at load: no pop, no blink */
 @media print { .reveal, .motion-ready .reveal:not(.in) { opacity: 1 !important; animation: none !important; } }
 
 /* hover lifts only where there is a real pointer, so taps don't leave things floating */
@@ -349,8 +349,10 @@ html:active-view-transition-type(back)::view-transition-new(root) { animation: v
   @view-transition { navigation: none; }
   html { scroll-behavior: auto; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
-  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
-  .motion-ready .reveal:not(.in), .reveal.in { opacity: 1; animation: none !important; }
+  *, *::before, *::after { transition-duration: .01ms !important; transition-delay: 0s !important; }
+  /* kit animation is clamped; a tool's own spinners and carets (inside .tool-ui) show work and keep running */
+  :not(.tool-ui, .tool-ui *), :not(.tool-ui, .tool-ui *)::before, :not(.tool-ui, .tool-ui *)::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; }
+  .motion-ready .reveal:not(.in):not(.tool-ui .reveal), .reveal.in:not(.tool-ui .reveal) { opacity: 1; animation: none !important; }
   /* pseudo-elements * cannot reach; one rule each, since an unknown vendor pseudo voids a selector list */
   .range::-webkit-slider-thumb, .tool-ui input[type=range]::-webkit-slider-thumb { transition: none !important; }
   .range::-moz-range-thumb, .tool-ui input[type=range]::-moz-range-thumb { transition: none !important; }

@@ -3,8 +3,6 @@
    The topic hubs are stitched collections: one patch per post in a column, with the topic's felt ribbon.
    lab.html is a toy shelf: a felt plank per kind of tool, each tool a plush card standing on it. No 3D. */
 
-/* lab.html keeps its old color-scheme meta (head metas stay byte-identical); the felt page itself is light */
-:root:has(.hub-page) { color-scheme: light; }
 /* the sticky header must not cover a jump target (the Lab's shelf chips) */
 html:has(.hub-page) { scroll-padding-top: 100px; }
 
@@ -192,7 +190,6 @@ html:has(.hub-page) { scroll-padding-top: 100px; }
 }
 
 /* room under the footer for kit/site.js's floating Menu button */
-.hub-page .site-foot { padding-bottom: 84px; }
 
 @media (max-width: 600px) {
   .hub-main, .hub--collection .hub-main { margin-top: 20px; }

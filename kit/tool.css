@@ -19,8 +19,6 @@
   --ease: cubic-bezier(.22, 1, .36, 1);
   --white: #fff;          /* felt's white pill (felt.css .btn), for tools' own buttons: the old pages' #fff was light text */
 }
-/* some tools keep a color-scheme: dark meta (head metas stay byte-identical); the felt page itself is light */
-:root:has(.tool-page) { color-scheme: light; }
 html:has(.tool-page) { scroll-padding-top: 100px; }
 
 /* ---------- frame ---------- */
@@ -31,7 +29,6 @@ html:has(.tool-page) { scroll-padding-top: 100px; }
 .tool[data-kind="media"] { --t: var(--sky); --t-dk: #8fb0d0; }
 .tool[data-kind="live"] { --t: var(--leaf); --t-dk: var(--green); }
 .tool[data-kind="dev"] { --t: var(--butter); --t-dk: #d6a43a; }
-.tool-page .site-foot { padding-bottom: 84px; } /* room for kit/site.js's floating Menu button */
 /* kit/site.js's floating Menu button never sits on a tool control. On tool pages it is always the small round ✦ (the label
    stays its accessible name, and ⌘K still opens the palette). Wider than a phone, the column leaves it a gutter: the button
    takes 16 + 46px at the right, so the column is at most 100% - 2 × 70px. On phones there is no room for a gutter, so it
