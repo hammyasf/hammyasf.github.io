@@ -325,7 +325,7 @@ onmessage=function(e){var d=e.data;try{var map=typeof d.mapText==="string"?JSON.
 
   function topSegment(path){ var i=path.indexOf("/"); return i===-1?path:path.slice(0,i); }
   function hueFor(path){ var top=topSegment(path); if(hue[top]===undefined){ hue[top]=(hueSeed*47+12)%360; hueSeed++; } return hue[top]; }
-  function fillFor(node,depthInView){ if(node.path==="[unmapped]")return "#a99fb5"; var h=hueFor(node.path); var baseAccent=getComputedStyle(document.documentElement).getPropertyValue("--accent"); var l=node.isDir?34:46; var s=node.isDir?38:58; return "hsl("+h+","+s+"%,"+l+"%)"; }
+  function fillFor(node,depthInView){ if(node.path==="[unmapped]")return "#d2cad9"; var h=hueFor(node.path); var baseAccent=getComputedStyle(document.documentElement).getPropertyValue("--accent"); var l=node.isDir?80:85; var s=node.isDir?48:50; return "hsl("+h+","+s+"%,"+l+"%)"; }
 
   function setupCanvas(){
     var dpr=Math.min(window.devicePixelRatio||1,2);
@@ -348,7 +348,7 @@ onmessage=function(e){var d=e.data;try{var map=typeof d.mapText==="string"?JSON.
       if(t.w<1||t.h<1)continue;
       ctx.fillStyle=fillFor(n);
       ctx.fillRect(t.x,t.y,t.w-1,t.h-1);
-      if(i===hoverTile){ ctx.fillStyle="rgba(255,247,234,.3)"; ctx.fillRect(t.x,t.y,t.w-1,t.h-1); }
+      if(i===hoverTile){ ctx.fillStyle="rgba(255,255,255,.45)"; ctx.fillRect(t.x,t.y,t.w-1,t.h-1); }
       // label
       if(t.w>54&&t.h>24){
         ctx.save();
@@ -368,7 +368,7 @@ onmessage=function(e){var d=e.data;try{var map=typeof d.mapText==="string"?JSON.
     var sizes=currentSizes(); var tops={};
     Object.keys(sizes).forEach(function(k){ var t=topSegment(k); tops[t]=(tops[t]||0)+sizes[k]; });
     var arr=Object.keys(tops).map(function(k){return {k:k,v:tops[k]};}).sort(function(a,b){return b.v-a.v;}).slice(0,8);
-    legend.innerHTML=arr.map(function(x){ var color=x.k==="[unmapped]"?"#a99fb5":"hsl("+hueFor(x.k+"/")+",52%,46%)"; return '<span><i style="background:'+color+'"></i>'+escapeHtml(x.k)+' · '+fmtSize(x.v)+'</span>'; }).join("");
+    legend.innerHTML=arr.map(function(x){ var color=x.k==="[unmapped]"?"#d2cad9":"hsl("+hueFor(x.k+"/")+",48%,80%)"; return '<span><i style="background:'+color+'"></i>'+escapeHtml(x.k)+' · '+fmtSize(x.v)+'</span>'; }).join("");
   }
 
   function renderCrumb(){
