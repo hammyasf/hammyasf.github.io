@@ -48,7 +48,7 @@
   /* entity chips: white felt pills with a colour bead; switched-off ones fade */
   .chip{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:999px;padding:8px 13px;font:600 13px/1 var(--display);color:var(--ink);cursor:pointer;user-select:none;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 2px 0 #e2cdb0;transition:transform .45s var(--spring-pop),opacity .2s;}
   .chip:hover{transform:translateY(-1px) rotate(-1.5deg);}
-  .chip .sw{width:11px;height:11px;border-radius:50%;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15),0 0 0 1px rgba(45,36,64,.25);}
+  .chip .sw{width:11px;height:11px;border-radius:50%;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15),0 0 0 1.5px var(--edge,rgba(45,36,64,.25));}
   .chip .ct{color:var(--faint);font-size:12px;}
   .chip.off{opacity:.45;box-shadow:none;}
   .chip.ai{outline:1.5px dashed var(--line-2);outline-offset:-4px;}
@@ -71,16 +71,17 @@
   .empty{padding:40px 24px;text-align:center;color:var(--muted);font-size:14.5px;}
   .empty b{color:var(--ink);font-family:var(--display);font-weight:600;font-size:19px;display:block;margin-bottom:6px;}
   .barfoot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-top:2px dashed var(--line);}
-  /* entity colours: felt dyes light enough for ink lettering */
-  .sw-email,mark.t-email{background:#b9dea2;}
-  .sw-phone,mark.t-phone{background:#a9cbee;}
-  .sw-name,mark.t-name{background:#f6d27a;}
-  .sw-org,mark.t-org{background:#f5ab98;}
-  .sw-location,mark.t-location{background:#d6bdee;}
-  .sw-ssn,mark.t-ssn{background:#f29a8a;}
-  .sw-creditcard,mark.t-creditcard{background:#f6b3cb;}
-  .sw-ip,mark.t-ip{background:#bccaf3;}
-  .sw-secret,mark.t-secret{background:#ee8f8f;}
+  /* entity colours: a light felt dye under ink lettering, edged with a deep thread of the same hue (>=3:1 on the paper) */
+  .sw-email,mark.t-email{background:#b9dea2;--edge:#4a8a3c;}
+  .sw-phone,mark.t-phone{background:#a9cbee;--edge:#3d6da3;}
+  .sw-name,mark.t-name{background:#f6d27a;--edge:#946500;}
+  .sw-org,mark.t-org{background:#f5ab98;--edge:#b9442f;}
+  .sw-location,mark.t-location{background:#d6bdee;--edge:#7b4fb0;}
+  .sw-ssn,mark.t-ssn{background:#f29a8a;--edge:#a8392a;}
+  .sw-creditcard,mark.t-creditcard{background:#f6b3cb;--edge:#a8325f;}
+  .sw-ip,mark.t-ip{background:#bccaf3;--edge:#4a5fb0;}
+  .sw-secret,mark.t-secret{background:#ee8f8f;--edge:#9e2a2a;}
+  .view.hl mark{box-shadow:0 0 0 1.5px var(--edge,var(--ink));}
   @media(max-width:560px){.ed textarea,.out-ta{font-size:13px;}.panel-h{padding:12px 14px 10px;}.controls{padding:16px 14px;}.barfoot{padding:14px;}}
 </style>
 <script src="kit/transitions.js"></script>
