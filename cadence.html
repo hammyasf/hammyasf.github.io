@@ -8,7 +8,7 @@
 <meta name="keywords" content="chord finder, chord detector, find chords of a song, key finder, song key detector, what key is this song, bpm counter, detect chords from mp3, chord recognition, chord analyzer, key detection, tempo detector, chords from audio" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Cadence — Find the Chords, Key &amp; Tempo of Any Song" />
 <meta property="og:description" content="Drop any song and get its chords, key, and tempo — computed entirely in your browser. Nothing is uploaded." />
@@ -20,92 +20,74 @@
 <meta name="twitter:description" content="A free, private chord + key + tempo detector that runs entirely in your browser." />
 <link rel="canonical" href="https://hammyasf.github.io/cadence.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Cadence — Chord, Key & Tempo Detector","url":"https://hammyasf.github.io/cadence.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Detect the chords, key and tempo of any song entirely in your browser with real audio analysis. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my music uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Cadence decodes and analyses your audio entirely in your browser using the Web Audio API. The file never leaves your device."}},{"@type":"Question","name":"How does it find the chords?","acceptedAnswer":{"@type":"Answer","text":"It computes a chromagram — the energy in each of the 12 pitch classes over time — using an FFT, then matches every moment against major and minor chord templates and smooths the result with a Viterbi decoder so the chords are stable."}},{"@type":"Question","name":"How accurate is it?","acceptedAnswer":{"@type":"Answer","text":"It is an estimate. It does very well on clear pop, folk and piano recordings, and can slip on dense mixes, jazz voicings or heavy distortion. It detects major and minor triads and the overall key, and tempo can occasionally land on half or double time."}},{"@type":"Question","name":"What files can I use?","acceptedAnswer":{"@type":"Answer","text":"Any audio your browser can decode — MP3, WAV, M4A, FLAC, OGG and more. You can also try the built-in sample with no file at all."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. There is no model to download and no server call. Once the page has loaded it runs with your internet off."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:960px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:960px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 12px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,54px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .drop{padding:44px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
-  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
-  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
-  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
-  .drop .or{margin-top:16px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);}
-  .prog{display:none;padding:8px 24px 22px;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .tool-ui .panel{border-radius:0;background:none;box-shadow:none;outline:0;}
+  .drop{padding:44px 24px;text-align:center;margin:0;cursor:pointer;}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:24px;}
+  .drop p{color:var(--muted);font-size:14.5px;margin-top:8px;}
+  .drop .or{margin-top:18px;}
+  .btn{font-size:15px;padding:12px 20px;}
+  .prog{display:none;padding:22px 4px 4px;}
   .prog.on{display:block;}
-  .bar-track{height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line);overflow:hidden;}
-  .bar-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s;}
+  .bar-track{height:14px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;}
+  .bar-fill{height:100%;width:0;border-radius:999px;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);transition:width .2s;}
   .prog .lbl{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:10px;}
-  .results{display:none;padding:4px 20px 24px;}
+  .results{display:none;padding:26px 0 0;}
   .results.on{display:block;}
-  .stats{display:flex;flex-wrap:wrap;gap:12px;margin:6px 0 18px;}
-  .stat{flex:1;min-width:150px;border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(var(--surfaceRGB),.5);}
-  .stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);}
-  .stat .v{font-family:var(--display);font-weight:600;font-size:28px;margin-top:4px;color:var(--ink);}
+  .stats{display:flex;flex-wrap:wrap;gap:14px;margin:0 0 18px;}
+  .stat{flex:1;min-width:150px;border-radius:18px;padding:16px 18px;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 3px 0 var(--line-2),0 8px 16px rgba(84,46,30,.1);outline:2px dashed var(--line);outline-offset:-6px;}
+  .stat:nth-child(1){rotate:-.6deg;}
+  .stat:nth-child(3){rotate:.5deg;}
+  .stat .k{font:600 12px/1 var(--display);letter-spacing:.09em;text-transform:uppercase;color:var(--faint);}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:30px;margin-top:6px;color:var(--ink);}
   .stat .v small{font-size:14px;color:var(--muted);font-family:var(--mono);font-weight:400;}
-  .nowbox{display:flex;align-items:center;gap:20px;flex-wrap:wrap;border:1px solid var(--line);border-radius:16px;padding:18px 20px;background:rgba(var(--surfaceRGB),.5);margin-bottom:16px;}
+  .nowbox{--muted:#b9b0c8;--faint:#d8cfe2;display:flex;align-items:center;gap:20px;flex-wrap:wrap;border-radius:20px;padding:20px 24px;margin-bottom:18px;color:var(--cream);background:url(kit/felt-texture.webp),var(--ink);box-shadow:0 4px 0 #1d1730,0 12px 24px rgba(45,36,64,.22);outline:2px dashed rgba(255,247,234,.35);outline-offset:-7px;}
   .nowchord{font-family:var(--display);font-weight:700;font-size:54px;line-height:1;letter-spacing:-.02em;min-width:120px;}
-  .nextlist{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-  .nextlist .c{font-family:var(--mono);font-size:14px;color:var(--muted);border:1px solid var(--line);border-radius:8px;padding:5px 10px;}
-  .nextlist .c.hot{color:#07100e;font-weight:600;}
-  canvas{display:block;width:100%;border-radius:12px;background:#05100d;border:1px solid var(--line);}
-  .canvlabel{font-family:var(--mono);font-size:11px;color:var(--faint);margin:14px 0 6px;letter-spacing:.06em;text-transform:uppercase;}
-  audio{width:100%;margin-top:14px;}
+  .nextlist{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;}
+  .nextlist .c{font:600 14px/1 var(--mono);color:var(--cream);border:1.5px dashed rgba(255,247,234,.35);border-radius:999px;padding:7px 12px;transition:background-color .2s;}
+  .nextlist .c.hot{color:var(--ink);font-weight:700;}
+  canvas{display:block;width:100%;border-radius:14px;background:var(--cream);box-shadow:var(--sunk),inset 0 0 0 2px var(--line);}
+  .canvlabel{font:600 12px/1.3 var(--display);color:var(--faint);margin:18px 0 8px 4px;letter-spacing:.06em;text-transform:uppercase;}
+  audio{width:100%;margin-top:16px;}
   .rbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
   .filemeta{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:10px;}
-  .note{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:10px;line-height:1.7;}
-  section.copy{padding:14px 0 8px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:24px;margin:26px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#c4d0cb;max-width:760px;margin-bottom:10px;}
-  section.copy code{font-family:var(--mono);font-size:.9em;background:rgba(var(--surfaceRGB),.8);padding:1px 6px;border-radius:5px;color:var(--accent);}
-  .faq{padding:8px 0 6px;}
-  .faq details{border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px;background:rgba(var(--surfaceRGB),.5);}
-  .faq summary{font-family:var(--display);font-weight:500;font-size:16px;cursor:pointer;color:var(--ink);}
-  .faq p{color:var(--muted);margin-top:10px;font-size:15px;}
-  .cta{border:1px solid var(--line);border-radius:18px;padding:26px;margin:26px 0 40px;background:rgba(var(--surfaceRGB),.5);}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:22px;}
-  .cta p{color:var(--muted);margin-top:8px;}
-  footer{border-top:1px solid var(--line);padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .note{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:14px;line-height:1.7;}
   .hidden{display:none!important;}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Cadence — Chord, Key & Tempo Detector","url":"https://hammyasf.github.io/cadence.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Detect the chords, key and tempo of any song entirely in your browser with real audio analysis. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my music uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Cadence decodes and analyses your audio entirely in your browser using the Web Audio API. The file never leaves your device."}},{"@type":"Question","name":"How does it find the chords?","acceptedAnswer":{"@type":"Answer","text":"It computes a chromagram — the energy in each of the 12 pitch classes over time — using an FFT, then matches every moment against major and minor chord templates and smooths the result with a Viterbi decoder so the chords are stable."}},{"@type":"Question","name":"How accurate is it?","acceptedAnswer":{"@type":"Answer","text":"It is an estimate. It does very well on clear pop, folk and piano recordings, and can slip on dense mixes, jazz voicings or heavy distortion. It detects major and minor triads and the overall key, and tempo can occasionally land on half or double time."}},{"@type":"Question","name":"What files can I use?","acceptedAnswer":{"@type":"Answer","text":"Any audio your browser can decode — MP3, WAV, M4A, FLAC, OGG and more. You can also try the built-in sample with no file at all."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. There is no model to download and no server call. Once the page has loaded it runs with your internet off."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs 100% in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="media">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-cadence">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Cadence</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-media"/></svg></span>
+    <span class="tag chip">Free tool · runs 100% in your browser</span>
     <h1>Cadence</h1>
     <p class="sub">Drop any song and get its <strong>chords</strong>, <strong>key</strong>, and <strong>tempo</strong> — computed live in your browser with real audio analysis. No upload, no sign-up, no account.</p>
-    <span class="priv">&#128274; 100% private — your audio never leaves your device</span>
+    <p class="priv">&#128274; 100% private — your audio never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add a song">
       <h2>Drop a song here</h2>
@@ -147,8 +129,8 @@
   <div id="unsupported" class="panel hidden" style="padding:24px;">
     <p style="color:var(--muted)">This browser doesn't support the Web Audio API that Cadence needs. Try the latest Chrome, Edge, Firefox or Safari.</p>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How does it find the chords in a browser?</h2>
     <p>When you drop a song, your browser decodes it to raw audio samples with the Web Audio API. Cadence downmixes it to mono, then slides a window across it and runs a <strong>Fast Fourier Transform</strong> on each chunk to see which frequencies are present. Every frequency is folded onto one of the twelve notes of the octave, building a <code>chromagram</code>: a picture of how much C, C#, D and so on is sounding at every moment. All of this happens on your machine — there is no server and nothing is uploaded.</p>
     <p>To name the chords, each moment of the chromagram is matched against templates for all 24 major and minor triads, and the best fit wins. Raw frame-by-frame guesses flicker, so a <strong>Viterbi decoder</strong> smooths the sequence, preferring to hold a chord rather than jump around — the same idea speech recognisers use. The overall key comes from correlating the song's average note profile with the Krumhansl-Schmuckle key profiles, and the tempo from an onset-strength envelope run through autocorrelation.</p>
@@ -157,27 +139,19 @@
     <h2>Reading the result</h2>
     <p>The <strong>chord map</strong> is the whole song at a glance, each block a chord coloured by its root; click anywhere to jump the player there. The <strong>chromagram</strong> underneath is the raw evidence — bright bands are the notes ringing out. The big letter is the chord playing right now, and the row beside it is the progression. Hit <em>Copy chord sheet</em> to grab the whole thing as text.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my music uploaded anywhere?</summary><p>No. Everything runs locally in your browser with the Web Audio API. Your file never touches a server, which is why it is instant and completely private.</p></details>
     <details><summary>How accurate is it?</summary><p>It is a solid estimate, not a transcription. It does well on clear pop, folk, piano and singer-songwriter material, and can struggle with dense mixes, jazz extensions, or heavy distortion. It reports major and minor triads plus the overall key.</p></details>
     <details><summary>What file types work?</summary><p>Anything your browser can decode — MP3, WAV, M4A/AAC, FLAC, and OGG all work. There is no length or size limit beyond your device's memory.</p></details>
     <details><summary>Why is the tempo sometimes doubled or halved?</summary><p>Rhythm is ambiguous: a beat and its half-beat both fit the music, so automatic tempo detection can land an octave off. If it reads 75 and feels fast, it's probably 150.</p></details>
     <details><summary>Does it need internet?</summary><p>Only to load the page. There is no model download and no API call, so once it's open it works offline.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I ship a tool like this every day.</h3>
-    <p>Senior full-stack engineer, open to senior or contract roles, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, open to senior or contract roles, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- ===================== ANALYSIS WORKER (not executed inline) ===================== -->
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script id="worker-src" type="javascript/worker">
 "use strict";
 function fft(re, im) {
@@ -349,13 +323,9 @@ onmessage = function(e){
   postMessage({ type:'done', key, tempo, segments, viz, dur: times.length? (times[times.length-1]+ (times[1]-times[0]||0.093)) : 0 });
 };
 </script>
-
-<!-- ===================== MAIN ===================== -->
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   var AC = window.AudioContext || window.webkitAudioContext;
   if (!AC || typeof Worker==="undefined" || typeof Blob==="undefined"){
@@ -377,7 +347,7 @@ onmessage = function(e){
     var blob=new Blob([src],{type:"application/javascript"});
     return new Worker(URL.createObjectURL(blob));
   }
-  function rootColor(root, q){ if(root<0) return "#33403b"; var h=(root*30)%360; return "hsl("+h+","+(q==="min"?"45%":"62%")+","+(q==="min"?"46%":"56%")+")"; }
+  function rootColor(root, q){ if(root<0) return "#e2d4bf"; var h=(root*30)%360; return "hsl("+h+","+(q==="min"?"45%":"62%")+","+(q==="min"?"46%":"56%")+")"; }
   function fmtTime(s){ s=Math.max(0,s|0); var m=(s/60)|0, ss=s%60; return m+":"+(ss<10?"0":"")+ss; }
 
   // ---------- WAV encode for the sample so it can play in <audio> ----------
@@ -489,22 +459,22 @@ onmessage = function(e){
   }
   function drawRibbon(){
     if(!state) return; var g=ribbon.getContext("2d"), W=ribbon.width, H=ribbon.height, dur=state.dur||1;
-    g.clearRect(0,0,W,H); g.fillStyle="#05100d"; g.fillRect(0,0,W,H);
+    g.clearRect(0,0,W,H); g.fillStyle="#fff7ea"; g.fillRect(0,0,W,H);
     state.segments.forEach(function(s){
       var x0=s.start/dur*W, x1=s.end/dur*W;
       g.fillStyle=rootColor(s.root,s.quality); g.fillRect(x0,0,Math.max(1,x1-x0-1),H);
       var bw=x1-x0;
-      if(bw>26 && s.chord!=="N.C."){ g.fillStyle="rgba(6,16,13,.92)"; g.font="600 13px "+getComputedStyle(document.body).getPropertyValue("--mono"); g.textAlign="center"; g.textBaseline="middle"; g.fillText(s.chord, (x0+x1)/2, H/2); }
+      if(bw>26 && s.chord!=="N.C."){ g.fillStyle="rgba(45,36,64,.92)"; g.font="600 13px "+getComputedStyle(document.body).getPropertyValue("--mono"); g.textAlign="center"; g.textBaseline="middle"; g.fillText(s.chord, (x0+x1)/2, H/2); }
     });
   }
   function drawChroma(){
     if(!state) return; var g=chroma.getContext("2d"), W=chroma.width, H=chroma.height, viz=state.viz, cols=viz.length||1;
-    g.clearRect(0,0,W,H); g.fillStyle="#05100d"; g.fillRect(0,0,W,H);
+    g.clearRect(0,0,W,H); g.fillStyle="#fff7ea"; g.fillRect(0,0,W,H);
     var cw=W/cols, rh=H/12;
     var acc=(getComputedStyle(document.documentElement).getPropertyValue("--accentRGB")||"43,227,176").trim();
     for(var x=0;x<cols;x++){ var f=viz[x]; for(var p=0;p<12;p++){ var v=Math.min(1,f[p]*1.6); if(v<0.04) continue; g.fillStyle="rgba("+acc+","+v.toFixed(3)+")"; g.fillRect(x*cw, H-(p+1)*rh, Math.ceil(cw), Math.ceil(rh)); } }
     // pitch labels
-    g.fillStyle="rgba(237,242,239,.30)"; g.font="10px "+getComputedStyle(document.body).getPropertyValue("--mono"); g.textAlign="left"; g.textBaseline="middle";
+    g.fillStyle="rgba(45,36,64,.5)"; g.font="10px "+getComputedStyle(document.body).getPropertyValue("--mono"); g.textAlign="left"; g.textBaseline="middle";
     var NM=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
     for(var p2=0;p2<12;p2++){ g.fillText(NM[p2], 3, H-(p2+0.5)*rh); }
   }
@@ -512,7 +482,7 @@ onmessage = function(e){
   function drawPlayheads(tsec){
     if(!state) return; var dur=state.dur||1, fr=Math.max(0,Math.min(1,tsec/dur));
     drawRibbon(); drawChroma();
-    [ribbon,chroma].forEach(function(cv){ var g=cv.getContext("2d"), x=fr*cv.width; g.strokeStyle="rgba(255,255,255,.9)"; g.lineWidth=Math.max(1,(cv.__dpr||1)); g.beginPath(); g.moveTo(x,0); g.lineTo(x,cv.height); g.stroke(); });
+    [ribbon,chroma].forEach(function(cv){ var g=cv.getContext("2d"), x=fr*cv.width; g.strokeStyle="rgba(45,36,64,.85)"; g.lineWidth=Math.max(1,(cv.__dpr||1)); g.beginPath(); g.moveTo(x,0); g.lineTo(x,cv.height); g.stroke(); });
     // current chord
     var cur=null; for(var i=0;i<state.segments.length;i++){ var s=state.segments[i]; if(tsec>=s.start && tsec<s.end){ cur=s; break; } }
     if(!cur && state.segments.length) cur=state.segments[tsec<=0?0:state.segments.length-1];
@@ -554,9 +524,5 @@ onmessage = function(e){
   window.__cadence = { makeSample: makeSample, runSample: runSample, getState: function(){ return state; } };
 })();
 </script>
-<!-- AdSense / Polar.sh monetization slot — intentionally left for later
-<div class="ad-slot"></div>
--->
-<script src="enhance.js" defer></script>
 </body>
 </html>

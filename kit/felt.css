@@ -106,12 +106,12 @@ button.chip, a.chip { cursor: pointer; transition: transform .45s var(--spring-p
 .chip:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
 
 /* text inputs, textareas and selects; a green thread is sewn in on focus */
-.field, .tool-ui input:is([type=text],[type=number],[type=search],[type=password],[type=email]), .tool-ui textarea, .tool-ui select {
+.field, .tool-ui input:is([type=text],[type=number],[type=search],[type=password],[type=email]), .tool-ui input:not([type]), .tool-ui textarea, .tool-ui select {
   width: 100%; font: 500 15px/1.4 var(--body); color: var(--ink); background: #fff; border: 0; border-radius: 999px; padding: 12px 16px;
   box-shadow: var(--sunk), 0 0 0 2px var(--line); transition: box-shadow .2s;
 }
-.field::placeholder, .tool-ui input:is([type=text],[type=number],[type=search],[type=password],[type=email])::placeholder, .tool-ui textarea::placeholder { color: #a99fb5; }
-.field:focus-visible, .tool-ui input:is([type=text],[type=number],[type=search],[type=password],[type=email]):focus-visible, .tool-ui textarea:focus-visible, .tool-ui select:focus-visible { outline: 2px dashed var(--green); outline-offset: -6px; box-shadow: var(--sunk), 0 0 0 3px rgba(63,122,85,.35); }
+.field::placeholder, .tool-ui input:is([type=text],[type=number],[type=search],[type=password],[type=email])::placeholder, .tool-ui input:not([type])::placeholder, .tool-ui textarea::placeholder { color: #a99fb5; }
+.field:focus-visible, .tool-ui input:is([type=text],[type=number],[type=search],[type=password],[type=email]):focus-visible, .tool-ui input:not([type]):focus-visible, .tool-ui textarea:focus-visible, .tool-ui select:focus-visible { outline: 2px dashed var(--green); outline-offset: -6px; box-shadow: var(--sunk), 0 0 0 3px rgba(63,122,85,.35); }
 .field[aria-invalid="true"] { box-shadow: var(--sunk), 0 0 0 2px var(--coral); }
 textarea.field, .tool-ui textarea { min-height: 120px; resize: vertical; border-radius: 18px; }
 select.field, .tool-ui select {
@@ -303,7 +303,7 @@ label:has(> .switch), .tool-ui label:has(> input[type=checkbox]) { display: inli
   .site-head__home:hover { transform: rotate(-2deg) scale(1.03); }
   .site-head__nav a:hover { color: var(--ink); transform: translateY(-2px); }
   .site-head__nav a:not([aria-current]):hover { background: rgba(255,255,255,.6); }
-  .field:hover:not(:focus-visible), .tool-ui input:is([type=text],[type=number],[type=search],[type=password],[type=email]):hover:not(:focus-visible), .tool-ui textarea:hover:not(:focus-visible), .tool-ui select:hover:not(:focus-visible) { box-shadow: var(--sunk), 0 0 0 2px #dcc4a0; }
+  .field:hover:not(:focus-visible), .tool-ui input:is([type=text],[type=number],[type=search],[type=password],[type=email]):hover:not(:focus-visible), .tool-ui input:not([type]):hover:not(:focus-visible), .tool-ui textarea:hover:not(:focus-visible), .tool-ui select:hover:not(:focus-visible) { box-shadow: var(--sunk), 0 0 0 2px #dcc4a0; }
   .drop:hover:not(.is-over) { border-color: rgba(232,96,76,.75); transform: scale(1.01); }
   .tabs > :not([aria-selected="true"]):not([aria-current="page"]):hover { color: var(--ink); transform: translateY(-2px); }
   .seg span:hover, .seg > button:hover { color: var(--ink); }

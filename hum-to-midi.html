@@ -8,7 +8,7 @@
 <meta name="keywords" content="hum to midi, voice to midi, sing to midi, melody to midi, audio to midi online, pitch detection online, hum to sheet music, whistle to midi, melody transcription, real time pitch detector, voice to midi online free, no upload" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Hum to MIDI — turn your voice into MIDI notes in your browser" />
 <meta property="og:description" content="Hum or sing a melody and watch it become MIDI in real time. Download the MIDI file. Runs entirely in your browser, nothing uploaded." />
 <meta property="og:type" content="website" />
@@ -19,97 +19,79 @@
 <meta name="twitter:description" content="Hum a melody, watch it become MIDI in real time, download the file. Private, no upload, no sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/hum-to-midi.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .bar{display:flex;gap:12px 14px;align-items:center;flex-wrap:wrap;padding:0 0 10px;}
+  .btn{font-size:15px;padding:12px 20px;}
+  .tool-ui .btn.rec{background:url(kit/felt-texture.webp),var(--coral-dk);box-shadow:0 3px 0 #7d2a1c,0 0 0 4px rgba(232,96,76,.28);}
+  .readout{display:flex;gap:22px;align-items:flex-end;flex-wrap:wrap;padding:10px 4px 18px;}
+  .note-now{font-family:var(--display);font-weight:700;font-size:clamp(40px,9vw,64px);line-height:1;color:var(--ink);min-width:120px;}
+  .note-now small{font-family:var(--mono);font-size:14px;color:var(--muted);font-weight:400;}
+  .meters{display:flex;flex-direction:column;gap:10px;flex:1;min-width:200px;}
+  .mrow{display:flex;align-items:center;gap:10px;font:600 12px/1 var(--display);color:var(--faint);}
+  .mrow .lab{width:62px;text-transform:uppercase;letter-spacing:.06em;}
+  .track{flex:1;height:12px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;position:relative;}
+  .fill{position:absolute;left:0;top:0;bottom:0;width:0%;border-radius:999px;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);transition:width .06s linear;}
+  .cents{position:relative;flex:1;height:12px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);}
+  .cents .mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;background:var(--line-2);}
+  .cents .dot{position:absolute;top:-2px;width:16px;height:16px;border-radius:50%;background:url(kit/felt-texture.webp),var(--coral);transform:translateX(-50%);left:50%;box-shadow:0 2px 0 var(--coral-dk);transition:left .06s linear;}
+  .rollwrap{position:relative;margin:0 0 18px;border-radius:22px;overflow:hidden;background:url(kit/felt-texture.webp),var(--cream);box-shadow:var(--sunk),inset 0 0 0 2px var(--line);}
+  .rollwrap::after{content:"";position:absolute;inset:7px;border:2px dashed var(--line-2);border-radius:16px;pointer-events:none;}
+  canvas#roll{display:block;width:100%;height:340px;}
+  .hint{position:absolute;inset:0;display:flex;flex-wrap:wrap;align-items:center;align-content:center;justify-content:center;column-gap:.3em;text-align:center;padding:30px;color:var(--muted);font-size:15.5px;pointer-events:none;}
+  .hint b{color:var(--ink);}
+  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:0 4px 20px;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-left:6px;}
+  .ctl .row{display:flex;align-items:center;gap:10px;}
+  .ctl input[type=range]{width:150px;}
+  .qval{font:600 14px/1 var(--mono);color:var(--accent);min-width:60px;}
+  .stats{display:flex;gap:22px;flex-wrap:wrap;padding:0 4px 12px;font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .stats b{color:var(--accent);font-weight:600;}
+  .exbar{display:flex;gap:12px 14px;align-items:center;flex-wrap:wrap;padding-top:20px;border-top:2px dashed var(--line);}
+  .err{margin:0 0 18px;padding:12px 16px;border-radius:16px;background:url(kit/felt-texture.webp),#fbe3dc;box-shadow:var(--sunk);outline:2px dashed rgba(185,68,47,.45);outline-offset:-6px;color:var(--coral-dk);font-size:14.5px;display:none;}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0 10px;}
+  .steps .s{border-radius:18px;padding:18px;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 3px 0 var(--line-2),0 8px 16px rgba(84,46,30,.1);}
+  .steps .s:nth-child(odd){rotate:-.5deg;}
+  .steps .s:nth-child(even){rotate:.5deg;}
+  .steps .s .n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;font:600 12px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--sky);box-shadow:0 2px 0 #8fb0d0;}
+  .steps .s h3{font-family:var(--display);font-weight:600;font-size:17px;margin:10px 0 6px;}
+  .steps .s p{font-size:14.5px;line-height:1.6;color:var(--muted);margin:0;}
+  @media(max-width:620px){.steps{grid-template-columns:1fr;}}
+</style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Hum to MIDI","url":"https://hammyasf.github.io/hum-to-midi.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Hum, sing, or play a melody and turn it into MIDI notes in real time, entirely in your browser. Download a standard MIDI file. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my microphone audio uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The pitch detection runs entirely in your browser using the Web Audio API. Your microphone audio never leaves your device and nothing is recorded to a server."}},{"@type":"Question","name":"How does it turn humming into MIDI?","acceptedAnswer":{"@type":"Answer","text":"It listens to the live waveform from your microphone and estimates the fundamental pitch many times per second using an autocorrelation algorithm. It then groups stable stretches of pitch into notes, snaps each to the nearest semitone, and writes them into a standard MIDI file."}},{"@type":"Question","name":"What should I hum into it?","acceptedAnswer":{"@type":"Answer","text":"One note at a time works best. Hum, sing on an 'ah' or 'la', or whistle a single melody line. It tracks monophonic (one-note-at-a-time) input, so chords are not detected."}},{"@type":"Question","name":"Can I open the MIDI in my DAW?","acceptedAnswer":{"@type":"Answer","text":"Yes. It exports a standard .mid file that opens in Ableton, FL Studio, Logic, GarageBand, Reaper, MuseScore, and any other tool that reads MIDI."}},{"@type":"Question","name":"Does it work on my phone?","acceptedAnswer":{"@type":"Answer","text":"It works in modern mobile browsers that allow microphone access over HTTPS. A quiet room and holding the phone close while you hum gives the cleanest result."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up and no limits. There is no audio upload and no AI model to download, so it loads instantly."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:20px 22px 6px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .btn.rec{background:#ff5c6c;color:#1a0608;}
-  .readout{display:flex;gap:22px;align-items:flex-end;flex-wrap:wrap;padding:6px 22px 14px;}
-  .note-now{font-family:var(--display);font-weight:600;font-size:clamp(40px,9vw,64px);line-height:1;color:var(--ink);min-width:120px;}
-  .note-now small{font-family:var(--mono);font-size:14px;color:var(--muted);font-weight:400;}
-  .meters{display:flex;flex-direction:column;gap:8px;flex:1;min-width:200px;}
-  .mrow{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--faint);}
-  .mrow .lab{width:62px;text-transform:uppercase;letter-spacing:.06em;}
-  .track{flex:1;height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line);overflow:hidden;position:relative;}
-  .fill{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .06s linear;}
-  .cents{position:relative;height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line);}
-  .cents .mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--line-2);}
-  .cents .dot{position:absolute;top:-3px;width:12px;height:12px;border-radius:50%;background:var(--accent);transform:translateX(-50%);left:50%;box-shadow:0 0 8px rgba(var(--accentRGB),.8);transition:left .06s linear;}
-  .rollwrap{position:relative;margin:0 18px 14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(var(--surfaceRGB),.4);}
-  canvas#roll{display:block;width:100%;height:340px;}
-  .hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--muted);font-size:15px;pointer-events:none;}
-  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:0 22px 18px;align-items:center;}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .ctl .row{display:flex;align-items:center;gap:10px;}
-  input[type=range]{accent-color:var(--accent);width:150px;}
-  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:60px;}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 13px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  .stats{display:flex;gap:22px;flex-wrap:wrap;padding:0 22px 8px;font-family:var(--mono);font-size:13px;color:var(--muted);}
-  .stats b{color:var(--accent);font-weight:500;}
-  .exbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:6px 22px 22px;}
-  .err{margin:0 22px 18px;padding:12px 14px;border:1px solid rgba(255,92,108,.4);background:rgba(255,92,108,.08);border-radius:12px;color:#ffb4bc;font-size:14px;display:none;}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0 6px;}
-  .steps .s{border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(var(--surfaceRGB),.4);}
-  .steps .s .n{font-family:var(--mono);font-size:12px;color:var(--accent);}
-  .steps .s h3{font-family:var(--display);font-weight:600;font-size:17px;margin:8px 0 6px;}
-  .steps .s p{font-size:14.5px;color:var(--muted);margin:0;}
-  @media(max-width:620px){.steps{grid-template-columns:1fr;}}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-</style>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="media">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-hum-to-midi">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Hum to MIDI</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-media"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>Hum to MIDI</h1>
     <p class="sub">Hum, sing, or whistle a melody and watch it turn into MIDI notes in real time. Then download a MIDI file you can drop straight into your DAW.</p>
-    <span class="priv">&#127908; 100% private — your microphone audio never leaves your device</span>
+    <p class="priv">&#127908; 100% private — your microphone audio never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="bar">
       <button class="btn" id="mic">Start microphone</button>
@@ -155,8 +137,8 @@
   </div>
 
   <!-- AdSense / Polar.sh slot (left intentionally empty until monetization is wired up) -->
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>Turn a melody in your head into MIDI, instantly</h2>
     <p>You get a tune stuck in your head, you hum it into your phone's voice memos, and then it sits there forever because turning a recording into actual notes is a pain. This does the annoying part for you. Hum the line, watch the notes land on the piano roll as you go, and walk away with a MIDI file you can open in any music software and build on.</p>
 
@@ -173,32 +155,23 @@
     <h2>Tips for a clean transcription</h2>
     <p>Hum one note at a time, since it tracks a single melody line rather than chords. A steady "ah" or "la" reads more cleanly than humming with a closed mouth. Leave a small gap between notes so each one gets its own bar, record somewhere quiet, and if faint background noise is creating stray notes, lower the sensitivity slider. For a song in a clear key, switch snapping to the detected key to nudge stray semitones back in line.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my microphone audio uploaded anywhere?</summary><p>No. Everything runs locally in your browser with the Web Audio API. Your audio never touches a server, which is why it starts instantly and stays private.</p></details>
     <details><summary>How does it turn humming into notes?</summary><p>It estimates the pitch of your voice many times a second using autocorrelation, groups stable stretches into notes, snaps each to the nearest semitone, and writes them into a standard MIDI file.</p></details>
     <details><summary>What should I hum into it?</summary><p>One note at a time. Hum, sing on an open vowel, or whistle a single melody line. It is monophonic, so it does not detect chords.</p></details>
     <details><summary>Can I open the file in my DAW?</summary><p>Yes. It exports a standard .mid file that opens in Ableton, FL Studio, Logic, GarageBand, Reaper, MuseScore, and anything else that reads MIDI.</p></details>
     <details><summary>Why are some notes wrong or doubled?</summary><p>Pitch detection on a raw voice is imperfect, especially with breathy notes or background noise. Lowering the sensitivity, leaving gaps between notes, and recording somewhere quiet all help a lot.</p></details>
     <details><summary>Does it work on mobile?</summary><p>Yes, in modern mobile browsers that allow microphone access over HTTPS. Hold the phone close and hum in a quiet spot for the best result.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   /* ---------- DSP + music core (exposed for tests as window.__hum) ---------- */
   var NOTE_NAMES=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
@@ -486,15 +459,15 @@
     for(var m=rng.lo;m<=rng.hi;m++){
       var y=h-(m-rng.lo)*rowH; var pc=((m%12)+12)%12;
       var black=(pc===1||pc===3||pc===6||pc===8||pc===10);
-      ctx.fillStyle=black?"rgba(255,255,255,0.02)":"rgba(255,255,255,0.0)";
+      ctx.fillStyle=black?"rgba(45,36,64,0.04)":"rgba(45,36,64,0.0)";
       ctx.fillRect(0,y-rowH,w,rowH);
-      ctx.strokeStyle=(pc===0)?"rgba(255,255,255,0.10)":"rgba(255,255,255,0.04)";
+      ctx.strokeStyle=(pc===0)?"rgba(45,36,64,0.14)":"rgba(45,36,64,0.05)";
       ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
-      if(pc===0){ ctx.fillStyle="rgba(255,255,255,0.30)"; ctx.font="10px ui-monospace,monospace"; ctx.fillText("C"+(Math.floor(m/12)-1),4,y-2); }
+      if(pc===0){ ctx.fillStyle="rgba(45,36,64,0.5)"; ctx.font="10px ui-monospace,monospace"; ctx.fillText("C"+(Math.floor(m/12)-1),4,y-2); }
     }
     return rowH;
   }
-  function accent(){ return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#2be3b0"; }
+  function accent(){ return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#b9442f"; }
   function rgbaAccent(a){ var rgb=getComputedStyle(document.documentElement).getPropertyValue("--accentRGB").trim()||"43,227,176"; return "rgba("+rgb+","+a+")"; }
 
   function drawLive(now){
@@ -512,7 +485,7 @@
     frames.forEach(function(fr){ if(fr.m==null||!isFinite(fr.m)){ pen=false; return; } var x=X(fr.t),y=Y(fr.m); if(!pen){ ctx.moveTo(x,y); pen=true; } else ctx.lineTo(x,y); });
     ctx.stroke();
     // playhead
-    ctx.strokeStyle="rgba(255,255,255,0.18)"; ctx.beginPath(); ctx.moveTo(w-1,0); ctx.lineTo(w-1,h); ctx.stroke();
+    ctx.strokeStyle="rgba(45,36,64,0.22)"; ctx.beginPath(); ctx.moveTo(w-1,0); ctx.lineTo(w-1,h); ctx.stroke();
   }
   function drawBar(nt,X,Y,rowH,fill){
     var x=X(nt.startT), x2=X(nt.endT), y=Y(nt.midi);
@@ -525,7 +498,7 @@
   function drawReview(notes){
     var dim=setupCanvas(), w=dim.w, h=dim.h;
     if(!notes||!notes.length){ var rng0=pitchRange([]); gridAndKeys(w,h,rng0);
-      ctx.fillStyle="rgba(255,255,255,0.35)"; ctx.font="13px ui-monospace,monospace"; ctx.textAlign="center";
+      ctx.fillStyle="rgba(45,36,64,0.6)"; ctx.font="13px ui-monospace,monospace"; ctx.textAlign="center";
       ctx.fillText("No notes captured — hum a little louder and try again.",w/2,h/2); ctx.textAlign="left"; return; }
     var rng=pitchRange(notes); var rowH=gridAndKeys(w,h,rng);
     var total=notes[notes.length-1].endT; if(total<=0) total=1; var pad=14;
@@ -592,7 +565,5 @@
   window.addEventListener("resize",function(){ if(result) drawReview(exportNotes()); else if(!running) { drawIdle(); } });
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

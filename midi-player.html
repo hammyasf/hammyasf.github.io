@@ -8,7 +8,7 @@
 <meta name="keywords" content="midi player, midi player online, play midi file, midi visualizer, online midi player, synthesia online, falling notes piano, web midi, midi keyboard browser, midi to piano, play midi in browser, free midi player, midi file viewer" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Pianola — MIDI Player &amp; Visualizer" />
 <meta property="og:description" content="Drop a MIDI file and watch it play with falling notes and a built-in synth. Connect a MIDI keyboard to play along. Private, no upload, no sign-up." />
 <meta property="og:type" content="website" />
@@ -19,96 +19,74 @@
 <meta name="twitter:description" content="Play and visualize any MIDI file in your browser. Falling notes, built-in synth, MIDI-keyboard play-along. No upload." />
 <link rel="canonical" href="https://hammyasf.github.io/midi-player.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Pianola — MIDI Player & Visualizer","url":"https://hammyasf.github.io/midi-player.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Play and visualize MIDI files in the browser with falling notes and a built-in synth, and play along with a connected MIDI keyboard using the Web MIDI API. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my MIDI file uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The file is parsed and played entirely in your browser with JavaScript and the Web Audio API. Nothing is uploaded and the player works offline."}},{"@type":"Question","name":"Can I connect a real MIDI keyboard?","acceptedAnswer":{"@type":"Answer","text":"Yes. In Chrome, Edge, or Opera the Web MIDI API lets the page detect connected MIDI devices, so you can play the built-in synth from your keyboard or route song playback to a hardware synth. Safari and Firefox can still use the file player and on-screen piano."}},{"@type":"Question","name":"What can I do with it?","acceptedAnswer":{"@type":"Answer","text":"Drop a .mid file or load the demo to watch Synthesia-style falling notes and hear it played by a built-in synth, change the tempo, click the on-screen piano, play along from a MIDI keyboard, and record what you play to a downloadable MIDI file."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up and no limits."}},{"@type":"Question","name":"Why does it sound like a synth and not a grand piano?","acceptedAnswer":{"@type":"Answer","text":"The notes are synthesized live in the browser with oscillators rather than streamed samples, so there is nothing to download and it stays instant and private. You can also route the notes to your own hardware or software instrument over MIDI."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:980px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:980px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 6px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:22px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .stage{position:relative;width:100%;background:#05080a;border-bottom:1px solid var(--line);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .stage{position:relative;width:100%;border-radius:22px;overflow:hidden;background:url(kit/felt-texture.webp),var(--cream);box-shadow:var(--sunk),inset 0 0 0 2px var(--line);}
+  .stage::after{content:"";position:absolute;inset:7px;border:2px dashed var(--line-2);border-radius:16px;pointer-events:none;}
   #viz{display:block;width:100%;height:auto;touch-action:none;cursor:pointer;}
-  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;background:rgba(5,8,10,.55);backdrop-filter:blur(2px);}
-  .overlay h2{font-family:var(--display);font-weight:600;font-size:clamp(20px,3vw,26px);}
-  .overlay p{color:var(--muted);font-size:14px;margin-top:8px;max-width:440px;}
-  .transport{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:center;padding:16px 20px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
+  .overlay{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;background:rgba(255,247,234,.82);backdrop-filter:blur(2px);}
+  .overlay h2{font-family:var(--display);font-weight:700;font-size:clamp(22px,3vw,28px);}
+  .overlay p{color:var(--muted);font-size:14.5px;margin-top:8px;max-width:440px;}
+  .transport{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:center;padding:22px 4px 18px;}
+  .btn{font-size:15px;padding:12px 20px;}
   .ic{font-family:var(--mono);}
   .seek{flex:1 1 220px;min-width:160px;display:flex;align-items:center;gap:10px;}
-  .seek input[type=range]{accent-color:var(--accent);width:100%;}
   .time{font-family:var(--mono);font-size:12.5px;color:var(--muted);white-space:nowrap;}
   .time b{color:var(--accent);}
-  .ctlrow{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;padding:0 20px 18px;}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctlrow{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-end;padding:0 4px 20px;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-left:6px;}
+  .ctl label.chk{font-size:14.5px;letter-spacing:0;text-transform:none;color:var(--ink);padding-left:0;}
   .ctl .row{display:flex;align-items:center;gap:10px;}
-  input[type=range].sm{accent-color:var(--accent);width:130px;}
-  .val{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:42px;}
-  select{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:13px;max-width:240px;}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 13px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  .now{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:0 20px 16px;}
+  .ctl input[type=range].sm{width:130px;}
+  .val{font:600 14px/1 var(--mono);color:var(--accent);min-width:42px;}
+  .card select{max-width:260px;font-family:var(--mono);font-size:13px;}
+  .now{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:0 4px 20px;}
   .now b{color:var(--ink);}
-  .midi{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 20px 20px;}
+  .midi{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding-top:22px;border-top:2px dashed var(--line);}
   @media(max-width:640px){.midi{grid-template-columns:1fr;}}
-  .card{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(var(--surfaceRGB),.4);}
-  .card h3{font-family:var(--display);font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px;}
-  .led{width:8px;height:8px;border-radius:50%;background:var(--faint);box-shadow:0 0 0 rgba(var(--accentRGB),0);transition:.2s;}
-  .led.on{background:var(--accent);box-shadow:0 0 10px rgba(var(--accentRGB),.8);}
-  .card p{font-size:13px;color:var(--muted);margin-top:6px;}
-  .card .row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;}
-  .chk{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;}
-  .chk input{accent-color:var(--accent);width:16px;height:16px;}
+  .card{border-radius:20px;padding:18px 20px;background:rgba(var(--surfaceRGB),.6);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;}
+  .card h3{font-family:var(--display);font-weight:600;font-size:16px;display:flex;align-items:center;gap:9px;}
+  .led{width:11px;height:11px;border-radius:50%;background:var(--line-2);box-shadow:inset 0 -1px 0 rgba(0,0,0,.15);transition:.2s;}
+  .led.on{background:var(--coral);box-shadow:0 0 0 3px rgba(232,96,76,.25),0 0 10px rgba(var(--accentRGB),.6);}
+  .card p{font-size:13.5px;color:var(--muted);margin-top:6px;}
+  .card .row{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap;}
+  .chk{font-size:14.5px;color:var(--ink);}
   .hint{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:10px;}
-  section.copy{padding:24px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:28px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Pianola — MIDI Player & Visualizer","url":"https://hammyasf.github.io/midi-player.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Play and visualize MIDI files in the browser with falling notes and a built-in synth, and play along with a connected MIDI keyboard using the Web MIDI API. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my MIDI file uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The file is parsed and played entirely in your browser with JavaScript and the Web Audio API. Nothing is uploaded and the player works offline."}},{"@type":"Question","name":"Can I connect a real MIDI keyboard?","acceptedAnswer":{"@type":"Answer","text":"Yes. In Chrome, Edge, or Opera the Web MIDI API lets the page detect connected MIDI devices, so you can play the built-in synth from your keyboard or route song playback to a hardware synth. Safari and Firefox can still use the file player and on-screen piano."}},{"@type":"Question","name":"What can I do with it?","acceptedAnswer":{"@type":"Answer","text":"Drop a .mid file or load the demo to watch Synthesia-style falling notes and hear it played by a built-in synth, change the tempo, click the on-screen piano, play along from a MIDI keyboard, and record what you play to a downloadable MIDI file."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up and no limits."}},{"@type":"Question","name":"Why does it sound like a synth and not a grand piano?","acceptedAnswer":{"@type":"Answer","text":"The notes are synthesized live in the browser with oscillators rather than streamed samples, so there is nothing to download and it stays instant and private. You can also route the notes to your own hardware or software instrument over MIDI."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="media">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-midi-player">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Pianola — MIDI Player &amp; Visualizer</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-media"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>Pianola — MIDI Player &amp; Visualizer</h1>
     <p class="sub">Drop a MIDI file and watch it play with Synthesia-style falling notes and a built-in synth. Plug in a MIDI keyboard to play along, or route the song to a hardware synth.</p>
-    <span class="priv">&#128274; 100% private — your files never leave your device</span>
+    <p class="priv">&#128274; 100% private — your files never leave your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="stage">
       <canvas id="viz" width="932" height="430"></canvas>
@@ -180,8 +158,8 @@
       </div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>When you drop a MIDI file in, Pianola reads the raw bytes and parses the Standard MIDI File format directly in JavaScript — the header, every track chunk, the variable-length timing, the tempo map, and each note-on and note-off event. It pairs the events into notes, converts ticks to seconds through the tempo changes, and lays them out as a falling-notes piano roll on a canvas. A small Web Audio synth then plays each note on schedule, polyphonically, with a touch of reverb. None of this needs a server, so the file never leaves your device and the player works offline.</p>
     <h2>How can a browser tab read a MIDI keyboard?</h2>
@@ -189,27 +167,19 @@
     <h2>Things to try</h2>
     <p>Load the demo and slow the tempo down to half speed to read the falling notes. Click the on-screen piano, or tap your computer's keyboard rows to play. If you have a MIDI keyboard, plug it in, tick "Record what I play," improvise for a bit, and save it as a real .mid file you can open in any DAW. Or tick "Route playback to this device" to drive your own synth with the demo.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my MIDI file uploaded anywhere?</summary><p>No. The file is read and played entirely in your browser. It never touches a server, which is why it is instant, private, and works offline.</p></details>
     <details><summary>Can I connect a real MIDI keyboard?</summary><p>Yes, in Chrome, Edge, or Opera. The Web MIDI API lets the page see your connected devices so you can play along or route playback to hardware. Safari and Firefox can still use the file player and the on-screen piano.</p></details>
     <details><summary>Why does it sound synthesized rather than like a grand piano?</summary><p>Notes are generated live with oscillators instead of streamed samples, so there is nothing to download and it stays instant. You can route the notes to your own software or hardware instrument over MIDI for any sound you like.</p></details>
     <details><summary>What file types does it open?</summary><p>Standard MIDI Files — .mid and .midi, format 0 and format 1. It reads tempo changes and multiple tracks.</p></details>
     <details><summary>Is it really free?</summary><p>Yes. No sign-up, no limits, no watermark.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- ============================ PURE CORE (no DOM; unit-tested in Node) ============================ -->
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script id="core">
 (function(root){
   "use strict";
@@ -377,14 +347,10 @@
   if(typeof module!=="undefined"&&module.exports) module.exports=root.PianolaCore;
 })(typeof window!=="undefined"?window:this);
 </script>
-
-<!-- ============================ APP (DOM + Web Audio + Web MIDI) ============================ -->
 <script>
 (function(){
   "use strict";
-  // theme: match the portfolio's saved colour
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var th=T[localStorage.getItem("siteTheme")]; if(th){var r=document.documentElement.style; r.setProperty("--accent",th[0]);r.setProperty("--accent-2",th[1]);r.setProperty("--accentRGB",th[2]);r.setProperty("--surfaceRGB",th[3]);r.setProperty("--bg",th[4]);r.setProperty("--bg-2",th[5]);} }catch(e){}
+  
 
   var C=window.PianolaCore;
   var $=function(id){return document.getElementById(id);};
@@ -393,7 +359,7 @@
   var rate=$("rate"), rateV=$("rateV"), vol=$("vol"), volV=$("volV"), loopChk=$("loop"), nowEl=$("now");
 
   // ---------- state ----------
-  var song=null, layout=null, accent="#2be3b0", accent2="#5b8cff";
+  var song=null, layout=null, accent="#b9442f", accent2="#3f7a55";
   var ac=null, master=null, wet=null;
   var playing=false, playRate=1, baseAudio=0, t0=0, schedPtr=0, scheduled=[], liveVoices={};
   var soundMode="internal";
@@ -401,7 +367,7 @@
   var recording=false, recEvents=[], recOpen={}, recStartAudio=0, recAnchorPerf=0;
   var activeKeys={}; // midi -> true (for highlight from playback + live)
 
-  function readAccent(){ var cs=getComputedStyle(document.documentElement); accent=(cs.getPropertyValue("--accent")||"#2be3b0").trim(); var a2=(cs.getPropertyValue("--accent-2")||"").trim(); accent2=a2||"#5b8cff"; }
+  function readAccent(){ var cs=getComputedStyle(document.documentElement); accent=(cs.getPropertyValue("--accent")||"#b9442f").trim(); var a2=(cs.getPropertyValue("--accent-2")||"").trim(); accent2=a2||"#3f7a55"; }
   readAccent();
 
   // ---------- audio ----------
@@ -542,8 +508,8 @@
     var w=viz._w||932, h=viz._h||430; ctx.clearRect(0,0,w,h);
     var L=ensureLayout(); var kbH=Math.max(56,Math.min(92,h*0.2)); var rollH=h-kbH; var pps=rollH/LOOK;
     // background grid (octave C lines)
-    ctx.fillStyle="#05080a"; ctx.fillRect(0,0,w,h);
-    for(var m=L.minMidi;m<=L.maxMidi;m++){ if(m%12===0){ var kx=L.map[m]; if(kx){ ctx.strokeStyle="rgba(237,242,239,.05)"; ctx.beginPath(); ctx.moveTo(kx.x,0); ctx.lineTo(kx.x,rollH); ctx.stroke(); } } }
+    ctx.fillStyle="#fff7ea"; ctx.fillRect(0,0,w,h);
+    for(var m=L.minMidi;m<=L.maxMidi;m++){ if(m%12===0){ var kx=L.map[m]; if(kx){ ctx.strokeStyle="rgba(45,36,64,.1)"; ctx.beginPath(); ctx.moveTo(kx.x,0); ctx.lineTo(kx.x,rollH); ctx.stroke(); } } }
     var now=song?songTime():0;
     // active keys reset (playback-derived)
     var pbActive={};
@@ -570,18 +536,18 @@
   }
   function roundRect(x,y,w,h,r){ r=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
   function drawKeyboard(L,top,kbH,active){
-    var y=top; ctx.fillStyle="#0b1012"; ctx.fillRect(0,y,viz._w,kbH);
+    var y=top; ctx.fillStyle="#2d2440"; ctx.fillRect(0,y,viz._w,kbH);
     ctx.fillStyle=hexA(accent,0.7); ctx.fillRect(0,y,viz._w,2);
     var m; // white keys
     for(m=L.minMidi;m<=L.maxMidi;m++){ if(C.isBlack(m)) continue; var k=L.map[m];
-      ctx.fillStyle=active[m]?hexA(accent,0.92):"#e8edea"; ctx.fillRect(k.x+0.5,y+3,k.w-1,kbH-3);
+      ctx.fillStyle=active[m]?hexA(accent,0.92):"#fffdf8"; ctx.fillRect(k.x+0.5,y+3,k.w-1,kbH-3);
       if(active[m]){ ctx.fillStyle=hexA(accent,0.25); ctx.fillRect(k.x+0.5,y+3,k.w-1,kbH-3); }
-      ctx.strokeStyle="rgba(0,0,0,.25)"; ctx.strokeRect(k.x+0.5,y+3,k.w-1,kbH-3);
-      if(m%12===0){ ctx.fillStyle="#7c8b84"; ctx.font="9px var(--mono),monospace"; ctx.textAlign="center"; ctx.fillText("C"+(Math.floor(m/12)-1),k.cx,y+kbH-6); }
+      ctx.strokeStyle="rgba(45,36,64,.25)"; ctx.strokeRect(k.x+0.5,y+3,k.w-1,kbH-3);
+      if(m%12===0){ ctx.fillStyle="#6c6380"; ctx.font="9px var(--mono),monospace"; ctx.textAlign="center"; ctx.fillText("C"+(Math.floor(m/12)-1),k.cx,y+kbH-6); }
     }
     for(m=L.minMidi;m<=L.maxMidi;m++){ if(!C.isBlack(m)) continue; var b=L.map[m];
-      ctx.fillStyle=active[m]?hexA(accent,0.95):"#10171a"; ctx.fillRect(b.x,y+3,b.w,kbH*0.62);
-      ctx.strokeStyle="rgba(0,0,0,.5)"; ctx.strokeRect(b.x,y+3,b.w,kbH*0.62);
+      ctx.fillStyle=active[m]?hexA(accent,0.95):"#2d2440"; ctx.fillRect(b.x,y+3,b.w,kbH*0.62);
+      ctx.strokeStyle="rgba(29,23,48,.6)"; ctx.strokeRect(b.x,y+3,b.w,kbH*0.62);
     }
   }
 
@@ -650,11 +616,5 @@
   window.__pianolaState=function(){ return {song:!!song,notes:song?song.notes.length:0,dur:song?song.duration:0,playing:playing,midi:!!navigator.requestMIDIAccess}; };
 })();
 </script>
-<!-- Monetization slots (left as comments for later):
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
-<a class="polar-cta" href="https://polar.sh/...">Support / Pro</a>
--->
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

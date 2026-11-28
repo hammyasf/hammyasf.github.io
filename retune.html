@@ -8,7 +8,7 @@
 <meta name="keywords" content="auto tune online, autotune your voice, real time autotune, browser autotune, vocal pitch correction, t-pain effect, pitch corrector online, autotune free no download, sing in tune, vocal tuner, live autotune, hard tune" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Retune — real-time auto-tune in your browser" />
 <meta property="og:description" content="Sing into your mic and hear yourself pitch-corrected live to any key. The classic hard-tune effect, running entirely in your browser. No upload, no sign-up." />
@@ -20,99 +20,81 @@
 <meta name="twitter:description" content="Sing into your mic, hear yourself auto-tuned live to any key. Runs 100% locally, nothing uploaded." />
 <link rel="canonical" href="https://hammyasf.github.io/retune.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Retune","url":"https://hammyasf.github.io/retune.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with microphone)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time auto-tune and vocal pitch corrector that runs entirely in the browser. Sing into your mic and hear yourself snapped to a musical key live, using the Web Audio API. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my voice uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs locally in your browser using the Web Audio API and an AudioWorklet. Your microphone audio is processed on your own device and never leaves it. There is no server, no account, and nothing is stored."}},{"@type":"Question","name":"How do I get the classic T-Pain hard-tune sound?","acceptedAnswer":{"@type":"Answer","text":"Set the retune speed to 0 (instant) and pick a scale like Major or Minor Pentatonic. With instant retune, your pitch is snapped straight to the nearest scale note with no glide, which produces the robotic, stair-stepped auto-tune effect. Slower retune speeds sound natural and transparent instead."}},{"@type":"Question","name":"Does it work in real time?","acceptedAnswer":{"@type":"Answer","text":"Yes. Retune detects your pitch and shifts it to the target note continuously as you sing, with only a few milliseconds of latency. Use headphones so the corrected output does not feed back into your mic."}},{"@type":"Question","name":"Do I need to install anything or sign up?","acceptedAnswer":{"@type":"Answer","text":"No install, no plugin, no DAW, no account. It works in any modern browser on desktop and most phones. You just grant microphone access when you press start."}},{"@type":"Question","name":"How does pitch correction actually work here?","acceptedAnswer":{"@type":"Answer","text":"Retune uses the YIN algorithm to estimate the fundamental frequency of your voice many times a second, finds the nearest note in your chosen key and scale, and then pitch-shifts your live audio by that ratio using a granular overlap-add shifter running in an AudioWorklet on the audio thread."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .stage{position:relative;}
-  canvas#viz{display:block;width:100%;height:320px;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.30));}
-  .readout{position:absolute;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;font-family:var(--mono);}
-  .note{font-family:var(--display);font-weight:700;font-size:clamp(40px,9vw,72px);line-height:.9;letter-spacing:-.02em;color:var(--ink);text-shadow:0 2px 24px rgba(0,0,0,.5);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .stage{position:relative;border-radius:22px;overflow:hidden;background:linear-gradient(180deg,rgba(255,253,248,.8),rgba(243,232,214,.55)),url(kit/felt-texture.webp),var(--paper);box-shadow:var(--sunk),inset 0 0 0 2px var(--line);}
+  .stage::after{content:"";position:absolute;inset:7px;border:2px dashed var(--line-2);border-radius:16px;pointer-events:none;}
+  canvas#viz{display:block;width:100%;height:320px;}
+  .readout{position:absolute;top:18px;left:22px;right:22px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;font-family:var(--mono);}
+  .note{font-family:var(--display);font-weight:700;font-size:clamp(40px,9vw,72px);line-height:.9;letter-spacing:-.02em;color:var(--ink);text-shadow:0 3px 0 rgba(255,253,248,.85);}
   .note .oct{font-size:.42em;color:var(--muted);vertical-align:super;margin-left:2px;}
   .cents{font-size:13px;color:var(--muted);margin-top:6px;}
   .cents b{color:var(--accent);}
   .tgt{text-align:right;font-size:13px;color:var(--muted);}
   .tgt .big{font-family:var(--display);font-weight:600;font-size:26px;color:var(--accent-2);display:block;}
   .idlemsg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;color:var(--muted);pointer-events:none;padding:20px;}
-  .idlemsg .k{font-family:var(--display);font-weight:600;font-size:22px;color:var(--ink);}
-  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:18px 22px;align-items:flex-end;border-top:1px solid var(--line);}
-  .ctl{display:flex;flex-direction:column;gap:7px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  select{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:9px;padding:9px 11px;font-family:var(--mono);font-size:13px;min-width:120px;}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;flex-wrap:wrap;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 13px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  input[type=range]{accent-color:var(--accent);width:150px;}
+  .idlemsg .k{font-family:var(--display);font-weight:600;font-size:24px;color:var(--ink);}
+  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:24px 4px 22px;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-left:6px;}
+  .ctl select{min-width:150px;font-family:var(--mono);font-size:13.5px;}
+  .ctl input[type=range]{width:160px;}
   .rngwrap{display:flex;align-items:center;gap:10px;}
-  .rngval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:52px;}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:16px 22px 22px;border-top:1px solid var(--line);}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .btn-rec{background:transparent;border:1px solid rgba(255,90,90,.5);color:#ff8a8a;}
-  .btn-rec.recording{background:#ff5a5a;color:#fff;border-color:#ff5a5a;}
+  .rngval{font:600 14px/1 var(--mono);color:var(--accent);min-width:52px;}
+  .bar{display:flex;gap:12px 14px;align-items:center;flex-wrap:wrap;padding:22px 4px 0;border-top:2px dashed var(--line);}
+  .btn{font-size:15px;padding:12px 22px;}
+  .btn.btn-rec{color:var(--coral-dk);background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
+  .btn.btn-rec::before{border-color:rgba(185,68,47,.35);}
+  .btn.btn-rec.recording{color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);box-shadow:0 3px 0 #96331f,0 0 0 4px rgba(232,96,76,.25);}
+  .btn.btn-rec.recording::before{border-color:rgba(255,247,234,.6);}
   .status{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
   .status b{color:var(--accent);}
-  .toggle{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;}
-  .toggle input{accent-color:var(--accent);width:16px;height:16px;}
-  .hint{font-family:var(--mono);font-size:11.5px;color:var(--faint);padding:0 22px 18px;}
+  .toggle{font-size:14.5px;color:var(--ink);user-select:none;}
+  .hint{font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--faint);padding:18px 4px 0;}
   .fail{display:none;padding:40px 24px;text-align:center;color:var(--muted);}
   .fail.show{display:block;}
   .fail h2{font-family:var(--display);color:var(--ink);font-size:22px;margin-bottom:8px;}
-  .clips{display:grid;gap:10px;padding:0 22px 20px;}
-  .clip{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(var(--surfaceRGB),.4);}
+  .clips{display:grid;gap:10px;padding-top:18px;}
+  .clips:empty{display:none;}
+  .clip{display:flex;gap:12px;align-items:center;border-radius:18px;padding:12px 16px;background:rgba(var(--surfaceRGB),.65);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-6px;}
   .clip audio{height:34px;flex:1;min-width:0;}
-  .clip .dl{font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:7px 12px;border-radius:8px;cursor:pointer;background:transparent;white-space:nowrap;text-decoration:none;}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){.controls{gap:14px 18px;}input[type=range]{width:120px;}}
+  .clip .dl{font:600 13.5px/1 var(--display);color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);padding:10px 15px;border-radius:999px;box-shadow:0 3px 0 #96331f;cursor:pointer;white-space:nowrap;text-decoration:none;transition:transform .45s var(--spring-pop);}
+  .clip .dl:hover{transform:translateY(-2px);}
+  @media(max-width:560px){.controls{gap:14px 18px;}.ctl input[type=range]{width:120px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Retune","url":"https://hammyasf.github.io/retune.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with microphone)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time auto-tune and vocal pitch corrector that runs entirely in the browser. Sing into your mic and hear yourself snapped to a musical key live, using the Web Audio API. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my voice uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs locally in your browser using the Web Audio API and an AudioWorklet. Your microphone audio is processed on your own device and never leaves it. There is no server, no account, and nothing is stored."}},{"@type":"Question","name":"How do I get the classic T-Pain hard-tune sound?","acceptedAnswer":{"@type":"Answer","text":"Set the retune speed to 0 (instant) and pick a scale like Major or Minor Pentatonic. With instant retune, your pitch is snapped straight to the nearest scale note with no glide, which produces the robotic, stair-stepped auto-tune effect. Slower retune speeds sound natural and transparent instead."}},{"@type":"Question","name":"Does it work in real time?","acceptedAnswer":{"@type":"Answer","text":"Yes. Retune detects your pitch and shifts it to the target note continuously as you sing, with only a few milliseconds of latency. Use headphones so the corrected output does not feed back into your mic."}},{"@type":"Question","name":"Do I need to install anything or sign up?","acceptedAnswer":{"@type":"Answer","text":"No install, no plugin, no DAW, no account. It works in any modern browser on desktop and most phones. You just grant microphone access when you press start."}},{"@type":"Question","name":"How does pitch correction actually work here?","acceptedAnswer":{"@type":"Answer","text":"Retune uses the YIN algorithm to estimate the fundamental frequency of your voice many times a second, finds the nearest note in your chosen key and scale, and then pitch-shifts your live audio by that ratio using a granular overlap-add shifter running in an AudioWorklet on the audio thread."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="media">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-retune">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Retune</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-media"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>Retune</h1>
     <p class="sub">Sing or talk into your mic and hear yourself auto-tuned to any key, live. Dial in the classic hard-tune robot effect or gentle, transparent pitch correction.</p>
-    <span class="priv">&#128274; 100% private — your voice is processed on your device and never uploaded</span>
+    <p class="priv">&#128274; 100% private — your voice is processed on your device and never uploaded</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="stage">
       <canvas id="viz" width="1840" height="640" aria-label="Live pitch tuner"></canvas>
@@ -171,8 +153,8 @@
       <p id="failMsg">Retune needs the Web Audio API with AudioWorklet and microphone access. Try the latest Chrome, Edge, Firefox, or Safari on a device with a microphone.</p>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>Wait — real auto-tune, running in a browser tab?</h2>
     <p>Yes. There is no server doing the work and nothing gets uploaded. When you press start, the page opens your microphone with the Web Audio API and streams the audio through an AudioWorklet, which is a small piece of DSP code that runs on the browser's real-time audio thread. That worklet does the pitch shifting sample by sample, so the corrected voice comes back with only a few milliseconds of delay. The whole signal path lives inside the tab.</p>
     <h2>How the pitch correction works</h2>
@@ -182,27 +164,19 @@
     <h2>A note on honesty</h2>
     <p>This is a real-time effect, not studio-grade offline tuning. It does not preserve formants perfectly on large jumps, so extreme corrections take on the classic robotic character rather than sounding invisible. For small, in-key corrections it sounds clean. If you sing roughly in tune and pick the right key, it does a genuinely nice job.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my voice uploaded anywhere?</summary><p>No. Everything runs locally in your browser with the Web Audio API. Your microphone audio never leaves your device, there is no account, and nothing is stored.</p></details>
     <details><summary>How do I get the classic hard-tune robot sound?</summary><p>Set retune speed to 0, strength to 100%, and pick a scale like Minor or Minor Pentatonic. Instant retune with no glide is what produces the stepped, robotic effect.</p></details>
     <details><summary>Why should I use headphones?</summary><p>If you turn on Monitor to hear the corrected voice through your speakers, that sound will leak back into your microphone and cause feedback and double-tracking. Headphones keep the loop clean.</p></details>
     <details><summary>Can I save what I record?</summary><p>Yes. Press Record while singing and Retune captures the corrected output. When you stop, a player appears with a download link so you can save the clip.</p></details>
     <details><summary>Does it work on my phone?</summary><p>It works in most modern mobile browsers that support AudioWorklet and microphone access. Latency is a little higher on phones, and you should still use headphones.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- AudioWorklet DSP: pitch-shifter that runs on the audio thread. Loaded as a Blob URL so this stays a single file. -->
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script id="worklet-code" type="text/js-worklet">
 class RetuneProcessor extends AudioWorkletProcessor {
   constructor(){
@@ -270,12 +244,9 @@ class RetuneProcessor extends AudioWorkletProcessor {
 }
 registerProcessor('retune-processor', RetuneProcessor);
 </script>
-
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   // ---------- music theory helpers ----------
   var SCALES = {
@@ -376,8 +347,8 @@ registerProcessor('retune-processor', RetuneProcessor);
   function draw(){
     var W=cv.width, H=cv.height;
     var css=getComputedStyle(document.documentElement);
-    var accent=(css.getPropertyValue("--accent")||"#2be3b0").trim();
-    var accent2=(css.getPropertyValue("--accent-2")||"#14c3c9").trim();
+    var accent=(css.getPropertyValue("--accent")||"#b9442f").trim();
+    var accent2=(css.getPropertyValue("--accent-2")||"#3f7a55").trim();
     cx.clearRect(0,0,W,H);
     // pitch window: center around recent target, +/- 14 semitones
     var center=57; // A3 midi fallback
@@ -395,11 +366,11 @@ registerProcessor('retune-processor', RetuneProcessor);
       var isAllowed=allowed[pc];
       var isRoot=(pc===rootPc);
       var yy=y(m);
-      cx.strokeStyle= isRoot? "rgba(255,255,255,.22)" : isAllowed? "rgba(255,255,255,.10)":"rgba(255,255,255,.03)";
+      cx.strokeStyle= isRoot? "rgba(45,36,64,.26)" : isAllowed? "rgba(45,36,64,.12)":"rgba(45,36,64,.04)";
       cx.lineWidth= isRoot?2:1;
       cx.beginPath(); cx.moveTo(0,yy); cx.lineTo(W,yy); cx.stroke();
       if(isAllowed){
-        cx.fillStyle= isRoot? "rgba(237,242,239,.55)":"rgba(147,168,161,.45)";
+        cx.fillStyle= isRoot? "rgba(45,36,64,.72)":"rgba(108,99,128,.62)";
         cx.fillText(NOTE_NAMES[pc]+(Math.floor(m/12)-1), 10, yy-6);
       }
     }
@@ -425,7 +396,7 @@ registerProcessor('retune-processor', RetuneProcessor);
       var last=history[n-1];
       var yd=y(freqToMidiFloat(last.target));
       cx.fillStyle=accent; cx.beginPath(); cx.arc(W-6,yd,8,0,7); cx.fill();
-      cx.fillStyle="rgba(43,227,176,.18)"; cx.beginPath(); cx.arc(W-6,yd,18,0,7); cx.fill();
+      cx.fillStyle="rgba(232,96,76,.2)"; cx.beginPath(); cx.arc(W-6,yd,18,0,7); cx.fill();
     }
   }
 
@@ -615,12 +586,5 @@ registerProcessor('retune-processor', RetuneProcessor);
   draw();
 })();
 </script>
-
-<!-- Monetization slots (left inert for now):
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX"></ins>
-Polar.sh "support this tool" button can drop in here. -->
-
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

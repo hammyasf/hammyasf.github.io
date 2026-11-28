@@ -8,7 +8,7 @@
 <meta name="keywords" content="frame by frame video player, step through video frame by frame, video frame viewer, frame accurate video, extract frame from video, save frame from video, onion skin video, compare video frames, slow motion frame stepper, study video frame by frame, golf swing frame by frame, webcodecs" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Framewise — Frame-by-Frame Video Player" />
 <meta property="og:description" content="Step through any video one frame at a time, frame-accurate, in your browser. Onion-skin, A/B compare, export the exact frame. Nothing uploaded." />
@@ -20,123 +20,107 @@
 <meta name="twitter:description" content="Step through any video frame by frame in your browser. Frame-accurate. Nothing uploaded." />
 <link rel="canonical" href="https://hammyasf.github.io/framewise.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Framewise — Frame-by-Frame Video Player","url":"https://hammyasf.github.io/framewise.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebCodecs)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Step through any video frame by frame, frame-accurate, in the browser. Onion-skin, A/B compare, export the exact frame as PNG. Nothing is uploaded; frames are decoded on-device with WebCodecs.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my video uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Framewise decodes your video entirely in your browser using the WebCodecs API. The file never leaves your device, and there is no sign-up."}},{"@type":"Question","name":"Why can it step frame by frame when a normal video player can't?","acceptedAnswer":{"@type":"Answer","text":"A normal HTML5 video element only seeks to keyframes, so stepping is jumpy and imprecise. Framewise demuxes the file and decodes every individual frame with a real video decoder, so it can show you any exact frame and the precise timestamp."}},{"@type":"Question","name":"What video formats work?","acceptedAnswer":{"@type":"Answer","text":"MP4 and MOV files using H.264 work in every modern browser. H.265/HEVC, VP9 and AV1 work if your browser and device can decode them. If a file can't be decoded, Framewise tells you instead of failing silently."}},{"@type":"Question","name":"Can I save a single frame as an image?","acceptedAnswer":{"@type":"Answer","text":"Yes. Land on the frame you want and click Save PNG. Framewise re-decodes that exact frame at full native resolution and downloads it, or copies it to your clipboard."}},{"@type":"Question","name":"How long a clip can it handle?","acceptedAnswer":{"@type":"Answer","text":"It works best on short clips — a few seconds to about 20 seconds — because every frame is decoded and held for instant scrubbing. Longer videos are processed up to a frame cap; trim to the moment you care about for the full range."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 10px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.4vw,54px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .drop{padding:54px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
-  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
-  .drop h2{font-family:var(--display);font-weight:600;font-size:23px;}
-  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
-  .drop .or{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s,opacity .2s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .btn-sm{font-size:13px;padding:8px 13px;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .panel{margin:0;overflow:hidden;}
+  .tool-ui .panel{border-radius:0;background:none;box-shadow:none;outline:0;}
+  .drop{padding:54px 24px;text-align:center;margin:0;cursor:pointer;}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:25px;}
+  .drop p{color:var(--muted);font-size:14.5px;margin-top:8px;}
+  .drop .or{margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn{font-size:15px;padding:12px 20px;}
+  .btn.btn-sm{font-size:13.5px;padding:9px 15px;}
   .hidden{display:none!important;}
   /* progress */
-  .prog{padding:22px 24px;}
+  .prog{padding:22px 4px;}
   .prog .lbl{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;gap:10px;}
-  .track{height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line);overflow:hidden;}
-  .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .15s;}
-  /* viewer */
-  .stage{padding:14px;}
-  .canvas-wrap{position:relative;background:#05090a;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:240px;}
+  .track{height:14px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;}
+  .fill{height:100%;width:0;border-radius:999px;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);transition:width .15s;}
+  /* viewer: the frame sits in an ink felt window, dashed cream thread */
+  .canvas-wrap{position:relative;background:url(kit/felt-texture.webp),var(--ink);border-radius:20px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:240px;box-shadow:0 4px 0 #1d1730,0 12px 24px rgba(45,36,64,.2);}
+  .canvas-wrap::after{content:"";position:absolute;inset:7px;border:2px dashed rgba(255,247,234,.3);border-radius:14px;pointer-events:none;}
   #view{max-width:100%;max-height:62vh;display:block;image-rendering:auto;}
-  .badge{position:absolute;top:12px;left:12px;font-family:var(--mono);font-size:12px;color:var(--ink);background:rgba(5,9,10,.72);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:9px;padding:6px 10px;letter-spacing:.02em;}
+  .badge{position:absolute;top:14px;left:14px;z-index:1;font-family:var(--mono);font-size:12px;color:var(--ink);background:url(kit/felt-texture.webp),var(--cream);border-radius:999px;padding:7px 12px;letter-spacing:.02em;box-shadow:0 2px 0 var(--line-2);rotate:-1deg;}
   .badge b{color:var(--accent);}
-  .hint{position:absolute;bottom:12px;right:12px;font-family:var(--mono);font-size:11px;color:var(--faint);background:rgba(5,9,10,.6);border:1px solid var(--line);border-radius:8px;padding:5px 9px;}
+  .hint{position:absolute;bottom:14px;right:14px;z-index:1;font-family:var(--mono);font-size:11px;color:var(--ink);background:rgba(255,247,234,.86);border-radius:999px;padding:6px 11px;}
   /* transport */
-  .transport{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px;border-top:1px solid var(--line);}
-  .iconbtn{width:42px;height:42px;border-radius:11px;border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.6);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.15s;font-size:15px;}
-  .iconbtn:hover{border-color:rgba(var(--accentRGB),.5);color:var(--accent);}
-  .iconbtn.play{background:var(--accent);color:#07100e;border-color:var(--accent);}
+  .transport{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:18px 4px;}
+  .iconbtn{width:44px;height:44px;border-radius:14px;border:0;background:url(kit/felt-texture.webp),var(--white);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:15px;box-shadow:var(--shadow-btn);transition:transform .45s var(--spring-pop),color .15s;}
+  .iconbtn:hover{color:var(--accent);transform:translateY(-2px);}
+  .iconbtn.play{width:52px;height:52px;border-radius:50%;background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);box-shadow:0 3px 0 #96331f,0 6px 14px rgba(185,68,47,.3);}
+  .iconbtn.play:hover{color:var(--white);}
   .scrub{flex:1;min-width:200px;display:flex;align-items:center;gap:12px;}
-  input[type=range]{accent-color:var(--accent);width:100%;height:22px;cursor:pointer;}
   .scrub-meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);white-space:nowrap;}
   .scrub-meta b{color:var(--accent);}
-  /* filmstrip */
-  .strip-wrap{padding:0 14px 14px;}
-  .strip{display:flex;gap:6px;overflow-x:auto;padding:8px;border:1px solid var(--line);border-radius:12px;background:rgba(5,9,10,.5);scrollbar-width:thin;}
-  .strip canvas{height:58px;width:auto;border-radius:6px;border:2px solid transparent;cursor:pointer;flex:0 0 auto;opacity:.78;transition:opacity .15s,border-color .15s;background:#05090a;}
+  /* filmstrip: a sunk sand pocket of little frames */
+  .strip-wrap{padding:0 0 18px;}
+  .strip{display:flex;gap:8px;overflow-x:auto;padding:10px;border-radius:16px;background:var(--sand);box-shadow:var(--sunk);scrollbar-width:thin;}
+  .strip canvas{height:58px;width:auto;border-radius:8px;border:3px solid transparent;cursor:pointer;flex:0 0 auto;opacity:.8;transition:opacity .15s,border-color .15s;background:var(--ink);}
   .strip canvas:hover{opacity:1;}
-  .strip canvas.cur{border-color:var(--accent);opacity:1;}
+  .strip canvas.cur{border-color:var(--coral);opacity:1;}
   /* tool rows */
-  .tools{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;padding:14px;border-top:1px solid var(--line);}
+  .tools{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center;padding:18px 4px;border-top:2px dashed var(--line);}
   .tgroup{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  .tgroup .ttl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .chk{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;}
-  .chk input{accent-color:var(--accent);width:15px;height:15px;}
-  .mini-range{width:108px;}
-  select{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:9px;padding:8px 10px;font-family:var(--mono);font-size:12.5px;}
-  .divider{width:1px;align-self:stretch;background:var(--line);}
+  .tgroup .ttl{font:600 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .chk{font-size:14.5px;color:var(--ink);}
+  .tgroup input.mini-range{width:108px;}
+  .tgroup select{width:auto;font-family:var(--mono);font-size:13px;padding:9px 40px 9px 14px;}
+  .divider{width:0;align-self:stretch;border-left:2px dashed var(--line);}
   /* compare overlay */
   .cmp{position:relative;}
-  .cmp .wipe{position:absolute;top:0;bottom:0;width:2px;background:var(--accent);box-shadow:0 0 10px rgba(var(--accentRGB),.8);pointer-events:none;}
-  .note{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:0 14px 14px;}
-  .err{color:#ff9a8f;}
-  /* content */
-  .content{padding:30px 0 10px;}
-  .content h2{font-family:var(--display);font-weight:600;font-size:26px;letter-spacing:-.01em;margin:34px 0 12px;}
+  .cmp .wipe{position:absolute;top:0;bottom:0;width:3px;background:var(--coral);box-shadow:0 0 0 1px rgba(255,247,234,.6);pointer-events:none;}
+  .note{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:14px 4px 0;}
+  .err{color:var(--coral-dk);}
+  /* content: the copy and the FAQ, sewn on as one paper patch */
+  .content.patch{--r:24px;padding:40px 56px 44px;background:linear-gradient(rgba(255,251,244,.8) 0 0),url(kit/felt-texture.webp),var(--cream);}
+  .content h2{font-family:var(--display);font-weight:700;font-size:clamp(22px,2.8vw,28px);margin:38px 0 12px;}
+  .content h2:first-child{margin-top:0;}
   .content h3{font-family:var(--display);font-weight:600;font-size:18px;margin:22px 0 8px;}
-  .content p{color:#c4d0cb;margin:10px 0;max-width:760px;}
-  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:18px 0;}
-  .step{border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(var(--surfaceRGB),.4);}
-  .step .n{font-family:var(--mono);font-size:12px;color:var(--accent);}
-  .step h4{font-family:var(--display);font-weight:600;font-size:16px;margin:8px 0 6px;}
-  .step p{font-size:14px;color:var(--muted);margin:0;}
-  .faq{border-top:1px solid var(--line);padding:18px 0;}
-  .faq h3{font-family:var(--display);font-weight:600;font-size:17px;margin:0 0 6px;}
-  .faq p{color:var(--muted);font-size:15px;margin:0;}
-  .faq details{margin:0;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:0;}
-  @media(max-width:640px){ .scrub-meta{font-size:11px;} #view{max-height:48vh;} }
+  .content p{color:var(--ink);margin:10px 0;font-size:17px;line-height:1.75;}
+  .content .faq + .faq{margin-top:12px;}
+  .content summary h3{font:inherit;margin:0;}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:22px 0;}
+  .step{border-radius:18px;padding:18px;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 3px 0 var(--line-2),0 8px 16px rgba(84,46,30,.1);}
+  .step:nth-child(odd){rotate:-.5deg;}
+  .step:nth-child(even){rotate:.5deg;}
+  .step .n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;font:600 12px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--sky);box-shadow:0 2px 0 #8fb0d0;}
+  .step h4{font-family:var(--display);font-weight:600;font-size:17px;margin:10px 0 6px;}
+  .step p{font-size:14.5px;line-height:1.6;color:var(--muted);margin:0;}
+  @media(max-width:640px){.scrub-meta{font-size:11px;}#view{max-height:48vh;}.content.patch{padding:30px 22px 26px;}}
 </style>
-<script>
-(function(){
-  // match the portfolio's saved theme (avoids a flash of the default jade)
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
 </script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Framewise — Frame-by-Frame Video Player","url":"https://hammyasf.github.io/framewise.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebCodecs)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Step through any video frame by frame, frame-accurate, in the browser. Onion-skin, A/B compare, export the exact frame as PNG. Nothing is uploaded; frames are decoded on-device with WebCodecs.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my video uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Framewise decodes your video entirely in your browser using the WebCodecs API. The file never leaves your device, and there is no sign-up."}},{"@type":"Question","name":"Why can it step frame by frame when a normal video player can't?","acceptedAnswer":{"@type":"Answer","text":"A normal HTML5 video element only seeks to keyframes, so stepping is jumpy and imprecise. Framewise demuxes the file and decodes every individual frame with a real video decoder, so it can show you any exact frame and the precise timestamp."}},{"@type":"Question","name":"What video formats work?","acceptedAnswer":{"@type":"Answer","text":"MP4 and MOV files using H.264 work in every modern browser. H.265/HEVC, VP9 and AV1 work if your browser and device can decode them. If a file can't be decoded, Framewise tells you instead of failing silently."}},{"@type":"Question","name":"Can I save a single frame as an image?","acceptedAnswer":{"@type":"Answer","text":"Yes. Land on the frame you want and click Save PNG. Framewise re-decodes that exact frame at full native resolution and downloads it, or copies it to your clipboard."}},{"@type":"Question","name":"How long a clip can it handle?","acceptedAnswer":{"@type":"Answer","text":"It works best on short clips — a few seconds to about 20 seconds — because every frame is decoded and held for instant scrubbing. Longer videos are processed up to a frame cap; trim to the moment you care about for the full range."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="media">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-framewise">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Frame-by-frame video player</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-media"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>Frame-by-frame video player</h1>
     <p class="sub">Drop in a clip and step through it one exact frame at a time. Onion-skin the previous frame, wipe between any two frames, and save the precise frame you want as a PNG. Every frame is decoded on your own machine.</p>
-    <span class="priv">&#128274; 100% private — your video never leaves your device</span>
+    <p class="priv">&#128274; 100% private — your video never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <!-- unsupported -->
   <div class="panel hidden" id="unsupported">
     <div class="prog">
@@ -229,7 +213,9 @@
   </section>
 
   <!-- content / SEO -->
-  <section class="content"><div>
+  </section>
+  <section class="tool-faq">
+    <section class="content patch"><div>
     <h2>Step through a video frame by frame, in your browser</h2>
     <p>A normal video player only lets you seek to keyframes, so when you try to pause on the one frame you care about &mdash; the moment a club meets the ball, the exact frame a logo flashes, the single sharp frame in a shaky clip &mdash; it skips right past it. Framewise demuxes your file and decodes <em>every</em> frame with a real video decoder, so you can land on any exact frame, read its precise timestamp, and save it at full resolution.</p>
     <p>It runs entirely on your device. Your video is never uploaded, there is no sign-up, and once the page is loaded it keeps working with your internet off.</p>
@@ -253,21 +239,11 @@
     <div class="faq"><details><summary><h3 style="display:inline">Why can this step frame by frame when YouTube or my player can&rsquo;t?</h3></summary><p>Most players seek only to keyframes, which can be a second or more apart. Framewise decodes every individual frame, so it can show you any exact frame and its precise time.</p></details></div>
     <div class="faq"><details><summary><h3 style="display:inline">Which formats work?</h3></summary><p>MP4 and MOV with H.264 work in every modern browser. H.265/HEVC, VP9, and AV1 work if your device can decode them. If a file can&rsquo;t be decoded, Framewise says so instead of failing quietly.</p></details></div>
     <div class="faq"><details><summary><h3 style="display:inline">How long a video can it handle?</h3></summary><p>It&rsquo;s built for short clips. Every frame is decoded and held in memory for instant scrubbing, so long videos are processed up to a frame cap. Trim to the moment you care about for the full range.</p></details></div>
-    <div class="faq"><details><summary><h3 style="display:inline">Is it really free?</h3></summary><p>Yes, completely free, no sign-up, no watermark. It&rsquo;s one of a set of free, privacy-first tools I build in public. <a href="lab.html">See the rest</a> or <a href="index.html#contact">get in touch</a>.</p></details></div>
+    <div class="faq"><details><summary><h3 style="display:inline">Is it really free?</h3></summary><p>Yes, completely free, no sign-up, no watermark. It&rsquo;s one of a set of free, privacy-first tools I build in public. <a href="lab.html">See the rest</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p></details></div>
   </div></section>
+  </section>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a> · <a href="lab.html">The Lab</a></span>
-</div></footer>
-
-<!--
-  AdSense slot (left for later):
-  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
-  Polar.sh / support slot (left for later).
--->
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a> · <a href="lab.html">The Lab</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
   "use strict";
@@ -606,7 +582,5 @@
 
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

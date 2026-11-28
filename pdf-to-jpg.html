@@ -8,7 +8,7 @@
 <meta name="keywords" content="pdf to jpg, pdf to image, convert pdf to jpg, pdf to png, pdf to jpg converter, pdf pages to images, pdf to jpg no upload, free pdf to jpg" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Free PDF to JPG Converter" />
 <meta property="og:description" content="Convert PDF pages to JPG or PNG in your browser. High resolution, batch download, private. No uploads, no sign-up." />
 <meta property="og:type" content="website" />
@@ -19,83 +19,63 @@
 <meta name="twitter:description" content="Convert PDF pages to JPG or PNG in your browser. Private, no sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/pdf-to-jpg.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PDF to JPG Converter","url":"https://hammyasf.github.io/pdf-to-jpg.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Convert PDF pages to JPG or PNG images in the browser. High resolution, batch download, private, no upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my PDF uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The PDF is opened and rendered entirely in your browser. Your file never leaves your device, which is why it works on private and confidential documents."}},{"@type":"Question","name":"Can I convert every page of a PDF to a separate image?","acceptedAnswer":{"@type":"Answer","text":"Yes. Each page becomes its own JPG or PNG. You can download pages individually or grab all of them at once as a ZIP."}},{"@type":"Question","name":"What resolution are the images?","acceptedAnswer":{"@type":"Answer","text":"You choose. Standard is good for screens, while High and Max render the pages at 2x and 3x for print-quality detail and sharp text."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up and no limit on the number of pages or PDFs you convert."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .drop{padding:46px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
-  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
-  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .drop{padding:46px 24px;text-align:center;margin:0 0 26px;cursor:pointer;}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:24px;}
   .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
-  .controls{display:flex;flex-wrap:wrap;gap:18px 28px;padding:0 24px 20px;align-items:center;}
+  .controls{display:flex;flex-wrap:wrap;gap:18px 28px;padding:0 0 24px;align-items:flex-end;}
   .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 15px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  input[type=range]{accent-color:var(--accent);width:160px;}
-  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:34px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 24px 22px;}
+  .ctl label{font:600 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-left:6px;}
+  .ctl input[type=range]{width:170px;}
+  .qval{font:600 14px/1 var(--mono);color:var(--accent);min-width:34px;}
+  .btn{font-size:15px;padding:12px 20px;}
+  .bar{display:flex;gap:12px 14px;align-items:center;flex-wrap:wrap;}
   .summary{font-family:var(--mono);font-size:13px;color:var(--muted);}
   .summary b{color:var(--accent);}
-  .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;padding:0 24px 24px;}
-  .item{border:1px solid var(--line);border-radius:14px;padding:10px;background:rgba(var(--surfaceRGB),.4);display:flex;flex-direction:column;gap:8px;}
-  .item img{width:100%;height:auto;border-radius:8px;background:#fff;display:block;box-shadow:0 6px 18px rgba(0,0,0,.35);}
+  .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;padding-top:22px;}
+  .results:empty{display:none;}
+  .item{border-radius:18px;padding:12px;background:rgba(var(--surfaceRGB),.65);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-6px;display:flex;flex-direction:column;gap:10px;}
+  .item img{width:100%;height:auto;border-radius:6px;background:var(--white);display:block;box-shadow:0 2px 0 var(--line-2),0 8px 16px rgba(84,46,30,.18);rotate:-.6deg;}
   .item .n{font-family:var(--mono);font-size:11.5px;color:var(--muted);word-break:break-all;text-align:center;}
-  .item .dl{font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:7px 10px;border-radius:8px;cursor:pointer;background:transparent;text-align:center;}
-  .err{color:#ff8f8f;font-family:var(--mono);font-size:13px;padding:0 24px 18px;}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .item .dl{font:600 13.5px/1 var(--display);color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);border:0;padding:10px 12px;border-radius:999px;box-shadow:0 3px 0 #96331f;cursor:pointer;text-align:center;transition:transform .45s var(--spring-pop);}
+  .item .dl:hover{transform:translateY(-2px);}
+  .err{color:var(--coral-dk);font-family:var(--mono);font-size:13px;padding-top:14px;}
+  .err:empty{display:none;}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PDF to JPG Converter","url":"https://hammyasf.github.io/pdf-to-jpg.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Convert PDF pages to JPG or PNG images in the browser. High resolution, batch download, private, no upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my PDF uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The PDF is opened and rendered entirely in your browser. Your file never leaves your device, which is why it works on private and confidential documents."}},{"@type":"Question","name":"Can I convert every page of a PDF to a separate image?","acceptedAnswer":{"@type":"Answer","text":"Yes. Each page becomes its own JPG or PNG. You can download pages individually or grab all of them at once as a ZIP."}},{"@type":"Question","name":"What resolution are the images?","acceptedAnswer":{"@type":"Answer","text":"You choose. Standard is good for screens, while High and Max render the pages at 2x and 3x for print-quality detail and sharp text."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up and no limit on the number of pages or PDFs you convert."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="media">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-pdf-to-jpg">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">PDF to JPG Converter</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-media"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>PDF to JPG Converter</h1>
     <p class="sub">Turn every page of a PDF into a JPG or PNG image. Pick the resolution, download pages one by one or all at once as a ZIP.</p>
-    <span class="priv">&#128274; 100% private — your PDF never leaves your device</span>
+    <p class="priv">&#128274; 100% private — your PDF never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add PDF files">
       <h2>Drop PDF here</h2>
@@ -128,8 +108,8 @@
     <div class="err" id="err"></div>
     <div class="results" id="out"></div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>This tool opens your PDF with a rendering engine that runs inside your browser. It draws each page onto a canvas at the resolution you choose, then exports that canvas as a JPG or PNG. Because the rendering happens locally, your file is never uploaded, there is no queue, and confidential documents stay on your machine. It also means it keeps working even with no internet connection once the page has loaded.</p>
     <h2>JPG or PNG, and which resolution</h2>
@@ -137,31 +117,22 @@
     <h2>Common uses</h2>
     <p>Pull a single chart or diagram out of a report, turn a contract into images for a slide deck, save a receipt page as a photo, or prep PDF pages for a website where you would rather serve images than embed a viewer. If you need the reverse, the <a href="image-to-pdf.html">Image to PDF</a> tool combines images back into one PDF.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my PDF uploaded anywhere?</summary><p>No. Everything runs locally in your browser. The file never touches a server, which is why it is fast and safe for private documents.</p></details>
     <details><summary>Can I convert just one page?</summary><p>Every page is rendered as its own image. Convert the PDF, then download only the page or pages you want, or grab them all at once.</p></details>
     <details><summary>Why do High and Max take a little longer?</summary><p>They render each page at 2x or 3x the pixels for sharper detail, which is more work for your device. For most on-screen uses Standard is plenty.</p></details>
     <details><summary>Is there a limit?</summary><p>No sign-up and no hard limit. Very large or image-heavy PDFs are bounded only by your device's memory.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   if(window.pdfjsLib){ pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; }
 
@@ -250,8 +221,5 @@
   });
 })();
 </script>
-<!-- Monetization slot: AdSense / Polar.sh pro tier go here once approved. Kept empty so the tool stays fast and clean. -->
-<!-- Analytics: Cloudflare Web Analytics beacon. Replace TOKEN with the token from your Cloudflare dashboard (free). -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

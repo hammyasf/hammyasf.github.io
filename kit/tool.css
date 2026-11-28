@@ -127,6 +127,9 @@ html:has(.tool-page) { scroll-padding-top: 100px; }
 .tool-ui .prog:has(> i) { border: 0; border-radius: 999px; background: var(--sand); box-shadow: var(--sunk); }
 .tool-ui .prog > i { border-radius: 999px; background: var(--knit), linear-gradient(#f07a66, var(--coral) 60%, #d4513e); background-size: 8px 11px, auto; }
 
+/* a felt .seg (felt.css) whose buttons the tool's script marks .on: the picked one is the raised white pill */
+.tool-ui .seg > button.on { color: var(--ink); background: var(--felt), #fff; box-shadow: var(--shadow-btn); }
+
 /* details: felt accordions, here and in the FAQ */
 .tool-ui details, .tool-faq details {
   position: relative; border-radius: 18px; background: var(--calm), var(--felt), var(--cream);
@@ -182,6 +185,13 @@ html:has(.tool-page) { scroll-padding-top: 100px; }
 .tool-cta a { color: #fff; font-weight: 700; text-decoration-color: rgba(255,255,255,.55); }
 
 /* ---------- phones ---------- */
+/* kit/site.js's floating Menu button: on phones a small round ✦ (the label stays its accessible name),
+   and it steps aside while focus is in the tool, so it never sits on a control being used */
+@media (max-width: 640px) {
+  .tool-page .xfab { width: 46px; height: 46px; padding: 0; gap: 0; font-size: 0; transition: opacity .2s; }
+  .tool-page .xfab > span { font-size: 19px; }
+  .tool-page:has(.tool-ui :focus-within) .xfab { opacity: 0; pointer-events: none; }
+}
 @media (max-width: 720px) {
   .tool > .hero { column-gap: 14px; padding: 26px 22px 26px; }
   .tool > .hero > .kind { grid-row: 1 / span 2; align-self: start; width: 82px; height: 82px; margin-top: -2px; outline-offset: -6px; }

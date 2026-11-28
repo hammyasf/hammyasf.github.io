@@ -8,7 +8,7 @@
 <meta name="keywords" content="vocal range test, vocal range finder, what is my vocal range, find my vocal range, voice type test, am i a tenor or baritone, singing range test, pitch detector, soprano alto tenor bass test" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Vocal Range Finder — test your singing range" />
 <meta property="og:description" content="Sing your lowest and highest notes and find your vocal range, octaves, and voice type. Real-time, in your browser, nothing uploaded." />
 <meta property="og:type" content="website" />
@@ -19,109 +19,92 @@
 <meta name="twitter:description" content="Find your vocal range and voice type in real time, in your browser. Private, no sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/vocal-range.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Vocal Range Finder","url":"https://hammyasf.github.io/vocal-range.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Find your vocal range and voice type by singing. Real-time pitch detection runs entirely in the browser, nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my microphone audio uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The pitch detection runs entirely in your browser using the Web Audio API. Your microphone audio never leaves your device and nothing is recorded or uploaded."}},{"@type":"Question","name":"How does it figure out my vocal range?","acceptedAnswer":{"@type":"Answer","text":"As you sing, it tracks the pitch of your voice many times a second using the McLeod Pitch Method. It keeps the lowest and highest clear notes you reach, then reports the span between them in notes and octaves."}},{"@type":"Question","name":"How accurate is the voice type result?","acceptedAnswer":{"@type":"Answer","text":"Voice type is an approximation based on where your comfortable range sits relative to the standard classical categories (bass, baritone, tenor, alto, mezzo-soprano, soprano). A real vocal coach also considers your tone and tessitura, so treat it as a fun guide, not a verdict."}},{"@type":"Question","name":"What is a normal vocal range?","acceptedAnswer":{"@type":"Answer","text":"Most untrained adults have a comfortable range of about 1.5 to 2 octaves. Trained singers often reach 3 octaves or more. The numbers vary by source and by how hard you push your highest and lowest notes."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .start{padding:46px 24px;text-align:center;}
-  .start h2{font-family:var(--display);font-weight:600;font-size:24px;}
-  .start p{color:var(--muted);font-size:15px;margin-top:10px;max-width:520px;margin-left:auto;margin-right:auto;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .live{display:none;padding:20px 24px 26px;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .start{padding:40px 24px;text-align:center;}
+  .start h2{font-family:var(--display);font-weight:700;font-size:28px;}
+  .start p{color:var(--muted);font-size:15.5px;margin-top:10px;max-width:520px;margin-left:auto;margin-right:auto;}
+  .btn{font-size:15px;padding:12px 22px;}
+  .live{display:none;padding:8px 0 4px;}
   .live.on{display:block;}
-  .now{display:flex;align-items:flex-end;justify-content:center;gap:18px;text-align:center;margin:6px 0 6px;}
-  .note{font-family:var(--display);font-weight:700;font-size:clamp(64px,16vw,128px);line-height:.92;letter-spacing:-.03em;}
+  .now{display:flex;align-items:flex-end;justify-content:center;gap:22px;text-align:center;margin:6px 0 10px;}
+  .note{font-family:var(--display);font-weight:700;font-size:clamp(64px,16vw,128px);line-height:.92;letter-spacing:-.03em;color:var(--ink);text-shadow:0 4px 0 rgba(232,96,76,.18);}
   .note .oct{font-size:.42em;color:var(--muted);vertical-align:super;}
   .note.silent{color:var(--faint);opacity:.5;}
-  .nowmeta{font-family:var(--mono);font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:8px;padding-bottom:10px;min-width:120px;text-align:left;}
+  .nowmeta{font-family:var(--mono);font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:8px;padding-bottom:10px;min-width:130px;text-align:left;}
   .nowmeta b{color:var(--accent);}
-  .cents{height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.8);border:1px solid var(--line);position:relative;overflow:hidden;}
-  .cents .mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line-2);}
-  .cents .nd{position:absolute;top:-2px;width:3px;height:12px;border-radius:2px;background:var(--accent);transform:translateX(-50%);transition:left .08s linear,background .1s;}
-  .clarity{height:6px;border-radius:6px;background:rgba(var(--surfaceRGB),.8);border:1px solid var(--line);overflow:hidden;}
-  .clarity .f{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .1s;}
-  canvas{display:block;width:100%;border-radius:14px;background:rgba(var(--surfaceRGB),.5);border:1px solid var(--line);}
+  .cents{height:12px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);position:relative;overflow:hidden;}
+  .cents .mid{position:absolute;left:50%;top:0;bottom:0;width:2px;background:var(--line-2);}
+  .cents .nd{position:absolute;top:0;width:4px;height:12px;border-radius:2px;background:var(--accent);transform:translateX(-50%);transition:left .08s linear,background .1s;}
+  .clarity{height:12px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;}
+  .clarity .f{height:100%;width:0;border-radius:999px;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);transition:width .1s;}
+  canvas{display:block;width:100%;border-radius:16px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:var(--sunk),inset 0 0 0 2px var(--line);}
   #trail{height:120px;margin:16px 0 4px;}
   .pianowrap{margin:14px 0 4px;}
   #piano{height:96px;}
-  .rangebar{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;justify-content:space-between;margin:16px 0 4px;}
+  .rangebar{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;justify-content:space-between;margin:18px 4px 4px;}
   .rng{font-family:var(--mono);font-size:14px;color:var(--muted);}
   .rng b{color:var(--accent);font-size:18px;}
   .rng .dim{color:var(--faint);font-size:12px;}
-  .live .bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
-  .hint{font-family:var(--mono);font-size:12.5px;color:var(--faint);margin-top:12px;text-align:center;}
+  .live .bar{display:flex;gap:10px 12px;flex-wrap:wrap;margin-top:18px;}
+  .hint{font-family:var(--mono);font-size:12.5px;color:var(--faint);margin-top:14px;text-align:center;}
   .hint b{color:var(--accent);}
   /* results */
-  .result{display:none;padding:24px;}
+  .result{display:none;padding:8px 0 4px;}
   .result.on{display:block;}
   .rverdict{text-align:center;padding:10px 0 18px;}
-  .rverdict .vt{font-family:var(--display);font-weight:700;font-size:clamp(34px,7vw,56px);letter-spacing:-.02em;}
+  .rverdict .vt{font-family:var(--display);font-weight:700;font-size:clamp(34px,7vw,56px);letter-spacing:-.02em;color:var(--ink);}
   .rverdict .rspan{font-family:var(--mono);font-size:18px;color:var(--accent);margin-top:6px;}
-  .rverdict .rdesc{color:#cdd8d3;font-size:15.5px;margin:12px auto 0;max-width:560px;}
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0;}
-  .stat{border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center;background:rgba(var(--surfaceRGB),.4);}
-  .stat .v{font-family:var(--display);font-weight:600;font-size:26px;color:var(--accent);}
-  .stat .l{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:4px;}
-  .compare{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:rgba(var(--surfaceRGB),.4);font-size:14.5px;color:#cdd8d3;}
+  .rverdict .rdesc{color:var(--ink);font-size:16px;line-height:1.65;margin:12px auto 0;max-width:560px;}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0;}
+  .stat{border-radius:18px;padding:16px;text-align:center;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 3px 0 var(--line-2),0 8px 16px rgba(84,46,30,.1);outline:2px dashed var(--line);outline-offset:-6px;}
+  .stat:nth-child(1){rotate:-.6deg;}
+  .stat:nth-child(3){rotate:.6deg;}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:28px;color:var(--accent);}
+  .stat .l{font:600 12px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:4px;}
+  .compare{border-radius:18px;padding:16px 20px;background:rgba(var(--surfaceRGB),.6);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-6px;font-size:15px;line-height:1.6;color:var(--ink);}
   .compare b{color:var(--accent);}
   #cardCanvas{margin:18px 0 6px;height:auto;}
   @media(max-width:560px){.stats{grid-template-columns:1fr;}.now{flex-direction:column;align-items:center;gap:4px;}.nowmeta{text-align:center;align-items:center;}}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .vtable{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px;}
-  .vtable th,.vtable td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);}
-  .vtable th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);font-weight:500;}
+  .vtable{width:100%;border-collapse:collapse;margin:14px 0;font-size:15px;}
+  .vtable th,.vtable td{text-align:left;padding:10px 12px;border-bottom:2px dashed var(--line);}
+  .vtable th{font:600 12px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);}
   .vtable td:first-child{color:var(--ink);font-weight:600;}
   .vtable td .n{font-family:var(--mono);color:var(--accent);}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Vocal Range Finder","url":"https://hammyasf.github.io/vocal-range.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Find your vocal range and voice type by singing. Real-time pitch detection runs entirely in the browser, nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my microphone audio uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The pitch detection runs entirely in your browser using the Web Audio API. Your microphone audio never leaves your device and nothing is recorded or uploaded."}},{"@type":"Question","name":"How does it figure out my vocal range?","acceptedAnswer":{"@type":"Answer","text":"As you sing, it tracks the pitch of your voice many times a second using the McLeod Pitch Method. It keeps the lowest and highest clear notes you reach, then reports the span between them in notes and octaves."}},{"@type":"Question","name":"How accurate is the voice type result?","acceptedAnswer":{"@type":"Answer","text":"Voice type is an approximation based on where your comfortable range sits relative to the standard classical categories (bass, baritone, tenor, alto, mezzo-soprano, soprano). A real vocal coach also considers your tone and tessitura, so treat it as a fun guide, not a verdict."}},{"@type":"Question","name":"What is a normal vocal range?","acceptedAnswer":{"@type":"Answer","text":"Most untrained adults have a comfortable range of about 1.5 to 2 octaves. Trained singers often reach 3 octaves or more. The numbers vary by source and by how hard you push your highest and lowest notes."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="media">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-vocal-range">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Vocal Range Finder</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-media"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>Vocal Range Finder</h1>
     <p class="sub">Sing your lowest note, then slide up to your highest. It tracks your pitch live and tells you your range, how many octaves you cover, and your voice type.</p>
-    <span class="priv">&#128274; 100% private — your mic audio never leaves your device</span>
+    <p class="priv">&#128274; 100% private — your mic audio never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <!-- START STATE -->
     <div class="start" id="start">
@@ -188,8 +171,8 @@
 
   <!-- AdSense / Polar.sh slot (left intentionally empty for later) -->
   <!-- <div class="ad-slot" data-slot="vocal-range-inline"></div> -->
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>When you sing, your voice produces a fundamental frequency, and that frequency is your pitch. This tool reads your microphone with the Web Audio API and runs a pitch tracker on each short slice of sound, many times a second, using the McLeod Pitch Method — the same family of algorithms used in real tuners. It measures the fundamental, converts it to a musical note, and keeps the lowest and highest clear notes you reach. The span between them is your vocal range. All of this runs on your own machine, so nothing is recorded and nothing is uploaded.</p>
     <h2>How to get an accurate result</h2>
@@ -209,37 +192,28 @@
     </table>
     <p>For reference, most untrained adults have a comfortable range of around one and a half to two octaves. Trained singers often reach three octaves or more. Ranges popularly attributed to famous singers — for instance the roughly five octaves often cited for Mariah Carey — are widely circulated approximations that vary a lot by source, so the comparison in your result is meant to be fun rather than exact.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my microphone audio uploaded anywhere?</summary><p>No. The pitch detection runs locally in your browser with the Web Audio API. Your audio is never recorded, stored, or sent to a server. You can confirm it by going offline after the page loads — it keeps working.</p></details>
     <details><summary>How does it detect my range?</summary><p>It tracks your pitch dozens of times a second and keeps the lowest and highest clear, sustained notes you sing. The span between them, in notes and octaves, is your range.</p></details>
     <details><summary>Why does it sometimes jump an octave or read nothing?</summary><p>Pitch detection needs a clear, sustained tone. Breathy notes, vocal fry, background noise, or notes held too briefly can confuse it. Sing a steady "ah", get closer to the mic, and watch the signal meter — it only captures notes when the signal is strong and stable.</p></details>
     <details><summary>How accurate is the voice type?</summary><p>It is an approximation from your range alone. A real classification also weighs your tone and the part of your range you can sustain comfortably, which only a coach can judge by ear. Use it as a fun guide.</p></details>
     <details><summary>Does it work on my phone?</summary><p>Yes, in most modern mobile browsers. Allow microphone access when prompted. A wired headset mic often gives a cleaner signal than the built-in mic in a noisy room.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   var NOTE_NAMES=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
   function freqToMidi(f){ return 69+12*Math.log2(f/440); }
   function midiToFreq(m){ return 440*Math.pow(2,(m-69)/12); }
   function midiName(m){ var r=Math.round(m); var n=NOTE_NAMES[((r%12)+12)%12]; var o=Math.floor(r/12)-1; return {name:n,oct:o,label:n+o}; }
-  function accentColor(){ return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#2be3b0'; }
+  function accentColor(){ return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#b9442f'; }
   function accentRGB(){ return getComputedStyle(document.documentElement).getPropertyValue('--accentRGB').trim()||'43,227,176'; }
 
   // ---- McLeod Pitch Method pitch detector ----
@@ -364,7 +338,7 @@
       hzEl.textContent=Math.round(midiToFreq(disp))+' Hz';
       var cents=(disp-Math.round(disp))*100; // -50..50
       centsNeedle.style.left=(50+cents)+'%';
-      centsNeedle.style.background = Math.abs(cents)<8 ? accentColor() : '#e8c84a';
+      centsNeedle.style.background = Math.abs(cents)<8 ? accentColor() : '#d6a43a';
     } else {
       noteEl.classList.add('silent'); noteEl.textContent='—'; hzEl.textContent='0 Hz';
     }
@@ -422,7 +396,7 @@
       tctx.fillRect(0, y(hiMidi), w, y(loMidi)-y(hiMidi));
     }
     // octave gridlines (C notes)
-    tctx.strokeStyle='rgba(237,242,239,.07)'; tctx.lineWidth=1; tctx.font='10px ui-monospace,monospace'; tctx.fillStyle='rgba(147,168,161,.6)';
+    tctx.strokeStyle='rgba(45,36,64,.1)'; tctx.lineWidth=1; tctx.font='10px ui-monospace,monospace'; tctx.fillStyle='rgba(108,99,128,.8)';
     for(var m=Math.ceil(lo/12)*12; m<=hi; m+=12){ var yy=y(m); tctx.beginPath(); tctx.moveTo(0,yy); tctx.lineTo(w,yy); tctx.stroke(); tctx.fillText(midiName(m).label, 4, yy-3); }
     // trail line
     var n=trailData.length; if(n>1){
@@ -455,11 +429,11 @@
       if(isBlack(mm)) continue;
       var x=idx*ww; whiteX[mm]=x;
       var inRange = loMidi!==null && hiMidi!==null && mm>=Math.round(loMidi) && mm<=Math.round(hiMidi);
-      pctx.fillStyle = inRange ? 'rgba('+accentRGB()+',.32)' : 'rgba(237,242,239,.92)';
+      pctx.fillStyle = inRange ? 'rgba('+accentRGB()+',.32)' : 'rgba(255,253,248,.96)';
       pctx.fillRect(x+1, 0, ww-2, h);
-      pctx.strokeStyle='rgba(7,16,14,.35)'; pctx.lineWidth=1; pctx.strokeRect(x+1,0,ww-2,h);
+      pctx.strokeStyle='rgba(45,36,64,.3)'; pctx.lineWidth=1; pctx.strokeRect(x+1,0,ww-2,h);
       // C labels
-      if(mm%12===0){ pctx.fillStyle='rgba(7,16,14,.55)'; pctx.font='9px ui-monospace,monospace'; pctx.fillText(midiName(mm).label, x+3, h-5); }
+      if(mm%12===0){ pctx.fillStyle='rgba(45,36,64,.6)'; pctx.font='9px ui-monospace,monospace'; pctx.fillText(midiName(mm).label, x+3, h-5); }
       idx++;
     }
     // captured low/high markers
@@ -470,7 +444,7 @@
       if(!isBlack(mm)) continue;
       var bx=keyX(mm,whiteX,ww); var bw=ww*0.62, bh=h*0.62;
       var inR = loMidi!==null && hiMidi!==null && mm>=Math.round(loMidi) && mm<=Math.round(hiMidi);
-      pctx.fillStyle = inR ? 'rgba('+accentRGB()+',.55)' : '#0c1a16';
+      pctx.fillStyle = inR ? 'rgba('+accentRGB()+',.55)' : '#2d2440';
       pctx.fillRect(bx, 0, bw, bh);
     }
     // current note marker
@@ -539,27 +513,27 @@
     var c=document.getElementById('cardCanvas'); var W=1200,H=630; c.width=W;c.height=H;
     var x=c.getContext('2d'); var acc=accentColor(), rgb=accentRGB();
     // bg
-    var g=x.createLinearGradient(0,0,W,H); g.addColorStop(0,'#07100e'); g.addColorStop(1,'#0b1714');
+    var g=x.createLinearGradient(0,0,W,H); g.addColorStop(0,'#fff7ea'); g.addColorStop(1,'#f3e8d6');
     x.fillStyle=g; x.fillRect(0,0,W,H);
     x.fillStyle='rgba('+rgb+',.10)'; x.beginPath(); x.arc(W*0.92,-40,220,0,7); x.fill();
     // header
     x.fillStyle=acc; x.font='600 22px "JetBrains Mono",ui-monospace,monospace'; x.fillText('MY VOCAL RANGE', 70, 92);
-    x.fillStyle='#7c8b84'; x.font='15px "JetBrains Mono",ui-monospace,monospace'; x.fillText('hammyasf.github.io/vocal-range.html', 70, 122);
+    x.fillStyle='#6c6380'; x.font='15px "JetBrains Mono",ui-monospace,monospace'; x.fillText('hammyasf.github.io/vocal-range.html', 70, 122);
     // voice type
-    x.fillStyle='#edf2ef'; x.font='600 96px "Clash Display",sans-serif'; x.fillText(t.name, 66, 240);
+    x.fillStyle='#2d2440'; x.font='600 96px "Clash Display",sans-serif'; x.fillText(t.name, 66, 240);
     // range
     x.fillStyle=acc; x.font='600 60px "Clash Display",sans-serif'; x.fillText(loL+'  –  '+hiL, 70, 330);
-    x.fillStyle='#93a8a1'; x.font='30px "JetBrains Mono",ui-monospace,monospace'; x.fillText(oct.toFixed(1)+' octaves', 70, 378);
+    x.fillStyle='#7a6450'; x.font='30px "JetBrains Mono",ui-monospace,monospace'; x.fillText(oct.toFixed(1)+' octaves', 70, 378);
     // mini piano strip
     var px=70, py=440, pw=W-140, ph=110, lo=PIANO_LO, hi=PIANO_HI;
     var whiteCount=0,mm; for(mm=lo;mm<=hi;mm++){ if(!isBlack(mm)) whiteCount++; }
     var ww=pw/whiteCount, idx=0, wx={};
     for(mm=lo;mm<=hi;mm++){ if(isBlack(mm))continue; var kx=px+idx*ww; wx[mm]=kx;
-      var inR=mm>=loR&&mm<=hiR; x.fillStyle=inR?'rgba('+rgb+',.45)':'rgba(237,242,239,.92)';
-      x.fillRect(kx+1,py,ww-2,ph); x.strokeStyle='rgba(7,16,14,.35)'; x.strokeRect(kx+1,py,ww-2,ph); idx++; }
-    for(mm=lo;mm<=hi;mm++){ if(!isBlack(mm))continue; var below=mm-1; var bx=(wx[below]!==undefined?wx[below]:px)+ww*0.69; var inR2=mm>=loR&&mm<=hiR; x.fillStyle=inR2?'rgba('+rgb+',.7)':'#0c1a16'; x.fillRect(bx,py,ww*0.62,ph*0.62); }
+      var inR=mm>=loR&&mm<=hiR; x.fillStyle=inR?'rgba('+rgb+',.45)':'rgba(255,253,248,.96)';
+      x.fillRect(kx+1,py,ww-2,ph); x.strokeStyle='rgba(45,36,64,.3)'; x.strokeRect(kx+1,py,ww-2,ph); idx++; }
+    for(mm=lo;mm<=hi;mm++){ if(!isBlack(mm))continue; var below=mm-1; var bx=(wx[below]!==undefined?wx[below]:px)+ww*0.69; var inR2=mm>=loR&&mm<=hiR; x.fillStyle=inR2?'rgba('+rgb+',.7)':'#2d2440'; x.fillRect(bx,py,ww*0.62,ph*0.62); }
     // footer
-    x.fillStyle='#7c8b84'; x.font='17px "JetBrains Mono",ui-monospace,monospace'; x.fillText('Find yours → free, in your browser, nothing uploaded', 70, H-34);
+    x.fillStyle='#6c6380'; x.font='17px "JetBrains Mono",ui-monospace,monospace'; x.fillText('Find yours → free, in your browser, nothing uploaded', 70, H-34);
   }
 
   // ---- buttons ----
@@ -576,7 +550,5 @@
   });
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>
