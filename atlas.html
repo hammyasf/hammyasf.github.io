@@ -8,7 +8,7 @@
 <meta name="keywords" content="text embeddings, semantic map, embedding visualizer, semantic search, cluster text online, group similar text, deduplicate list, sentence embeddings, embedding projector, on-device ai, transformers.js, all-minilm" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Atlas — Map any list of words by meaning" />
 <meta property="og:description" content="A real AI embedding model lays your words out on a map by meaning, clusters them, and lets you search by meaning — all in your browser, nothing uploaded." />
 <meta property="og:type" content="website" />
@@ -19,110 +19,92 @@
 <meta name="twitter:description" content="A real AI embedding model maps your words by meaning, in your browser. Nothing uploaded." />
 <link rel="canonical" href="https://hammyasf.github.io/atlas.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Atlas — Semantic Map of Your Text","url":"https://hammyasf.github.io/atlas.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (modern web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Paste any list of words or sentences and a real sentence-embedding model lays them out on a 2D map by meaning, clusters them, and answers semantic searches — all in the browser, nothing uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The embedding model is downloaded once to your browser and runs entirely on your device with Transformers.js. Your text never leaves your machine, and it keeps working offline after the first load."}},{"@type":"Question","name":"What does it actually do?","acceptedAnswer":{"@type":"Answer","text":"It turns each line of text into a 384-number vector with a real sentence-embedding model (all-MiniLM-L6-v2), then projects those vectors down to a 2D point with PCA so you can see them. Things that mean similar things end up close together. It also clusters them with k-means and lets you search by meaning."}},{"@type":"Question","name":"How is it different from Ctrl+F search?","acceptedAnswer":{"@type":"Answer","text":"Ctrl+F matches letters. Atlas matches meaning. Search 'sad' and it will surface 'grief', 'heartbroken' and 'down' even though none of them share a single letter with your query, because it compares the embeddings, not the spelling."}},{"@type":"Question","name":"How big is the model and is there a cost?","acceptedAnswer":{"@type":"Answer","text":"The quantized all-MiniLM-L6-v2 model is about 23 MB. It downloads once, is cached by the browser, and there is no API key, no per-use cost, and no sign-up."}},{"@type":"Question","name":"How many items can I map?","acceptedAnswer":{"@type":"Answer","text":"A few hundred lines works comfortably on a normal laptop. It embeds in batches so the page stays responsive, and everything after that — projection, clustering, search — is instant because the vectors already live in memory."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 6px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .app{display:grid;grid-template-columns:340px 1fr;gap:0;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .app{display:grid;grid-template-columns:340px minmax(0,1fr);gap:24px;}
   @media(max-width:860px){.app{grid-template-columns:1fr;}}
-  .left{padding:20px;border-right:1px solid var(--line);}
-  @media(max-width:860px){.left{border-right:none;border-bottom:1px solid var(--line);}}
-  .left h2{font-family:var(--display);font-weight:600;font-size:18px;margin-bottom:4px;}
-  .left .hint{color:var(--faint);font-size:13px;margin-bottom:12px;}
-  textarea{width:100%;height:200px;resize:vertical;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:12px;padding:12px 14px;font-family:var(--mono);font-size:13px;line-height:1.5;}
-  textarea:focus{outline:none;border-color:rgba(var(--accentRGB),.55);}
-  .samples{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 2px;}
-  .chip{font-family:var(--mono);font-size:11.5px;color:var(--muted);border:1px solid var(--line-2);background:transparent;padding:6px 11px;border-radius:100px;cursor:pointer;transition:.15s;}
-  .chip:hover{border-color:rgba(var(--accentRGB),.5);color:var(--ink);}
-  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .left h2{font-family:var(--display);font-weight:600;font-size:22px;margin-bottom:4px;}
+  .left .hint{color:var(--faint);font-size:14px;margin-bottom:12px;}
+  .left textarea{width:100%;height:200px;resize:vertical;font-family:var(--mono);font-size:13px;line-height:1.5;}
+  .samples{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 2px;}
+  .chip{font:600 13px/1.1 var(--display);color:var(--green);border:0;background:url(kit/felt-texture.webp),var(--mint);padding:8px 12px;border-radius:999px;cursor:pointer;outline:1.5px dashed rgba(63,122,85,.3);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .2s;}
+  .chip:hover{transform:translateY(-1px) rotate(-2deg) scale(1.04);background:url(kit/felt-texture.webp),#e1ecd8;}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .ctl{margin-top:18px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:7px;}
-  .ctl label b{color:var(--accent);}
-  input[type=range]{accent-color:var(--accent);width:100%;}
-  .search{width:100%;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:10px 12px;font-family:var(--body);font-size:14px;}
-  .search:focus{outline:none;border-color:rgba(var(--accentRGB),.55);}
-  .right{position:relative;min-height:520px;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .ctl{margin-top:20px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:8px;}
+  .ctl label b{color:var(--coral-dk);}
+  .ctl input[type=range]{width:100%;}
+  .search{width:100%;}
+  /* the map: a cream sheet of dotted paper sunk into the patch */
+  .right{position:relative;min-height:520px;border-radius:22px;overflow:hidden;background:radial-gradient(rgba(45,36,64,.2) 1.2px,transparent 1.8px) 0 0/22px 22px,linear-gradient(rgba(255,247,234,.62) 0 0),url(kit/felt-texture.webp),var(--cream);box-shadow:var(--sunk),inset 0 0 0 2px var(--line);}
+  .right::after{content:"";position:absolute;inset:7px;border:2px dashed var(--line-2);border-radius:16px;pointer-events:none;}
   #map{display:block;width:100%;height:100%;min-height:520px;touch-action:none;cursor:crosshair;}
-  .status{position:absolute;top:14px;left:14px;right:14px;display:flex;flex-direction:column;gap:10px;pointer-events:none;}
-  .loadbox{background:rgba(7,16,14,.82);border:1px solid var(--line-2);border-radius:12px;padding:14px 16px;backdrop-filter:blur(6px);pointer-events:auto;}
-  .loadbox .t{font-family:var(--mono);font-size:12.5px;color:var(--ink);}
-  .loadbox .s{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:4px;}
-  .prog{height:6px;border-radius:100px;background:rgba(237,242,239,.12);margin-top:9px;overflow:hidden;}
-  .prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s;}
+  .status{position:absolute;top:14px;left:14px;right:14px;display:flex;flex-direction:column;gap:10px;pointer-events:none;z-index:2;}
+  .loadbox{background:url(kit/felt-texture.webp),rgba(255,255,255,.94);border-radius:16px;padding:14px 18px;pointer-events:auto;box-shadow:0 3px 0 #e2cdb0,0 10px 20px rgba(84,46,30,.14);outline:2px dashed var(--line-2);outline-offset:-6px;}
+  .loadbox .t{font:600 14px/1.3 var(--display);color:var(--ink);}
+  .loadbox .s{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:4px;}
+  .prog{height:10px;margin-top:10px;overflow:hidden;}
+  .prog i{display:block;height:100%;width:0;transition:width .2s;}
   .empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;pointer-events:none;}
   .empty div{max-width:360px;}
-  .empty h3{font-family:var(--display);font-weight:600;font-size:20px;color:var(--ink);}
-  .empty p{color:var(--muted);font-size:14px;margin-top:8px;}
-  .tip{position:absolute;pointer-events:none;background:rgba(7,16,14,.94);border:1px solid var(--line-2);border-radius:8px;padding:7px 10px;font-family:var(--mono);font-size:12px;color:var(--ink);max-width:260px;transform:translate(-50%,-140%);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:5;opacity:0;transition:opacity .1s;}
-  .legend{position:absolute;bottom:12px;left:14px;display:flex;flex-wrap:wrap;gap:6px 12px;max-width:70%;}
-  .legend span{font-family:var(--mono);font-size:11px;color:var(--muted);display:inline-flex;align-items:center;gap:6px;}
-  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block;}
-  .nbr{border-top:1px solid var(--line);padding:16px 20px;}
-  .nbr h3{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;}
-  .nbr .sel{font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);margin-bottom:10px;}
-  .nlist{display:grid;gap:6px;}
-  .nlist .n{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;font-size:14px;color:#cdd8d3;}
-  .nlist .n .b{height:6px;border-radius:100px;background:rgba(var(--accentRGB),.18);position:relative;min-width:70px;}
-  .nlist .n .b i{position:absolute;left:0;top:0;bottom:0;border-radius:100px;background:var(--accent);}
-  .nlist .n .pct{font-family:var(--mono);font-size:11.5px;color:var(--accent);min-width:38px;text-align:right;}
-  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 20px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .empty h3{font-family:var(--display);font-weight:600;font-size:21px;color:var(--ink);}
+  .empty p{color:var(--muted);font-size:14.5px;margin-top:8px;}
+  .tip{position:absolute;pointer-events:none;background:url(kit/felt-texture.webp),var(--ink);border-radius:10px;padding:7px 11px;font:600 12.5px/1.2 var(--display);color:var(--cream);box-shadow:0 3px 0 #1d1730,0 8px 16px rgba(45,36,64,.25);max-width:260px;transform:translate(-50%,-140%);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:5;opacity:0;transition:opacity .1s;}
+  .legend{position:absolute;bottom:16px;left:18px;display:flex;flex-wrap:wrap;gap:6px 8px;max-width:72%;z-index:1;}
+  .legend:empty{display:none;}
+  .legend span{font:600 12px/1 var(--display);color:var(--ink);display:inline-flex;align-items:center;gap:6px;padding:5px 10px 5px 7px;border-radius:999px;background:rgba(255,255,255,.88);box-shadow:0 2px 0 #e2cdb0;}
+  .legend i{width:10px;height:10px;border-radius:50%;display:inline-block;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15);}
+  .nbr{margin-top:22px;padding:18px 20px;border-radius:20px;background:rgba(var(--surfaceRGB),.6);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;}
+  .nbr h3{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;}
+  .nbr .sel{font-family:var(--display);font-weight:600;font-size:17px;color:var(--ink);margin-bottom:12px;}
+  .nlist{display:grid;gap:8px;}
+  .nlist .n{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;font-size:14.5px;color:var(--ink);}
+  .nlist .n .b{height:8px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);position:relative;min-width:70px;}
+  .nlist .n .b i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--knit),var(--coral);background-size:8px 11px,auto;}
+  .nlist .n .pct{font:600 12.5px/1 var(--display);color:var(--coral-dk);min-width:38px;text-align:right;}
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:2px dashed var(--line);font:600 13.5px/1.3 var(--display);color:var(--muted);}
   .toolbar .sp{flex:1;}
-  .mini{font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:7px 12px;border-radius:8px;cursor:pointer;background:transparent;}
-  .mini[disabled]{opacity:.4;cursor:not-allowed;}
-  .fail{margin:18px;padding:18px;border:1px solid rgba(255,120,90,.4);border-radius:14px;background:rgba(255,120,90,.06);color:#ffd9cf;font-size:14.5px;display:none;}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .mini{font:600 13px/1 var(--display);color:var(--coral-dk);background:url(kit/felt-texture.webp),var(--white);border:0;padding:10px 15px;border-radius:999px;cursor:pointer;box-shadow:var(--shadow-btn);transition:transform .45s var(--spring-pop);}
+  .mini:hover:not([disabled]){transform:translateY(-2px);}
+  .mini[disabled]{opacity:.45;cursor:not-allowed;}
+  .fail{margin:0 0 20px;padding:16px 20px;border-radius:16px;color:var(--coral-dk);background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 12%,var(--cream));outline:2px dashed rgba(185,68,47,.4);outline-offset:-6px;font-size:14.5px;display:none;}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Atlas — Semantic Map of Your Text","url":"https://hammyasf.github.io/atlas.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (modern web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Paste any list of words or sentences and a real sentence-embedding model lays them out on a 2D map by meaning, clusters them, and answers semantic searches — all in the browser, nothing uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The embedding model is downloaded once to your browser and runs entirely on your device with Transformers.js. Your text never leaves your machine, and it keeps working offline after the first load."}},{"@type":"Question","name":"What does it actually do?","acceptedAnswer":{"@type":"Answer","text":"It turns each line of text into a 384-number vector with a real sentence-embedding model (all-MiniLM-L6-v2), then projects those vectors down to a 2D point with PCA so you can see them. Things that mean similar things end up close together. It also clusters them with k-means and lets you search by meaning."}},{"@type":"Question","name":"How is it different from Ctrl+F search?","acceptedAnswer":{"@type":"Answer","text":"Ctrl+F matches letters. Atlas matches meaning. Search 'sad' and it will surface 'grief', 'heartbroken' and 'down' even though none of them share a single letter with your query, because it compares the embeddings, not the spelling."}},{"@type":"Question","name":"How big is the model and is there a cost?","acceptedAnswer":{"@type":"Answer","text":"The quantized all-MiniLM-L6-v2 model is about 23 MB. It downloads once, is cached by the browser, and there is no API key, no per-use cost, and no sign-up."}},{"@type":"Question","name":"How many items can I map?","acceptedAnswer":{"@type":"Answer","text":"A few hundred lines works comfortably on a normal laptop. It embeds in batches so the page stays responsive, and everything after that — projection, clustering, search — is instant because the vectors already live in memory."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">On-device AI · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-atlas">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Atlas</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">On-device AI · runs in your browser</span>
     <h1>Atlas</h1>
     <p class="sub">Paste any list of words or sentences and watch a real AI model lay them out on a map by <em>meaning</em>. Things that mean similar things land close together. Then search by meaning, cluster, and spot near-duplicates — with nothing ever leaving your device.</p>
-    <span class="priv">&#128274; 100% private — the model runs locally, your text is never uploaded</span>
+    <p class="priv">&#128274; 100% private — the model runs locally, your text is never uploaded</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="fail" id="fail"></div>
     <div class="app">
@@ -177,8 +159,8 @@
       <button class="mini" id="png" disabled>Save map (PNG)</button>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>What am I actually looking at?</h2>
     <p>Every dot is one line of your text. To place it, Atlas runs a real sentence-embedding model that turns the line into a list of 384 numbers — a vector that captures its meaning rather than its spelling. Lines that mean similar things get similar vectors. Those vectors live in 384 dimensions, which no human can see, so Atlas uses a technique called principal component analysis to flatten them down to the two directions that carry the most variation and draws each item at that spot. The upshot: distance on the map is roughly distance in meaning. Fruit drifts to one corner, animals to another, and a word like "bat" quietly lands between the animals and the sports gear, because the model has seen it used both ways.</p>
     <h2>Wait — this runs in my browser?</h2>
@@ -188,27 +170,19 @@
     <h2>How the clustering and search work</h2>
     <p>The colour groups come from k-means run directly on the full 384-dimensional vectors, not on the flattened map, so the grouping reflects true similarity even where the 2D projection has to squash things together. Move the slider and it re-groups instantly because the embeddings are already in memory. Search does the same thing a vector database does: it embeds your query into the same space and ranks every item by cosine similarity, the angle between the two vectors. Clicking a point runs that ranking from the point itself, which is exactly the "find more like this" primitive behind recommendation and semantic search.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my text uploaded anywhere?</summary><p>No. The model downloads once to your browser and every embedding is computed on your device. Your text never touches a server, and Atlas keeps working with no connection after the first load.</p></details>
     <details><summary>How is this different from Ctrl+F?</summary><p>Ctrl+F matches letters; Atlas matches meaning. Search "sad" and it will surface "grief", "heartbroken" and "down" even though they share no letters with your query, because it compares embeddings, not spelling.</p></details>
     <details><summary>What model does it use, and how big is it?</summary><p>all-MiniLM-L6-v2, a 384-dimension sentence-embedding model, quantized to about 23 MB. It is cached after the first download. No API key, no per-use cost, no sign-up.</p></details>
     <details><summary>Why do the same items sometimes sit in slightly different spots?</summary><p>The embeddings are deterministic, but the 2D projection is a squash from 384 dimensions to two, so a lot of nuance has to be thrown away to draw it. Distances are approximate by design. The clustering and the search both use the full-dimensional vectors, so they stay faithful even when the picture cannot.</p></details>
     <details><summary>How many lines can I map?</summary><p>A few hundred is comfortable on a normal laptop. Items are embedded in batches so the page stays responsive; after that, projection, clustering and search are instant.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- ===== Embedding worker source (module worker, built into a Blob at runtime) ===== -->
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script type="javascript/worker" id="worker-src">
 import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1';
 env.allowLocalModels = false;
@@ -244,8 +218,6 @@ self.onmessage = async (e) => {
   }
 };
 </script>
-
-<!-- ===== Pure math helpers (also node-testable) ===== -->
 <script>
 (function(g){
   "use strict";
@@ -326,19 +298,15 @@ self.onmessage = async (e) => {
   if(typeof module!=='undefined' && module.exports){ module.exports=API; } else { g.ATLAS_MATH=API; }
 })(typeof window!=='undefined'?window:this);
 </script>
-
-<!-- ===== App ===== -->
 <script>
 (function(){
   "use strict";
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var tt=T[localStorage.getItem("siteTheme")]; if(tt){var r=document.documentElement.style; r.setProperty("--accent",tt[0]);r.setProperty("--accent-2",tt[1]);r.setProperty("--accentRGB",tt[2]);r.setProperty("--surfaceRGB",tt[3]);r.setProperty("--bg",tt[4]);r.setProperty("--bg-2",tt[5]);} }catch(e){}
+  
 
   var M = window.ATLAS_MATH;
   var $ = function(id){ return document.getElementById(id); };
   // Fixed cluster palette, independent of the site accent so groups never collide with the theme.
-  var PAL = ["#2be3b0","#ff8a3d","#6aa8ff","#ffd23d","#c479ff","#ff6a9c","#4ad6d6","#a3e635"];
+  var PAL = ["#e8604c","#3f7a55","#4f86c6","#d6a43a","#8a5cc4","#e86a9a","#2f9c94","#7fae58"];
 
   var SAMPLES = {
     mixed: ["cat","dog","horse","elephant","tiger","rabbit","dolphin","eagle","apple","banana","orange","grape","strawberry","mango","pineapple","watermelon","tennis","basketball","soccer","cricket","boxing","swimming","cycling","golf"],
@@ -429,13 +397,13 @@ self.onmessage = async (e) => {
     if(showDupes){
       ctx.lineWidth=1.4*dpr;
       for(i=0;i<dupePairs.length;i++){ var a=screenPts[dupePairs[i][0]], b=screenPts[dupePairs[i][1]];
-        ctx.strokeStyle="rgba(255,138,61,"+(0.25+0.5*dupePairs[i][2])+")";
+        ctx.strokeStyle="rgba(185,68,47,"+(0.25+0.5*dupePairs[i][2])+")";
         ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke(); }
     }
     // neighbour links from selection
     if(sel>=0 && selNbrs.length){
       ctx.lineWidth=1.5*dpr; ctx.strokeStyle="rgba(var(--accentRGB),.5)";
-      var accent=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#2be3b0";
+      var accent=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#b9442f";
       for(i=0;i<selNbrs.length;i++){ var p=screenPts[selNbrs[i].idx];
         ctx.strokeStyle=hexA(accent, 0.15+0.5*selNbrs[i].sim);
         ctx.beginPath(); ctx.moveTo(screenPts[sel][0],screenPts[sel][1]); ctx.lineTo(p[0],p[1]); ctx.stroke(); }
@@ -443,7 +411,7 @@ self.onmessage = async (e) => {
     // points
     var qset={}; for(i=0;i<queryHits.length;i++) qset[queryHits[i].idx]=queryHits[i].sim;
     for(i=0;i<screenPts.length;i++){
-      var s=screenPts[i], col=PAL[clusters[i]%PAL.length]||"#2be3b0";
+      var s=screenPts[i], col=PAL[clusters[i]%PAL.length]||"#e8604c";
       var isHit=(i in qset), isSel=(i===sel);
       var rad=(isSel?7:(isHit?6:4.4))*dpr;
       // faded if a query is active and this isn't a hit
@@ -451,20 +419,20 @@ self.onmessage = async (e) => {
       ctx.globalAlpha = faded?0.22:1;
       ctx.beginPath(); ctx.arc(s[0],s[1],rad,0,6.2832);
       ctx.fillStyle=col; ctx.fill();
-      if(isSel){ ctx.globalAlpha=1; ctx.lineWidth=2.2*dpr; ctx.strokeStyle="#fff"; ctx.stroke(); }
-      else if(isHit){ ctx.globalAlpha=1; ctx.lineWidth=1.6*dpr; ctx.strokeStyle="rgba(255,255,255,.85)"; ctx.stroke(); }
+      if(isSel){ ctx.globalAlpha=1; ctx.lineWidth=2.2*dpr; ctx.strokeStyle="#2d2440"; ctx.stroke(); }
+      else if(isHit){ ctx.globalAlpha=1; ctx.lineWidth=1.6*dpr; ctx.strokeStyle="rgba(45,36,64,.7)"; ctx.stroke(); }
       ctx.globalAlpha=1;
     }
     // labels for near points (only a few, to stay readable)
     ctx.globalAlpha=1; ctx.font=(12*dpr)+"px "+(getComputedStyle(document.body).fontFamily||"sans-serif");
-    ctx.fillStyle="rgba(237,242,239,.9)"; ctx.textBaseline="middle";
+    ctx.fillStyle="rgba(45,36,64,.88)"; ctx.textBaseline="middle";
     var labelSet=labelIndices();
     for(i=0;i<labelSet.length;i++){ var li=labelSet[i], sp=screenPts[li]; if(!sp) continue;
       ctx.fillText(trunc(items[li],22), sp[0]+8*dpr, sp[1]); }
     // query marker
     if(queryPt){ var qs=[computeScreen._sx(queryPt[0]), computeScreen._sy(queryPt[1])];
-      ctx.beginPath(); ctx.arc(qs[0],qs[1],8*dpr,0,6.2832); ctx.fillStyle="#ffffff"; ctx.fill();
-      ctx.beginPath(); ctx.arc(qs[0],qs[1],13*dpr,0,6.2832); ctx.lineWidth=2*dpr; ctx.strokeStyle="#ffffff"; ctx.stroke();
+      ctx.beginPath(); ctx.arc(qs[0],qs[1],8*dpr,0,6.2832); ctx.fillStyle="#2d2440"; ctx.fill();
+      ctx.beginPath(); ctx.arc(qs[0],qs[1],13*dpr,0,6.2832); ctx.lineWidth=2*dpr; ctx.strokeStyle="#2d2440"; ctx.stroke();
     }
   }
   function hexA(hex, a){ hex=hex.replace("#",""); if(hex.length===3){hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];} var n=parseInt(hex,16); return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")"; }
@@ -595,17 +563,11 @@ self.onmessage = async (e) => {
   $("clear").addEventListener("click", function(){ $("input").value=""; items=[]; vecs=[]; coords=[]; clusters=[]; centers=[]; sel=-1; queryPt=null; queryHits=[]; $("legend").innerHTML=""; $("nbr").style.display="none"; $("empty").style.display="flex"; $("count").textContent="No items mapped yet."; $("dedupe").disabled=true; $("png").disabled=true; ctx.clearRect(0,0,cv.width,cv.height); });
   document.querySelectorAll("#samples .chip").forEach(function(b){ b.addEventListener("click", function(){ $("input").value=SAMPLES[b.getAttribute("data-s")].join("\n"); mapIt(); }); });
   $("dedupe").addEventListener("click", function(){ if(!vecs.length) return; showDupes=!showDupes; $("dedupe").textContent=showDupes?"Hide near-duplicates":"Show near-duplicates"; $("count").textContent=showDupes?(dupePairs.length+" near-duplicate pair"+(dupePairs.length===1?"":"s")+" found (cosine ≥ 0.86)"):(items.length+" items mapped · "+centers.length+" clusters · click a point or search by meaning"); draw(); });
-  $("png").addEventListener("click", function(){ if(!coords.length) return; var bg=getComputedStyle(document.documentElement).getPropertyValue("--bg").trim()||"#07100e"; var tmp=document.createElement("canvas"); tmp.width=cv.width; tmp.height=cv.height; var tc=tmp.getContext("2d"); tc.fillStyle=bg; tc.fillRect(0,0,tmp.width,tmp.height); tc.drawImage(cv,0,0); var a=document.createElement("a"); a.href=tmp.toDataURL("image/png"); a.download="atlas-map.png"; a.click(); });
+  $("png").addEventListener("click", function(){ if(!coords.length) return; var bg=getComputedStyle(document.documentElement).getPropertyValue("--bg").trim()||"#fff7ea"; var tmp=document.createElement("canvas"); tmp.width=cv.width; tmp.height=cv.height; var tc=tmp.getContext("2d"); tc.fillStyle=bg; tc.fillRect(0,0,tmp.width,tmp.height); tc.drawImage(cv,0,0); var a=document.createElement("a"); a.href=tmp.toDataURL("image/png"); a.download="atlas-map.png"; a.click(); });
 
   // initial size
   setTimeout(resize, 60);
 })();
 </script>
-
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
-<!-- Ad/monetization slot (left intentionally empty for now):
-<ins class="adsbygoogle" ...></ins>  or  Polar.sh embed
--->
 </body>
 </html>

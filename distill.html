@@ -8,7 +8,7 @@
 <meta name="keywords" content="summarize text online, ai text summarizer, summarize an article, tldr generator, summarize long text, summarize pdf, summarize transcript, private summarizer, in browser summarizer, offline summarizer, no upload summarizer, free summarizer" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Distill — AI Text Summarizer that runs in your browser" />
 <meta property="og:description" content="Summarize text and PDFs of any length with a real AI model running 100% in your browser. Private, offline-capable, no sign-up." />
 <meta property="og:type" content="website" />
@@ -19,119 +19,95 @@
 <meta name="twitter:description" content="Summarize any length of text or a PDF with a real AI model, 100% private, in your browser." />
 <link rel="canonical" href="https://hammyasf.github.io/distill.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://huggingface.co" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Distill — AI Text Summarizer","url":"https://hammyasf.github.io/distill.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Summarize text and PDFs of any length with a real seq2seq AI model that runs entirely in the browser. Private, offline-capable, no upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI model runs entirely in your browser with WebAssembly. Your text and any PDF you drop in never leave your device."}},{"@type":"Question","name":"How can it summarize very long documents?","acceptedAnswer":{"@type":"Answer","text":"The summarization model reads about a thousand words at a time, so Distill splits long text into sections, summarizes each one, then summarizes those summaries together. This map-reduce approach lets it handle articles, transcripts and whole PDFs that are far longer than the model's own limit."}},{"@type":"Question","name":"Which AI model does it use?","acceptedAnswer":{"@type":"Answer","text":"A quantized build of DistilBART (distilbart-cnn), a distilled version of Facebook's BART model fine-tuned for summarization. It runs through Transformers.js and ONNX Runtime Web."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes, after the first use. The model downloads once (about 270 MB) and is cached by your browser, so later summaries work with no internet."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, with no sign-up and no limit on how much you summarize."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:22px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .drop{padding:22px 22px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px 18px 12px;transition:border-color .2s,background .2s;cursor:pointer;}
-  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
-  .drop h2{font-family:var(--display);font-weight:600;font-size:19px;}
-  .drop p{color:var(--muted);font-size:13.5px;margin-top:6px;}
-  textarea#src{width:calc(100% - 36px);margin:0 18px;display:block;min-height:190px;resize:vertical;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:14px;padding:14px 16px;font-family:var(--body);font-size:15px;line-height:1.6;}
-  textarea#src:focus{outline:none;border-color:var(--accent);}
-  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:16px 22px 6px;align-items:center;}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 15px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  .samples{display:flex;flex-wrap:wrap;gap:8px;padding:4px 22px 4px;}
-  .samples span{font-family:var(--mono);font-size:11px;color:var(--faint);align-self:center;}
-  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);background:transparent;border-radius:100px;padding:6px 12px;cursor:pointer;transition:.15s;}
-  .chip:hover{border-color:var(--accent);color:var(--ink);}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:14px 22px 20px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 22px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .tool-ui > .panel{border-radius:0;background:none;box-shadow:none;outline:0;}
+  .drop{padding:24px 22px;text-align:center;margin:0 0 14px;cursor:pointer;}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:21px;}
+  .drop p{color:var(--muted);font-size:14px;margin-top:6px;}
+  textarea#src{width:100%;display:block;min-height:190px;resize:vertical;font-family:var(--body);font-size:15px;line-height:1.6;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:18px 0 4px;align-items:center;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .samples{display:flex;flex-wrap:wrap;gap:8px;padding:14px 0 0;}
+  .samples span{font:600 13px/1 var(--display);color:var(--faint);align-self:center;}
+  .chip{font:600 13px/1.1 var(--display);color:var(--green);border:0;background:url(kit/felt-texture.webp),var(--mint);border-radius:999px;padding:8px 13px;cursor:pointer;outline:1.5px dashed rgba(63,122,85,.3);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .2s;}
+  .chip:hover{transform:translateY(-1px) rotate(-2deg) scale(1.04);background:url(kit/felt-texture.webp),#e1ecd8;}
+  #clearBtn{color:var(--muted);background:url(kit/felt-texture.webp),var(--white);outline-color:var(--line-2);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:18px 0 18px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 22px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .count{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  .count b{color:var(--accent);font-weight:500;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .count{font:600 13px/1 var(--display);color:var(--muted);}
+  .count b{color:var(--coral-dk);}
   /* progress */
-  .prog{display:none;padding:0 22px 20px;}
+  .prog{display:none;padding:0 0 18px;}
   .prog.on{display:block;}
-  .prog .track{height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line);overflow:hidden;}
-  .prog .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .3s var(--ease);}
-  .prog .lbl{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:9px;}
-  .prog .lbl b{color:var(--accent);font-weight:500;}
+  .prog .track{height:12px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;}
+  .prog .fill{height:100%;width:0;border-radius:999px;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);background-size:8px 11px,auto;transition:width .3s var(--ease);}
+  .prog .lbl{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:9px;}
+  .prog .lbl b{color:var(--coral-dk);font-weight:600;}
   /* output */
-  .out{display:none;margin:22px 0;}
-  .out.on{display:block;}
-  .stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
-  .stat{border:1px solid var(--line);border-radius:12px;background:rgba(var(--surfaceRGB),.5);padding:10px 14px;min-width:120px;}
-  .stat .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .stat .v{font-family:var(--display);font-weight:600;font-size:22px;color:var(--ink);margin-top:2px;}
+  .out{display:none;margin:22px 0 0;padding-top:24px;border-top:2px dashed var(--line);}
+  .out.on{display:block;animation:rise .6s var(--spring-pop) both;}
+  .stats{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+  .stat{border-radius:16px;background:url(kit/felt-texture.webp),var(--white);padding:12px 16px;min-width:120px;box-shadow:var(--shadow-btn);outline:1.5px dashed var(--line-2);outline-offset:-5px;}
+  .stat:nth-child(odd){rotate:-1deg;}
+  .stat:nth-child(even){rotate:.8deg;}
+  .stat .k{font:600 11.5px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .stat .v{font-family:var(--display);font-weight:600;font-size:24px;color:var(--ink);margin-top:2px;}
   .stat .v small{font-size:13px;color:var(--muted);font-family:var(--mono);font-weight:400;}
-  .sumcard{border:1px solid var(--line-2);border-radius:16px;background:rgba(var(--surfaceRGB),.6);padding:20px 22px;}
-  .sumcard h3{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
-  #summaryText{font-size:16.5px;line-height:1.72;color:#e6ede9;white-space:pre-wrap;}
-  .outbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
-  .keywrap{margin-top:14px;}
-  .keywrap details{border:1px solid var(--line);border-radius:14px;background:rgba(var(--surfaceRGB),.4);padding:4px 16px;}
-  .keywrap summary{cursor:pointer;font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:12px 0;list-style:none;}
-  .keywrap summary::-webkit-details-marker{display:none;}
-  .keywrap summary::before{content:"▸ ";color:var(--accent);}
-  .keywrap details[open] summary::before{content:"▾ ";}
-  .source{font-size:15px;line-height:1.75;color:var(--muted);padding:6px 0 16px;max-height:340px;overflow:auto;}
-  .source mark{background:rgba(var(--accentRGB),.18);color:#eafff6;border-radius:4px;padding:1px 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
-  .note{font-family:var(--mono);font-size:12px;color:var(--faint);padding:0 22px 18px;}
-  .warn{display:none;margin:14px 18px;border:1px solid rgba(255,140,90,.4);background:rgba(255,140,90,.08);color:#ffcaa8;border-radius:12px;padding:12px 15px;font-size:13.5px;}
+  /* the summary: a sheet of paper pinned into the patch */
+  .sumcard{border-radius:20px;background:linear-gradient(rgba(255,255,255,.72) 0 0),url(kit/felt-texture.webp),var(--white);padding:24px 26px;box-shadow:0 3px 0 #e2cdb0,0 12px 24px rgba(84,46,30,.14);outline:2px dashed var(--line-2);outline-offset:-8px;}
+  .sumcard h3{font:600 12.5px/1.2 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--coral-dk);margin-bottom:12px;}
+  #summaryText{font-size:16.5px;line-height:1.72;color:var(--ink);white-space:pre-wrap;}
+  .outbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+  .keywrap{margin-top:18px;}
+  .source{font-size:15px;line-height:1.75;color:var(--muted);padding:0 24px 18px;max-height:340px;overflow:auto;}
+  .source mark{background:color-mix(in srgb,var(--butter) 55%,#fff);color:var(--ink);border-radius:4px;padding:1px 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
+  .note{font-size:13.5px;line-height:1.55;color:var(--faint);padding:0;}
+  .warn{display:none;margin:0 0 14px;border-radius:16px;padding:14px 18px;font-size:14px;color:var(--coral-dk);background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 12%,var(--cream));outline:2px dashed rgba(185,68,47,.4);outline-offset:-6px;}
   .warn.on{display:block;}
-  section.copy{padding:20px 0 8px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:22px;margin:22px 0 8px;letter-spacing:-.01em;}
-  section.copy p{color:#c3d0ca;font-size:15.5px;max-width:720px;}
   .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:16px 0 6px;}
-  .step{border:1px solid var(--line);border-radius:14px;background:rgba(var(--surfaceRGB),.45);padding:16px 18px;}
-  .step .n{font-family:var(--mono);font-size:11px;color:var(--accent);}
+  .step{border-radius:16px;background:url(kit/felt-texture.webp),var(--white);padding:16px 18px;box-shadow:var(--shadow-btn);}
+  .step .n{font:600 12px/1 var(--display);color:var(--coral-dk);}
   .step h4{font-family:var(--display);font-weight:600;font-size:16px;margin:6px 0 4px;}
   .step p{font-size:13.5px;color:var(--muted);}
-  .faq{margin:14px 0;}
-  .faq details{border-bottom:1px solid var(--line);padding:6px 0;}
-  .faq summary{cursor:pointer;font-family:var(--display);font-weight:500;font-size:16.5px;padding:12px 0;color:var(--ink);}
-  .faq p{color:var(--muted);font-size:15px;padding:0 0 12px;max-width:720px;}
-  .cta{margin:26px 0 10px;border:1px solid var(--line);border-radius:18px;background:rgba(var(--accentRGB),.05);padding:24px;}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:20px;}
-  .cta p{color:var(--muted);font-size:15px;margin-top:6px;}
-  footer{border-top:1px solid var(--line);margin-top:36px;padding:24px;}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:var(--mono);font-size:12.5px;color:var(--faint);padding:0 24px;}
-  @media(max-width:640px){textarea#src{width:calc(100% - 24px);margin:0 12px;}.drop{margin:12px;}}
+  @media(max-width:640px){.sumcard{padding:20px 18px;}.source{padding:0 16px 16px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Distill — AI Text Summarizer","url":"https://hammyasf.github.io/distill.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Summarize text and PDFs of any length with a real seq2seq AI model that runs entirely in the browser. Private, offline-capable, no upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI model runs entirely in your browser with WebAssembly. Your text and any PDF you drop in never leave your device."}},{"@type":"Question","name":"How can it summarize very long documents?","acceptedAnswer":{"@type":"Answer","text":"The summarization model reads about a thousand words at a time, so Distill splits long text into sections, summarizes each one, then summarizes those summaries together. This map-reduce approach lets it handle articles, transcripts and whole PDFs that are far longer than the model's own limit."}},{"@type":"Question","name":"Which AI model does it use?","acceptedAnswer":{"@type":"Answer","text":"A quantized build of DistilBART (distilbart-cnn), a distilled version of Facebook's BART model fine-tuned for summarization. It runs through Transformers.js and ONNX Runtime Web."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes, after the first use. The model downloads once (about 270 MB) and is cached by your browser, so later summaries work with no internet."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, with no sign-up and no limit on how much you summarize."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · a real AI model in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-distill">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Distill</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">Free tool · a real AI model in your browser</span>
     <h1>Distill</h1>
     <p class="sub">Summarize an article, a transcript, or a whole PDF &mdash; any length &mdash; with a real summarization model that runs entirely on your own machine. Nothing is uploaded, and once it loads it works offline.</p>
-    <span class="priv">&#128274; 100% private &mdash; your text never leaves your device</span>
+    <p class="priv">&#128274; 100% private &mdash; your text never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add a document">
       <h2>Paste text below, or drop a file here</h2>
@@ -182,8 +158,8 @@
       </div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>Distill runs a real neural summarization model &mdash; a quantized build of DistilBART &mdash; directly inside your browser tab using WebAssembly. When you hit Summarize, your text is tokenized and fed through the model on your own CPU, and the summary comes back without a single byte being sent to a server. If you drop in a PDF, the text is pulled out locally in your browser too.</p>
     <h2>How it handles documents of any length</h2>
@@ -197,35 +173,19 @@
     <h2>Why summarize in the browser?</h2>
     <p>Most summarizers make you paste sensitive text &mdash; a private email thread, an internal doc, a medical note &mdash; into someone else's server. Distill never does that. The whole thing is one static web page and an open model, so your words stay on your machine, there are no usage limits, and it keeps working on a plane with the wifi off.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my text uploaded anywhere?</summary><p>No. The model runs locally in your browser with WebAssembly, and PDF text is extracted locally too. Nothing you paste or drop in is sent to a server.</p></details>
     <details><summary>How long does it take?</summary><p>The first run has to download the model (about 270 MB), so give it a minute on a normal connection. After that it is cached. Summarizing itself runs on your CPU, so a short article is quick and a long PDF takes longer while each section is processed.</p></details>
     <details><summary>How accurate is it?</summary><p>DistilBART is a solid, widely used summarization model, but it is a compact one running quantized for speed, so treat the summary as a fast first pass, not a substitute for reading anything important. It works best on well-structured prose like articles, transcripts, and reports.</p></details>
     <details><summary>What can I summarize?</summary><p>Paste any text, or drop a .txt, .md, or .pdf file. It is built for articles, blog posts, meeting or video transcripts, release notes, and papers.</p></details>
     <details><summary>Is it really free?</summary><p>Yes. No sign-up, no account, no limits. It is one of a series of free, privacy-first tools I build in public.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>I'm Harman, a senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>I'm Harman, a senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>&copy; 2026 Harman Kamboj</span>
-  <span>Built in the browser &middot; <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- match the portfolio's saved theme (runs before paint) -->
-<script>
-(function(){
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
-<!-- ================= app ================= -->
+<footer class="site-foot"><span>&copy; 2026 Harman Kamboj</span><span>Built in the browser &middot; <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
   "use strict";
@@ -483,14 +443,5 @@
   setCount();
 })();
 </script>
-
-<!-- shared site enhancer: command palette, theme, analytics beacon -->
-<script src="enhance.js" defer></script>
-<!-- Analytics: Cloudflare Web Analytics beacon (also injected by enhance.js; direct tag kept as fallback). -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
-<!-- AdSense slot (left for later):
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
--->
-<!-- Polar.sh support slot (left for later) -->
 </body>
 </html>

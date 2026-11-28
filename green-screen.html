@@ -8,7 +8,7 @@
 <meta name="keywords" content="virtual background, webcam background remover, blur webcam background online, green screen online, virtual green screen, remove webcam background, video call background, change webcam background, free virtual background, background blur webcam" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Green Screen Studio — virtual backgrounds in your browser" />
 <meta property="og:description" content="Blur or replace your webcam background in real time with on-device AI. No green screen, no download, nothing uploaded." />
 <meta property="og:type" content="website" />
@@ -19,105 +19,89 @@
 <meta name="twitter:description" content="Blur or replace your webcam background in real time with on-device AI. Nothing uploaded." />
 <link rel="canonical" href="https://hammyasf.github.io/green-screen.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://storage.googleapis.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Green Screen Studio","url":"https://hammyasf.github.io/green-screen.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebGL)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Blur or replace your webcam background in real time using an on-device AI segmentation model. Runs entirely in the browser, nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my webcam feed uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI segmentation model and all the compositing run entirely in your browser using WebAssembly and your GPU. Your camera frames never leave your device and nothing is uploaded."}},{"@type":"Question","name":"Do I need a physical green screen?","acceptedAnswer":{"@type":"Answer","text":"No. A neural network separates you from your background in real time, so you can blur or replace the background against any wall. A real green screen still gives the cleanest edges, but it is not required."}},{"@type":"Question","name":"Can I use this as a virtual background for Zoom or Google Meet?","acceptedAnswer":{"@type":"Answer","text":"This runs as a web page, so it cannot feed a virtual camera into other apps by itself. You can record a clip with your new background and download it, or use it for browser-based recording. Meet and Zoom have their own built-in background features."}},{"@type":"Question","name":"It is free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, no watermark. The model downloads once and is then cached for instant, offline use."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .stage{position:relative;width:100%;aspect-ratio:16/9;background:#05100d;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the view: a cream felt sheet until the camera is live, then an ink felt window */
+  .stage{position:relative;width:100%;aspect-ratio:16/9;border-radius:22px;background:radial-gradient(circle at 50% 40%,rgba(255,253,248,.7),transparent 65%),url(kit/felt-texture.webp),var(--cream);box-shadow:var(--sunk),inset 0 0 0 2px var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .stage::after{content:"";position:absolute;inset:8px;border:2px dashed var(--line-2);border-radius:16px;pointer-events:none;}
+  .stage.live{background:url(kit/felt-texture.webp),var(--ink);box-shadow:0 4px 0 #1d1730,0 16px 30px rgba(45,36,64,.26);}
+  .stage.live::after{border-color:rgba(255,247,234,.3);}
   .stage canvas{width:100%;height:100%;object-fit:contain;display:none;}
   .stage.live canvas{display:block;}
   .first{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:14px;}
-  .first h2{font-family:var(--display);font-weight:600;font-size:clamp(20px,3vw,26px);}
-  .first p{color:var(--muted);font-size:14px;max-width:420px;}
-  .first .or{font-family:var(--mono);font-size:12px;color:var(--faint);}
-  .fps{position:absolute;top:10px;left:12px;font-family:var(--mono);font-size:11px;color:var(--accent);background:rgba(5,16,13,.6);border:1px solid var(--line);padding:3px 8px;border-radius:6px;display:none;}
+  .first h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);color:var(--ink);}
+  .first p{color:var(--muted);font-size:15px;max-width:460px;}
+  .first .or{font:600 13px/1 var(--display);color:var(--faint);}
+  .fps{position:absolute;top:14px;left:16px;z-index:1;font:600 12px/1 var(--display);color:var(--coral-dk);background:url(kit/felt-texture.webp),var(--cream);padding:6px 10px;border-radius:999px;box-shadow:0 2px 0 #e2cdb0;display:none;}
   .stage.live .fps{display:block;}
-  .loading{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(5,16,13,.82);text-align:center;padding:24px;}
+  .loading{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(255,247,234,.92);text-align:center;padding:24px;z-index:2;}
   .loading.show{display:flex;}
-  .spinner{width:40px;height:40px;border:3px solid rgba(var(--accentRGB),.25);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
+  .spinner{width:42px;height:42px;border:4px dashed rgba(45,36,64,.2);border-top:4px solid var(--coral);border-radius:50%;animation:spin 1s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
-  .loading p{font-family:var(--mono);font-size:13px;color:var(--ink);}
-  .loading small{font-family:var(--mono);font-size:11px;color:var(--faint);max-width:340px;}
-  .controls{padding:18px 22px 6px;display:none;flex-direction:column;gap:16px;}
+  .loading p{font:600 16px/1.3 var(--display);color:var(--ink);}
+  .loading small{font-family:var(--mono);font-size:12px;color:var(--muted);max-width:380px;}
+  .controls{padding:22px 0 4px;display:none;flex-direction:column;gap:16px;}
   .controls.show{display:flex;}
   .row{display:flex;flex-wrap:wrap;gap:16px 26px;align-items:flex-end;}
-  .ctl{display:flex;flex-direction:column;gap:7px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .seg{display:flex;flex-wrap:wrap;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;border-right:1px solid var(--line);}
-  .seg button:last-child{border-right:none;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  input[type=range]{accent-color:var(--accent);width:150px;}
-  .swatches{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-  .sw{width:26px;height:26px;border-radius:7px;border:1px solid var(--line-2);cursor:pointer;padding:0;}
-  .sw.on{outline:2px solid var(--accent);outline-offset:2px;}
-  input[type=color]{width:34px;height:30px;border:1px solid var(--line-2);border-radius:7px;background:transparent;cursor:pointer;padding:2px;}
-  .toggle{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;}
-  .toggle input{accent-color:var(--accent);width:16px;height:16px;}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:8px 22px 20px;border-top:1px solid var(--line);margin-top:4px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .ctl{display:flex;flex-direction:column;gap:8px;min-width:0;max-width:100%;}
+  .seg{flex-wrap:wrap;border-radius:24px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl input[type=range]{width:160px;}
+  .val{font:600 13px/1 var(--display);color:var(--coral-dk);letter-spacing:0;}
+  .toggle{display:inline-flex;align-items:center;gap:10px;font:600 14px/1 var(--display);color:var(--ink);cursor:pointer;user-select:none;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:20px 0 0;border-top:2px dashed var(--line);margin-top:18px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .btn-rec.recording{background:#ff5a5a;color:#fff;}
-  .note{font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .err{margin:0 22px 18px;padding:12px 14px;border:1px solid rgba(255,120,120,.4);background:rgba(255,90,90,.08);border-radius:12px;color:#ffb4b4;font-size:14px;display:none;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-rec.recording{color:var(--white);background:url(kit/felt-texture.webp),var(--coral-dk);box-shadow:0 3px 0 #7d2a1c,0 0 0 5px rgba(232,96,76,.25);}
+  .note{font:600 13px/1.3 var(--display);color:var(--muted);}
+  .err{margin:16px 0 0;padding:14px 18px;border-radius:16px;color:var(--coral-dk);background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 12%,var(--cream));outline:2px dashed rgba(185,68,47,.4);outline-offset:-6px;font-size:14.5px;display:none;}
   .err.show{display:block;}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
   .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:18px 0;}
-  .step{border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(var(--surfaceRGB),.4);}
-  .step b{font-family:var(--display);color:var(--accent);font-size:15px;}
+  .step{border-radius:16px;padding:18px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
+  .step b{font-family:var(--display);color:var(--coral-dk);font-size:15px;}
   .step p{font-size:14.5px;color:var(--muted);margin-top:6px;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){.row{gap:14px 18px;}input[type=range]{width:120px;}}
+  .swatches{display:flex;gap:9px;align-items:center;flex-wrap:wrap;min-height:44px;}
+  .sw{width:30px;height:30px;border-radius:50%;border:0;cursor:pointer;padding:0;box-shadow:0 2px 0 var(--line-2),inset 0 0 0 2px rgba(45,36,64,.12);transition:transform .45s var(--spring-pop);}
+  .sw:hover{transform:translateY(-2px) scale(1.08);}
+  .sw.on{outline:2.5px dashed var(--coral-dk);outline-offset:3px;}
+  .ctl input[type=color]{width:44px;height:44px;border:0;border-radius:50%;background:url(kit/felt-texture.webp),var(--white);cursor:pointer;padding:6px;box-shadow:var(--shadow-btn);}
+  #pickImg{min-height:44px;}
+  @media(max-width:560px){.row{gap:14px 18px;}.ctl input[type=range]{width:140px;}.stage:not(.live){aspect-ratio:auto;min-height:400px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Green Screen Studio","url":"https://hammyasf.github.io/green-screen.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebGL)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Blur or replace your webcam background in real time using an on-device AI segmentation model. Runs entirely in the browser, nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my webcam feed uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI segmentation model and all the compositing run entirely in your browser using WebAssembly and your GPU. Your camera frames never leave your device and nothing is uploaded."}},{"@type":"Question","name":"Do I need a physical green screen?","acceptedAnswer":{"@type":"Answer","text":"No. A neural network separates you from your background in real time, so you can blur or replace the background against any wall. A real green screen still gives the cleanest edges, but it is not required."}},{"@type":"Question","name":"Can I use this as a virtual background for Zoom or Google Meet?","acceptedAnswer":{"@type":"Answer","text":"This runs as a web page, so it cannot feed a virtual camera into other apps by itself. You can record a clip with your new background and download it, or use it for browser-based recording. Meet and Zoom have their own built-in background features."}},{"@type":"Question","name":"It is free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, no watermark. The model downloads once and is then cached for instant, offline use."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · on-device AI · live camera</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-green-screen">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Green Screen Studio</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">Free tool · on-device AI · live camera</span>
     <h1>Green Screen Studio</h1>
     <p class="sub">Blur or replace your webcam background in real time. A neural network separates you from whatever is behind you, right in your browser. No green screen, no install, nothing uploaded.</p>
-    <span class="priv">&#128274; 100% private — your camera never leaves your device</span>
+    <p class="priv">&#128274; 100% private — your camera never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="stage" id="stage">
       <canvas id="out"></canvas>
@@ -186,8 +170,8 @@
       <span class="note" id="note"></span>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>Every frame from your camera is handed to a neural segmentation model that predicts, for each pixel, how likely it is to be you versus the background. That gives a soft mask. The page then keeps your pixels, feathers the edge so it does not look cut out with scissors, and paints your chosen background behind you — a blur of your real room, a solid color, a generated scene, or an image you upload. All of this happens dozens of times a second, entirely on your machine.</p>
     <p>The model is Google's MediaPipe Selfie Segmenter running through WebAssembly and your GPU. Because it runs locally, there is no upload, no round-trip to a server, and no privacy trade-off. It also keeps working with your internet switched off once the model has been cached.</p>
@@ -200,34 +184,19 @@
     <h2>Why run it in the browser?</h2>
     <p>Background tools usually mean installing software or piping your webcam to a cloud service. Neither is great when the thing being sent is a live video of your face and your room. Doing the segmentation on-device means the footage simply never leaves your computer. It is also instant, since there is no upload to wait on, and it is free to run because there is no server bill behind it.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my webcam feed uploaded anywhere?</summary><p>No. The AI model and the compositing run locally in your browser through WebAssembly and your GPU. Your camera frames never touch a server, which is why it is instant and private.</p></details>
     <details><summary>Do I need a real green screen?</summary><p>No. The neural network separates you from your background against any wall. A physical green screen still gives the crispest edge, but it is not required.</p></details>
     <details><summary>Can I use this as a virtual camera in Zoom or Meet?</summary><p>Not directly — a web page cannot feed a virtual camera into other apps on its own. You can record a clip here and download it, or use it for browser-based recording. Zoom and Meet also have their own built-in background features.</p></details>
     <details><summary>Why does the edge look rough sometimes?</summary><p>Even lighting and a bit of contrast between you and the wall help a lot. The edge smoothing slider softens the outline, and a blurred background hides imperfections far better than a hard-edged image.</p></details>
     <details><summary>Does it work on my phone?</summary><p>It runs on modern mobile browsers, but the model is heavier on a phone, so the frame rate will be lower than on a laptop. A desktop browser gives the smoothest result.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- theme: match the portfolio's saved accent -->
-<script>
-(function(){
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script type="module">
 import { ImageSegmenter, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/vision_bundle.mjs";
 
@@ -498,11 +467,5 @@ if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
   showErr("Camera access is not available in this browser. You can still try the tool by dropping in a video file.");
 }
 </script>
-
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
-
-<!-- AdSense / Polar.sh monetization slot (left intentionally empty for later) -->
-<!-- <ins class="adsbygoogle" ...></ins> -->
 </body>
 </html>

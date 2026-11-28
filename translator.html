@@ -8,7 +8,7 @@
 <meta name="keywords" content="offline translator, private translator, browser translator, translate offline, on-device translation, nllb translator, free translator no upload, local translation, translate without internet, ai translator in browser, privacy translator" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Private On-Device Translator — runs in your browser" />
 <meta property="og:description" content="A real 600M-parameter neural translation model running 100% in your browser. 100+ languages, nothing uploaded, works offline." />
 <meta property="og:type" content="website" />
@@ -19,90 +19,73 @@
 <meta name="twitter:description" content="Neural translation across 100+ languages, entirely in your browser. Private, offline, no sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/translator.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Private On-Device Translator","url":"https://hammyasf.github.io/translator.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser with WebAssembly)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Translate text across 100+ languages with Meta's NLLB-200 neural model running entirely in the browser. Private, offline-capable, no upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The translation model is downloaded to your browser once and every translation runs on your own device. Your text never leaves your computer."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. After the model downloads the first time, it is cached by your browser, so you can translate with your internet disconnected."}},{"@type":"Question","name":"Which model does it use?","acceptedAnswer":{"@type":"Answer","text":"Meta's open-source NLLB-200 (distilled, 600M parameters), a multilingual neural machine translation model, quantized and run in your browser through Transformers.js and WebAssembly."}},{"@type":"Question","name":"How big is the download?","acceptedAnswer":{"@type":"Answer","text":"About 320 MB, one time. Your browser caches it, so later visits load instantly and work offline."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, with no sign-up, no API key, and no limits on how much you translate."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .langbar{display:grid;grid-template-columns:1fr 44px 1fr;gap:10px;align-items:end;padding:18px 18px 6px;}
-  .ctl{display:flex;flex-direction:column;gap:6px;min-width:0;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  select{width:100%;background:rgba(var(--surfaceRGB),.85);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:11px 12px;font-family:var(--body);font-size:15px;cursor:pointer;}
-  select:focus{outline:none;border-color:var(--accent);}
-  .swap{align-self:end;margin-bottom:1px;height:42px;width:42px;border-radius:10px;border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.6);color:var(--ink);cursor:pointer;font-size:18px;transition:.15s;display:flex;align-items:center;justify-content:center;}
-  .swap:hover{border-color:var(--accent);color:var(--accent);transform:rotate(180deg);}
-  .io{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:8px 18px 6px;}
-  @media(max-width:640px){.io{grid-template-columns:1fr;}.langbar{grid-template-columns:1fr 40px 1fr;}}
-  .box{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:rgba(var(--surfaceRGB),.4);min-height:210px;overflow:hidden;}
-  .box .bh{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--faint);}
-  textarea{flex:1;width:100%;resize:vertical;background:transparent;border:none;color:var(--ink);padding:14px;font-family:var(--body);font-size:16px;line-height:1.55;min-height:150px;}
-  textarea:focus{outline:none;}
-  .outtext{flex:1;padding:14px;font-size:16px;line-height:1.55;color:var(--ink);white-space:pre-wrap;word-break:break-word;overflow:auto;min-height:150px;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .langbar{display:grid;grid-template-columns:1fr 50px 1fr;gap:12px;align-items:end;padding:0 0 8px;}
+  .ctl{display:flex;flex-direction:column;gap:8px;min-width:0;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl select{width:100%;cursor:pointer;}
+  .swap{align-self:end;margin-bottom:2px;height:46px;width:46px;border-radius:50%;border:0;background:url(kit/felt-texture.webp),var(--white);color:var(--coral-dk);cursor:pointer;font-size:20px;font-weight:700;box-shadow:var(--shadow-btn);outline:1.5px dashed var(--line-2);outline-offset:-5px;transition:transform .6s var(--spring-bounce),color .2s;display:flex;align-items:center;justify-content:center;}
+  .swap:hover{transform:rotate(180deg);}
+  .io{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:12px 0 6px;}
+  @media(max-width:640px){.io{grid-template-columns:1fr;}.langbar{grid-template-columns:1fr 46px 1fr;gap:8px;}}
+  /* two sheets of paper: yours and the translation */
+  .box{display:flex;flex-direction:column;border-radius:20px;background:linear-gradient(rgba(255,255,255,.72) 0 0),url(kit/felt-texture.webp),var(--white);min-height:210px;overflow:hidden;box-shadow:0 3px 0 #e2cdb0,0 10px 20px rgba(84,46,30,.12);outline:2px dashed var(--line);outline-offset:-7px;transition:outline-color .2s;}
+  .box:nth-child(2){background:linear-gradient(rgba(255,255,255,.5) 0 0),url(kit/felt-texture.webp),var(--mint);}
+  .box:focus-within{outline-color:var(--green);}
+  .box .bh{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;padding:10px 18px 8px;border-bottom:2px dashed var(--line);font:600 12.5px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);}
+  .box textarea{flex:1;width:100%;resize:vertical;background:transparent;border:0;border-radius:0;box-shadow:none;outline:0;padding:16px 18px;font-family:var(--body);font-size:16px;line-height:1.55;min-height:150px;}
+  .box textarea:focus,.box textarea:focus-visible{outline:0;box-shadow:none;background:transparent;}
+  .outtext{flex:1;padding:16px 18px;font-size:16px;line-height:1.55;color:var(--ink);white-space:pre-wrap;word-break:break-word;overflow:auto;min-height:150px;}
   .outtext.placeholder{color:var(--faint);}
-  .mini{font-family:var(--mono);font-size:11px;color:var(--faint);background:transparent;border:1px solid var(--line);border-radius:7px;padding:5px 9px;cursor:pointer;color:var(--muted);}
-  .mini:hover{border-color:var(--accent);color:var(--accent);}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:8px 18px 18px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .mini{font:600 12.5px/1 var(--display);letter-spacing:0;text-transform:none;color:var(--coral-dk);background:url(kit/felt-texture.webp),var(--white);border:0;border-radius:999px;padding:7px 12px;cursor:pointer;box-shadow:0 2px 0 #e2cdb0;transition:transform .45s var(--spring-pop);}
+  .mini:hover{transform:translateY(-1px);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:16px 0 16px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 24px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
   .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .samples{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 14px;}
-  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:100px;padding:6px 12px;cursor:pointer;background:transparent;}
-  .chip:hover{border-color:var(--accent);color:var(--accent);}
-  .status{font-family:var(--mono);font-size:12.5px;color:var(--muted);min-height:18px;}
-  .status b{color:var(--accent);}
-  .prog{height:8px;border-radius:6px;background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line);overflow:hidden;margin:2px 18px 0;display:none;}
-  .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s;}
-  .note{padding:0 18px 16px;font-family:var(--mono);font-size:11.5px;color:var(--faint);}
-  .warn{margin:18px;padding:14px 16px;border:1px solid rgba(255,180,80,.4);background:rgba(255,180,80,.07);border-radius:12px;color:#ffd9a8;font-size:14px;display:none;}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .samples{display:flex;gap:8px;flex-wrap:wrap;padding:0 0 16px;}
+  .chip{font:600 13px/1.1 var(--display);color:var(--green);border:0;background:url(kit/felt-texture.webp),var(--mint);border-radius:999px;padding:8px 13px;cursor:pointer;outline:1.5px dashed rgba(63,122,85,.3);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .2s;}
+  .chip:hover{transform:translateY(-1px) rotate(-2deg) scale(1.04);background:url(kit/felt-texture.webp),#e1ecd8;}
+  .status{font-family:var(--mono);font-size:13px;min-height:18px;}
+  .prog{height:12px;overflow:hidden;margin:8px 0 0;display:none;}
+  .prog i{display:block;height:100%;width:0;transition:width .2s;}
+  .note{padding:0;font-size:13.5px;line-height:1.55;color:var(--faint);}
+  .warn{margin:0 0 18px;padding:14px 18px;border-radius:16px;color:#7a4a00;background:url(kit/felt-texture.webp),color-mix(in srgb,var(--butter) 28%,var(--cream));outline:2px dashed rgba(214,164,58,.6);outline-offset:-6px;font-size:14.5px;display:none;}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Private On-Device Translator","url":"https://hammyasf.github.io/translator.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser with WebAssembly)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Translate text across 100+ languages with Meta's NLLB-200 neural model running entirely in the browser. Private, offline-capable, no upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The translation model is downloaded to your browser once and every translation runs on your own device. Your text never leaves your computer."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. After the model downloads the first time, it is cached by your browser, so you can translate with your internet disconnected."}},{"@type":"Question","name":"Which model does it use?","acceptedAnswer":{"@type":"Answer","text":"Meta's open-source NLLB-200 (distilled, 600M parameters), a multilingual neural machine translation model, quantized and run in your browser through Transformers.js and WebAssembly."}},{"@type":"Question","name":"How big is the download?","acceptedAnswer":{"@type":"Answer","text":"About 320 MB, one time. Your browser caches it, so later visits load instantly and work offline."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, with no sign-up, no API key, and no limits on how much you translate."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">On-device AI · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-translator">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Private Translator</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">On-device AI · runs in your browser</span>
     <h1>Private Translator</h1>
     <p class="sub">Translate between 100+ languages with a real neural model that runs entirely on your device. Your text is never uploaded, and once it loads, it works with your internet off.</p>
-    <span class="priv">&#128274; 100% private — nothing leaves your device</span>
+    <p class="priv">&#128274; 100% private — nothing leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="warn" id="warn"></div>
 
@@ -134,8 +117,8 @@
     <div class="samples" id="samples"></div>
     <div class="note">First use downloads the model once (about 320&nbsp;MB) and caches it in your browser. After that, translation is instant and works offline. Runs on Meta&rsquo;s open NLLB-200 via Transformers.js + WebAssembly.</div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>When you translate for the first time, the page downloads a quantized copy of Meta&rsquo;s NLLB-200 model, a 600-million-parameter neural network trained to translate between 200 languages. The model file is stored in your browser&rsquo;s cache. From then on, every translation is computed locally: your sentence is tokenized, run through the encoder and decoder on your own CPU using WebAssembly, and turned back into text. There is no server in the loop, which is why nothing you type is ever sent anywhere.</p>
     <h2>Why translate on your own device?</h2>
@@ -143,27 +126,19 @@
     <h2>Good things to try</h2>
     <p>Paste a paragraph and watch it translate sentence by sentence. Use the swap button to flip the direction and translate a reply back. Switch the target to a language you are learning and check your own writing. Translate the same sentence into several languages in a row to compare. Because it is all local, you can do this as many times as you like, on text you would never paste into a website.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my text uploaded anywhere?</summary><p>No. The model runs in your browser. Your text is processed on your own device and never sent to a server, which is why it is private and works offline.</p></details>
     <details><summary>How good are the translations?</summary><p>NLLB-200 is a strong open research model from Meta covering 200 languages, including many that big translators handle poorly. The in-browser build is quantized to keep the download reasonable, so for very nuanced or literary text a large cloud model may still edge it out, but for everyday translation it is very capable.</p></details>
     <details><summary>Why does the first translation take a moment?</summary><p>The first time, it downloads the model (about 320&nbsp;MB) and warms it up. That happens once. Your browser caches it, so later visits start fast and run with no connection.</p></details>
     <details><summary>Which languages are supported?</summary><p>The model supports 200 languages. This tool exposes 100+ of the most widely used, with correct scripts, and you can pick any pair in either direction.</p></details>
     <details><summary>Do I need a fast computer or a GPU?</summary><p>No GPU is needed; it runs on your CPU through WebAssembly. A modern laptop or desktop handles it comfortably. Very long passages translate sentence by sentence so you see progress as it goes.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>&copy; 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- Worker source (module). Not executed inline; loaded as a Blob URL worker. -->
+<footer class="site-foot"><span>&copy; 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script type="text/worker-js" id="wsrc">
 import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1';
 env.allowLocalModels = false;
@@ -211,13 +186,10 @@ self.onmessage = async function(e){
   }
 };
 </script>
-
 <script>
 /* Private On-Device Translator — Harman Kamboj.  Theme-match + app. */
 (function(){
-  // ---- match the portfolio's saved theme ----
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   // ============ PURE HELPERS (unit-tested) ============
   // Languages: [display, FLORES-200 code, spacelessScript?]
@@ -467,7 +439,5 @@ self.onmessage = async function(e){
   window.__mtProbe = function(codes){ ensureWorker(); return new Promise(function(res){ window.__mtProbeResolve=res; worker.postMessage({kind:"probe", codes:codes}); }); };
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

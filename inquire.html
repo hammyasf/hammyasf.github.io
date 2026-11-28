@@ -8,7 +8,7 @@
 <meta name="keywords" content="ask questions about a document, document question answering, question answering online, extract answer from text, ai reading comprehension, semantic search document, ask a pdf question, private document qa, question answering no upload, on-device ai" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Inquire — Ask Any Document" />
 <meta property="og:description" content="Ask a document a question and get the exact answer highlighted. A real AI reads it entirely in your browser. Nothing uploaded." />
 <meta property="og:type" content="website" />
@@ -19,113 +19,97 @@
 <meta name="twitter:description" content="Ask any document a question, get the answer highlighted. Runs 100% in your browser, no upload." />
 <link rel="canonical" href="https://hammyasf.github.io/inquire.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://huggingface.co" crossorigin>
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Inquire — Ask Any Document","url":"https://hammyasf.github.io/inquire.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser with WebAssembly)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Ask any document a question in plain English and get the exact answer highlighted. A reading-comprehension AI model runs entirely in your browser; nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my document uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI model is downloaded to your browser once and every question is answered locally with WebAssembly. Your document and your questions never leave your device."}},{"@type":"Question","name":"How does an AI run in the browser with no server?","acceptedAnswer":{"@type":"Answer","text":"Inquire loads a DistilBERT question-answering model (trained on SQuAD) as ONNX weights and runs it with the Transformers.js runtime on WebAssembly in a Web Worker. The first question downloads about 65 MB, then the model is cached and works offline."}},{"@type":"Question","name":"What kind of questions can it answer?","acceptedAnswer":{"@type":"Answer","text":"Factual, extractive questions whose answer is a span of text somewhere in the document, such as amounts, dates, names, deadlines, and definitions. It finds and highlights the passage rather than writing a new paragraph."}},{"@type":"Question","name":"Does it work on long documents?","acceptedAnswer":{"@type":"Answer","text":"Yes. Long text is split into overlapping windows so nothing at the end is cut off, each window is scored, and the highest-confidence answer across the whole document is returned."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .phead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px 6px;flex-wrap:wrap;}
-  .phead .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .phead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 20px 10px;flex-wrap:wrap;}
+  .phead .lbl{font:600 12.5px/1.2 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
   .chips{display:flex;flex-wrap:wrap;gap:8px;}
-  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);background:transparent;border-radius:100px;padding:6px 12px;cursor:pointer;transition:.15s;}
-  .chip:hover{border-color:var(--accent);color:var(--accent);}
-  textarea#doc{width:calc(100% - 40px);margin:6px 20px 4px;min-height:190px;resize:vertical;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:14px;padding:14px 16px;font-family:var(--body);font-size:15px;line-height:1.65;}
-  textarea#doc:focus{outline:none;border-color:var(--accent);}
-  .docmeta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:2px 20px 14px;}
-  .docmeta .count{font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .docmeta .count b{color:var(--accent);}
-  .drop{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);border:1px dashed var(--line-2);border-radius:10px;padding:8px 12px;cursor:pointer;transition:.2s;}
-  .drop:hover,.drop.over{border-color:var(--accent);color:var(--accent);background:rgba(var(--accentRGB),.06);}
+  .chip{font:600 13px/1.1 var(--display);color:var(--green);border:0;background:url(kit/felt-texture.webp),var(--mint);border-radius:999px;padding:8px 13px;cursor:pointer;outline:1.5px dashed rgba(63,122,85,.3);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .2s;}
+  .chip{max-width:100%;text-align:left;}
+  .chip:hover{transform:translateY(-1px) rotate(-2deg) scale(1.04);background:url(kit/felt-texture.webp),#e1ecd8;}
+  #clearDoc{color:var(--muted);background:url(kit/felt-texture.webp),var(--white);outline-color:var(--line-2);}
+  textarea#doc{width:calc(100% - 40px);margin:6px 20px 4px;min-height:190px;resize:vertical;font-family:var(--body);font-size:15px;line-height:1.65;}
+  .docmeta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:8px 20px 18px;}
+  .docmeta .count{font:600 13px/1 var(--display);color:var(--muted);}
+  .docmeta .count b{color:var(--coral-dk);}
+  /* the small drop target here is a stitched felt label, not the big pocket */
+  .drop{display:inline-flex;align-items:center;gap:8px;font:600 13px/1.2 var(--display);border-width:2px;border-radius:999px;padding:9px 14px;cursor:pointer;box-shadow:none;}
+  .drop.over{transform:scale(1.04) rotate(-1deg);}
   .askbar{display:flex;gap:10px;align-items:stretch;padding:0 20px 18px;flex-wrap:wrap;}
-  input#q{flex:1 1 320px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:100px;padding:13px 18px;font-family:var(--body);font-size:15.5px;}
-  input#q:focus{outline:none;border-color:var(--accent);}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:12px 24px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;white-space:nowrap;}
+  input#q{flex:1 1 320px;font-size:15.5px;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:15px;padding:12px 26px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;white-space:nowrap;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
   .prog{display:none;padding:0 20px 18px;}
   .prog.on{display:block;}
-  .track{height:8px;border-radius:100px;background:rgba(var(--accentRGB),.12);overflow:hidden;}
-  .track .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .3s var(--ease);}
-  .plbl{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px;}
-  .warn{display:none;margin:0 20px 18px;padding:12px 14px;border:1px solid rgba(255,180,90,.4);background:rgba(255,180,90,.08);border-radius:12px;font-size:14px;color:#ffd9a8;}
+  .track{height:12px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;}
+  .track .fill{height:100%;width:0;border-radius:999px;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);background-size:8px 11px,auto;transition:width .3s var(--ease);}
+  .plbl{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:8px;}
+  .warn{display:none;margin:0 20px 18px;padding:14px 18px;border-radius:16px;font-size:14.5px;color:#7a4a00;background:url(kit/felt-texture.webp),color-mix(in srgb,var(--butter) 28%,var(--cream));outline:2px dashed rgba(214,164,58,.6);outline-offset:-6px;}
   .warn.on{display:block;}
   .ans{display:none;padding:0 20px 20px;}
-  .ans.on{display:block;}
-  .acard{border:1px solid rgba(var(--accentRGB),.3);border-radius:16px;background:linear-gradient(150deg,rgba(var(--accentRGB),.1),rgba(var(--accentRGB),.02));padding:18px 20px;}
-  .acard .qline{font-family:var(--mono);font-size:12px;color:var(--faint);margin-bottom:8px;}
+  .ans.on{display:block;animation:rise .6s var(--spring-pop) both;}
+  /* the answer: a white felt card pinned on with a coral thread */
+  .acard{border-radius:20px;background:linear-gradient(rgba(255,255,255,.72) 0 0),url(kit/felt-texture.webp),var(--white);padding:22px 24px;box-shadow:0 3px 0 #e2cdb0,0 12px 24px rgba(84,46,30,.14);outline:2px dashed rgba(185,68,47,.45);outline-offset:-8px;rotate:-.3deg;}
+  .acard .qline{font-family:var(--mono);font-size:12.5px;color:var(--faint);margin-bottom:8px;}
   .acard .qline b{color:var(--muted);}
   .acard .atext{font-family:var(--display);font-weight:600;font-size:clamp(20px,3.4vw,28px);line-height:1.25;letter-spacing:-.01em;color:var(--ink);}
   .conf{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap;}
-  .conf .meter{flex:1 1 160px;max-width:220px;height:7px;border-radius:100px;background:rgba(237,242,239,.1);overflow:hidden;}
-  .conf .meter i{display:block;height:100%;width:0;background:var(--accent);border-radius:100px;}
-  .conf .clabel{font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .conf .clabel b{color:var(--accent);}
-  .alts{margin-top:14px;}
-  .alts .h{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
-  .altchip{font-family:var(--body);font-size:13px;color:var(--muted);border:1px solid var(--line-2);background:transparent;border-radius:100px;padding:6px 13px;cursor:pointer;margin:0 8px 8px 0;transition:.15s;}
-  .altchip:hover{border-color:var(--accent);color:var(--accent);}
-  .altchip span{font-family:var(--mono);font-size:11px;color:var(--faint);margin-left:6px;}
-  .srcbox{margin:16px 20px 4px;border:1px solid var(--line);border-radius:14px;background:rgba(var(--surfaceRGB),.4);padding:16px 18px;max-height:360px;overflow:auto;font-size:15px;line-height:1.75;color:#cdd8d3;display:none;white-space:pre-wrap;word-break:break-word;}
+  .conf .meter{flex:1 1 160px;max-width:220px;height:10px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;}
+  .conf .meter i{display:block;height:100%;width:0;background:var(--knit),var(--green);background-size:8px 11px,auto;border-radius:999px;}
+  .conf .clabel{font:600 13px/1.2 var(--display);color:var(--muted);}
+  .conf .clabel b{color:var(--green);}
+  .alts{margin-top:16px;}
+  .alts .h{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
+  .altchip{font:600 13.5px/1.2 var(--display);color:var(--ink);border:0;background:url(kit/felt-texture.webp),var(--cream);border-radius:999px;padding:8px 14px;cursor:pointer;margin:0 8px 8px 0;box-shadow:var(--shadow-btn);transition:transform .45s var(--spring-pop);}
+  .altchip:hover{transform:translateY(-2px);color:var(--coral-dk);}
+  .altchip span{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-left:6px;}
+  .srcbox{margin:4px 20px 4px;border-radius:18px;background:rgba(var(--surfaceRGB),.6);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;padding:18px 20px;max-height:360px;overflow:auto;font-size:15px;line-height:1.75;color:var(--ink);display:none;white-space:pre-wrap;word-break:break-word;}
   .srcbox.on{display:block;}
-  .srcbox mark{background:rgba(var(--accentRGB),.28);color:var(--ink);border-radius:4px;padding:1px 3px;box-shadow:0 0 0 1px rgba(var(--accentRGB),.4);}
-  .srcbox .sent{background:rgba(var(--accentRGB),.07);border-radius:4px;}
-  .hist{margin:6px 20px 20px;display:none;}
+  .srcbox mark{background:color-mix(in srgb,var(--butter) 60%,#fff);color:var(--ink);border-radius:5px;padding:1px 3px;box-shadow:0 2px 0 #d6a43a;}
+  .srcbox .sent{background:color-mix(in srgb,var(--butter) 18%,transparent);border-radius:4px;}
+  .hist{margin:10px 20px 4px;display:none;}
   .hist.on{display:block;}
-  .hist .h{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:10px 0 8px;}
-  .hrow{border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:8px;background:rgba(var(--surfaceRGB),.3);}
+  .hist .h{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:10px 0 10px;}
+  .hrow{border-radius:14px;padding:11px 16px;margin-bottom:8px;background:rgba(var(--surfaceRGB),.65);box-shadow:var(--sunk);outline:1.5px dashed var(--line);outline-offset:-5px;}
   .hrow .hq{font-size:13.5px;color:var(--muted);}
   .hrow .hq b{color:var(--ink);}
-  .hrow .ha{font-size:14.5px;color:var(--accent);margin-top:3px;font-weight:600;}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){textarea#doc,input#q{font-size:16px;}}
+  .hrow .ha{font-size:14.5px;color:var(--coral-dk);margin-top:3px;font-weight:700;}
+  @media(max-width:560px){textarea#doc,input#q{font-size:16px;}.phead,.docmeta,.askbar,.prog,.ans{padding-left:4px;padding-right:4px;}textarea#doc{width:calc(100% - 8px);margin:6px 4px 4px;}.warn,.srcbox,.hist{margin-left:4px;margin-right:4px;}#qchips{padding-left:4px!important;padding-right:4px!important;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Inquire — Ask Any Document","url":"https://hammyasf.github.io/inquire.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser with WebAssembly)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Ask any document a question in plain English and get the exact answer highlighted. A reading-comprehension AI model runs entirely in your browser; nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my document uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI model is downloaded to your browser once and every question is answered locally with WebAssembly. Your document and your questions never leave your device."}},{"@type":"Question","name":"How does an AI run in the browser with no server?","acceptedAnswer":{"@type":"Answer","text":"Inquire loads a DistilBERT question-answering model (trained on SQuAD) as ONNX weights and runs it with the Transformers.js runtime on WebAssembly in a Web Worker. The first question downloads about 65 MB, then the model is cached and works offline."}},{"@type":"Question","name":"What kind of questions can it answer?","acceptedAnswer":{"@type":"Answer","text":"Factual, extractive questions whose answer is a span of text somewhere in the document, such as amounts, dates, names, deadlines, and definitions. It finds and highlights the passage rather than writing a new paragraph."}},{"@type":"Question","name":"Does it work on long documents?","acceptedAnswer":{"@type":"Answer","text":"Yes. Long text is split into overlapping windows so nothing at the end is cut off, each window is scored, and the highest-confidence answer across the whole document is returned."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · on-device AI · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-inquire">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Inquire — ask any document</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">Free tool · on-device AI · runs in your browser</span>
     <h1>Inquire — ask any document</h1>
     <p class="sub">Paste a contract, report, or article, ask a question in plain English, and get the exact answer pulled straight out of the text and highlighted. A real reading-comprehension model does the thinking, entirely on your machine.</p>
-    <span class="priv">&#128274; 100% private — the document and your questions never leave your device</span>
+    <p class="priv">&#128274; 100% private — the document and your questions never leave your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="phead">
       <span class="lbl">1 · Your document</span>
@@ -162,8 +146,8 @@
     <div class="srcbox" id="srcbox"></div>
     <div class="hist" id="hist"><div class="h">This session</div><div id="histwrap"></div></div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>Why answer questions in the browser?</h2>
     <p>Every popular "chat with your document" tool uploads your file to someone else's servers. That is fine for a blog post, but not for a lease, an offer letter, a medical result, a legal brief, or an internal report. Inquire flips that around: the AI model itself is downloaded to your browser once, and then every question you ask is answered locally. Nothing is uploaded, there is no account, and it keeps working with your Wi-Fi off.</p>
     <h2>How it works</h2>
@@ -172,31 +156,22 @@
     <h2>Good questions to ask</h2>
     <p>It is strongest on factual, extractive questions: amounts, dates, names, deadlines, percentages, definitions, and "who / what / when / how much" style queries where the answer is actually written somewhere in the text. It is not a chatbot and will not invent facts or summarize an argument — if the answer is not in the document, it tells you its confidence is low rather than making something up.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my document uploaded anywhere?</summary><p>No. The model runs locally in your browser with WebAssembly. Your document and your questions never touch a server, which is the whole point of building it this way.</p></details>
     <details><summary>How can an AI model run without a server?</summary><p>The DistilBERT question-answering model is about 65&nbsp;MB of ONNX weights. It downloads once, is cached by your browser, and then runs on WebAssembly in a background Web Worker. After the first load it works entirely offline.</p></details>
     <details><summary>Why does it highlight text instead of writing an answer?</summary><p>This is extractive QA. It locates the exact passage that answers your question so the answer is verifiable and can never hallucinate a fact that is not in your document. You always see where the answer came from.</p></details>
     <details><summary>Does it handle long documents and PDFs?</summary><p>Yes. Drop a .txt, .md, or text-based .pdf and it is read locally. Long text is split into overlapping windows so nothing at the end gets cut off, and the highest-confidence answer across the whole document wins.</p></details>
     <details><summary>Which browsers work?</summary><p>Any recent desktop Chrome, Edge, Firefox, or Safari with WebAssembly and Web Workers. It runs on mobile too, though the one-time model download is heavier there.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build a tool like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
-  /* match the portfolio's saved theme */
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   var $=function(id){return document.getElementById(id);};
   var doc=$("doc"),q=$("q"),go=$("go"),count=$("count"),drop=$("drop"),file=$("file"),
@@ -441,9 +416,5 @@
   updateState();
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
-<!-- AdSense slot (add publisher script + <ins> here when approved). -->
-<!-- Polar.sh support/donate slot (add embed here later). -->
 </body>
 </html>

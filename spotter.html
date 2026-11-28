@@ -8,7 +8,7 @@
 <meta name="keywords" content="object detector online, real time object detection, ai object detector, webcam object detection, detect objects in image, count objects in image, what is in this image ai, object recognition online, coco object detection, browser object detection no upload" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#070d14" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Spotter — real-time object detector in your browser" />
 <meta property="og:description" content="A real AI model boxes and labels every object your camera sees, live and on-device. Nothing uploaded." />
 <meta property="og:type" content="website" />
@@ -19,117 +19,99 @@
 <meta name="twitter:description" content="Point your camera and watch an on-device AI box and label everything it sees, live. Nothing uploaded." />
 <link rel="canonical" href="https://hammyasf.github.io/spotter.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://storage.googleapis.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Spotter","url":"https://hammyasf.github.io/spotter.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (modern web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time object detector that runs an on-device AI model in your browser. Point your camera or drop a photo and it draws boxes and labels around every object it sees, counting them live. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my camera or photos uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI detection model and all the drawing run entirely in your browser through WebAssembly and your GPU. Your camera frames and any photo you drop in never leave your device, and nothing is uploaded."}},{"@type":"Question","name":"What objects can it detect?","acceptedAnswer":{"@type":"Answer","text":"The model recognises 80 common object categories from the COCO dataset, including people, cars, bikes, dogs, cats, cups, bottles, laptops, phones, chairs, books and food. It draws a labelled box around each one with a confidence score."}},{"@type":"Question","name":"How is real-time AI detection running without a server?","acceptedAnswer":{"@type":"Answer","text":"It uses Google's MediaPipe Object Detector, an EfficientDet neural network compiled to run through WebAssembly and your GPU. The model file downloads once, is cached, and then every frame is analysed locally on your machine, so there is no round-trip to a server."}},{"@type":"Question","name":"Does it work without a camera?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can drop in a photo or a video file and it will detect objects in that instead. The camera is just the fastest way to see it work."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up and no watermark. The model downloads once and is cached for instant, offline use afterwards."}}]}</script>
-<style>
-  :root{--bg:#070d14;--bg-2:#0b131f;--ink:#eaf1f8;--muted:#90a3b8;--faint:#76879b;--line:rgba(234,241,248,.12);--line-2:rgba(234,241,248,.22);--accent:#39d0ff;--accent-2:#5b8cff;--accentRGB:57,208,255;--surfaceRGB:11,19,31;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#070d14;}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8e4;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .stage{position:relative;width:100%;aspect-ratio:16/9;background:#05090f;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the view: a cream felt sheet until the camera is live, then an ink felt window */
+  .stage{position:relative;width:100%;aspect-ratio:16/9;border-radius:22px;background:radial-gradient(circle at 50% 40%,rgba(255,253,248,.7),transparent 65%),url(kit/felt-texture.webp),var(--cream);box-shadow:var(--sunk),inset 0 0 0 2px var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .stage::after{content:"";position:absolute;inset:8px;border:2px dashed var(--line-2);border-radius:16px;pointer-events:none;}
+  .stage.live{background:url(kit/felt-texture.webp),var(--ink);box-shadow:0 4px 0 #1d1730,0 16px 30px rgba(45,36,64,.26);}
+  .stage.live::after{border-color:rgba(255,247,234,.3);}
   .stage canvas{width:100%;height:100%;object-fit:contain;display:none;}
   .stage.live canvas{display:block;}
   .first{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:14px;}
-  .first h2{font-family:var(--display);font-weight:600;font-size:clamp(20px,3vw,26px);}
-  .first p{color:var(--muted);font-size:14px;max-width:440px;}
-  .first .or{font-family:var(--mono);font-size:12px;color:var(--faint);}
-  .drophint{position:absolute;inset:0;border:2px dashed rgba(var(--accentRGB),.6);border-radius:18px;margin:10px;display:none;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;color:var(--accent);background:rgba(var(--accentRGB),.06);pointer-events:none;}
+  .first h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);color:var(--ink);}
+  .first p{color:var(--muted);font-size:15px;max-width:460px;}
+  .first .or{font:600 13px/1 var(--display);color:var(--faint);}
+  .drophint{position:absolute;inset:0;border:3px dashed var(--coral);border-radius:18px;margin:10px;display:none;align-items:center;justify-content:center;font:600 17px/1.2 var(--display);color:var(--coral-dk);background:rgba(255,247,234,.88);pointer-events:none;z-index:2;}
   .stage.dragover .drophint{display:flex;}
-  .fps{position:absolute;top:10px;left:12px;font-family:var(--mono);font-size:11px;color:var(--accent);background:rgba(5,9,15,.6);border:1px solid var(--line);padding:3px 8px;border-radius:6px;display:none;}
+  .fps{position:absolute;top:14px;left:16px;z-index:1;font:600 12px/1 var(--display);color:var(--coral-dk);background:url(kit/felt-texture.webp),var(--cream);padding:6px 10px;border-radius:999px;box-shadow:0 2px 0 #e2cdb0;display:none;}
   .stage.live .fps{display:block;}
-  .loading{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(5,9,15,.85);text-align:center;padding:24px;}
+  .loading{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(255,247,234,.92);text-align:center;padding:24px;z-index:2;}
   .loading.show{display:flex;}
-  .spinner{width:40px;height:40px;border:3px solid rgba(var(--accentRGB),.25);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
+  .spinner{width:42px;height:42px;border:4px dashed rgba(45,36,64,.2);border-top:4px solid var(--coral);border-radius:50%;animation:spin 1s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
-  .loading p{font-family:var(--mono);font-size:13px;color:var(--ink);}
-  .loading small{font-family:var(--mono);font-size:11px;color:var(--faint);max-width:360px;}
-  .controls{padding:18px 22px 6px;display:none;flex-direction:column;gap:16px;}
+  .loading p{font:600 16px/1.3 var(--display);color:var(--ink);}
+  .loading small{font-family:var(--mono);font-size:12px;color:var(--muted);max-width:380px;}
+  .controls{padding:22px 0 4px;display:none;flex-direction:column;gap:16px;}
   .controls.show{display:flex;}
   .row{display:flex;flex-wrap:wrap;gap:16px 26px;align-items:flex-end;}
-  .ctl{display:flex;flex-direction:column;gap:7px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .seg{display:flex;flex-wrap:wrap;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;border-right:1px solid var(--line);}
-  .seg button:last-child{border-right:none;}
-  .seg button.on{background:var(--accent);color:#070d14;font-weight:600;}
-  input[type=range]{accent-color:var(--accent);width:150px;}
-  .val{font-family:var(--mono);font-size:12px;color:var(--accent);}
-  .toggle{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;}
-  .toggle input{accent-color:var(--accent);width:16px;height:16px;}
-  .stats{display:none;gap:10px;flex-wrap:wrap;padding:4px 22px 2px;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl input[type=range]{width:160px;}
+  .val{font:600 13px/1 var(--display);color:var(--coral-dk);letter-spacing:0;}
+  .toggle{display:inline-flex;align-items:center;gap:10px;font:600 14px/1 var(--display);color:var(--ink);cursor:pointer;user-select:none;}
+  .stats{display:none;gap:10px;flex-wrap:wrap;padding:14px 0 2px;}
   .stats.show{display:flex;}
-  .chip{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--ink);border:1px solid var(--line-2);border-radius:100px;padding:6px 12px;background:rgba(var(--surfaceRGB),.6);}
-  .chip .sw{width:10px;height:10px;border-radius:3px;}
-  .chip b{color:var(--accent);}
-  .empty-stat{font-family:var(--mono);font-size:12.5px;color:var(--faint);padding:2px 0;}
-  .seen{padding:6px 22px 2px;display:none;}
+  .chip{display:inline-flex;align-items:center;gap:8px;font:600 13px/1 var(--display);color:var(--ink);border-radius:999px;padding:8px 13px;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 2px 0 #e2cdb0;}
+  .chip .sw{width:11px;height:11px;border-radius:50%;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15);}
+  .chip b{color:var(--coral-dk);}
+  .empty-stat{font:600 13px/1.3 var(--display);color:var(--faint);padding:2px 0;}
+  .seen{padding:16px 0 2px;display:none;}
   .seen.show{display:block;}
-  .seen h4{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
-  .seenrow{display:flex;gap:10px;flex-wrap:wrap;}
-  .seenitem{width:74px;text-align:center;}
-  .seenitem canvas,.seenitem img{width:74px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line-2);background:#05090f;}
-  .seenitem span{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:14px 22px 20px;border-top:1px solid var(--line);margin-top:10px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#070d14;border:none;cursor:pointer;transition:transform .14s;}
+  .seen h4{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;}
+  .seenrow{display:flex;gap:12px;flex-wrap:wrap;}
+  .seenitem{width:78px;text-align:center;padding:5px 5px 6px;border-radius:10px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
+  .seenitem:nth-child(odd){rotate:-2deg;}
+  .seenitem:nth-child(even){rotate:1.5deg;}
+  .seenitem canvas,.seenitem img{width:68px;height:52px;object-fit:cover;border-radius:6px;background:var(--ink);}
+  .seenitem span{display:block;font:600 11.5px/1.2 var(--display);color:var(--ink);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:20px 0 0;border-top:2px dashed var(--line);margin-top:18px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .btn-rec.recording{background:#ff5a5a;color:#fff;}
-  .note{font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .err{margin:0 22px 18px;padding:12px 14px;border:1px solid rgba(255,120,120,.4);background:rgba(255,90,90,.08);border-radius:12px;color:#ffb4b4;font-size:14px;display:none;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-rec.recording{color:var(--white);background:url(kit/felt-texture.webp),var(--coral-dk);box-shadow:0 3px 0 #7d2a1c,0 0 0 5px rgba(232,96,76,.25);}
+  .note{font:600 13px/1.3 var(--display);color:var(--muted);}
+  .err{margin:16px 0 0;padding:14px 18px;border-radius:16px;color:var(--coral-dk);background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 12%,var(--cream));outline:2px dashed rgba(185,68,47,.4);outline-offset:-6px;font-size:14.5px;display:none;}
   .err.show{display:block;}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8e4;font-size:16.5px;margin:12px 0;}
   .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:18px 0;}
-  .step{border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(var(--surfaceRGB),.4);}
-  .step b{font-family:var(--display);color:var(--accent);font-size:15px;}
+  .step{border-radius:16px;padding:18px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
+  .step b{font-family:var(--display);color:var(--coral-dk);font-size:15px;}
   .step p{font-size:14.5px;color:var(--muted);margin-top:6px;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8e4;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){.row{gap:14px 18px;}input[type=range]{width:120px;}}
+  @media(max-width:560px){.row{gap:14px 18px;}.ctl input[type=range]{width:140px;}.stage:not(.live){aspect-ratio:auto;min-height:400px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Spotter","url":"https://hammyasf.github.io/spotter.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (modern web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time object detector that runs an on-device AI model in your browser. Point your camera or drop a photo and it draws boxes and labels around every object it sees, counting them live. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my camera or photos uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI detection model and all the drawing run entirely in your browser through WebAssembly and your GPU. Your camera frames and any photo you drop in never leave your device, and nothing is uploaded."}},{"@type":"Question","name":"What objects can it detect?","acceptedAnswer":{"@type":"Answer","text":"The model recognises 80 common object categories from the COCO dataset, including people, cars, bikes, dogs, cats, cups, bottles, laptops, phones, chairs, books and food. It draws a labelled box around each one with a confidence score."}},{"@type":"Question","name":"How is real-time AI detection running without a server?","acceptedAnswer":{"@type":"Answer","text":"It uses Google's MediaPipe Object Detector, an EfficientDet neural network compiled to run through WebAssembly and your GPU. The model file downloads once, is cached, and then every frame is analysed locally on your machine, so there is no round-trip to a server."}},{"@type":"Question","name":"Does it work without a camera?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can drop in a photo or a video file and it will detect objects in that instead. The camera is just the fastest way to see it work."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up and no watermark. The model downloads once and is cached for instant, offline use afterwards."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · on-device AI · live camera</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-spotter">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Spotter</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">Free tool · on-device AI · live camera</span>
     <h1>Spotter</h1>
     <p class="sub">Point your camera, or drop in a photo, and a real AI model boxes and labels every object it sees, live. It recognises 80 everyday things and counts them as they appear, all in your browser. Nothing is uploaded.</p>
-    <span class="priv">&#128274; 100% private — your camera and photos never leave your device</span>
+    <p class="priv">&#128274; 100% private — your camera and photos never leave your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="stage" id="stage">
       <canvas id="out"></canvas>
@@ -185,8 +167,8 @@
       <span class="note" id="note"></span>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>Every frame from your camera, or every photo you drop in, is handed to a neural network that has been trained to find objects. For each thing it recognises it returns a box, a label like "person" or "cup" or "laptop", and a confidence score. The page draws those boxes on top of the live image, tallies how many of each kind are in view, and quietly keeps a thumbnail of the first time it sees each new category. All of this happens many times a second, entirely on your machine.</p>
     <p>The detector is Google's MediaPipe Object Detector, an EfficientDet model running through WebAssembly and your GPU. Because it runs locally, there is no upload, no round-trip to a server and no privacy trade-off, and it keeps working with your internet switched off once the model has cached.</p>
@@ -200,34 +182,19 @@
     <h2>Why run it in the browser?</h2>
     <p>Object detection is usually something you set up on a server or wire to a paid cloud vision API, sending your images or your webcam off to someone else's machine. Doing it on-device means the footage simply never leaves your computer. It is also instant, because there is no upload to wait on, and free to run, because there is no server bill behind it. It is a neat demonstration of how much real machine learning the modern web platform can do on its own.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Are my camera or photos uploaded anywhere?</summary><p>No. The AI model and all the drawing run locally in your browser through WebAssembly and your GPU. Your camera frames and any image you drop in never touch a server, which is why it is instant and private.</p></details>
     <details><summary>What can it detect?</summary><p>It recognises 80 common categories from the COCO dataset: people, cars, bikes, buses, dogs, cats, cups, bottles, laptops, phones, keyboards, chairs, couches, books, and a range of food, among others. It will not detect things outside that set.</p></details>
     <details><summary>How is real-time AI running without a server?</summary><p>It uses Google's MediaPipe Object Detector, an EfficientDet neural network compiled to WebAssembly that runs on your GPU. The model downloads once, caches, and then analyses each frame on your own device.</p></details>
     <details><summary>Why is the frame rate lower on my phone?</summary><p>The model is heavier on a phone than on a laptop, so it analyses fewer frames a second. It still works; the boxes just update a little less often. The Fast model is the smoother choice on mobile.</p></details>
     <details><summary>Fast versus Accurate — what is the difference?</summary><p>Fast (EfficientDet-Lite0) is smaller and runs at a higher frame rate. Accurate (EfficientDet-Lite2) is a larger model that catches more objects and smaller ones, at the cost of speed and a bigger one-time download.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- theme: match the portfolio's saved accent -->
-<script>
-(function(){
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script type="module">
 import { ObjectDetector, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/vision_bundle.mjs";
 
@@ -445,7 +412,7 @@ function drawFrame(src, srcW, srcH, res){
       const tw=dctx.measureText(txt).width, pad=6, fh=Math.max(18,Math.round(W/40));
       let ly=b.y-fh; if(ly<0) ly=b.y;
       dctx.fillStyle=col; dctx.fillRect(b.x,ly,tw+pad*2,fh);
-      dctx.fillStyle="#06121b"; dctx.textBaseline="middle";
+      dctx.fillStyle="#2d2440"; dctx.textBaseline="middle";
       dctx.fillText(txt,b.x+pad,ly+fh/2);
     }
   }
@@ -510,13 +477,5 @@ function stopAll(){
   note.textContent="";
 }
 </script>
-
-<!-- Monetization slots (left commented for later):
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX"></ins>
-<a href="https://polar.sh/hammyasf" class="support">Support the lab</a>
--->
-
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

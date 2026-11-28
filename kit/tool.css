@@ -186,11 +186,12 @@ html:has(.tool-page) { scroll-padding-top: 100px; }
 
 /* ---------- phones ---------- */
 /* kit/site.js's floating Menu button: on phones a small round ✦ (the label stays its accessible name),
-   and it steps aside while focus is in the tool, so it never sits on a control being used */
+   and it steps aside while keyboard or text focus is in the tool (:focus-visible, so a tap on a button
+   leaves it put), so it never sits on a control being used; hidden, it can't take focus unseen */
 @media (max-width: 640px) {
-  .tool-page .xfab { width: 46px; height: 46px; padding: 0; gap: 0; font-size: 0; transition: opacity .2s; }
+  .tool-page .xfab { width: 46px; height: 46px; padding: 0; gap: 0; font-size: 0; transition: opacity .2s, visibility .2s; }
   .tool-page .xfab > span { font-size: 19px; }
-  .tool-page:has(.tool-ui :focus-within) .xfab { opacity: 0; pointer-events: none; }
+  .tool-page:has(.tool-ui :focus-visible) .xfab { opacity: 0; visibility: hidden; pointer-events: none; }
 }
 @media (max-width: 720px) {
   .tool > .hero { column-gap: 14px; padding: 26px 22px 26px; }

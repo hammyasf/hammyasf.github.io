@@ -8,7 +8,7 @@
 <meta name="keywords" content="chat with pdf, chat with pdf free, chatpdf alternative, ask your pdf, talk to pdf, pdf ai chat, chat with pdf no upload, chat with pdf offline, private pdf chat, ai pdf reader, question answering pdf, local rag" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Chat With Your PDF — 100% private, in your browser" />
 <meta property="og:description" content="Ask questions about any PDF. A real LLM and semantic search run on your own GPU. Nothing is uploaded, no API key, offline-capable." />
 <meta property="og:type" content="website" />
@@ -19,136 +19,118 @@
 <meta name="twitter:description" content="Drop a PDF, ask it anything. Real LLM + retrieval on your GPU. No upload, no sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/chat-with-pdf.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://huggingface.co" crossorigin>
-<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Chat With Your PDF","url":"https://hammyasf.github.io/chat-with-pdf.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (modern web browser; WebGPU for AI answers)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Ask questions about any PDF with a language model and semantic search that run entirely in your browser. Your file is never uploaded. No API key, works offline after the models download once.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my PDF uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The PDF is read, split, embedded and searched entirely inside your browser tab. The text never leaves your device. The only network requests are the one-time downloads of the open-source AI models from a public model host."}},{"@type":"Question","name":"How can a chatbot read my PDF without a server?","acceptedAnswer":{"@type":"Answer","text":"The page runs a small embedding model and a quantized language model directly on your GPU using WebGPU. It splits your document into passages, finds the ones most relevant to your question with a vector search, and asks the local model to answer using only those passages, citing the page numbers. This is retrieval-augmented generation running fully on-device."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. After the models download once they are cached by the browser. You can reload, disconnect from the internet, and keep asking questions about your documents."}},{"@type":"Question","name":"Do I need a special browser?","acceptedAnswer":{"@type":"Answer","text":"Document search works in any modern browser. Generating written answers uses a local language model that needs WebGPU, available in recent desktop Chrome or Edge. If WebGPU is missing, the tool still finds and shows the most relevant passages from your PDF."}},{"@type":"Question","name":"Is it free and private?","acceptedAnswer":{"@type":"Answer","text":"It is completely free with no account and no API key, and it is private by design because the model runs on your own hardware and your document is never transmitted."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:960px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:960px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5.2vw,50px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .note{padding:14px 20px;font-size:14px;color:#ffd9b0;background:rgba(255,150,80,.06);border-bottom:1px solid var(--line);display:none;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .note{margin:0 0 16px;padding:14px 18px;border-radius:16px;font-size:14.5px;color:#7a4a00;background:url(kit/felt-texture.webp),color-mix(in srgb,var(--butter) 28%,var(--cream));outline:2px dashed rgba(214,164,58,.6);outline-offset:-6px;display:none;}
   .note.show{display:block;}
-  .note a{color:var(--accent);}
-  .drop{margin:20px;border:1.5px dashed var(--line-2);border-radius:16px;padding:30px 20px;text-align:center;cursor:pointer;transition:.18s;background:rgba(var(--surfaceRGB),.4);}
-  .drop:hover,.drop.over{border-color:rgba(var(--accentRGB),.6);background:rgba(var(--accentRGB),.05);}
-  .drop h2{font-family:var(--display);font-weight:600;font-size:20px;color:var(--ink);}
-  .drop p{color:var(--muted);font-size:14px;margin-top:6px;}
-  .drop .or{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:16px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:11px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;white-space:nowrap;}
+  .note a{color:var(--coral-dk);}
+  .drop{margin:0 0 16px;padding:32px 20px;text-align:center;cursor:pointer;}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:23px;color:var(--ink);}
+  .drop p{color:var(--muted);font-size:14.5px;margin-top:6px;}
+  .drop .or{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:18px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;white-space:nowrap;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .btn-sm{font-size:12.5px;padding:8px 13px;}
-  .docbar{display:none;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 20px;border-bottom:1px solid var(--line);background:rgba(var(--accentRGB),.04);}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-sm{font-size:13.5px;padding:9px 15px;}
+  /* the loaded document: a little felt file tag */
+  .docbar{display:none;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 16px;padding:12px 14px 12px 18px;border-radius:18px;background:linear-gradient(rgba(255,247,234,.35) 0 0),url(kit/felt-texture.webp),color-mix(in srgb,var(--sky) 60%,var(--cream));box-shadow:0 3px 0 #b9cfe6;outline:2px dashed rgba(45,36,64,.18);outline-offset:-6px;}
   .docbar.show{display:flex;}
-  .docbar .fname{font-family:var(--mono);font-size:13px;color:var(--ink);display:flex;align-items:center;gap:8px;min-width:0;}
-  .docbar .fname b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px;}
-  .docbar .meta{font-family:var(--mono);font-size:12px;color:var(--faint);}
-  .toolbar{display:none;flex-wrap:wrap;gap:14px;align-items:flex-end;padding:16px 20px;border-bottom:1px solid var(--line);}
+  .docbar .fname{font:600 15px/1.2 var(--display);color:var(--ink);display:flex;align-items:center;gap:8px;min-width:0;}
+  .docbar .fname b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px;}
+  .docbar .meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .toolbar{display:none;flex-wrap:wrap;gap:14px;align-items:flex-end;padding:0 0 16px;}
   .toolbar.show{display:flex;}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  select,textarea,input[type=text]{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:10px 12px;font-family:var(--body);font-size:14px;}
-  select{min-width:230px;font-family:var(--mono);font-size:13px;}
-  .status{display:flex;align-items:center;gap:10px;padding:12px 20px;font-family:var(--mono);font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--line);flex-wrap:wrap;}
-  .status .led{width:9px;height:9px;border-radius:50%;background:var(--faint);flex:none;}
-  .status.ready .led{background:var(--accent);box-shadow:0 0 10px rgba(var(--accentRGB),.8);}
-  .status.busy .led{background:var(--accent-2);animation:pulse 1s infinite;}
-  .status.err .led{background:#ff6a6a;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl select{min-width:260px;}
+  .status{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;background:linear-gradient(rgba(255,247,234,.45) 0 0),url(kit/felt-texture.webp),var(--sand);box-shadow:var(--sunk);font-family:var(--mono);font-size:12.5px;flex-wrap:wrap;}
+  #statusText{flex:1 1 180px;min-width:0;}
+  .status .led{width:11px;height:11px;border-radius:50%;background:var(--line-2);flex:none;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);}
+  .status.ready .led{background:var(--green);box-shadow:inset 0 -2px 0 rgba(0,0,0,.15),0 0 0 4px rgba(63,122,85,.18);}
+  .status.busy .led{background:var(--coral);animation:pulse 1s infinite;}
+  .status.err .led{background:var(--coral-dk);}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-  .prog{height:6px;background:rgba(var(--accentRGB),.12);border-radius:6px;overflow:hidden;flex:1;min-width:120px;max-width:280px;display:none;}
-  .prog > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .25s;}
-  .chat{padding:10px 20px 8px;max-height:54vh;min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
+  .prog{height:10px;overflow:hidden;flex:1;min-width:120px;max-width:280px;display:none;}
+  .prog > i{display:block;height:100%;width:0%;transition:width .25s;}
+  .chat{margin-top:16px;padding:16px 18px;max-height:54vh;min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;border-radius:20px;background:rgba(var(--surfaceRGB),.55);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;}
   .msg{display:flex;gap:12px;align-items:flex-start;}
-  .msg .av{width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:700;}
-  .msg.user .av{background:rgba(var(--accentRGB),.16);color:var(--accent);}
-  .msg.bot .av{background:rgba(237,242,239,.08);color:var(--ink);}
+  .msg .av{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;font:700 12px/1 var(--display);box-shadow:0 2px 0 rgba(84,46,30,.22);}
+  .msg.user .av{background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);}
+  .msg.bot .av{background:url(kit/felt-texture.webp),var(--butter);color:var(--ink);}
   .msg .bub{flex:1;min-width:0;}
-  .msg .who{font-family:var(--mono);font-size:11px;color:var(--faint);margin-bottom:3px;letter-spacing:.05em;text-transform:uppercase;}
-  .msg .bub .body{font-size:15px;color:#e6efea;word-wrap:break-word;overflow-wrap:anywhere;}
-  .msg .body p{margin:8px 0;}.msg .body p:first-child{margin-top:0;}
+  .msg .who{font:600 11.5px/1.2 var(--display);color:var(--faint);margin-bottom:4px;letter-spacing:.06em;text-transform:uppercase;}
+  .msg .bub .body{font-size:15px;color:var(--ink);word-wrap:break-word;overflow-wrap:anywhere;}
+  .msg.user .bub .body{display:inline-block;padding:10px 15px;border-radius:4px 18px 18px 18px;background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 14%,var(--cream));}
+  .msg .body p{margin:8px 0;}
+  .msg .body p:first-child{margin-top:0;}
   .msg .body ul{margin:8px 0 8px 20px;}
-  .msg .body strong{color:#fff;}
-  .msg .body code{font-family:var(--mono);font-size:13px;background:rgba(237,242,239,.08);padding:1px 5px;border-radius:5px;}
-  .cite{font-family:var(--mono);font-size:12px;color:var(--accent);background:rgba(var(--accentRGB),.12);padding:1px 6px;border-radius:6px;white-space:nowrap;}
+  .msg .body strong{color:var(--ink);}
+  .msg .body code{font-family:var(--mono);font-size:13px;background:var(--sand);padding:1px 5px;border-radius:5px;}
+  .cite{font:600 12px/1 var(--display);color:var(--coral-dk);background:color-mix(in srgb,var(--coral) 14%,var(--cream));padding:2px 7px;border-radius:999px;white-space:nowrap;}
   .sources{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
-  .sources .lbl{font-family:var(--mono);font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;}
-  .src{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);padding:3px 9px;border-radius:100px;cursor:pointer;background:transparent;transition:.15s;}
-  .src:hover{border-color:rgba(var(--accentRGB),.5);color:var(--ink);}
-  .cursor{display:inline-block;width:8px;height:15px;background:var(--accent);margin-left:1px;vertical-align:text-bottom;animation:blink 1s steps(2) infinite;}
+  .sources .lbl{font:600 11.5px/1 var(--display);color:var(--faint);text-transform:uppercase;letter-spacing:.06em;}
+  .src{font:600 12.5px/1 var(--display);color:var(--ink);border:0;padding:6px 11px;border-radius:999px;cursor:pointer;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 2px 0 #e2cdb0;transition:transform .45s var(--spring-pop);}
+  .src:hover{transform:translateY(-1px);color:var(--coral-dk);}
+  .cursor{display:inline-block;width:8px;height:15px;background:var(--coral);border-radius:2px;margin-left:1px;vertical-align:text-bottom;animation:blink 1s steps(2) infinite;}
   @keyframes blink{50%{opacity:0}}
   .empty{text-align:center;padding:30px 10px;color:var(--muted);}
-  .empty h2{font-family:var(--display);font-weight:600;font-size:21px;color:var(--ink);margin-bottom:8px;}
+  .empty h2{font-family:var(--display);font-weight:600;font-size:22px;color:var(--ink);margin-bottom:8px;}
   .examples{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px;}
-  .ex{font-size:13px;color:#cdd8d3;border:1px solid var(--line-2);padding:8px 13px;border-radius:100px;cursor:pointer;transition:.15s;background:transparent;}
-  .ex:hover{border-color:rgba(var(--accentRGB),.5);color:#fff;}
-  .composer{display:flex;gap:10px;align-items:flex-end;padding:14px 20px;border-top:1px solid var(--line);}
-  .composer textarea{flex:1;min-height:48px;max-height:160px;resize:none;font-size:15px;}
-  .composer textarea:disabled{opacity:.5;}
-  .metrics{display:none;gap:16px;flex-wrap:wrap;padding:0 20px 16px;font-family:var(--mono);font-size:12px;color:var(--faint);}
+  .ex{font:600 13.5px/1.2 var(--display);color:var(--green);border:0;padding:9px 14px;border-radius:999px;cursor:pointer;background:url(kit/felt-texture.webp),var(--mint);outline:1.5px dashed rgba(63,122,85,.3);outline-offset:-4px;transition:transform .45s var(--spring-pop);}
+  .ex:hover{transform:translateY(-1px) rotate(-2deg);}
+  .composer{display:flex;gap:10px;align-items:flex-end;padding:16px 0 0;}
+  .composer textarea{flex:1;min-height:52px;max-height:160px;resize:none;font-size:15px;}
+  .composer textarea:disabled{opacity:.55;}
+  .metrics{display:none;gap:16px;flex-wrap:wrap;padding:14px 4px 0;font:600 12.5px/1.3 var(--display);color:var(--faint);}
   .metrics.show{display:flex;}
-  .metrics b{color:var(--accent);font-weight:500;}
-  .pop{position:fixed;inset:0;background:rgba(4,9,7,.7);display:none;align-items:center;justify-content:center;z-index:100;padding:24px;}
+  .metrics b{color:var(--coral-dk);font-weight:600;}
+  .pop{position:fixed;inset:0;background:rgba(45,36,64,.45);display:none;align-items:center;justify-content:center;z-index:100;padding:24px;}
   .pop.show{display:flex;}
-  .pop .card{max-width:560px;width:100%;max-height:80vh;overflow:auto;background:var(--bg-2);border:1px solid var(--line-2);border-radius:16px;padding:22px 24px;}
-  .pop .card h3{font-family:var(--display);font-weight:600;font-size:18px;margin-bottom:4px;}
-  .pop .card .pg{font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:12px;}
-  .pop .card p{color:#cdd8d3;font-size:14.5px;line-height:1.7;}
-  .pop .x{float:right;cursor:pointer;color:var(--muted);font-size:20px;line-height:1;background:none;border:none;}
-  section.copy{padding:24px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
+  .pop .card{max-width:560px;width:100%;max-height:80vh;overflow:auto;background:linear-gradient(rgba(255,247,234,.5) 0 0),url(kit/felt-texture.webp),var(--cream);border-radius:22px;padding:24px 26px;box-shadow:var(--shadow-lift);outline:2px dashed var(--thread);outline-offset:-8px;color:var(--ink);}
+  .pop .card h3{font-family:var(--display);font-weight:600;font-size:20px;margin-bottom:4px;}
+  .pop .card .pg{font:600 13px/1 var(--display);color:var(--coral-dk);margin-bottom:12px;}
+  .pop .card p{color:var(--ink);font-size:15px;line-height:1.7;}
+  .pop .x{float:right;cursor:pointer;width:34px;height:34px;border-radius:50%;color:var(--white);font-size:20px;line-height:1;background:url(kit/felt-texture.webp),var(--coral-btn);border:none;box-shadow:0 2px 0 #96331f;}
   .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:18px 0;}
-  .step{border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(var(--surfaceRGB),.5);}
-  .step .n{font-family:var(--mono);font-size:12px;color:var(--accent);}
+  .step{border-radius:16px;padding:18px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
+  .step .n{font:600 12px/1 var(--display);color:var(--coral-dk);}
   .step h3{font-family:var(--display);font-weight:600;font-size:17px;margin:8px 0 6px;}
   .step p{font-size:14.5px;color:var(--muted);margin:0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:26px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){.toolbar{gap:10px;}select{min-width:0;width:100%;}.ctl{width:100%;}}
+  @media(max-width:560px){.toolbar{gap:10px;}.ctl select{min-width:0;width:100%;}.ctl{width:100%;}.status{border-radius:18px;}.chat{padding:14px 12px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Chat With Your PDF","url":"https://hammyasf.github.io/chat-with-pdf.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (modern web browser; WebGPU for AI answers)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Ask questions about any PDF with a language model and semantic search that run entirely in your browser. Your file is never uploaded. No API key, works offline after the models download once.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my PDF uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The PDF is read, split, embedded and searched entirely inside your browser tab. The text never leaves your device. The only network requests are the one-time downloads of the open-source AI models from a public model host."}},{"@type":"Question","name":"How can a chatbot read my PDF without a server?","acceptedAnswer":{"@type":"Answer","text":"The page runs a small embedding model and a quantized language model directly on your GPU using WebGPU. It splits your document into passages, finds the ones most relevant to your question with a vector search, and asks the local model to answer using only those passages, citing the page numbers. This is retrieval-augmented generation running fully on-device."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. After the models download once they are cached by the browser. You can reload, disconnect from the internet, and keep asking questions about your documents."}},{"@type":"Question","name":"Do I need a special browser?","acceptedAnswer":{"@type":"Answer","text":"Document search works in any modern browser. Generating written answers uses a local language model that needs WebGPU, available in recent desktop Chrome or Edge. If WebGPU is missing, the tool still finds and shows the most relevant passages from your PDF."}},{"@type":"Question","name":"Is it free and private?","acceptedAnswer":{"@type":"Answer","text":"It is completely free with no account and no API key, and it is private by design because the model runs on your own hardware and your document is never transmitted."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs on your own device</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-chat-with-pdf">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Chat With Your PDF</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">Free tool · runs on your own device</span>
     <h1>Chat With Your PDF</h1>
     <p class="sub">Drop in a PDF and ask it anything. A real language model and document search run entirely inside this browser tab on your GPU. Your file is never uploaded, there is no API key and no sign-up, and it keeps working offline once the models download.</p>
-    <span class="priv">&#128274; 100% private — your document never leaves your device</span>
+    <p class="priv">&#128274; 100% private — your document never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="note" id="note"></div>
 
@@ -193,8 +175,8 @@
       <span><b>on your device</b></span>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <div class="steps">
       <div class="step"><div class="n">01</div><h3>Read &amp; split</h3><p>Your PDF is parsed in the browser and split into overlapping passages, each tagged with its page number. The text never leaves the tab.</p></div>
@@ -209,29 +191,21 @@
     <h2>Good things to try</h2>
     <p>Summarise a long report, pull a specific number or clause out of a contract, ask what a paper concluded, find every mention of a term, turn a policy document into plain-English answers, or quiz yourself on study notes. Because answers are grounded in retrieved passages and cite their pages, you can always click through and verify the source rather than trusting the model blindly.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my PDF uploaded anywhere?</summary><p>No. The file is read, split, embedded and searched entirely in your browser. The text never touches a server. The only network requests are the one-time downloads of the open-source models from a public model host.</p></details>
     <details><summary>How accurate are the answers?</summary><p>Answers are grounded in passages retrieved from your document and cite the pages they came from, which keeps them honest and checkable. The local models are small enough to run on consumer hardware, so for very long or subtle documents you should still click the cited pages to verify. If something is not in the document, the tool is told to say so rather than guess.</p></details>
     <details><summary>What do I need to run it?</summary><p>Any modern browser can read a PDF and search it. Generating written answers uses a language model that needs WebGPU, available in recent desktop Chrome or Edge. On a browser without WebGPU the tool falls back to showing you the most relevant passages with their page numbers.</p></details>
     <details><summary>Does it really work offline?</summary><p>Yes. Once the embedding and language models have downloaded, the browser caches them. You can reload, go offline, and keep asking questions about your documents.</p></details>
     <details><summary>How big are the downloads?</summary><p>The embedding model is small, around 30 MB. The answer model is a few hundred megabytes to roughly a gigabyte depending on which one you pick. Each downloads once and is then reused from cache.</p></details>
     <details><summary>Is it free?</summary><p>Completely free, with no account and no API key. Because it runs on your own machine there is nothing to bill.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Runs on your device · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <div class="pop" id="pop"><div class="card"><button class="x" id="popX" aria-label="Close">&times;</button><h3 id="popTitle">Source passage</h3><div class="pg" id="popPg"></div><p id="popBody"></p></div></div>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Runs on your device · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
 <script>
 /* ===== PURE HELPERS START (unit-tested in Node; no DOM/browser deps) ===== */
 function escapeHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
@@ -353,17 +327,12 @@ var SAMPLE_DOC={
 if(typeof module!=="undefined" && module.exports){ module.exports={escapeHtml:escapeHtml,renderMarkdown:renderMarkdown,chunkPages:chunkPages,cosine:cosine,topK:topK,buildRagMessages:buildRagMessages,uniquePages:uniquePages,fmtBytes:fmtBytes,fmtMB:fmtMB,fmtTokSec:fmtTokSec,prettyName:prettyName,quantOf:quantOf,pickModels:pickModels,SAMPLE_DOC:SAMPLE_DOC}; }
 /* ===== PURE HELPERS END ===== */
 </script>
-
-<!-- PDF.js (UMD) for reading PDFs entirely client-side -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
 <script type="module">
 import { pipeline, env } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1";
 env.allowLocalModels=false;
 
-// match the portfolio's saved theme
-try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-  var th=T[localStorage.getItem("siteTheme")]; if(th){var r=document.documentElement.style; r.setProperty("--accent",th[0]);r.setProperty("--accent-2",th[1]);r.setProperty("--accentRGB",th[2]);r.setProperty("--surfaceRGB",th[3]);r.setProperty("--bg",th[4]);r.setProperty("--bg-2",th[5]);} }catch(e){}
+
 
 if(window.pdfjsLib){ pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; }
 
@@ -691,11 +660,5 @@ els.pop.addEventListener("click",function(e){ if(e.target===els.pop) els.pop.cla
   window.__cpdfReady=true;
 })();
 </script>
-
-<!-- Monetization slots (left intentionally empty for now):
-     AdSense: paste the <script> + <ins class="adsbygoogle"> here once approved.
-     Polar.sh: paste a "support this tool" button here. -->
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>
