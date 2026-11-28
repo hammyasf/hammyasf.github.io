@@ -8,7 +8,7 @@
 <meta name="keywords" content="fluid simulation, webgpu fluid simulation, interactive fluid simulation, fluid simulation online, fluid simulation browser, navier stokes browser, liquid simulation, paint with fluid, fluid art generator, photo to liquid, gpu compute, real time fluid" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Fluid Simulation — real-time WebGPU fluid you paint" />
 <meta property="og:description" content="A real Navier-Stokes fluid solver running on your GPU with WebGPU. Stir glowing ink, melt a photo into liquid, record a clip — all in your browser, nothing uploaded." />
@@ -20,98 +20,80 @@
 <meta name="twitter:description" content="A real Navier-Stokes fluid solver on your GPU via WebGPU. Stir ink, melt a photo into liquid, record a clip — all in your browser." />
 <link rel="canonical" href="https://hammyasf.github.io/fluid-sim.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Fluid Simulation — WebGPU Fluid Playground","url":"https://hammyasf.github.io/fluid-sim.html","applicationCategory":"GameApplication","operatingSystem":"Any (WebGPU browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time Navier-Stokes fluid simulation running on the GPU with WebGPU compute shaders, entirely in the browser. Stir ink, melt a photo into liquid, record a clip.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does a real fluid simulation run in a browser?","acceptedAnswer":{"@type":"Answer","text":"It uses WebGPU compute shaders. The velocity field, the ink, and the pressure solve all live in GPU buffers, and every cell of the grid is updated in parallel on your graphics card each frame. There is no server and nothing is uploaded."}},{"@type":"Question","name":"What kind of fluid solver is this?","acceptedAnswer":{"@type":"Answer","text":"It is a grid-based Navier-Stokes solver in the style of Jos Stam's stable-fluids method: advect the velocity, add vorticity, compute divergence, solve for pressure with Jacobi iterations, then subtract the pressure gradient so the flow stays incompressible. The ink is then carried along by that velocity field."}},{"@type":"Question","name":"Can I turn a photo into liquid?","acceptedAnswer":{"@type":"Answer","text":"Yes. Drop in any image and its pixels are loaded as ink into the fluid, so you can stir, swirl, and melt your own photo in real time, then record the result."}},{"@type":"Question","name":"Is anything uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. The whole thing is one HTML file that runs on your GPU. Your photos and your recordings never leave your device and there is no sign-up."}},{"@type":"Question","name":"Why does it say my browser is not supported?","acceptedAnswer":{"@type":"Answer","text":"It needs WebGPU, available in recent Chrome, Edge, and Safari, and behind a flag in Firefox. Update your browser or open it in desktop Chrome."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1040px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 12px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,50px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
-  .stage{position:relative;margin:24px 0 8px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#000;height:min(72vh,680px);min-height:380px;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the ink colours are computed in the shaders, so the tank is a dark window sewn into the felt; the controls are stitched on below */
+  .stage{position:relative;margin:0;border-radius:22px;overflow:hidden;background:url(kit/felt-texture.webp),var(--ink);height:min(72vh,680px);min-height:380px;box-shadow:0 4px 0 #1b1527,0 16px 30px rgba(45,36,64,.3);}
+  .stage::after{content:"";position:absolute;inset:9px;z-index:4;border:2px dashed rgba(246,234,214,.28);border-radius:15px;pointer-events:none;}
   #gpu{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair;}
-  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;background:rgba(7,16,14,.86);backdrop-filter:blur(4px);z-index:5;}
+  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;color:var(--cream);background:url(kit/felt-texture.webp),radial-gradient(120% 100% at 50% 30%,#4a3d66,var(--ink));z-index:5;}
   .overlay[hidden]{display:none;}
   [hidden]{display:none !important;}
   .overlay .card{max-width:480px;}
-  .overlay h2{font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:10px;}
-  .overlay p{color:var(--muted);font-size:15px;}
-  .overlay a{font-weight:600;}
-  .hud{position:absolute;top:12px;left:12px;z-index:4;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(7,16,14,.55);border:1px solid var(--line);padding:6px 10px;border-radius:8px;pointer-events:none;backdrop-filter:blur(6px);}
-  .hud b{color:var(--accent);}
-  .hint{position:absolute;bottom:12px;left:12px;z-index:4;font-family:var(--mono);font-size:11px;color:var(--faint);background:rgba(7,16,14,.45);border:1px solid var(--line);padding:5px 9px;border-radius:8px;pointer-events:none;}
-  .recdot{position:absolute;top:12px;right:12px;z-index:6;display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;color:#ff6a6a;background:rgba(7,16,14,.6);border:1px solid rgba(255,106,106,.4);padding:5px 10px;border-radius:8px;}
-  .recdot .b{width:8px;height:8px;border-radius:50%;background:#ff5a5a;box-shadow:0 0 8px #ff5a5a;animation:blink 1s steps(2) infinite;}
+  .overlay h2{font-family:var(--display);font-weight:600;font-size:26px;margin-bottom:10px;color:var(--cream);}
+  .overlay p{color:rgba(255,247,234,.82);font-size:15px;}
+  .overlay a{font-weight:600;color:var(--butter);}
+  .hud{position:absolute;top:18px;left:18px;z-index:4;font-family:var(--mono);font-size:11.5px;color:var(--ink);background:url(kit/felt-texture.webp),rgba(255,247,234,.94);padding:7px 12px;border-radius:12px;rotate:-1deg;box-shadow:0 3px 0 #b9a58a,0 6px 14px rgba(27,21,39,.3);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;pointer-events:none;}
+  .hud b{color:var(--coral-dk);}
+  .hint{position:absolute;bottom:20px;left:20px;z-index:4;font:600 12px/1 var(--display);color:var(--cream);background:rgba(45,36,64,.7);padding:7px 11px;border-radius:999px;pointer-events:none;}
+  .recdot{position:absolute;top:18px;right:18px;z-index:6;display:flex;align-items:center;gap:7px;font:600 12px/1 var(--display);letter-spacing:.06em;color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);padding:8px 12px;border-radius:999px;box-shadow:0 3px 0 #96331f,0 6px 14px rgba(27,21,39,.3);}
+  .recdot .b{width:9px;height:9px;border-radius:50%;background:var(--cream);box-shadow:0 0 0 2px rgba(255,247,234,.35);animation:blink 1s steps(2) infinite;}
   @keyframes blink{50%{opacity:.25;}}
-
-  .panel{margin:8px 0 26px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);padding:18px 20px;}
-  .rowtop{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
+  .tool-ui > .panel{margin:0;padding:24px 6px 0;border-radius:0;background:none;box-shadow:none;outline:0;}
+  .rowtop{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:22px;}
   .presets{display:flex;flex-wrap:wrap;gap:8px;}
-  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);background:transparent;padding:7px 13px;border-radius:100px;cursor:pointer;transition:.15s;}
-  .chip:hover{color:var(--ink);border-color:rgba(var(--accentRGB),.5);}
-  .chip.on{background:var(--accent);color:#07100e;font-weight:600;border-color:var(--accent);}
+  .chip{font:600 13.5px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--white);border:0;border-radius:999px;padding:10px 14px;cursor:pointer;box-shadow:var(--shadow-btn);outline:1.5px dashed rgba(45,36,64,.2);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .2s,color .2s;}
+  .chip:hover{transform:translateY(-2px) rotate(-2deg);}
+  .chip.on{background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);box-shadow:0 3px 0 #96331f,0 6px 12px rgba(185,68,47,.25);outline-color:rgba(255,247,234,.55);}
+  .chip:focus-visible{outline:3px solid var(--green);outline-offset:2px;}
   .spacer{flex:1;}
-  .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:7px;font-size:14px;padding:10px 16px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
   .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:600;}
-  .sliders{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px 26px;}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl .lab{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);}
-  .ctl .lab .v{color:var(--accent);}
-  input[type=range]{accent-color:var(--accent);width:100%;}
-  .segwrap{display:flex;flex-wrap:wrap;gap:18px 26px;margin-top:16px;align-items:flex-end;}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;flex-wrap:wrap;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 13px;font-family:var(--mono);font-size:12px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  .seglab{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:6px;display:block;}
-
-  section.copy{padding:26px 0 8px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  section.copy code{font-family:var(--mono);font-size:14px;background:rgba(var(--surfaceRGB),.7);border:1px solid var(--line);padding:2px 6px;border-radius:6px;color:var(--accent);}
-  .faq{border-top:1px solid var(--line);margin-top:12px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){.stage{height:62vh;}}
+  .sliders{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px 30px;padding:20px 22px 22px;border-radius:20px;background:rgba(255,255,255,.5);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl .lab{display:flex;justify-content:space-between;align-items:baseline;font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl .lab .v{font:600 13px var(--mono);letter-spacing:0;text-transform:none;color:var(--coral-dk);}
+  .ctl input[type=range]{width:100%;}
+  .segwrap{display:flex;flex-wrap:wrap;gap:18px 26px;margin-top:22px;align-items:flex-end;}
+  .seg{flex-wrap:wrap;}
+  .seglab{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;display:block;}
+  @media(max-width:560px){.stage{height:62vh;}.sliders{padding:16px 16px 18px;}.spacer{flex-basis:100%;height:0;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Fluid Simulation — WebGPU Fluid Playground","url":"https://hammyasf.github.io/fluid-sim.html","applicationCategory":"GameApplication","operatingSystem":"Any (WebGPU browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time Navier-Stokes fluid simulation running on the GPU with WebGPU compute shaders, entirely in the browser. Stir ink, melt a photo into liquid, record a clip.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does a real fluid simulation run in a browser?","acceptedAnswer":{"@type":"Answer","text":"It uses WebGPU compute shaders. The velocity field, the ink, and the pressure solve all live in GPU buffers, and every cell of the grid is updated in parallel on your graphics card each frame. There is no server and nothing is uploaded."}},{"@type":"Question","name":"What kind of fluid solver is this?","acceptedAnswer":{"@type":"Answer","text":"It is a grid-based Navier-Stokes solver in the style of Jos Stam's stable-fluids method: advect the velocity, add vorticity, compute divergence, solve for pressure with Jacobi iterations, then subtract the pressure gradient so the flow stays incompressible. The ink is then carried along by that velocity field."}},{"@type":"Question","name":"Can I turn a photo into liquid?","acceptedAnswer":{"@type":"Answer","text":"Yes. Drop in any image and its pixels are loaded as ink into the fluid, so you can stir, swirl, and melt your own photo in real time, then record the result."}},{"@type":"Question","name":"Is anything uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. The whole thing is one HTML file that runs on your GPU. Your photos and your recordings never leave your device and there is no sign-up."}},{"@type":"Question","name":"Why does it say my browser is not supported?","acceptedAnswer":{"@type":"Answer","text":"It needs WebGPU, available in recent Chrome, Edge, and Safari, and behind a flag in Firefox. Update your browser or open it in desktop Chrome."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">WebGPU · runs on your GPU</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="sim">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-fluid-sim">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Fluid Simulation</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-sim"/></svg></span>
+    <span class="tag chip">WebGPU · runs on your GPU</span>
     <h1>Fluid Simulation</h1>
     <p class="sub">A real Navier-Stokes fluid solver running on your graphics card. Stir glowing ink with your mouse, or drop in a photo and melt it into liquid. Every frame is computed on your GPU — no server, no upload.</p>
-    <span class="priv">&#9889; 100% on-device — your GPU solves every frame</span>
+    <p class="priv">&#9889; 100% on-device — your GPU solves every frame</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="stage" id="stage">
     <canvas id="gpu"></canvas>
     <div class="hud" id="hud" hidden><b id="hudRes">0&times;0</b> grid · <b id="hudFps">0</b> fps</div>
@@ -160,8 +142,8 @@
       </div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How does a real fluid run in your browser?</h2>
     <p>Every frame the simulation does the full incompressible fluid pipeline on your GPU through WebGPU compute shaders. It <em>advects</em> the velocity field along itself, adds a little <em>vorticity</em> so small eddies keep their spin, measures how much the flow is compressing or expanding (its <em>divergence</em>), then runs a batch of <em>Jacobi</em> iterations to solve for the pressure that cancels that divergence and subtracts the pressure gradient back out. The result is a velocity field that conserves mass, and the ink you paint is simply carried along by it. Because each grid cell is updated by its own GPU thread, a laptop can solve a grid of hundreds of thousands of cells dozens of times per second without ever touching a server.</p>
     <h2>What you are looking at</h2>
@@ -171,37 +153,19 @@
     <h2>Privacy and performance</h2>
     <p>Nothing is uploaded and there is no account. The solver, the rendering, the photo you drop, and the clip you record all stay on your machine. It needs a WebGPU-capable browser — recent Chrome, Edge, or Safari work well; Firefox needs WebGPU enabled. If your device is modest, the grid resolution and pressure quality scale down automatically to hold a steady frame rate.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>How can a real fluid simulation run client-side?</summary><p>WebGPU exposes your graphics card to the page. The velocity field, the ink, the divergence, and the pressure all live in GPU buffers, and compute shaders update every cell in parallel — so there is no per-cell JavaScript loop and no server round trip.</p></details>
     <details><summary>What solver is this?</summary><p>A grid-based Navier-Stokes solver using Jos Stam's stable-fluids approach: semi-Lagrangian advection, vorticity confinement, and a Jacobi pressure projection that keeps the fluid incompressible. The "Pressure quality" slider sets how many Jacobi iterations run per frame.</p></details>
     <details><summary>Can I melt my own photo?</summary><p>Yes. Click "Drop a photo" (or drag an image onto the canvas) and its pixels are loaded straight into the ink field, so you can stir and swirl your own picture into liquid, then record it. The image never leaves your device.</p></details>
     <details><summary>My browser says it is not supported.</summary><p>It needs WebGPU. Update to a current Chrome, Edge, or Safari, or enable WebGPU in Firefox. A desktop GPU gives the smoothest result.</p></details>
     <details><summary>Is it really private?</summary><p>Yes. The whole thing is one HTML file that runs locally on your GPU. No upload, no tracking of your inputs, no sign-up.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build things like this for a living.</h3>
-    <p>Senior full-stack engineer comfortable from WebGPU compute shaders to production backends, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer comfortable from WebGPU compute shaders to production backends, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- AdSense slot (enable later): <ins class="adsbygoogle" ...></ins> -->
-<!-- Polar.sh "support this tool" slot (enable later) -->
-
-<script>
-(function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script type="module">
 const $ = function(id){ return document.getElementById(id); };
 const canvas = $("gpu"), stage = $("stage"), overlay = $("overlay"), ovTitle = $("ovTitle"), ovMsg = $("ovMsg"), panel = $("panel"), hud = $("hud"), hint = $("hint");
@@ -900,8 +864,5 @@ function debounce(fn, ms){ let t; return function(){ clearTimeout(t); t=setTimeo
 
 boot().catch(function(e){ fail("Could not start the simulation", "An unexpected error occurred: " + (e && e.message ? e.message : e) + ". Try reloading or a different browser."); });
 </script>
-
-<!-- Analytics: Cloudflare Web Analytics beacon -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

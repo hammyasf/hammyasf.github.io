@@ -8,7 +8,7 @@
 <meta name="keywords" content="webgpu path tracer, path tracing in browser, real time ray tracing online, ray tracer online, webgpu ray tracing, global illumination demo, gpu ray tracing browser, cornell box, path tracer online, monte carlo rendering" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="WebGPU Path Tracer — real-time ray tracing in your browser" />
 <meta property="og:description" content="A real Monte Carlo path tracer running on your GPU, in a browser tab. Global illumination, soft shadows, reflections and glass. Nothing is uploaded." />
 <meta property="og:type" content="website" />
@@ -19,82 +19,65 @@
 <meta name="twitter:description" content="A real path tracer on your GPU, in a browser tab. Global illumination, soft shadows, reflections, glass. No install." />
 <link rel="canonical" href="https://hammyasf.github.io/path-tracer.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"WebGPU Path Tracer","url":"https://hammyasf.github.io/path-tracer.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (browser with WebGPU)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time Monte Carlo path tracer that runs entirely on your GPU in the browser, with global illumination, soft shadows, reflections and glass refraction.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this really ray tracing, or a video?","acceptedAnswer":{"@type":"Answer","text":"It is a real path tracer. Every frame your GPU shoots rays from the camera, bounces them around the scene, and samples light the same way an offline renderer does. The image is computed live on your machine, not streamed."}},{"@type":"Question","name":"Does it run on a server?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs on your own GPU through the WebGPU API. Nothing is uploaded and there is no backend. You can disconnect from the internet after the page loads and it keeps rendering."}},{"@type":"Question","name":"Why does the image start noisy and then clean up?","acceptedAnswer":{"@type":"Answer","text":"Path tracing is a Monte Carlo method. Each frame adds one new random sample per pixel and averages it with the previous frames, so the picture converges from grainy to smooth the longer you leave it still."}},{"@type":"Question","name":"What do I need to run it?","acceptedAnswer":{"@type":"Answer","text":"A browser with WebGPU enabled, such as a recent Chrome, Edge, or Safari on a reasonably modern machine. If WebGPU is unavailable the page will tell you instead of breaking."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:22px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .stage{position:relative;width:100%;aspect-ratio:16/10;background:#05090a;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the render is light computed on the GPU, so the stage is a dark stitched window; the knobs are felt below it */
+  .stage{position:relative;width:100%;aspect-ratio:16/10;border-radius:22px;overflow:hidden;background:url(kit/felt-texture.webp),var(--ink);box-shadow:0 4px 0 #1b1527,0 16px 30px rgba(45,36,64,.3);}
+  .stage::after{content:"";position:absolute;inset:9px;z-index:4;border:2px dashed rgba(246,234,214,.28);border-radius:15px;pointer-events:none;}
   .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;}
   .stage canvas:active{cursor:grabbing;}
-  .hud{position:absolute;left:14px;top:12px;font-family:var(--mono);font-size:12px;color:var(--muted);background:rgba(5,9,10,.55);border:1px solid var(--line);padding:7px 11px;border-radius:10px;backdrop-filter:blur(6px);pointer-events:none;line-height:1.5;}
-  .hud b{color:var(--accent);}
-  .hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:11.5px;color:var(--faint);background:rgba(5,9,10,.5);border:1px solid var(--line);padding:6px 10px;border-radius:10px;pointer-events:none;}
-  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;background:rgba(5,9,10,.92);z-index:5;}
+  .hud{position:absolute;left:18px;top:18px;z-index:2;font-family:var(--mono);font-size:12px;color:var(--ink);background:url(kit/felt-texture.webp),rgba(255,247,234,.94);padding:8px 12px;border-radius:12px;rotate:-1deg;box-shadow:0 3px 0 #b9a58a,0 6px 14px rgba(27,21,39,.3);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;pointer-events:none;line-height:1.5;}
+  .hud b{color:var(--coral-dk);}
+  .hint{position:absolute;right:20px;bottom:20px;z-index:2;font:600 12px/1 var(--display);color:var(--cream);background:rgba(45,36,64,.7);padding:7px 11px;border-radius:999px;pointer-events:none;}
+  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--cream);background:url(kit/felt-texture.webp),radial-gradient(120% 100% at 50% 30%,#4a3d66,var(--ink));z-index:5;}
   .overlay div{max-width:520px;}
-  .overlay h3{font-family:var(--display);font-weight:600;font-size:22px;margin-bottom:10px;}
-  .overlay p{color:var(--muted);font-size:15px;}
-  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:18px 22px;align-items:flex-end;border-top:1px solid var(--line);}
-  .ctl{display:flex;flex-direction:column;gap:7px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  input[type=range]{accent-color:var(--accent);width:150px;}
+  .overlay h3{font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:10px;color:var(--cream);}
+  .overlay p{color:rgba(255,247,234,.82);font-size:15px;}
+  .controls{display:flex;flex-wrap:wrap;gap:18px 26px;padding:24px 6px 0;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .rangewrap input[type=range]{width:150px;}
   .rangewrap{display:flex;align-items:center;gap:10px;}
-  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:30px;}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 22px 20px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .qval{font:600 13px var(--mono);color:var(--coral-dk);min-width:30px;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:22px 6px 0;}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;padding:11px 19px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:780px;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;max-width:780px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){.controls{gap:14px 18px;}input[type=range]{width:120px;}}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  @media(max-width:560px){.controls{gap:16px 18px;}.rangewrap input[type=range]{width:120px;}.hint{right:16px;bottom:16px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"WebGPU Path Tracer","url":"https://hammyasf.github.io/path-tracer.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (browser with WebGPU)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time Monte Carlo path tracer that runs entirely on your GPU in the browser, with global illumination, soft shadows, reflections and glass refraction.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this really ray tracing, or a video?","acceptedAnswer":{"@type":"Answer","text":"It is a real path tracer. Every frame your GPU shoots rays from the camera, bounces them around the scene, and samples light the same way an offline renderer does. The image is computed live on your machine, not streamed."}},{"@type":"Question","name":"Does it run on a server?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs on your own GPU through the WebGPU API. Nothing is uploaded and there is no backend. You can disconnect from the internet after the page loads and it keeps rendering."}},{"@type":"Question","name":"Why does the image start noisy and then clean up?","acceptedAnswer":{"@type":"Answer","text":"Path tracing is a Monte Carlo method. Each frame adds one new random sample per pixel and averages it with the previous frames, so the picture converges from grainy to smooth the longer you leave it still."}},{"@type":"Question","name":"What do I need to run it?","acceptedAnswer":{"@type":"Answer","text":"A browser with WebGPU enabled, such as a recent Chrome, Edge, or Safari on a reasonably modern machine. If WebGPU is unavailable the page will tell you instead of breaking."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs on your GPU</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="sim">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-path-tracer">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">WebGPU Path Tracer</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-sim"/></svg></span>
+    <span class="tag chip">Free tool · runs on your GPU</span>
     <h1>WebGPU Path Tracer</h1>
     <p class="sub">A real Monte Carlo path tracer, rendering in a browser tab. Drag to orbit and the image accumulates samples in real time — true global illumination, soft shadows, mirror reflections and glass. Nothing is uploaded; it all runs on your own graphics card.</p>
-    <span class="priv">&#9889; 100% on-device — your GPU does every ray, no server</span>
+    <p class="priv">&#9889; 100% on-device — your GPU does every ray, no server</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="stage" id="stage">
       <canvas id="cv"></canvas>
@@ -145,8 +128,8 @@
       <button class="btn btn-out" id="save">Save PNG</button>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How does this run in a browser?</h2>
     <p>For a long time, ray tracing meant a render farm and a long wait. This page does it live on your own machine using WebGPU, the new browser standard for talking to your graphics card directly. The whole renderer is a pair of shader programs compiled and run on your GPU. There is no server in the loop, no upload, and no install — once the page loads you could pull the network cable and it would keep rendering.</p>
     <h2>What a path tracer actually does</h2>
@@ -156,36 +139,18 @@
     <h2>Try this</h2>
     <p>Switch the centre sphere to glass and watch it refract the room behind it, then to metal to turn it into a mirror that reflects the other spheres. Open the Cornell box scene to see the classic global-illumination test — notice how the red and green walls tint the white surfaces near them, light that no direct lamp is casting. Push light bounces up for richer indirect light, or down for speed.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is this real ray tracing or a pre-rendered video?</summary><p>Real. Every frame is computed on your GPU from the current camera and settings. Change anything and it re-renders from scratch, which a video could not do.</p></details>
     <details><summary>Does anything get uploaded?</summary><p>No. There is no backend at all. The renderer is pure client-side WebGPU, so nothing about the scene or your machine leaves the page.</p></details>
     <details><summary>It says WebGPU is unavailable — why?</summary><p>WebGPU needs a recent browser and a supported GPU. Use the latest Chrome or Edge on desktop, or Safari 18+. On some machines you may need to enable hardware acceleration in browser settings.</p></details>
     <details><summary>Why is it noisy while I move the camera?</summary><p>Because accumulation resets on any change. A single sample per pixel is grainy by nature; the image is meant to be read after you stop moving and let the frames pile up.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build things like this every day.</h3>
-    <p>Senior full-stack engineer, comfortable from GPU shaders to product, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, comfortable from GPU shaders to product, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Rendered in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- AdSense / Polar.sh monetization slot (left intentionally empty for later) -->
-
-<script>
-(function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
-<!-- ===== Pure helpers (also unit-tested under node) ===== -->
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Rendered in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script id="pt-helpers">
 var PT = (function(){
   function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
@@ -223,8 +188,6 @@ var PT = (function(){
 })();
 if(typeof module!=="undefined"&&module.exports){ module.exports=PT; }
 </script>
-
-<!-- ===== WebGPU path tracer ===== -->
 <script id="pt-app">
 (function(){
   if(typeof module!=="undefined"&&module.exports){ return; } // skip under node
@@ -671,8 +634,5 @@ if(typeof module!=="undefined"&&module.exports){ module.exports=PT; }
   boot();
 })();
 </script>
-
-<!-- Analytics: Cloudflare Web Analytics beacon -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

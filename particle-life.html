@@ -8,7 +8,7 @@
 <meta name="keywords" content="particle life, particle life simulation, webgpu, particle life browser, emergent behavior, artificial life, alife, particle simulation, gpu compute, attraction matrix, particle life online, clusters simulation, generative art" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Particle Life — emergent life in your browser (WebGPU)" />
 <meta property="og:description" content="Thousands of particles, a few simple rules, and lifelike creatures emerge. Runs entirely on your GPU. Edit the rules, make new lifeforms, share them." />
@@ -20,104 +20,85 @@
 <meta name="twitter:description" content="Thousands of particles, a few simple rules, lifelike creatures emerge. All on your GPU, nothing uploaded." />
 <link rel="canonical" href="https://hammyasf.github.io/particle-life.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Particle Life","url":"https://hammyasf.github.io/particle-life.html","applicationCategory":"GameApplication","operatingSystem":"Any (web browser with WebGPU)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"An emergent artificial-life simulation. Thousands of particles follow a small force matrix and self-organize into lifelike structures, computed entirely on the GPU with WebGPU.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does this run without a server?","acceptedAnswer":{"@type":"Answer","text":"Every particle and every force is computed on your own graphics card using WebGPU compute shaders. Nothing is uploaded and there is no backend. The page is a single HTML file."}},{"@type":"Question","name":"What is particle life?","acceptedAnswer":{"@type":"Answer","text":"It is an artificial-life model. Each particle has a color, and a small matrix says how strongly each color is attracted to or repelled by every other color. From those few numbers, lifelike cells, chasers, and ecosystems emerge."}},{"@type":"Question","name":"Why do I need WebGPU?","acceptedAnswer":{"@type":"Answer","text":"The simulation computes the force between every pair of particles each frame, which is millions of calculations. WebGPU runs that on the GPU in parallel so it stays smooth. It works in recent Chrome, Edge, and Brave on desktop, and in Safari 18+."}},{"@type":"Question","name":"Is it free and private?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is completely free, with no sign-up, and it runs entirely on your device."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1180px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:26px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,50px);margin:12px 0 0;}
-  .sub{margin-top:13px;font-size:17.5px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
-  .app{display:grid;grid-template-columns:1fr 320px;gap:18px;margin:22px 0 8px;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the particles glow on a GPU-cleared night (a numeric clear colour), so the stage is a dark stitched window;
+     the knobs and the force matrix sit in a felt pocket beside it, the matrix cells in felt green (attract) and coral (repel) */
+  .app{display:grid;grid-template-columns:1fr 320px;gap:20px;margin:0;}
   @media(max-width:920px){.app{grid-template-columns:1fr;}}
-  .stage{position:relative;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#04080a;min-height:62vh;}
+  .app > *{min-width:0;}
+  .stage{position:relative;border-radius:22px;overflow:hidden;background:url(kit/felt-texture.webp),var(--ink);min-height:62vh;box-shadow:0 4px 0 #1b1527,0 16px 30px rgba(45,36,64,.3);}
+  .stage::after{content:"";position:absolute;inset:9px;z-index:4;border:2px dashed rgba(246,234,214,.28);border-radius:15px;pointer-events:none;}
   #cv{display:block;width:100%;height:100%;position:absolute;inset:0;touch-action:none;}
-  .hud{position:absolute;top:12px;left:14px;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(4,8,10,.5);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:9px;padding:6px 10px;pointer-events:none;z-index:3;}
-  .hud b{color:var(--accent);font-weight:500;}
-  .stage-tip{position:absolute;bottom:12px;left:14px;right:14px;font-family:var(--mono);font-size:11px;color:var(--faint);text-align:center;pointer-events:none;z-index:3;}
-  .overlay{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;background:rgba(4,8,10,.78);backdrop-filter:blur(4px);}
+  .hud{position:absolute;top:18px;left:18px;z-index:3;font-family:var(--mono);font-size:11.5px;color:var(--ink);background:url(kit/felt-texture.webp),rgba(255,247,234,.94);border-radius:12px;padding:7px 12px;rotate:-1deg;box-shadow:0 3px 0 #b9a58a,0 6px 14px rgba(27,21,39,.3);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;pointer-events:none;}
+  .hud b{color:var(--coral-dk);font-weight:600;}
+  .stage-tip{position:absolute;bottom:22px;left:50%;translate:-50% 0;width:max-content;max-width:calc(100% - 44px);font:600 12.5px/1.45 var(--display);color:var(--cream);background:rgba(45,36,64,.72);padding:7px 13px;border-radius:14px;text-align:center;pointer-events:none;z-index:3;}
+  .overlay{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--cream);background:url(kit/felt-texture.webp),radial-gradient(120% 100% at 50% 30%,#4a3d66,var(--ink));}
   .overlay .box{max-width:440px;}
-  .overlay h2{font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:10px;}
-  .overlay p{color:var(--muted);font-size:14.5px;line-height:1.65;}
+  .overlay h2{font-family:var(--display);font-weight:600;font-size:26px;margin-bottom:10px;color:var(--cream);}
+  .overlay p{color:rgba(255,247,234,.82);font-size:15px;line-height:1.65;}
   .overlay.hidden{display:none;}
-
-  .panel{border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);padding:16px 16px 18px;align-self:start;}
-  .row-btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
-  .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 14px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s,opacity .14s;}
+  .panel{padding:20px 18px 20px;align-self:start;rotate:.3deg;}
+  .row-btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:7px;font-size:14px;padding:10px 16px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s,opacity .14s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
-  .btn-sm{font-size:12px;padding:7px 11px;}
-  .grp{margin:14px 0 4px;}
-  .grp h3{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn-sm{font-size:13px;padding:8px 13px;}
+  .grp{margin:18px 0 4px;}
+  .grp h3{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;}
   .ctl{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
-  .ctl .lab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .ctl .lab b{color:var(--accent);font-weight:500;}
-  input[type=range]{accent-color:var(--accent);width:100%;}
-  select{width:100%;background:rgba(var(--surfaceRGB),.7);border:1px solid var(--line-2);color:var(--ink);border-radius:9px;padding:8px 10px;font-family:var(--mono);font-size:12.5px;}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{flex:1;background:transparent;color:var(--muted);border:none;padding:8px 6px;font-family:var(--mono);font-size:12px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-
-  .matrix-wrap{overflow:auto;}
+  .ctl .lab{display:flex;justify-content:space-between;font:600 13.5px/1.2 var(--display);color:var(--mute);}
+  .ctl .lab b{font:600 12.5px var(--mono);color:var(--coral-dk);}
+  .ctl input[type=range]{width:100%;}
+  .seg button{flex:1;}
+  .matrix-wrap{overflow:auto;padding:4px 0;}
   table.matrix{border-collapse:collapse;margin:2px auto 0;}
   table.matrix td,table.matrix th{width:34px;height:34px;text-align:center;}
   table.matrix th{font-size:0;}
-  .sw{width:18px;height:18px;border-radius:50%;margin:auto;box-shadow:0 0 8px rgba(0,0,0,.4);}
-  .cell{width:32px;height:32px;border-radius:7px;border:1px solid var(--line);cursor:ns-resize;font-family:var(--mono);font-size:10.5px;color:#dfeae6;display:flex;align-items:center;justify-content:center;user-select:none;touch-action:none;}
-  .mhint{font-family:var(--mono);font-size:10.5px;color:var(--faint);text-align:center;margin-top:8px;line-height:1.5;}
-
-  section.copy{padding:18px 0 4px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:760px;}
-  .faq{border-top:1px solid var(--line);margin-top:14px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:28px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);z-index:300;opacity:0;pointer-events:none;background:var(--accent);color:#07100e;font-family:var(--mono);font-size:13px;font-weight:500;padding:11px 18px;border-radius:100px;transition:opacity .3s,transform .3s;}
+  .sw{width:18px;height:18px;border-radius:50%;margin:auto;box-shadow:0 0 0 1.5px rgba(45,36,64,.6),0 2px 0 rgba(84,46,30,.2);}
+  .cell{width:32px;height:32px;border-radius:9px;border:1.5px dashed rgba(45,36,64,.18);cursor:ns-resize;font:600 11px var(--mono);color:var(--ink);display:flex;align-items:center;justify-content:center;user-select:none;touch-action:none;}
+  .mhint{font-size:12.5px;color:var(--mute);text-align:center;margin-top:10px;line-height:1.5;}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);z-index:300;opacity:0;pointer-events:none;color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);font:600 14px/1 var(--display);padding:12px 18px;border-radius:999px;box-shadow:0 3px 0 #96331f,0 10px 22px rgba(45,36,64,.25);transition:opacity .3s,transform .3s;}
   .toast.on{opacity:1;transform:translate(-50%,0);}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Particle Life","url":"https://hammyasf.github.io/particle-life.html","applicationCategory":"GameApplication","operatingSystem":"Any (web browser with WebGPU)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"An emergent artificial-life simulation. Thousands of particles follow a small force matrix and self-organize into lifelike structures, computed entirely on the GPU with WebGPU.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does this run without a server?","acceptedAnswer":{"@type":"Answer","text":"Every particle and every force is computed on your own graphics card using WebGPU compute shaders. Nothing is uploaded and there is no backend. The page is a single HTML file."}},{"@type":"Question","name":"What is particle life?","acceptedAnswer":{"@type":"Answer","text":"It is an artificial-life model. Each particle has a color, and a small matrix says how strongly each color is attracted to or repelled by every other color. From those few numbers, lifelike cells, chasers, and ecosystems emerge."}},{"@type":"Question","name":"Why do I need WebGPU?","acceptedAnswer":{"@type":"Answer","text":"The simulation computes the force between every pair of particles each frame, which is millions of calculations. WebGPU runs that on the GPU in parallel so it stays smooth. It works in recent Chrome, Edge, and Brave on desktop, and in Safari 18+."}},{"@type":"Question","name":"Is it free and private?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is completely free, with no sign-up, and it runs entirely on your device."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">WebGPU · runs on your GPU</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="sim">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-particle-life">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Particle Life</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-sim"/></svg></span>
+    <span class="tag chip">WebGPU · runs on your GPU</span>
     <h1>Particle Life</h1>
     <p class="sub">A few thousand particles, a small table of attraction rules, and life-like creatures appear on their own. Edit the rules, roll a new lifeform, and watch it self-organize. Every force is computed on your graphics card in real time.</p>
-    <span class="priv">&#9889; 100% on your device — nothing is uploaded</span>
+    <p class="priv">&#9889; 100% on your device — nothing is uploaded</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="app">
     <div class="stage" id="stage">
       <canvas id="cv"></canvas>
       <div class="hud" id="hud">starting…</div>
-      <div class="stage-tip">Drag on the canvas to push or pull particles. Hit <b style="color:var(--accent)">Randomize</b> for a brand-new lifeform.</div>
+      <div class="stage-tip">Drag on the canvas to push or pull particles. Hit <b style="color:var(--butter)">Randomize</b> for a brand-new lifeform.</div>
       <div class="overlay hidden" id="overlay"><div class="box">
         <h2 id="ovTitle">WebGPU not available</h2>
         <p id="ovMsg">This simulation runs on your GPU through WebGPU. Open it in a recent desktop Chrome, Edge, or Brave, or Safari 18+ on a Mac, and it will start automatically.</p>
@@ -183,8 +164,8 @@
       </div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>What you are looking at</h2>
     <p>Each dot is a particle with a color. A small square table, the force matrix on the right, says how strongly every color is attracted to or repelled by every other color. That is the entire rulebook. There is no goal coded in, no behavior scripted. Yet from those few numbers you get cells that hold together, predators that chase prey, and slow churning ecosystems that never quite settle. This is the model people call particle life, and the surprise is how much life comes out of how little.</p>
     <h2>How it runs in your browser</h2>
@@ -192,33 +173,19 @@
     <h2>Things to try</h2>
     <p>Hit Randomize a few times until something catches your eye, then drag a single matrix cell up or down and watch the whole population change its mind. Turn the interaction radius up for sweeping galaxy-like motion or down for tight, twitchy cells. Drag on the canvas to stir it. When you find something you love, press Share to copy a link that rebuilds the exact same world for anyone you send it to.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>How does this work without a server?</summary><p>Everything is computed on your own GPU with WebGPU and drawn on the spot. There is no backend and nothing is uploaded. The page is a single static file.</p></details>
     <details><summary>Why does it need WebGPU?</summary><p>The simulation compares every particle with every other particle each frame, which is millions of operations. WebGPU runs that in parallel on your graphics card so it stays at full frame rate. It works in recent Chrome, Edge, and Brave on desktop, and in Safari 18 and up.</p></details>
     <details><summary>What is the force matrix?</summary><p>It is the rulebook. The value in row A, column B is how strongly color A is pulled toward or pushed from color B. Positive is attraction, negative is repulsion. Asymmetry, where A chases B but B flees A, is what creates the most life-like motion.</p></details>
     <details><summary>Is it free?</summary><p>Yes, completely free, no sign-up, and it runs entirely on your device.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build something like this every day.</h3>
-    <p>Senior full-stack engineer, open to senior or contract roles, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, open to senior or contract roles, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <div class="toast" id="toast"></div>
-
-<!-- early theme match (same as the rest of the site) -->
-<script>
-(function(){ try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-  var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){} })();
-</script>
-
 <script>
 (function(){
   "use strict";
@@ -500,8 +467,8 @@ fn fs(in: VOut) -> @location(0) vec4<f32> {
   // ---- matrix UI ----
   function valColor(v){
     var a=Math.min(1,Math.abs(v));
-    if(v>=0) return "rgba(70,210,140,"+(0.12+a*0.78)+")";
-    return "rgba(238,92,82,"+(0.12+a*0.78)+")";
+    if(v>=0) return "rgba(98,170,112,"+(0.12+a*0.78)+")";
+    return "rgba(232,96,76,"+(0.12+a*0.78)+")";
   }
   function buildMatrixUI(){
     var tbl=document.getElementById("matrix"); var pal=SCHEMES[S.scheme]||SCHEMES.spectrum; var n=S.types;
@@ -590,13 +557,5 @@ fn fs(in: VOut) -> @location(0) vec4<f32> {
   init();
 })();
 </script>
-
-<!-- AdSense slot (placeholder — enable later)
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
--->
-<!-- Polar.sh support/tip slot (placeholder — enable later) -->
-
-<!-- shared site enhancements + Cloudflare Web Analytics beacon (token in enhance.js) -->
-<script src="enhance.js" defer></script>
 </body>
 </html>

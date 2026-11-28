@@ -8,7 +8,7 @@
 <meta name="keywords" content="gaussian splat viewer, view splat online, ply splat viewer, splat viewer, 3dgs viewer, gaussian splatting online, clean gaussian splat, crop gaussian splatting, gaussian splat editor, gaussian splatting web viewer, ply to splat, view 3d scan browser" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Splat Studio — view and clean 3D Gaussian Splats in your browser" />
 <meta property="og:description" content="Orbit a photorealistic Gaussian Splatting scan on your GPU, crop away floaters, and export a cleaned .splat — all client-side, nothing uploaded." />
@@ -20,97 +20,80 @@
 <meta name="twitter:description" content="A real-time 3D Gaussian Splatting viewer and editor running entirely in your browser via WebGL2." />
 <link rel="canonical" href="https://hammyasf.github.io/splat-studio.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Splat Studio — 3D Gaussian Splat Viewer & Cleaner","url":"https://hammyasf.github.io/splat-studio.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebGL2)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time 3D Gaussian Splatting viewer and editor that runs entirely in the browser via WebGL2. Load .splat or .ply scans, orbit them on the GPU, crop away floaters, and export a cleaned .splat.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How is a photorealistic 3D scan rendering in a browser tab?","acceptedAnswer":{"@type":"Answer","text":"Gaussian Splatting represents a scene as millions of tiny translucent 3D blobs. Splat Studio projects every blob to the screen, computes its 2D shape from a covariance matrix, sorts them back-to-front, and blends them — all on your GPU with WebGL2, recomputed every frame. There is no server; the whole scene lives in your browser's memory."}},{"@type":"Question","name":"Is my file uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. Your .splat or .ply is read locally with the File API and rendered on your own graphics card. It never leaves your device, and the cleaned file you export is generated in the browser too."}},{"@type":"Question","name":"What files can I open?","acceptedAnswer":{"@type":"Answer","text":"The compact .splat format loads instantly. You can also drop a 3D Gaussian Splatting .ply (the raw training output) and Splat Studio converts it in the browser. There is a built-in sample scene so you can try it with zero setup."}},{"@type":"Question","name":"What does cleaning a splat do?","acceptedAnswer":{"@type":"Answer","text":"Real scans are full of stray floating blobs around the subject. Draw a box to keep or delete the splats inside it, undo if you overshoot, then export a smaller, cleaner .splat that loads faster in any viewer."}},{"@type":"Question","name":"Why does it say my browser is not supported?","acceptedAnswer":{"@type":"Answer","text":"The renderer needs WebGL2, which is available in every recent Chrome, Edge, Firefox, and Safari. If you see the fallback message, update your browser or open it on a desktop with a GPU."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,54px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
-  .stage{position:relative;margin:22px 0 0;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#02040a;box-shadow:0 30px 80px -40px rgba(0,0,0,.9);}
-  #gl{display:block;width:100%;height:70vh;min-height:440px;touch-action:none;cursor:grab;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* splats are photographs of light, drawn on a night background by the shader: the scene is a dark stitched window,
+     the source chips ride on top of it as felt, the editing dock is sewn on below (as in gravity) */
+  .stage{position:relative;margin:0;}
+  #gl{display:block;width:100%;height:70vh;min-height:440px;touch-action:none;cursor:grab;border-radius:22px;background:url(kit/felt-texture.webp),var(--ink);box-shadow:0 4px 0 #1b1527,0 16px 30px rgba(45,36,64,.3);outline:2px dashed rgba(246,234,214,.28);outline-offset:-9px;}
   #gl.grabbing{cursor:grabbing;}
   #gl.cropping{cursor:crosshair;}
-  #sel{position:absolute;border:1.5px solid var(--accent);background:rgba(var(--accentRGB),.12);pointer-events:none;display:none;z-index:4;border-radius:2px;}
-  .topbar{position:absolute;top:0;left:0;right:0;display:flex;gap:8px;flex-wrap:wrap;padding:14px;background:linear-gradient(180deg,rgba(2,4,10,.82),rgba(2,4,10,0));z-index:3;}
-  .chip{font-family:var(--mono);font-size:12px;color:var(--ink);background:rgba(12,22,30,.72);border:1px solid var(--line-2);padding:7px 13px;border-radius:100px;cursor:pointer;transition:.15s;backdrop-filter:blur(6px);}
-  .chip:hover{border-color:rgba(var(--accentRGB),.6);}
-  .chip.on{background:var(--accent);color:#04120d;border-color:var(--accent);font-weight:600;}
-  .chip[disabled]{opacity:.4;cursor:not-allowed;}
-  .stats{position:absolute;top:14px;right:14px;z-index:3;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(2,4,10,.6);border:1px solid var(--line);border-radius:10px;padding:8px 11px;line-height:1.7;text-align:right;backdrop-filter:blur(6px);pointer-events:none;max-width:60%;}
-  .stats b{color:var(--accent);}
-  .dock{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;gap:14px 18px;flex-wrap:wrap;align-items:center;padding:14px 16px;background:linear-gradient(0deg,rgba(2,4,10,.88),rgba(2,4,10,0));}
-  .dock .grp{display:flex;flex-direction:column;gap:5px;}
-  .dock label{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .dock .row{display:flex;align-items:center;gap:9px;}
-  input[type=range]{accent-color:var(--accent);width:120px;}
-  .iconbtn{font-family:var(--mono);font-size:12.5px;color:var(--ink);background:rgba(12,22,30,.72);border:1px solid var(--line-2);padding:8px 14px;border-radius:100px;cursor:pointer;transition:.15s;}
-  .iconbtn:hover{border-color:rgba(var(--accentRGB),.6);}
-  .iconbtn.primary{background:var(--accent);color:#04120d;border-color:var(--accent);font-weight:700;}
-  .iconbtn[disabled]{opacity:.4;cursor:not-allowed;}
-  .vval{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:30px;}
-  .hint{position:absolute;left:14px;bottom:74px;z-index:3;font-family:var(--mono);font-size:11px;color:var(--faint);background:rgba(2,4,10,.5);padding:5px 9px;border-radius:8px;pointer-events:none;max-width:70%;}
-
-  .loader{position:absolute;inset:0;z-index:6;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;background:rgba(2,4,10,.72);backdrop-filter:blur(3px);}
-  .loader h3{font-family:var(--display);font-weight:600;font-size:20px;margin-bottom:12px;}
-  .loader .track{width:260px;max-width:70vw;height:7px;border-radius:100px;background:rgba(237,242,239,.12);overflow:hidden;}
-  .loader .fill{height:100%;width:0%;background:var(--accent);transition:width .15s;}
-  .loader p{color:var(--muted);font-size:13px;margin-top:12px;font-family:var(--mono);}
-
-  .fallback{display:none;position:absolute;inset:0;z-index:7;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;background:radial-gradient(120% 100% at 50% 30%,rgba(20,30,50,.5),#02040a);}
-  .fallback h3{font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:10px;}
-  .fallback p{color:var(--muted);font-size:14.5px;max-width:460px;}
-
-  .toast{position:absolute;left:50%;top:64px;transform:translateX(-50%);z-index:8;font-family:var(--mono);font-size:12.5px;color:#04120d;background:var(--accent);padding:8px 15px;border-radius:100px;opacity:0;transition:opacity .2s;pointer-events:none;}
+  #sel{position:absolute;border:2px dashed var(--butter);background:rgba(242,193,78,.14);pointer-events:none;display:none;z-index:4;border-radius:4px;}
+  .topbar{position:absolute;top:0;left:0;right:0;display:flex;gap:8px;flex-wrap:wrap;padding:18px 18px 26px;border-radius:22px 22px 0 0;background:linear-gradient(180deg,rgba(45,36,64,.72),rgba(45,36,64,0));z-index:3;}
+  .chip{font:600 13.5px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--cream);border:0;padding:9px 14px;border-radius:999px;cursor:pointer;box-shadow:0 2px 0 #b9a58a,0 4px 10px rgba(27,21,39,.25);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .2s,color .2s;}
+  .chip:hover{transform:translateY(-2px) rotate(-2deg);}
+  .chip.on{background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);box-shadow:0 2px 0 #96331f,0 4px 10px rgba(27,21,39,.25);outline-color:rgba(255,247,234,.55);}
+  .chip[disabled]{opacity:.5;cursor:not-allowed;transform:none;}
+  .chip:focus-visible{outline:3px solid var(--butter);outline-offset:2px;}
+  .stats{position:absolute;top:70px;right:18px;z-index:3;font-family:var(--mono);font-size:11.5px;color:var(--ink);background:url(kit/felt-texture.webp),rgba(255,247,234,.94);border-radius:12px;padding:9px 13px;line-height:1.7;text-align:right;rotate:1.5deg;box-shadow:0 3px 0 #b9a58a,0 6px 14px rgba(27,21,39,.3);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;pointer-events:none;max-width:60%;}
+  .stats b{color:var(--coral-dk);}
+  .dock{display:flex;gap:12px 14px;flex-wrap:wrap;align-items:flex-end;padding:22px 6px 0;}
+  .dock .grp{display:flex;flex-direction:column;gap:7px;margin-right:10px;}
+  .dock label{font:600 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .dock .row{display:flex;align-items:center;gap:10px;}
+  .dock input[type=range]{width:132px;}
+  .iconbtn{font:600 14.5px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--white);border:0;padding:12px 18px;border-radius:999px;cursor:pointer;box-shadow:var(--shadow-btn);transition:transform .45s var(--spring-pop),box-shadow .2s,opacity .2s;}
+  .iconbtn:hover:not([disabled]){transform:translateY(-2px) scale(1.04);}
+  .iconbtn:active:not([disabled]){transform:translateY(2px) scale(.95);transition-duration:.08s;}
+  .iconbtn.primary{background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);box-shadow:0 3px 0 #96331f,0 6px 14px rgba(185,68,47,.3);}
+  .iconbtn[disabled]{opacity:.5;cursor:not-allowed;}
+  .vval{font:600 13px var(--mono);color:var(--coral-dk);min-width:30px;}
+  .hint{position:absolute;left:18px;top:calc(max(70vh, 440px) - 44px);z-index:3;font:600 12px/1 var(--display);color:var(--cream);background:rgba(45,36,64,.7);padding:7px 11px;border-radius:999px;pointer-events:none;max-width:70%;}
+  .loader{position:absolute;inset:0 0 auto;height:max(70vh, 440px);z-index:6;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;border-radius:22px;color:var(--ink);background:url(kit/felt-texture.webp),rgba(255,247,234,.92);}
+  .loader h3{font-family:var(--display);font-weight:600;font-size:22px;margin-bottom:14px;}
+  .loader .track{width:260px;max-width:70vw;height:12px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;}
+  .loader .fill{height:100%;width:0%;border-radius:999px;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);background-size:8px 11px,auto;transition:width .15s;}
+  .loader p{color:var(--mute);font-size:13px;margin-top:12px;font-family:var(--mono);}
+  .fallback{display:none;position:absolute;inset:0 0 auto;height:max(70vh, 440px);z-index:7;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;border-radius:22px;color:var(--cream);background:url(kit/felt-texture.webp),radial-gradient(120% 100% at 50% 30%,#4a3d66,var(--ink));outline:2px dashed rgba(246,234,214,.28);outline-offset:-9px;}
+  .fallback h3{font-family:var(--display);font-weight:600;font-size:26px;margin-bottom:10px;color:var(--cream);}
+  .fallback p{color:rgba(255,247,234,.82);font-size:15px;max-width:460px;}
+  .toast{position:absolute;left:50%;top:76px;transform:translateX(-50%);z-index:8;font:600 13.5px/1 var(--display);color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);padding:10px 16px;border-radius:999px;box-shadow:0 3px 0 #96331f,0 8px 18px rgba(27,21,39,.3);opacity:0;transition:opacity .2s;pointer-events:none;}
   .toast.show{opacity:1;}
-
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:760px;}
-  .faq{border-top:1px solid var(--line);margin-top:14px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:640px){#gl{height:60vh;}.dock{gap:10px 14px;}.stats{font-size:10.5px;}.hint{display:none;}}
+  @media(max-width:640px){#gl{height:60vh;}.loader,.fallback{height:max(60vh, 440px);}.dock{gap:10px 12px;}.stats{top:auto;bottom:calc(100% - max(60vh, 440px) + 18px);font-size:11px;}.hint{display:none;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Splat Studio — 3D Gaussian Splat Viewer & Cleaner","url":"https://hammyasf.github.io/splat-studio.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebGL2)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time 3D Gaussian Splatting viewer and editor that runs entirely in the browser via WebGL2. Load .splat or .ply scans, orbit them on the GPU, crop away floaters, and export a cleaned .splat.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How is a photorealistic 3D scan rendering in a browser tab?","acceptedAnswer":{"@type":"Answer","text":"Gaussian Splatting represents a scene as millions of tiny translucent 3D blobs. Splat Studio projects every blob to the screen, computes its 2D shape from a covariance matrix, sorts them back-to-front, and blends them — all on your GPU with WebGL2, recomputed every frame. There is no server; the whole scene lives in your browser's memory."}},{"@type":"Question","name":"Is my file uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. Your .splat or .ply is read locally with the File API and rendered on your own graphics card. It never leaves your device, and the cleaned file you export is generated in the browser too."}},{"@type":"Question","name":"What files can I open?","acceptedAnswer":{"@type":"Answer","text":"The compact .splat format loads instantly. You can also drop a 3D Gaussian Splatting .ply (the raw training output) and Splat Studio converts it in the browser. There is a built-in sample scene so you can try it with zero setup."}},{"@type":"Question","name":"What does cleaning a splat do?","acceptedAnswer":{"@type":"Answer","text":"Real scans are full of stray floating blobs around the subject. Draw a box to keep or delete the splats inside it, undo if you overshoot, then export a smaller, cleaner .splat that loads faster in any viewer."}},{"@type":"Question","name":"Why does it say my browser is not supported?","acceptedAnswer":{"@type":"Answer","text":"The renderer needs WebGL2, which is available in every recent Chrome, Edge, Firefox, and Safari. If you see the fallback message, update your browser or open it on a desktop with a GPU."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">WebGL2 · runs on your GPU</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="sim">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-splat-studio">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Splat Studio</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-sim"/></svg></span>
+    <span class="tag chip">WebGL2 · runs on your GPU</span>
     <h1>Splat Studio</h1>
     <p class="sub">A real 3D Gaussian Splatting viewer and cleaner, running entirely in your browser. Drop a <code>.splat</code> or <code>.ply</code>, orbit a photorealistic scan on your graphics card, box-crop away the floaters, and export a cleaner file. Nothing is uploaded.</p>
-    <span class="priv">&#128274; 100% on-device — your scan renders on your GPU and never leaves your device</span>
+    <p class="priv">&#128274; 100% on-device — your scan renders on your GPU and never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="stage">
     <canvas id="gl"></canvas>
     <div id="sel"></div>
@@ -151,8 +134,8 @@
 
     <div class="toast" id="toast"></div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>What am I looking at?</h2>
     <p>3D Gaussian Splatting is a way of capturing a real place from a handful of photos and turning it into a fully navigable 3D scene. Instead of triangles, the scene is made of millions of tiny translucent blobs, each with its own position, colour, shape and orientation. Rendered together and sorted by depth, they reconstruct the original scene with startling realism — and because it is closer to drawing points than to classic 3D, it runs fast on ordinary graphics hardware.</p>
     <h2>How it runs in your browser</h2>
@@ -160,34 +143,19 @@
     <h2>Clean up your scans</h2>
     <p>Captured scans are almost always surrounded by stray floating splats — noise the reconstruction couldn't place. Switch to crop mode, drag a box around what you want, and either keep only what's inside or delete it. Undo as many times as you like, then export a smaller, tidier <code>.splat</code> that loads faster anywhere. It's the quick clean-up pass you'd otherwise open a desktop tool for.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>How is a photorealistic 3D scan rendering in a browser tab?</summary><p>The scene is millions of translucent 3D blobs. Splat Studio projects every blob, computes its on-screen shape from a covariance matrix, sorts them by depth, and blends them — all on your GPU with WebGL2, recomputed each frame. The whole scene lives in your browser's memory.</p></details>
     <details><summary>Is my file uploaded anywhere?</summary><p>No. Your <code>.splat</code> or <code>.ply</code> is read locally and rendered on your own graphics card. It never leaves your device, and the cleaned file you export is built in the browser too.</p></details>
     <details><summary>What files can I open?</summary><p>The compact <code>.splat</code> format loads instantly. You can also drop a 3D Gaussian Splatting <code>.ply</code> (the raw training output) and it converts in-browser. A sample scene is built in so you can try it with zero setup.</p></details>
     <details><summary>What does cleaning a splat do?</summary><p>Draw a box to keep or delete the splats inside it, undo if you overshoot, then export a smaller, cleaner <code>.splat</code> that loads faster in any viewer.</p></details>
     <details><summary>Why does it say my browser isn't supported?</summary><p>The renderer needs WebGL2, available in every recent Chrome, Edge, Firefox and Safari. If you see the fallback, update your browser or use a desktop with a GPU.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<script>
-(function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script id="app">
 (function(){
 "use strict";
@@ -831,10 +799,5 @@ loadBytes(buildGalaxy(),"");  // instant magic on first paint
 updateButtons();
 })();
 </script>
-
-<!-- Monetization slot (left intentionally empty): AdSense / Polar.sh can drop in below the fold later. -->
-
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

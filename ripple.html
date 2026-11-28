@@ -8,7 +8,7 @@
 <meta name="keywords" content="ripple tank simulator, wave interference simulator, double slit experiment simulator, diffraction simulator, wave simulation online, interference pattern, physics simulation browser, webgl wave equation, refraction simulator, two slit interference" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Ripple — Wave &amp; Interference Lab" />
 <meta property="og:description" content="A real 2D wave equation solved on your GPU. Double-slit, diffraction, refraction and interference, live in your browser. Nothing uploaded." />
 <meta property="og:type" content="website" />
@@ -19,83 +19,71 @@
 <meta name="twitter:description" content="A real wave equation on your GPU. Double-slit, diffraction, interference, live in your browser." />
 <link rel="canonical" href="https://hammyasf.github.io/ripple.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the wave field's colours live in the shader, so the tank is a dark window sewn into the patch; presets and tools are felt below */
+  .stage{position:relative;margin:0;}
+  .canvaswrap{position:relative;width:100%;aspect-ratio:16/9;border-radius:22px;overflow:hidden;background:url(kit/felt-texture.webp),var(--ink);box-shadow:0 4px 0 #1b1527,0 16px 30px rgba(45,36,64,.3);}
+  .canvaswrap::after{content:"";position:absolute;inset:9px;border:2px dashed rgba(246,234,214,.28);border-radius:15px;pointer-events:none;}
+  #sim{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair;}
+  #hud{position:absolute;top:18px;left:18px;z-index:2;font-family:var(--mono);font-size:11.5px;color:var(--ink);background:url(kit/felt-texture.webp),rgba(255,247,234,.94);padding:8px 12px;border-radius:12px;rotate:-1deg;box-shadow:0 3px 0 #b9a58a,0 6px 14px rgba(27,21,39,.3);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;pointer-events:none;}
+  #fail{position:absolute;inset:0;z-index:3;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;flex-direction:column;gap:10px;color:var(--cream);background:url(kit/felt-texture.webp),radial-gradient(120% 100% at 50% 30%,#4a3d66,var(--ink));}
+  #fail h3{font-family:var(--display);font-weight:600;font-size:24px;color:var(--cream);}
+  #fail p{color:rgba(255,247,234,.82);font-size:15px;max-width:420px;}
+  .presets{display:flex;flex-wrap:wrap;gap:9px;padding:22px 6px 0;}
+  .chip{font:600 13.5px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--white);border:0;border-radius:999px;padding:10px 14px;cursor:pointer;box-shadow:var(--shadow-btn);outline:1.5px dashed rgba(45,36,64,.2);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .2s,color .2s;}
+  .chip:hover{transform:translateY(-2px) rotate(-2deg);}
+  .chip.on{background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);box-shadow:0 3px 0 #96331f,0 6px 12px rgba(185,68,47,.25);outline-color:rgba(255,247,234,.55);}
+  .chip:focus-visible{outline:3px solid var(--green);outline-offset:2px;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:18px 26px;padding:22px 6px 0;align-items:flex-end;}
+  .grp{display:flex;flex-direction:column;gap:8px;}
+  .grp label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .seg{flex-wrap:wrap;}
+  .grp input[type=range]{width:130px;}
+  .rowval{display:flex;align-items:center;gap:10px;}
+  .rowval span{font:600 13px var(--mono);color:var(--coral-dk);min-width:30px;}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:7px;font-size:14px;padding:10px 17px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn.ghost{color:var(--ink);background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
+  .btn.ghost::before{content:none;}
+  .hint{font-size:14px;line-height:1.6;color:var(--mute);padding:20px 6px 0;}
+  .hint b{color:var(--ink);}
+  @media(max-width:560px){.grp input[type=range]{width:108px;}#hud{top:14px;left:14px;max-width:calc(100% - 28px);font-size:11px;padding:6px 10px;rotate:0deg;}}
+</style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Ripple — Wave & Interference Lab","url":"https://hammyasf.github.io/ripple.html","applicationCategory":"EducationalApplication","operatingSystem":"Any (modern web browser with WebGL2)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"An interactive 2D wave-equation simulation solved on the GPU. Shows the double-slit experiment, diffraction, refraction and interference in real time, entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this a real physics simulation or a canned animation?","acceptedAnswer":{"@type":"Answer","text":"It is a real simulation. Ripple numerically solves the 2D wave equation on a grid every frame using a finite-difference scheme running in a WebGL2 fragment shader on your GPU. The interference fringes emerge from the physics, they are not drawn in."}},{"@type":"Question","name":"How does the double-slit experiment work here?","acceptedAnswer":{"@type":"Answer","text":"A straight plane wave travels toward a barrier with two narrow gaps. Each gap acts as a new source, and the two spreading waves overlap. Where crests meet crests you get bright bands, where crest meets trough they cancel. That striped pattern is interference, the signature of wave behaviour."}},{"@type":"Question","name":"Does anything get uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. The entire simulation runs locally on your GPU through WebGL2. Nothing leaves your device and there is no sign-up."}},{"@type":"Question","name":"What do I need to run it?","acceptedAnswer":{"@type":"Answer","text":"Any modern browser with WebGL2 and floating-point render targets, which covers current Chrome, Edge, Firefox and Safari on desktop and most recent phones. If your browser cannot do it, Ripple tells you instead of showing a broken page."}},{"@type":"Question","name":"Can I make my own setups?","acceptedAnswer":{"@type":"Answer","text":"Yes. Paint walls, carve your own slits, drop single ripples, place a slow lens region to bend waves, or add point sources. Every change is live."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .stage{margin:22px 0 8px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;position:relative;}
-  .canvaswrap{position:relative;width:100%;aspect-ratio:16/9;background:#050c0a;}
-  #sim{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair;}
-  #hud{position:absolute;top:12px;left:14px;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(5,12,10,.55);border:1px solid var(--line);padding:6px 10px;border-radius:8px;pointer-events:none;backdrop-filter:blur(4px);}
-  #fail{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;flex-direction:column;gap:10px;background:rgba(5,12,10,.9);}
-  #fail h3{font-family:var(--display);font-size:22px;}
-  #fail p{color:var(--muted);font-size:14px;max-width:420px;}
-  .toolbar{display:flex;flex-wrap:wrap;gap:16px 22px;padding:16px 18px;align-items:flex-end;border-top:1px solid var(--line);}
-  .grp{display:flex;flex-direction:column;gap:7px;}
-  .grp label{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;flex-wrap:wrap;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 13px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
-  .seg button:hover{color:var(--ink);}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  input[type=range]{accent-color:var(--accent);width:130px;}
-  .rowval{display:flex;align-items:center;gap:9px;}
-  .rowval span{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:30px;}
-  .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line-2);font-weight:500;}
-  .presets{display:flex;flex-wrap:wrap;gap:9px;padding:0 18px 16px;}
-  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.5);padding:8px 13px;border-radius:100px;cursor:pointer;transition:.15s;}
-  .chip:hover{border-color:rgba(var(--accentRGB),.5);color:var(--ink);}
-  .chip.on{border-color:var(--accent);color:var(--accent);background:rgba(var(--accentRGB),.08);}
-  .hint{font-family:var(--mono);font-size:11.5px;color:var(--faint);padding:0 18px 16px;}
-  section.copy{margin:44px 0 0;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:24px;margin:26px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#c4d1cb;max-width:720px;margin-bottom:8px;}
-  .faq{margin-top:26px;}
-  .faq details{border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px;background:rgba(var(--surfaceRGB),.4);}
-  .faq summary{font-family:var(--display);font-weight:500;font-size:16px;cursor:pointer;}
-  .faq p{margin-top:8px;color:var(--muted);font-size:15px;}
-  .cta{margin:40px 0;padding:28px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--accentRGB),.05);}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:22px;}
-  .cta p{color:var(--muted);margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){input[type=range]{width:108px;}}
-</style>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Physics · runs on your GPU</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="sim">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-ripple">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Ripple — Wave &amp; Interference Lab</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-sim"/></svg></span>
+    <span class="tag chip">Physics · runs on your GPU</span>
     <h1>Ripple — Wave &amp; Interference Lab</h1>
     <p class="sub">A real 2D wave equation, solved on your graphics card every frame. Watch the double-slit experiment, diffraction, and refraction happen live. Paint walls, carve slits, drop ripples.</p>
-    <span class="priv">&#9889; 100% in your browser — the whole simulation runs on your GPU, nothing uploaded</span>
+    <p class="priv">&#9889; 100% in your browser — the whole simulation runs on your GPU, nothing uploaded</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="stage">
     <div class="canvaswrap">
       <canvas id="sim"></canvas>
@@ -141,8 +129,8 @@
     </div>
     <div class="hint" id="hint">Tip: the double-slit is loaded and running. Try switching the tool to <b>Draw wall</b> and carving your own slit, or drop single ripples in an empty tank.</div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>What you're looking at</h2>
     <p>Most animations of waves are just drawings that loop. This one is not. Every frame, Ripple solves the real 2D wave equation on a grid of hundreds of thousands of cells, entirely on your GPU. Each cell looks at its neighbours, works out how the surface should move next, and passes that on. The striped interference pattern behind the two slits is not painted in. It falls out of the physics, the same way it does in a water tank or a laser lab.</p>
     <h2>How it runs in a browser</h2>
@@ -150,36 +138,20 @@
     <h2>Things to try</h2>
     <p>Switch to <b>Two sources</b> and watch the checkerboard of interference between them. Load the <b>Lens</b> preset and see a flat wave get focused to a point. Open the plain <b>ripple tank</b>, set the tool to <b>Drop ripple</b>, and tap two spots quickly to make two ring patterns collide. Paint a <b>wall</b> with a single narrow gap to see one slit spray a wave in every direction, which is diffraction. Turn <b>damping</b> down and the tank rings for longer; turn it up and it settles fast.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <h2 style="font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:14px;">Questions</h2>
     <details open><summary>Is this a real simulation or a canned animation?</summary><p>Real. Ripple integrates the 2D wave equation numerically on a grid every frame, in a GPU shader. The interference and diffraction come out of the maths, they are not hand-drawn.</p></details>
     <details><summary>Why does the double-slit make stripes?</summary><p>Each slit becomes a new source of circular waves. Where a crest from one slit lines up with a crest from the other they add up (a bright band); where a crest meets a trough they cancel (a dark band). Those alternating bands are interference.</p></details>
     <details><summary>Is anything uploaded?</summary><p>No. The whole thing runs on your GPU locally through WebGL2. Nothing leaves your device, and there is no sign-up.</p></details>
     <details><summary>It says my browser can't run it. Why?</summary><p>Ripple needs WebGL2 and the ability to render into floating-point textures. Most current browsers support this, but some older phones and locked-down setups do not. Ripple detects that and tells you rather than showing a broken canvas.</p></details>
     <details><summary>Can I build my own setup?</summary><p>Yes. Every tool is live: paint walls, carve slits, paint a slow lens region, erase, and drop single ripples anywhere. Change frequency, damping and contrast on the fly.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build things like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- theme bootstrap (match the portfolio's saved theme) -->
-<script>
-(function(){
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
-<!-- pure helpers (also exported for tests) -->
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 /*__RP_HELPERS_START__*/
 (function(root){
@@ -286,8 +258,6 @@
 })(typeof window!=='undefined'?window:globalThis);
 /*__RP_HELPERS_END__*/
 </script>
-
-<!-- app -->
 <script>
 (function(){
   "use strict";
@@ -532,10 +502,5 @@
   requestAnimationFrame(loop);
 })();
 </script>
-
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
-<!-- AdSense slot (left intentionally empty for later): <ins class="adsbygoogle" ...></ins> -->
-<!-- Polar.sh support slot (left intentionally empty for later) -->
 </body>
 </html>

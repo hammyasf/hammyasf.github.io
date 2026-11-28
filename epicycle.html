@@ -8,7 +8,7 @@
 <meta name="keywords" content="fourier epicycles, fourier series drawing, draw with circles, epicycle drawing, fourier transform visualizer, spinning circles drawing, draw your name with circles, fourier draw, discrete fourier transform visualizer, fourier art, 3blue1brown circles, epicycle animation" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Fourier Epicycle Machine — draw anything, circles redraw it" />
 <meta property="og:description" content="Draw a shape or type your name and watch rotating circles retrace it. A real Fourier transform, running entirely in your browser." />
 <meta property="og:type" content="website" />
@@ -19,89 +19,69 @@
 <meta name="twitter:description" content="Draw anything and watch a chain of spinning circles redraw it. Real Fourier transform, in your browser." />
 <link rel="canonical" href="https://hammyasf.github.io/epicycle.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Fourier Epicycle Machine","url":"https://hammyasf.github.io/epicycle.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Draw a shape or type text and a real Discrete Fourier Transform turns it into a chain of rotating circles (epicycles) that retrace the path, all in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does drawing with circles actually work?","acceptedAnswer":{"@type":"Answer","text":"Your path is treated as a list of complex numbers and run through a Discrete Fourier Transform. Each frequency becomes a rotating vector with its own size, speed, and starting angle. Stacked tip to tail, those vectors trace your original drawing."}},{"@type":"Question","name":"Is anything uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The Fourier transform and the animation run entirely in your browser with plain JavaScript and Canvas. Your drawing never leaves your device."}},{"@type":"Question","name":"Can it draw my name?","acceptedAnswer":{"@type":"Answer","text":"Yes. Type text and the tool traces the outline of the letters into a path, then rebuilds that path from spinning circles."}},{"@type":"Question","name":"What do more circles do?","acceptedAnswer":{"@type":"Answer","text":"More circles means more Fourier terms, so the reconstruction matches your drawing more precisely. Fewer circles gives a smoother, rounder approximation, which is fun to watch."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .stage{position:relative;background:
-    linear-gradient(rgba(var(--accentRGB),.05) 1px,transparent 1px) 0 0/26px 26px,
-    linear-gradient(90deg,rgba(var(--accentRGB),.05) 1px,transparent 1px) 0 0/26px 26px,
-    radial-gradient(120% 90% at 50% 0%,rgba(var(--accentRGB),.06),transparent 60%),#060d0b;
-    touch-action:none;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the circles draw on cream graph paper sunk into the patch; the trace takes the felt dyes */
+  .stage{position:relative;border-radius:22px;overflow:hidden;touch-action:none;
+    background:linear-gradient(rgba(45,36,64,.07) 1px,transparent 1px) 0 0/26px 26px,linear-gradient(90deg,rgba(45,36,64,.07) 1px,transparent 1px) 0 0/26px 26px,linear-gradient(rgba(255,251,244,.72) 0 0),url(kit/felt-texture.webp),var(--cream);
+    box-shadow:var(--sunk),0 3px 0 #e6d2b5;outline:2px dashed var(--line-2);outline-offset:-9px;}
   canvas{display:block;width:100%;height:auto;cursor:crosshair;}
   .hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;text-align:center;}
-  .hint span{font-family:var(--mono);font-size:13px;color:var(--muted);background:rgba(6,13,11,.6);border:1px solid var(--line);padding:8px 14px;border-radius:100px;}
-  .toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:16px 18px;border-top:1px solid var(--line);align-items:center;}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  .textrow{display:flex;gap:8px;align-items:center;flex:1;min-width:220px;}
-  .textrow input[type=text]{flex:1;min-width:120px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:9px 12px;font-family:var(--body);font-size:14px;}
-  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:4px 18px 18px;align-items:center;}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .hint span{font:600 14px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--white);padding:11px 16px;border-radius:999px;rotate:-1.5deg;box-shadow:var(--shadow-btn);outline:1.5px dashed rgba(45,36,64,.22);outline-offset:-4px;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:12px;padding:24px 6px 0;align-items:center;}
+  .textrow{display:flex;gap:10px;align-items:center;flex:1;min-width:220px;}
+  .textrow input[type=text]{flex:1;min-width:120px;}
+  .controls{display:flex;flex-wrap:wrap;gap:18px 28px;padding:22px 6px 0;align-items:center;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl > label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
   .ctl .row{display:flex;align-items:center;gap:10px;}
-  input[type=range]{accent-color:var(--accent);width:150px;}
-  .val{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:42px;}
-  .chk{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;}
-  .chk input{accent-color:var(--accent);width:16px;height:16px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 17px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .ctl input[type=range]{width:150px;}
+  .val{font:600 13px var(--mono);letter-spacing:0;text-transform:none;color:var(--coral-dk);min-width:42px;}
+  .chk{display:flex;align-items:center;gap:8px;font:600 14px/1 var(--display);color:var(--ink);cursor:pointer;}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:10px 17px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .btn-out.rec{border-color:#ff5b6e;color:#ff8b97;}
-  .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:0 18px 18px;}
-  .swatches{display:flex;gap:8px;}
-  .sw{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;}
-  .sw.on{border-color:var(--ink);}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-out.rec{color:var(--coral-dk);}
+  .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:24px 6px 0;}
+  .swatches{display:flex;gap:9px;}
+  .sw{width:26px;height:26px;border-radius:50%;cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 2px 0 rgba(84,46,30,.25);transition:transform .45s var(--spring-pop);}
+  .sw:hover{transform:scale(1.12);}
+  .sw.on{outline:2.5px solid var(--ink);outline-offset:3px;}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Fourier Epicycle Machine","url":"https://hammyasf.github.io/epicycle.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Draw a shape or type text and a real Discrete Fourier Transform turns it into a chain of rotating circles (epicycles) that retrace the path, all in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does drawing with circles actually work?","acceptedAnswer":{"@type":"Answer","text":"Your path is treated as a list of complex numbers and run through a Discrete Fourier Transform. Each frequency becomes a rotating vector with its own size, speed, and starting angle. Stacked tip to tail, those vectors trace your original drawing."}},{"@type":"Question","name":"Is anything uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The Fourier transform and the animation run entirely in your browser with plain JavaScript and Canvas. Your drawing never leaves your device."}},{"@type":"Question","name":"Can it draw my name?","acceptedAnswer":{"@type":"Answer","text":"Yes. Type text and the tool traces the outline of the letters into a path, then rebuilds that path from spinning circles."}},{"@type":"Question","name":"What do more circles do?","acceptedAnswer":{"@type":"Answer","text":"More circles means more Fourier terms, so the reconstruction matches your drawing more precisely. Fewer circles gives a smoother, rounder approximation, which is fun to watch."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="sim">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-epicycle">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Fourier Epicycle Machine</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-sim"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>Fourier Epicycle Machine</h1>
     <p class="sub">Draw any shape or type your name, and a chain of spinning circles will retrace it. It is a real Fourier transform turning your path into rotating vectors, computed live on your device.</p>
-    <span class="priv">&#128274; 100% private — your drawing never leaves your browser</span>
+    <p class="priv">&#128274; 100% private — your drawing never leaves your browser</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="stage" id="stage">
       <canvas id="cv" width="1700" height="1100" aria-label="Epicycle canvas"></canvas>
@@ -154,8 +134,8 @@
       <button class="btn btn-out rec" id="rec">● Record video</button>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How does this run in my browser?</h2>
     <p>When you draw, the tool collects the points of your stroke and treats each one as a complex number, the x going on the real axis and the y on the imaginary axis. It then runs a Discrete Fourier Transform over that list. The transform breaks your path into a sum of pure rotations: each one is a circle of a certain size, spinning at a certain whole-number speed, starting at a certain angle. Add those rotating arrows tip to tail and the very last tip traces your original drawing. No server, no library, no upload. The math is a few dozen lines of JavaScript and the animation is plain Canvas.</p>
     <h2>Why it looks like magic</h2>
@@ -163,26 +143,19 @@
     <h2>Things to try</h2>
     <p>Draw your signature in one continuous stroke and record the rebuild as a video to share. Type a short word and watch the circles hop between letters. Pull the circle count down to 3 or 4 to see the simplest possible approximation of a complex shape. Turn on the target overlay to see how closely the epicycles hug your original path as you add more terms.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>How does drawing with circles work?</summary><p>Your path becomes a list of complex numbers and is run through a Discrete Fourier Transform. Each frequency comes out as a rotating vector with its own radius, speed, and phase. Chained tip to tail, those vectors retrace your drawing.</p></details>
     <details><summary>Is my drawing uploaded anywhere?</summary><p>No. The transform and the animation run locally in your browser using JavaScript and Canvas. Nothing is sent to a server.</p></details>
     <details><summary>Can it draw my name?</summary><p>Yes. Switch to Type text, enter a short word, and it traces the outline of the letters into a path before rebuilding it from circles.</p></details>
     <details><summary>What does the Circles slider change?</summary><p>It sets how many Fourier terms are used. More circles means a more exact match to your drawing; fewer circles gives a smoother, rounder approximation.</p></details>
     <details><summary>Does it work on a phone?</summary><p>Yes, you can draw with your finger. Recording video depends on your browser, and is available in most desktop browsers.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 /* ===================== Pure Fourier core (also unit-tested in node) ===================== */
 (function(root){
@@ -246,9 +219,7 @@
 
 /* ===================== App (browser only) ===================== */
 if(typeof window!=="undefined") (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var tm=T[localStorage.getItem("siteTheme")]; if(tm){var r=document.documentElement.style; r.setProperty("--accent",tm[0]);r.setProperty("--accent-2",tm[1]);r.setProperty("--accentRGB",tm[2]);r.setProperty("--surfaceRGB",tm[3]);r.setProperty("--bg",tm[4]);r.setProperty("--bg-2",tm[5]);} }catch(e){}
+  
 
   var C = window.FourierCore;
   var cv=document.getElementById("cv"), ctx=cv.getContext("2d");
@@ -381,11 +352,11 @@ if(typeof window!=="undefined") (function(){
     ctx.clearRect(0,0,W,H);
     // subtle vignette handled by CSS background
     if(!terms.length){ return; }
-    var col = traceColor || getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#2be3b0";
+    var col = traceColor || getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#b9442f";
 
     // target overlay
     if(showPath){
-      ctx.strokeStyle="rgba(237,242,239,.18)"; ctx.lineWidth=2; ctx.beginPath();
+      ctx.strokeStyle="rgba(45,36,64,.22)"; ctx.lineWidth=2; ctx.beginPath();
       target.forEach(function(p,i){ i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); }); ctx.closePath(); ctx.stroke();
     }
 
@@ -397,9 +368,9 @@ if(typeof window!=="undefined") (function(){
         var ang=terms[i].phase + 2*Math.PI*terms[i].freq*t;
         var nx=x+terms[i].amp*Math.cos(ang), ny=y+terms[i].amp*Math.sin(ang);
         if(terms[i].amp>0.7){
-          ctx.strokeStyle="rgba(237,242,239,.12)";
+          ctx.strokeStyle="rgba(45,36,64,.14)";
           ctx.beginPath(); ctx.arc(x,y,terms[i].amp,0,2*Math.PI); ctx.stroke();
-          ctx.strokeStyle="rgba(237,242,239,.35)";
+          ctx.strokeStyle="rgba(45,36,64,.42)";
           ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(nx,ny); ctx.stroke();
         }
         x=nx; y=ny;
@@ -481,10 +452,10 @@ if(typeof window!=="undefined") (function(){
     terms.length=0; trail.length=0; ctx.clearRect(0,0,W,H); hint.querySelector("span").textContent="Draw a shape in one stroke"; hint.style.display="flex"; });
 
   // color swatches
-  var COLORS=["__accent__","#ff6a3d","#3da5ff","#b07cff","#ffd23d","#ff5b8a"];
+  var COLORS=["__accent__","#c2571f","#3d6da3","#7b4fb0","#946500","#a8325f"];
   var swWrap=document.getElementById("sw");
   COLORS.forEach(function(c,i){ var d=document.createElement("div"); d.className="sw"+(i===0?" on":"");
-    var real = c==="__accent__" ? (getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#2be3b0") : c;
+    var real = c==="__accent__" ? (getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#b9442f") : c;
     d.style.background=real; d.title=i===0?"theme":real;
     d.addEventListener("click",function(){ swWrap.querySelectorAll(".sw").forEach(function(x){x.classList.remove("on");}); d.classList.add("on");
       traceColor = c==="__accent__" ? null : c; });
@@ -493,7 +464,7 @@ if(typeof window!=="undefined") (function(){
   // export PNG (composite background so it isn't transparent)
   document.getElementById("png").addEventListener("click",function(){
     var ec=document.createElement("canvas"); ec.width=W; ec.height=H; var e=ec.getContext("2d");
-    e.fillStyle="#060d0b"; e.fillRect(0,0,W,H); e.drawImage(cv,0,0);
+    e.fillStyle="#fff7ea"; e.fillRect(0,0,W,H); e.drawImage(cv,0,0);
     var a=document.createElement("a"); a.href=ec.toDataURL("image/png"); a.download="epicycle.png"; a.click();
   });
   // export the reconstructed path as an SVG polyline
@@ -501,7 +472,7 @@ if(typeof window!=="undefined") (function(){
     if(!terms.length) return; var pts=[]; var k=Math.min(count,terms.length);
     for(var i=0;i<=600;i++){ var p=C.reconstruct(terms,i/600,k); pts.push(p.x.toFixed(1)+","+p.y.toFixed(1)); }
     var col=traceColor||getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
-    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'"><rect width="'+W+'" height="'+H+'" fill="#060d0b"/><polyline points="'+pts.join(" ")+'" fill="none" stroke="'+col+'" stroke-width="3" stroke-linejoin="round"/></svg>';
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'"><rect width="'+W+'" height="'+H+'" fill="#fff7ea"/><polyline points="'+pts.join(" ")+'" fill="none" stroke="'+col+'" stroke-width="3" stroke-linejoin="round"/></svg>';
     var a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([svg],{type:"image/svg+xml"})); a.download="epicycle.svg"; a.click();
   });
   // record video (webm) if supported
@@ -530,11 +501,5 @@ if(typeof window!=="undefined") (function(){
   requestAnimationFrame(frame);
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
-<!-- AdSense slot (left for later):
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXataXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
--->
-<!-- Polar.sh "buy me a coffee" slot (left for later) -->
 </body>
 </html>

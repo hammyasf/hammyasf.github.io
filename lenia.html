@@ -8,7 +8,7 @@
 <meta name="keywords" content="lenia, continuous cellular automata, artificial life, orbium, smoothlife, game of life, generative art, webgl, gpu simulation, emergent life, cellular automata online, lenia simulator" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Lenia — Artificial Life in your browser" />
 <meta property="og:description" content="A real continuous cellular automaton on your GPU. Watch the Orbium glider swim, grow life from noise, or paint your own. 100% in-browser." />
 <meta property="og:type" content="website" />
@@ -19,83 +19,68 @@
 <meta name="twitter:description" content="A real continuous cellular automaton on your GPU. Watch the Orbium glider swim, grow life from noise, or paint your own." />
 <link rel="canonical" href="https://hammyasf.github.io/lenia.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* Lenia's palettes are shader constants, so the world stays a dark petri dish: an ink felt window sewn into the patch, the controls stitched on below */
+  .stage{margin:0;}
+  .canvas-wrap{position:relative;width:100%;aspect-ratio:16/10;border-radius:22px;overflow:hidden;background:url(kit/felt-texture.webp),var(--ink);box-shadow:0 4px 0 #1b1527,0 16px 30px rgba(45,36,64,.3);}
+  .canvas-wrap::after{content:"";position:absolute;inset:9px;border:2px dashed rgba(246,234,214,.28);border-radius:15px;pointer-events:none;}
+  #gl{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none;}
+  #hud{position:absolute;left:18px;top:18px;z-index:2;font-family:var(--mono);font-size:11.5px;color:var(--ink);background:url(kit/felt-texture.webp),rgba(255,247,234,.94);border-radius:12px;padding:8px 12px;line-height:1.5;rotate:-1deg;box-shadow:0 3px 0 #b9a58a,0 6px 14px rgba(27,21,39,.3);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;pointer-events:none;}
+  #hud:empty{display:none;}
+  #hud b{color:var(--coral-dk);font-weight:600;}
+  #fail{position:absolute;inset:0;z-index:3;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--cream);background:url(kit/felt-texture.webp),radial-gradient(120% 100% at 50% 30%,#4a3d66,var(--ink));}
+  #fail h3{font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:8px;color:var(--cream);}
+  #fail p{color:rgba(255,247,234,.82);font-size:15px;max-width:440px;}
+  .controls{display:flex;flex-wrap:wrap;gap:18px 26px;padding:24px 6px 0;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:7px;font-size:14px;padding:10px 17px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .chip{font:600 13.5px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--white);border:0;border-radius:999px;padding:10px 14px;cursor:pointer;box-shadow:var(--shadow-btn);outline:1.5px dashed rgba(45,36,64,.2);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .2s,color .2s;}
+  .chip:hover{transform:translateY(-2px) rotate(-2deg);}
+  .chip.on{background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);box-shadow:0 3px 0 #96331f,0 6px 12px rgba(185,68,47,.25);outline-color:rgba(255,247,234,.55);}
+  .chip:focus-visible{outline:3px solid var(--green);outline-offset:2px;}
+  .ctl input[type=range]{width:150px;}
+  .val{font:600 13px var(--mono);letter-spacing:0;text-transform:none;color:var(--coral-dk);min-width:44px;display:inline-block;}
+  .hint{font-size:14px;line-height:1.6;color:var(--mute);padding:20px 6px 0;max-width:86ch;}
+  @media(max-width:560px){.canvas-wrap{aspect-ratio:1/1;}.ctl input[type=range]{width:120px;}#hud{top:14px;left:14px;max-width:calc(100% - 28px);font-size:11px;padding:6px 10px;rotate:0deg;}}
+</style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Lenia — Continuous Cellular Automata","url":"https://hammyasf.github.io/lenia.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebGL2)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"An interactive Lenia continuous cellular automaton running on the GPU with WebGL2. Watch the Orbium glider swim, grow emergent life from noise, and paint your own patterns, entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Lenia?","acceptedAnswer":{"@type":"Answer","text":"Lenia is a continuous generalization of Conway's Game of Life, invented by Bert Chan. Instead of cells that are simply on or off, every cell holds a continuous value between 0 and 1, and time and space are smoothed out too. From these rules, stable, moving, life-like creatures called solitons emerge — the most famous is the Orbium, a glider that swims across the grid."}},{"@type":"Question","name":"Does this run on a server?","acceptedAnswer":{"@type":"Answer","text":"No. The entire simulation runs on your own GPU using WebGL2. Each cell's update — a convolution with the Lenia kernel followed by the growth mapping — is computed in a fragment shader every frame. Nothing is uploaded and it works offline."}},{"@type":"Question","name":"Why does the Orbium keep its shape while moving?","acceptedAnswer":{"@type":"Answer","text":"The Orbium is a soliton: a self-stabilizing attractor of the Lenia rule. Its exact shape and the parameters (kernel radius 13, growth centre 0.15, width 0.015) are tuned so that as it grows on its leading edge and decays on its trailing edge, it reproduces itself one step over — so it appears to swim while staying intact."}},{"@type":"Question","name":"My browser says it is not supported. Why?","acceptedAnswer":{"@type":"Answer","text":"Lenia needs WebGL2 with floating-point render targets (the EXT_color_buffer_float extension). That is available in current Chrome, Edge, Firefox, and Safari on most desktops and many phones. If your device or browser lacks it, the simulation cannot run and a message is shown instead."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .stage{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .canvas-wrap{position:relative;width:100%;aspect-ratio:16/10;background:#04070a;}
-  #gl{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;touch-action:none;}
-  #hud{position:absolute;left:14px;top:12px;font-family:var(--mono);font-size:11.5px;color:var(--muted);background:rgba(4,7,10,.5);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:10px;padding:7px 11px;pointer-events:none;line-height:1.5;}
-  #hud b{color:var(--accent);font-weight:500;}
-  #fail{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;background:rgba(4,7,10,.9);}
-  #fail h3{font-family:var(--display);font-size:22px;margin-bottom:8px;}
-  #fail p{color:var(--muted);font-size:14.5px;max-width:440px;}
-  .controls{display:flex;flex-wrap:wrap;gap:14px 22px;padding:16px 20px;align-items:flex-end;border-top:1px solid var(--line);}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
-  .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;}
-  .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 15px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s,opacity .2s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
-  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);background:transparent;border:1px solid var(--line-2);border-radius:9px;padding:8px 12px;cursor:pointer;transition:.15s;}
-  .chip:hover{border-color:var(--accent);color:var(--ink);}
-  .chip.on{background:var(--accent);color:#07100e;border-color:var(--accent);font-weight:600;}
-  input[type=range]{accent-color:var(--accent);width:150px;}
-  .val{font-family:var(--mono);font-size:12.5px;color:var(--accent);min-width:44px;display:inline-block;}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 13px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  .hint{font-family:var(--mono);font-size:11.5px;color:var(--faint);padding:0 20px 16px;}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  section.copy code{font-family:var(--mono);font-size:.92em;background:rgba(var(--accentRGB),.1);padding:1px 6px;border-radius:5px;color:var(--accent);}
-  .faq{border-top:1px solid var(--line);margin-top:14px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){.canvas-wrap{aspect-ratio:1/1;}input[type=range]{width:120px;}}
-</style>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Artificial life · runs on your GPU</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="sim">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-lenia">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Lenia</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-sim"/></svg></span>
+    <span class="tag chip">Artificial life · runs on your GPU</span>
     <h1>Lenia</h1>
     <p class="sub">A real continuous cellular automaton, computed live on your graphics card. Watch the <em>Orbium</em> glider swim, grow a primordial soup that self-organizes into life, or paint your own — the whole simulation runs in your browser, nothing uploaded.</p>
-    <span class="priv">&#9889; 100% in your browser — no server, no upload</span>
+    <p class="priv">&#9889; 100% in your browser — no server, no upload</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="stage">
     <div class="canvas-wrap">
       <canvas id="gl"></canvas>
@@ -151,8 +136,8 @@
     </div>
     <div class="hint">Drag on the canvas to paint life (or erase). The grid wraps around like a torus, so creatures that leave one edge return on the other. The math is real Lenia — a convolution with the kernel, then a Gaussian growth mapping, once per cell per step, all on your GPU.</div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>What am I looking at?</h2>
     <p>This is <strong>Lenia</strong>, a continuous cellular automaton invented by Bert Chan. Conway&rsquo;s Game of Life has cells that are either alive or dead and time that ticks in whole steps. Lenia smooths all of that out: every cell holds a real value between 0 and 1, the neighbourhood is a wide fuzzy ring instead of eight square cells, and each step nudges the grid by a small fraction. From those smooth rules, something remarkable happens — stable, self-repairing, <em>moving</em> creatures appear. They are called solitons, and they behave uncannily like microscopic organisms.</p>
     <p>The headline creature is the <em>Orbium</em>: a little crescent that swims steadily across the grid, holding its exact shape as it goes. It is the continuous cousin of the Game of Life glider. Load it and watch it wrap around the edges forever. Then switch to a primordial soup and watch structure condense out of pure noise, or grab the brush and drop your own blob of life to see what it becomes.</p>
@@ -163,31 +148,22 @@
 
     <h2>Things to try</h2>
     <p>Load the <em>Orbium glider</em> and let it swim, then gently paint a wall in its path and watch it deform and recover. Switch to <em>Primordial soup</em> and nudge <code>μ</code> and <code>σ</code> a hair — the entire character of the world changes, from isolated blobs to writhing rotors to branching coral. Drop the growth width <code>σ</code> very low with <code>μ</code> near 0.15 and life becomes fragile and picky; widen it and the grid fills with churn. Paint two blobs next to each other and see whether they merge, orbit, or annihilate. When something beautiful happens, hit <em>Save PNG</em> or <em>Record</em>.</p>
-
-    <div class="faq">
-      <details open><summary>Is this really the same math as the research Lenia?</summary><p>Yes. The kernel is the unimodal smooth-bump core, the growth is the Gaussian mapping, and the Orbium uses its published parameters — kernel radius 13, μ = 0.15, σ = 0.015 — and its exact seed. I verified the seed reproduces a stable, translating soliton before shipping.</p></details>
+  </section>
+  <section class="tool-faq">
+    <details open><summary>Is this really the same math as the research Lenia?</summary><p>Yes. The kernel is the unimodal smooth-bump core, the growth is the Gaussian mapping, and the Orbium uses its published parameters — kernel radius 13, μ = 0.15, σ = 0.015 — and its exact seed. I verified the seed reproduces a stable, translating soliton before shipping.</p></details>
       <details><summary>Does anything leave my device?</summary><p>No. The simulation runs entirely on your GPU in the browser. There is no server, no upload, and no sign-up. It works offline.</p></details>
       <details><summary>Why does the soup sometimes fade away?</summary><p>Life in Lenia only survives in certain bands of μ and σ. If you push the sliders into a hostile regime the pattern can die out or, at the other extreme, flood the grid. The presets sit in known living regimes; hit Reseed to start fresh.</p></details>
       <details><summary>Who invented Lenia?</summary><p>Lenia was created and named by Bert Wang-Chak Chan, building on Conway&rsquo;s Game of Life and SmoothLife. The Orbium and the other creatures come from his search through this continuous world.</p></details>
-    </div>
   </section>
-
-  <div class="cta">
+  <aside class="tool-cta patch">
     <h3>I build something like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 })();
 
 (function(){
@@ -530,7 +506,5 @@
   window.__leniaBoot=true;
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

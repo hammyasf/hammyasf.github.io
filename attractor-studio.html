@@ -8,7 +8,7 @@
 <meta name="keywords" content="strange attractor generator, de jong attractor, clifford attractor, generative art maker, attractor visualizer, math art generator, webgl generative art, fractal flame, gpu particles, wallpaper generator" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Strange Attractor Studio — generative art from math" />
 <meta property="og:description" content="A million points iterate on your GPU in real time to draw strange-attractor art. Tweak the equations, pick a palette, export 4K. Runs entirely in your browser." />
 <meta property="og:type" content="website" />
@@ -19,87 +19,75 @@
 <meta name="twitter:description" content="A million points iterate on your GPU in real time. Strange-attractor art, exported to 4K. All in your browser." />
 <link rel="canonical" href="https://hammyasf.github.io/attractor-studio.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the attractor glows out of darkness and its palettes are number ramps, so the canvas is a dark stitched window; the knobs sit in a felt pocket beside it */
+  .studio{margin:0;display:grid;grid-template-columns:1fr 320px;gap:20px;}
+  @media(max-width:880px){.studio{grid-template-columns:1fr;}}
+  .studio > *{min-width:0;}
+  .stage{border-radius:22px;background:url(kit/felt-texture.webp),var(--ink);overflow:hidden;position:relative;aspect-ratio:1/1;box-shadow:0 4px 0 #1b1527,0 16px 30px rgba(45,36,64,.3);}
+  .stage::after{content:"";position:absolute;inset:9px;border:2px dashed rgba(246,234,214,.28);border-radius:15px;pointer-events:none;}
+  .stage canvas{display:block;width:100%;height:100%;}
+  .stageMsg{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;font:600 15px/1.5 var(--display);color:var(--cream);background:rgba(45,36,64,.78);}
+  .stageMsg.hidden{display:none;}
+  .badge{position:absolute;left:18px;bottom:18px;z-index:2;font-family:var(--mono);font-size:11.5px;color:var(--ink);background:url(kit/felt-texture.webp),rgba(255,247,234,.94);padding:7px 12px;border-radius:12px;rotate:1deg;box-shadow:0 3px 0 #b9a58a,0 6px 14px rgba(27,21,39,.3);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;}
+  .panel{padding:22px 20px;display:flex;flex-direction:column;gap:18px;align-self:start;rotate:.3deg;}
+  .grp{display:flex;flex-direction:column;gap:10px;}
+  .grp > label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .seg{flex-wrap:wrap;}
+  .seg button{flex:1 1 auto;white-space:nowrap;}
+  .slider{display:flex;flex-direction:column;gap:6px;}
+  .slider .row{display:flex;justify-content:space-between;align-items:center;}
+  .slider .nm{font:600 13.5px/1.2 var(--display);color:var(--mute);}
+  .slider .vl{font:600 12.5px var(--mono);color:var(--coral-dk);}
+  .slider input[type=range]{width:100%;}
+  .pals{display:flex;flex-wrap:wrap;gap:9px;}
+  .pal{width:34px;height:26px;border-radius:999px;cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 2px 0 rgba(84,46,30,.25);transition:transform .45s var(--spring-pop);}
+  .pal:hover{transform:scale(1.08) rotate(-3deg);}
+  .pal.on{outline:2.5px solid var(--ink);outline-offset:3px;}
+  .btns{display:flex;flex-wrap:wrap;gap:9px;}
+  .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:14px;padding:11px 16px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;flex:1 1 auto;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .hintline{font-size:13px;color:var(--mute);text-align:center;}
+  .hintline b{display:inline-block;min-width:1.7em;font:600 12px/1 var(--mono);color:var(--ink);background:url(kit/felt-texture.webp),var(--white);border-radius:6px;padding:4px 6px;box-shadow:0 2px 0 #dcc4a0;}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);font:600 14px/1 var(--display);padding:12px 18px;border-radius:999px;box-shadow:0 3px 0 #96331f,0 10px 22px rgba(45,36,64,.25);opacity:0;pointer-events:none;transition:.25s;z-index:120;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Strange Attractor Studio","url":"https://hammyasf.github.io/attractor-studio.html","applicationCategory":"DesignApplication","operatingSystem":"Any (web browser with WebGL2)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Generate generative art from strange attractors. A million points iterate on the GPU in real time, accumulate into a density field, and tone-map into art. Export to 4K. Runs fully in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does this run in my browser without a server?","acceptedAnswer":{"@type":"Answer","text":"Everything runs on your GPU using WebGL2. A grid of about a million points is stored in a floating-point texture. Each frame a shader advances every point by one iteration of the attractor equation, then the points are splatted additively into a density buffer that is tone-mapped into the final image. No data is uploaded and there is no backend."}},{"@type":"Question","name":"What is a strange attractor?","acceptedAnswer":{"@type":"Answer","text":"A strange attractor is the shape that a chaotic dynamical system settles onto. You repeatedly apply a simple equation to a point, and although the path never repeats, the cloud of all the points it visits forms an intricate, self-similar pattern. Clifford, De Jong, Svensson and Fractal Dream are classic two-dimensional examples."}},{"@type":"Question","name":"Is my art private?","acceptedAnswer":{"@type":"Answer","text":"Yes. The whole tool is a single web page that runs locally on your device. Nothing is sent anywhere, and the images you export are generated on your machine."}},{"@type":"Question","name":"Can I use the images I export?","acceptedAnswer":{"@type":"Answer","text":"Yes. The output is generated by mathematics on your own device, so you are free to use the exported PNGs as wallpapers, backgrounds, prints, or anywhere else."}},{"@type":"Question","name":"What do I need to run it?","acceptedAnswer":{"@type":"Answer","text":"A modern browser with WebGL2 and floating-point render targets, which covers almost all desktops and most phones from the last few years. If your device is missing a required feature the page will tell you instead of breaking."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,50px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .studio{margin:22px 0;display:grid;grid-template-columns:1fr 320px;gap:18px;}
-  @media(max-width:880px){.studio{grid-template-columns:1fr;}}
-  .stage{border:1px solid var(--line);border-radius:20px;background:#04070a;overflow:hidden;position:relative;aspect-ratio:1/1;}
-  .stage canvas{display:block;width:100%;height:100%;}
-  .stageMsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;font-family:var(--mono);font-size:13.5px;color:var(--muted);background:rgba(4,7,10,.7);}
-  .stageMsg.hidden{display:none;}
-  .badge{position:absolute;left:12px;bottom:12px;font-family:var(--mono);font-size:11px;color:var(--accent);background:rgba(4,7,10,.55);border:1px solid rgba(var(--accentRGB),.3);padding:5px 10px;border-radius:8px;backdrop-filter:blur(6px);}
-  .panel{border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);padding:18px;display:flex;flex-direction:column;gap:16px;}
-  .grp{display:flex;flex-direction:column;gap:9px;}
-  .grp > label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .seg{display:flex;flex-wrap:wrap;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{flex:1 1 auto;background:transparent;color:var(--muted);border:none;padding:9px 8px;font-family:var(--mono);font-size:12px;cursor:pointer;transition:.15s;white-space:nowrap;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  .slider{display:flex;flex-direction:column;gap:5px;}
-  .slider .row{display:flex;justify-content:space-between;align-items:center;}
-  .slider .nm{font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .slider .vl{font-family:var(--mono);font-size:12px;color:var(--accent);}
-  input[type=range]{accent-color:var(--accent);width:100%;}
-  .pals{display:flex;flex-wrap:wrap;gap:8px;}
-  .pal{width:30px;height:24px;border-radius:7px;border:2px solid transparent;cursor:pointer;}
-  .pal.on{border-color:var(--ink);}
-  .btns{display:flex;flex-wrap:wrap;gap:9px;}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:10px 15px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;flex:1 1 auto;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  select{background:rgba(var(--surfaceRGB),.7);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:9px 10px;font-family:var(--mono);font-size:12.5px;width:100%;}
-  .hintline{font-family:var(--mono);font-size:11px;color:var(--faint);text-align:center;}
-  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#07100e;font-family:var(--mono);font-size:13px;font-weight:600;padding:11px 18px;border-radius:100px;opacity:0;pointer-events:none;transition:.25s;z-index:120;}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-</style>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs on your GPU</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="sim">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-attractor-studio">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Strange Attractor Studio</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-sim"/></svg></span>
+    <span class="tag chip">Free tool · runs on your GPU</span>
     <h1>Strange Attractor Studio</h1>
     <p class="sub">Turn a few numbers into generative art. A million points iterate on your GPU in real time, building intricate strange-attractor patterns. Tweak the equation, pick a palette, export a wallpaper.</p>
-    <span class="priv">&#9889; A million GPU points · nothing uploaded · made on your device</span>
+    <p class="priv">&#9889; A million GPU points · nothing uploaded · made on your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="studio">
     <div class="stage">
       <canvas id="cv" width="900" height="900"></canvas>
@@ -141,8 +129,8 @@
       <div class="hintline">keys: <b>r</b> surprise · <b>s</b> save</div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How does this run in your browser?</h2>
     <p>There is no server doing the work. The whole thing is a single web page that hands the heavy lifting to your graphics card through WebGL2. About a million points are stored in a floating-point texture. Every animation frame, a tiny shader reads each point and advances it by one step of the attractor equation, writing the new positions back. Those points are then drawn additively into a separate buffer, so brighter areas mean more points landed there. A final pass tone-maps that density field, runs it through a colour palette, and you see art forming and sharpening in real time.</p>
     <p>This is the same idea behind fractal-flame renderers, but it happens live at sixty frames a second because the GPU updates and draws all million points in parallel. It also means your work never leaves the machine, there is no upload, and the equations you explore are yours alone.</p>
@@ -151,34 +139,22 @@
     <h2>Tips for finding good ones</h2>
     <p>Hit Surprise me until something catches your eye, then nudge the a, b, c and d sliders slowly. Small changes can swing a pattern from a tangled knot to a clean ribbon. Pull the exposure down for fine, wiry detail or up for a soft glow, and zoom in when a piece has interesting structure near the centre. When you find a keeper, Copy link saves the exact settings in the URL so you can share it or come back to it, and Save PNG renders a clean high-resolution version, up to 4K, for a wallpaper or print.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is anything uploaded?</summary><p>No. Every calculation happens locally on your GPU, and the PNGs you export are produced on your device. The page works the same with your network disconnected after it loads.</p></details>
     <details><summary>Why is it blank or slow?</summary><p>The tool needs WebGL2 with floating-point render targets. That covers almost every desktop and most recent phones, but some older or locked-down devices disable it. If a required feature is missing the page shows a message instead of a black screen.</p></details>
     <details><summary>Can I use the images commercially?</summary><p>Yes. They are generated by mathematics on your own machine, so the exported images are yours to use as wallpapers, prints, album art, or anything else.</p></details>
     <details><summary>What are the equations?</summary><p>Clifford: x' = sin(a·y) + c·cos(a·x), y' = sin(b·x) + d·cos(b·y). De Jong: x' = sin(a·y) − cos(b·x), y' = sin(c·x) − cos(d·y). Svensson and Fractal Dream follow the same spirit with their own mix of sines and cosines.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build something like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. Browse the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. Browse the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <div class="toast" id="toast"></div>
-
-<!-- AdSense / Polar.sh slot (left intentionally empty for later) -->
-
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   var canvas=document.getElementById("cv"), msg=document.getElementById("msg"), badge=document.getElementById("badge");
   function fail(text){ msg.innerHTML=text; msg.classList.remove("hidden"); badge.style.display="none"; }
@@ -458,7 +434,5 @@
   restart();
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

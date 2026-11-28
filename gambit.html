@@ -8,7 +8,7 @@
 <meta name="keywords" content="chess engine, watch chess engine think, chess engine visualizer, alpha beta pruning, minimax visualizer, play chess against computer, chess engine from scratch, perft, chess AI, how do chess engines work, javascript chess engine" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Gambit — Watch a Chess Engine Think" />
 <meta property="og:description" content="Play a chess engine and watch every move it considers, scored live. Built from scratch, runs entirely in your browser." />
 <meta property="og:type" content="website" />
@@ -19,133 +19,130 @@
 <meta name="twitter:description" content="Play a chess engine and watch every move it considers, scored live. No server, no install." />
 <link rel="canonical" href="https://hammyasf.github.io/gambit.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Gambit — Watch a Chess Engine Think","url":"https://hammyasf.github.io/gambit.html","applicationCategory":"GameApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A chess engine written from scratch that shows you its search as it happens: every move considered, each one scored, and the line it expects to follow. Runs entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this a real chess engine or a scripted animation?","acceptedAnswer":{"@type":"Answer","text":"It is a real engine. Move generation, alpha-beta search, quiescence search and the evaluation function are all written from scratch in plain JavaScript with no chess library. The numbers moving on screen are the actual scores the search is returning as it runs."}},{"@type":"Question","name":"How do you know the move generator is correct?","acceptedAnswer":{"@type":"Answer","text":"By perft. Perft counts every legal position reachable to a given depth, and chess programmers publish exact reference counts for standard test positions. This engine matches all of them, including Kiwipete to depth 4 (4,085,603 positions). You can run the same test yourself on this page and compare against the published numbers."}},{"@type":"Question","name":"Does anything get uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. There is no server and no account. The engine runs in a Web Worker on your own machine, so the page keeps working with your network disconnected."}},{"@type":"Question","name":"What does the evaluation number mean?","acceptedAnswer":{"@type":"Answer","text":"It is measured in pawns, from White's point of view. Plus 1.0 means White is roughly a pawn ahead. A score like M3 means a forced checkmate in three moves. The engine reaches these numbers by playing out the position and assuming both sides pick their best reply."}},{"@type":"Question","name":"Why does the engine change its mind as it thinks?","acceptedAnswer":{"@type":"Answer","text":"It searches one depth at a time, a technique called iterative deepening. A move that looks strong two moves ahead can collapse when the engine sees four moves ahead, so the ranking reshuffles as the depth climbs. Watching that reshuffle is the point of this page."}},{"@type":"Question","name":"How strong is it?","acceptedAnswer":{"@type":"Answer","text":"Roughly club strength at the higher settings. It will punish hanging pieces and find short tactics, but it has no opening book and no endgame tablebases, so it is not trying to compete with Stockfish. It is built to be watched."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--warn:#ff9a3d;--light:#e8ded0;--dark:#4a6b62;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1180px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:36px 0 10px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.2vw,50px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
-  .app{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:22px;margin:26px 0 10px;align-items:start;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* a felt chess board: sand and sage squares with ink pieces; the eval bar is ink (Black) filling with cream (White).
+     The copy says the engine's good candidates are green and losing ones orange, so those bars are felt green and burnt orange */
+  :root{--warn:#c2571f;--light:#f3e3c8;--dark:#86ad7c;}
+  .app{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:22px;margin:0;align-items:start;}
   @media(max-width:960px){.app{grid-template-columns:1fr;}}
-  .panel{border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .phead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;border-bottom:1px solid var(--line);}
-  .phead h2{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.01em;}
-  .phead .hint{font-family:var(--mono);font-size:11px;color:var(--faint);}
-
+  .app .panel{border-radius:22px;overflow:hidden;}
+  .phead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 20px 13px;border-bottom:2px dashed var(--line);}
+  .phead h2{font-family:var(--display);font-weight:600;font-size:17px;}
+  .phead .hint{font:600 12.5px/1.3 var(--display);color:var(--mute);text-align:right;}
   /* board */
-  .boardwrap{display:flex;gap:14px;padding:18px;align-items:stretch;}
-  .evalbar{width:16px;border-radius:8px;overflow:hidden;background:var(--dark);position:relative;flex:none;border:1px solid var(--line);}
-  .evalfill{position:absolute;left:0;right:0;bottom:0;background:var(--light);transition:height .35s var(--ease);height:50%;}
+  .boardwrap{display:flex;gap:14px;padding:20px;align-items:stretch;}
+  .evalbar{width:18px;border-radius:999px;overflow:hidden;background:var(--ink);position:relative;flex:none;box-shadow:0 0 0 2px var(--ink),0 3px 0 2px #1b1527;}
+  .evalfill{position:absolute;left:0;right:0;bottom:0;background:url(kit/felt-texture.webp),var(--cream);transition:height .35s var(--ease);height:50%;}
   .boardbox{flex:1;min-width:0;}
-  .board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border-radius:12px;overflow:hidden;border:1px solid var(--line-2);touch-action:manipulation;}
+  .board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border-radius:14px;overflow:hidden;touch-action:manipulation;box-shadow:0 0 0 6px var(--sand),0 0 0 8px #dcc4a0,0 10px 22px rgba(84,46,30,.22);}
   .sq{position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;}
-  .sq.l{background:var(--light);}.sq.d{background:var(--dark);}
-  .sq .pc{font-size:min(7.2vw,44px);line-height:1;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35));}
-  .sq.sel::after{content:"";position:absolute;inset:0;background:rgba(var(--accentRGB),.42);}
-  .sq.mv::before{content:"";position:absolute;width:26%;height:26%;border-radius:50%;background:rgba(7,16,14,.34);}
-  .sq.cap::before{content:"";position:absolute;inset:6%;border-radius:50%;border:4px solid rgba(7,16,14,.34);width:auto;height:auto;background:none;}
-  .sq.last::after{content:"";position:absolute;inset:0;background:rgba(var(--accentRGB),.20);}
-  .sq.chk::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,90,80,.75),transparent 68%);}
-  .coord{position:absolute;font-family:var(--mono);font-size:9px;color:rgba(7,16,14,.5);}
-  .coord.f{bottom:2px;right:3px;}.coord.r{top:2px;left:3px;}
-
-  .status{padding:0 18px 16px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  .status b{color:var(--ink);font-weight:500;}
-  .status .think{color:var(--accent);}
-
-  .controls{display:flex;flex-wrap:wrap;gap:10px;padding:0 18px 18px;}
-  .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .sq.l{background:var(--light);}
+  .sq.d{background:var(--dark);}
+  .sq .pc{font-size:min(7.2vw,44px);line-height:1;color:var(--ink);pointer-events:none;filter:drop-shadow(0 2px 0 rgba(84,46,30,.25));}
+  .sq.sel::after{content:"";position:absolute;inset:0;background:rgba(242,193,78,.6);box-shadow:inset 0 0 0 3px var(--coral-dk);}
+  .sq.mv::before{content:"";position:absolute;width:26%;height:26%;border-radius:50%;background:rgba(45,36,64,.4);}
+  .sq.cap::before{content:"";position:absolute;inset:6%;border-radius:50%;border:4px solid rgba(45,36,64,.42);width:auto;height:auto;background:none;}
+  .sq.last::after{content:"";position:absolute;inset:0;background:rgba(242,193,78,.34);}
+  .sq.chk::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(201,74,54,.85),transparent 68%);}
+  .coord{position:absolute;font:600 11px/1 var(--mono);color:rgba(45,36,64,.72);}
+  .coord.f{bottom:2px;right:3px;}
+  .coord.r{top:2px;left:3px;}
+  .status{padding:0 20px 16px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font:600 14px/1.3 var(--display);color:var(--mute);}
+  .status b{font-family:var(--mono);color:var(--ink);font-weight:600;}
+  .status .think{color:var(--coral-dk);}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;padding:0 20px 20px;}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:7px;font-size:14px;padding:10px 17px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line-2);font-weight:500;}
-  .btn.ghost:hover{color:var(--ink);border-color:var(--accent);}
-
-  .ctlrow{display:flex;flex-wrap:wrap;gap:16px 22px;padding:14px 18px;border-top:1px solid var(--line);align-items:center;}
-  .ctl{display:flex;flex-direction:column;gap:5px;}
-  .ctl label{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:7px 13px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  select{background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line-2);color:var(--ink);border-radius:9px;padding:7px 10px;font-family:var(--mono);font-size:12.5px;}
-
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn.ghost{color:var(--ink);background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
+  .btn.ghost::before{content:none;}
+  .ctlrow{display:flex;flex-wrap:wrap;gap:16px 24px;padding:16px 20px 20px;border-top:2px dashed var(--line);align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl select{width:auto;min-width:190px;}
   /* search visualiser */
-  .search{padding:14px 18px 18px;}
-  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
-  .metric{border:1px solid var(--line);border-radius:12px;padding:9px 11px;background:rgba(var(--surfaceRGB),.5);}
-  .metric .k{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .metric .v{font-family:var(--display);font-weight:600;font-size:19px;margin-top:2px;}
-  .cands{display:flex;flex-direction:column;gap:5px;max-height:330px;overflow-y:auto;}
-  .cand{display:grid;grid-template-columns:52px 1fr 58px;gap:9px;align-items:center;font-family:var(--mono);font-size:12.5px;}
+  .search{padding:16px 20px 20px;}
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+  .metric{border-radius:14px;padding:10px 12px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
+  .metric:nth-child(2){rotate:.6deg;}
+  .metric:nth-child(odd){rotate:-.5deg;}
+  .metric .k{font:600 11px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .metric .v{font-family:var(--display);font-weight:600;font-size:20px;margin-top:2px;}
+  .cands{display:flex;flex-direction:column;gap:6px;max-height:330px;overflow-y:auto;}
+  .cand{display:grid;grid-template-columns:52px 1fr 58px;gap:9px;align-items:center;font:600 13px var(--mono);}
   .cand .mv{color:var(--ink);}
-  .cand .bar{height:8px;border-radius:5px;background:rgba(237,242,239,.09);overflow:hidden;position:relative;}
-  .cand .bar i{position:absolute;top:0;bottom:0;left:50%;background:var(--accent);transition:width .3s var(--ease),left .3s var(--ease);border-radius:5px;}
+  .cand .bar{height:10px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;position:relative;}
+  .cand .bar i{position:absolute;top:0;bottom:0;left:50%;background:var(--green);transition:width .3s var(--ease),left .3s var(--ease);border-radius:999px;}
   .cand .bar i.neg{background:var(--warn);}
-  .cand .sc{text-align:right;color:var(--muted);}
-  .cand.best .mv{color:var(--accent);font-weight:500;}
-  .cand.best .sc{color:var(--accent);}
-  .pv{margin-top:13px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:rgba(var(--surfaceRGB),.5);font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.7;}
-  .pv b{color:var(--accent);font-weight:500;}
-  .empty{font-family:var(--mono);font-size:12.5px;color:var(--faint);padding:18px 2px;line-height:1.7;}
-
-  .moves{padding:12px 18px 16px;max-height:180px;overflow-y:auto;font-family:var(--mono);font-size:12.5px;color:var(--muted);line-height:1.9;}
+  .cand .sc{text-align:right;color:var(--mute);}
+  .cand.best .mv{color:var(--green);font-weight:700;}
+  .cand.best .sc{color:var(--green);}
+  .pv{margin-top:14px;padding:11px 14px;border-radius:14px;background:url(kit/felt-texture.webp),var(--mint);outline:1.5px dashed rgba(63,122,85,.35);outline-offset:-5px;font-family:var(--mono);font-size:12.5px;color:var(--ink);line-height:1.7;}
+  .pv b{color:var(--green);font-weight:700;}
+  .empty{font-size:14px;color:var(--mute);padding:14px 2px;line-height:1.65;}
+  .moves{padding:14px 20px 18px;max-height:180px;overflow-y:auto;font:500 13px/1.9 var(--mono);color:var(--mute);}
   .moves span.n{color:var(--faint);margin-right:4px;}
   .moves span.m{color:var(--ink);margin-right:11px;}
-
   /* perft */
-  .perft{padding:14px 18px 18px;}
-  .ptable{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;margin-top:10px;}
-  .ptable th{text-align:left;color:var(--faint);font-weight:400;padding:6px 8px;border-bottom:1px solid var(--line);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;}
-  .ptable td{padding:6px 8px;border-bottom:1px solid rgba(237,242,239,.06);color:var(--muted);}
-  .ptable td.ok{color:var(--accent);}
-  .ptable td.bad{color:#ff6b60;}
+  .perft{padding:16px 20px 20px;}
+  .ptable{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;margin-top:12px;}
+  .ptable th{text-align:left;font:600 11px/1.2 var(--display);color:var(--faint);padding:6px 8px;border-bottom:2px dashed var(--line);letter-spacing:.06em;text-transform:uppercase;}
+  .ptable td{padding:7px 8px;border-bottom:1px solid var(--line);color:var(--mute);}
+  .ptable td.ok{color:var(--green);font-weight:700;}
+  .ptable td.bad{color:var(--coral-dk);font-weight:700;}
   .ptable td.num{text-align:right;color:var(--ink);}
-
-  .content{margin:44px 0 10px;}
-  .content h2{font-family:var(--display);font-weight:600;font-size:24px;margin:30px 0 10px;letter-spacing:-.01em;}
-  .content h3{font-family:var(--display);font-weight:600;font-size:17px;margin:20px 0 6px;}
-  .content p{color:#c4d1cc;margin-bottom:12px;max-width:760px;}
-  .content ul{color:#c4d1cc;margin:0 0 12px 20px;max-width:760px;}
+  /* content: the copy and the FAQ, sewn on as one paper patch (as framewise) */
+  .content.patch{--r:24px;padding:42px 56px 40px;background:linear-gradient(rgba(255,251,244,.8) 0 0),url(kit/felt-texture.webp),var(--cream);}
+  .content h2{font-family:var(--display);font-weight:700;font-size:clamp(22px,2.8vw,28px);margin:36px 0 12px;}
+  .content h2:first-child{margin-top:0;}
+  .content h3{font-family:var(--display);font-weight:600;font-size:18px;margin:22px 0 6px;}
+  .content p{color:var(--ink);margin-bottom:12px;font-size:17px;line-height:1.75;}
+  .content ul{color:var(--ink);margin:0 0 12px 20px;font-size:17px;line-height:1.7;}
   .content li{margin-bottom:6px;}
-  .content code{font-family:var(--mono);font-size:13px;background:rgba(var(--surfaceRGB),.8);border:1px solid var(--line);padding:1px 6px;border-radius:6px;color:var(--accent);}
-  .faq{border-top:1px solid var(--line);padding:16px 0;}
-  .faq h3{margin:0 0 6px;}
-  footer{border-top:1px solid var(--line);margin-top:50px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;}
-  .fail{display:none;padding:20px;margin:20px 0;border:1px solid var(--warn);border-radius:14px;background:rgba(255,154,61,.08);color:#ffd9b0;font-family:var(--mono);font-size:13px;}
+  .content code{font-family:var(--mono);font-size:14px;background:var(--white);padding:1px 6px;border-radius:6px;box-shadow:0 1px 0 #e2cdb0;color:var(--coral-dk);}
+  .content .faq{margin-top:12px;padding:16px 20px;border-radius:16px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
+  .content .faq:nth-of-type(odd){rotate:-.3deg;}
+  .content .faq:nth-of-type(even){rotate:.3deg;}
+  .content .faq h3{margin:0 0 6px;}
+  .content .faq p{margin:0;font-size:16px;}
+  .fail{display:none;padding:16px 20px;margin:0 0 20px;border-radius:16px;color:#7a4a00;font:600 15px/1.5 var(--display);background:url(kit/felt-texture.webp),#fbe7b5;outline:2px dashed rgba(122,74,0,.35);outline-offset:-6px;}
+  @media(max-width:640px){.content.patch{padding:30px 22px 26px;}.boardwrap{padding:16px 14px;gap:10px;}.phead{padding:13px 16px 11px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Gambit — Watch a Chess Engine Think","url":"https://hammyasf.github.io/gambit.html","applicationCategory":"GameApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A chess engine written from scratch that shows you its search as it happens: every move considered, each one scored, and the line it expects to follow. Runs entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this a real chess engine or a scripted animation?","acceptedAnswer":{"@type":"Answer","text":"It is a real engine. Move generation, alpha-beta search, quiescence search and the evaluation function are all written from scratch in plain JavaScript with no chess library. The numbers moving on screen are the actual scores the search is returning as it runs."}},{"@type":"Question","name":"How do you know the move generator is correct?","acceptedAnswer":{"@type":"Answer","text":"By perft. Perft counts every legal position reachable to a given depth, and chess programmers publish exact reference counts for standard test positions. This engine matches all of them, including Kiwipete to depth 4 (4,085,603 positions). You can run the same test yourself on this page and compare against the published numbers."}},{"@type":"Question","name":"Does anything get uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. There is no server and no account. The engine runs in a Web Worker on your own machine, so the page keeps working with your network disconnected."}},{"@type":"Question","name":"What does the evaluation number mean?","acceptedAnswer":{"@type":"Answer","text":"It is measured in pawns, from White's point of view. Plus 1.0 means White is roughly a pawn ahead. A score like M3 means a forced checkmate in three moves. The engine reaches these numbers by playing out the position and assuming both sides pick their best reply."}},{"@type":"Question","name":"Why does the engine change its mind as it thinks?","acceptedAnswer":{"@type":"Answer","text":"It searches one depth at a time, a technique called iterative deepening. A move that looks strong two moves ahead can collapse when the engine sees four moves ahead, so the ranking reshuffles as the depth climbs. Watching that reshuffle is the point of this page."}},{"@type":"Question","name":"How strong is it?","acceptedAnswer":{"@type":"Answer","text":"Roughly club strength at the higher settings. It will punish hanging pieces and find short tactics, but it has no opening book and no endgame tablebases, so it is not trying to compete with Stockfish. It is built to be watched."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="index.html">Portfolio</a><a href="blog.html">Writing</a><a href="lab.html">Lab</a></div>
-</nav>
-
-<div class="wrap">
-  <header class="hero">
-    <div class="tag">The Lab · Chess engine</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="sim">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-gambit">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Watch a chess engine think.</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-sim"/></svg></span>
+    <span class="tag chip">The Lab · Chess engine</span>
     <h1>Watch a chess engine think.</h1>
     <p class="sub">Most chess apps show you a move and hide the reasoning. This one opens it up: every move the engine is considering, what it scores each one, and the line it expects to follow — updating live while it searches. Written from scratch, no chess library, no server.</p>
-    <span class="priv">◆ Runs entirely on your device</span>
+    <p class="priv">◆ Runs entirely on your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div id="fail" class="fail"></div>
 
   <div class="app">
@@ -225,7 +222,7 @@
       <section class="panel" style="margin-top:18px;">
         <div class="phead"><h2>Prove the engine is correct</h2><span class="hint">perft</span></div>
         <div class="perft">
-          <p style="font-size:13.5px;color:#c4d1cc;margin-bottom:4px;">A chess move generator is either exactly right or quietly broken. <code>perft</code> settles it: count every legal position to a given depth and compare against the counts chess programmers have published for these exact positions. Run it here and check the numbers yourself.</p>
+          <p style="font-size:13.5px;color:#6c6380;margin-bottom:4px;">A chess move generator is either exactly right or quietly broken. <code>perft</code> settles it: count every legal position to a given depth and compare against the counts chess programmers have published for these exact positions. Run it here and check the numbers yourself.</p>
           <button class="btn" id="perftBtn" style="margin-top:10px;">Run perft test</button>
           <table class="ptable" id="ptable" style="display:none;">
             <thead><tr><th>Position</th><th>Depth</th><th style="text-align:right">Expected</th><th style="text-align:right">Counted</th><th></th></tr></thead>
@@ -834,8 +831,9 @@ self.onmessage = function (ev) {
   }
 };
   </script>
-
-  <section class="content">
+  </section>
+  <section class="tool-faq">
+    <section class="content patch">
     <h2>What you are actually looking at</h2>
     <p>When an engine plays a move, you normally see the move and nothing else. The interesting part — the hundreds of thousands of positions it rejected to get there — is thrown away. This page keeps it.</p>
     <p>The panel on the right lists the moves the engine is weighing at the root of its search. Each bar is that move's score: green means it favours the engine, orange means it loses ground. The list reorders itself as the search goes deeper, because a move that looks fine two moves ahead often falls apart four moves ahead. Underneath, the <b>principal variation</b> is the sequence the engine expects if both sides play the best moves it can find.</p>
@@ -871,14 +869,11 @@ self.onmessage = function (ev) {
     <div class="faq"><h3>What does the evaluation number mean?</h3><p>Pawns, from White's point of view. <code>+1.0</code> means White is about a pawn ahead. <code>M3</code> means a forced mate in three.</p></div>
     <div class="faq"><h3>Why does it change its mind while thinking?</h3><p>It searches one depth at a time. A move that looks strong shallowly can collapse deeper, so the ranking reshuffles as the depth climbs. Watching that happen is the point.</p></div>
 
-    <p style="margin-top:26px;">Built by <a href="index.html">Harman Kamboj</a>. More experiments in <a href="lab.html">the Lab</a>, or <a href="index.html#contact">get in touch</a>.</p>
+    <p style="margin-top:26px;">Built by <a href="index.html">Harman Kamboj</a>. More experiments in <a href="lab.html">the Lab</a>, or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
   </section>
-</div>
-
-<footer><div class="wrap"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Remote</span><a href="index.html">← Portfolio</a></div></footer>
-
-<!-- ==== AdSense / Polar.sh slot (intentionally empty for now) ==== -->
-
+  </section>
+</main>
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Senior Full-Stack Engineer · Remote</span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function () {
   'use strict';
@@ -1313,6 +1308,5 @@ self.onmessage = function (ev) {
   window.__gambitBoot = true;
 })();
 </script>
-<script src="enhance.js" defer></script>
 </body>
 </html>

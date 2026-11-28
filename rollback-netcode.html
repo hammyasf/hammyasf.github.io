@@ -8,7 +8,7 @@
 <meta name="keywords" content="rollback netcode, delay based netcode, GGPO, netcode explained, deterministic simulation, lockstep netcode, game networking, prediction and rollback, fighting game netcode" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Ghostframe — a rollback netcode playground" />
 <meta property="og:description" content="Two game clients, one fake internet you control. Watch rollback netcode predict, mispredict and re-simulate frames in real time." />
 <meta property="og:type" content="website" />
@@ -19,101 +19,91 @@
 <meta name="twitter:description" content="Dial in latency, jitter and packet loss and watch rollback netcode re-simulate frames live." />
 <link rel="canonical" href="https://hammyasf.github.io/rollback-netcode.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the match is played on a mint felt pitch. "You" are the green player (the copy says so), so on this page the accent is felt green;
+     the peer is burnt orange and a rollback is red (as the explainer says), the same three colours in the players, the packets, the timeline and its key */
+  :root{--accent:#3f7a55;--accentRGB:63,122,85;--warm:#c2571f;--bad:#b3263c;}
+  .screens{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:820px){.screens{grid-template-columns:1fr;}}
+  .screen{border-radius:18px;overflow:hidden;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
+  .screen:first-child{rotate:-.4deg;}
+  .screen:last-child{rotate:.4deg;}
+  .screen .hd{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:2px dashed var(--line);font-family:var(--mono);font-size:12px;color:var(--mute);}
+  .screen .hd b{font:600 14.5px/1.2 var(--display);color:var(--ink);}
+  .screen .hd .st{font:600 11.5px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;}
+  .screen canvas{display:block;width:100%;height:auto;background:var(--mint);}
+  .wire{margin-top:16px;border-radius:16px;background:rgba(255,255,255,.55);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-6px;padding:12px 16px 6px;}
+  .wire .lb{font:600 12px/1.3 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .wire canvas,.tl canvas{display:block;width:100%;height:auto;}
+  .tl{margin-top:14px;border-radius:16px;background:rgba(255,255,255,.55);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-6px;padding:12px 16px 8px;}
+  .tl .lb{font:600 12px/1.3 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  .tl .key{display:flex;flex-wrap:wrap;gap:12px;color:var(--mute);text-transform:none;letter-spacing:0;font-size:13px;}
+  .tl .key i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px;font-style:normal;}
+  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px;}
+  @media(max-width:720px){.stats{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  .stat{border-radius:14px;padding:11px 13px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
+  .stat:nth-child(odd){rotate:-.5deg;}
+  .stat:nth-child(4n+2){rotate:.5deg;}
+  .stat .k{font:600 11.5px/1.2 var(--display);letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
+  .stat .v{font:600 20px var(--mono);color:var(--accent);margin-top:4px;}
+  .stat .v.warn{color:var(--warm);}
+  .stat .v.bad{color:var(--bad);}
+  .stat .n{font-size:12.5px;color:var(--mute);margin-top:2px;}
+  .modes{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:22px;}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:14.5px;padding:11px 19px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn-out{font:600 14px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--white);border:0;border-radius:999px;padding:11px 16px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn-out:hover{transform:translateY(-2px);}
+  .btn-out:focus-visible{outline:3px solid var(--green);outline-offset:2px;}
+  .ctls{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px 26px;margin-top:20px;padding:20px 22px;border-radius:20px;background:rgba(255,255,255,.5);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;gap:8px;}
+  .ctl label span{font:600 13px var(--mono);letter-spacing:0;text-transform:none;color:var(--coral-dk);}
+  .ctl input[type=range]{width:100%;margin-top:8px;}
+  .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .presets button{font:600 13px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--mint);border:0;padding:10px 13px;border-radius:999px;cursor:pointer;box-shadow:0 2px 0 #cfdcc4;outline:1.5px dashed rgba(63,122,85,.35);outline-offset:-4px;transition:transform .45s var(--spring-pop);}
+  .presets button:hover{transform:translateY(-2px) rotate(-2deg);}
+  .presets button:focus-visible{outline:3px solid var(--green);outline-offset:2px;}
+  .hint{font-size:14px;line-height:1.7;color:var(--mute);margin-top:18px;}
+  .explain{margin-top:18px;border-radius:16px;padding:15px 18px;background:url(kit/felt-texture.webp),var(--mint);outline:2px dashed rgba(63,122,85,.35);outline-offset:-6px;font-size:15.5px;line-height:1.6;color:var(--ink);rotate:-.2deg;}
+  .explain:empty{display:none;}
+  .explain b{color:var(--ink);}
+  code{font-family:var(--mono);font-size:.9em;color:var(--coral-dk);}
+</style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Ghostframe — Rollback Netcode Playground","url":"https://hammyasf.github.io/rollback-netcode.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"An interactive sandbox that runs two independent game clients with their own netcode stacks, connected by a simulated network with adjustable latency, jitter and packet loss, so you can watch delay-based and rollback netcode behave differently.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is rollback netcode?","acceptedAnswer":{"@type":"Answer","text":"Rollback netcode runs the game forward immediately using a guess for what the other player is doing, usually that they are still holding whatever they held last. When their real input arrives and it does not match the guess, the client restores a saved copy of the game state from that frame and re-simulates every frame since, this time with the correct input. The correction happens in a single frame, so your own controls always feel instant."}},{"@type":"Question","name":"How is rollback different from delay-based netcode?","acceptedAnswer":{"@type":"Answer","text":"Delay-based netcode holds your own input back by a fixed number of frames so both clients can run the same frame at the same time with both real inputs. Nothing is ever wrong, but everything you do is late, and if a packet arrives after its frame is due the game has to freeze until it turns up. Rollback never delays and never freezes, at the cost of occasionally showing you a frame that turns out to be wrong."}},{"@type":"Question","name":"Does anything get uploaded or sent to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Both clients, the network simulator and the game run entirely inside this one browser tab. There is no server and no account, and the page keeps working with the network disconnected."}},{"@type":"Question","name":"Why does the simulation avoid floating point?","acceptedAnswer":{"@type":"Answer","text":"Rollback only works if re-simulating the same frames with the same inputs produces exactly the same state. This simulation uses 32-bit integers with a 1/64 pixel fixed-point scale and an integer square root, so there is no floating point anywhere in the game step and no room for a rounding difference to creep in."}},{"@type":"Question","name":"What is a desync?","acceptedAnswer":{"@type":"Answer","text":"A desync is when two clients that should be showing the same match have quietly ended up with different game states. This page hashes both clients' state every frame and compares them, so you can watch the naive mode desync within seconds while rollback stays verified frame for frame."}},{"@type":"Question","name":"Why does rollback use more CPU?","acceptedAnswer":{"@type":"Answer","text":"Every rollback re-simulates all the frames between the corrected frame and the present. At 100 ms of latency a client can be re-running six or seven frames of game logic several times a second, so the simulation step has to stay cheap. The playground shows the real multiplier live."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--warm:#ff9a4d;--bad:#ff5f56;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a{color:var(--muted);}nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 12px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:700px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;padding:18px;}
-  .screens{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-  @media(max-width:820px){.screens{grid-template-columns:1fr;}}
-  .screen{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#050c0a;}
-  .screen .hd{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--muted);}
-  .screen .hd b{color:var(--ink);font-weight:500;}
-  .screen .hd .st{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;}
-  .screen canvas{display:block;width:100%;height:auto;background:#050c0a;}
-  .wire{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.25);padding:8px 12px 4px;}
-  .wire .lb{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .wire canvas,.tl canvas{display:block;width:100%;height:auto;}
-  .tl{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.25);padding:8px 12px 6px;}
-  .tl .lb{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-  .tl .key{display:flex;gap:12px;color:var(--faint);text-transform:none;letter-spacing:0;}
-  .tl .key i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px;font-style:normal;}
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;margin-top:14px;}
-  .stat{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(var(--surfaceRGB),.5);}
-  .stat .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
-  .stat .v{font-family:var(--mono);font-size:19px;color:var(--accent);margin-top:4px;}
-  .stat .v.warn{color:var(--warm);}.stat .v.bad{color:var(--bad);}
-  .stat .n{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:2px;}
-  .modes{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px;}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;font-family:var(--mono);font-size:12.5px;padding:9px 14px;}
-  .ctls{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px 22px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;gap:8px;}
-  .ctl label span{color:var(--accent);}
-  .ctl input[type=range]{accent-color:var(--accent);width:100%;margin-top:6px;}
-  .presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
-  .presets button{background:transparent;border:1px solid var(--line-2);color:var(--muted);font-family:var(--mono);font-size:12px;padding:7px 12px;border-radius:100px;cursor:pointer;}
-  .presets button:hover{border-color:rgba(var(--accentRGB),.5);color:var(--ink);}
-  .hint{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:12px;}
-  .hint kbd{border:1px solid var(--line-2);border-radius:5px;padding:1px 6px;color:var(--ink);font-size:11px;}
-  .explain{margin-top:14px;border:1px solid rgba(var(--accentRGB),.22);border-radius:14px;padding:14px 16px;background:rgba(var(--accentRGB),.05);font-size:15px;color:#cdd8d3;}
-  .explain b{color:var(--ink);}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
-  section.copy h3{font-family:var(--display);font-weight:600;font-size:19px;margin:22px 0 6px;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  section.copy ol,section.copy ul{color:#cdd8d3;font-size:16.5px;margin:12px 0 12px 22px;}
-  section.copy li{margin:7px 0;}
-  code{font-family:var(--mono);font-size:.9em;color:var(--accent);}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-</style>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="blog.html">Writing</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Ghostframe · runs entirely in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="sim">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-rollback-netcode">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Rollback netcode, live</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-sim"/></svg></span>
+    <span class="tag chip">Ghostframe · runs entirely in your browser</span>
     <h1>Rollback netcode, live</h1>
     <p class="sub">Two complete game clients, each with its own netcode stack, connected by a fake internet whose latency, jitter and packet loss you control. Play one of them and watch the other client predict you, get it wrong, and quietly re-simulate the last few frames to catch up.</p>
-    <span class="priv">&#128274; No server, no account &mdash; both clients and the network live in this tab</span>
+    <p class="priv">&#128274; No server, no account &mdash; both clients and the network live in this tab</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="screens">
       <div class="screen">
@@ -133,7 +123,7 @@
 
     <div class="tl">
       <div class="lb"><span>Your client's frame timeline</span>
-        <span class="key"><span><i style="background:#2be3b0"></i>confirmed</span><span><i style="background:#ff9a4d"></i>predicted</span><span><i style="background:#ff5f56"></i>rollback</span></span>
+        <span class="key"><span><i style="background:#3f7a55"></i>confirmed</span><span><i style="background:#c2571f"></i>predicted</span><span><i style="background:#b3263c"></i>rollback</span></span>
       </div>
       <canvas id="cT" width="960" height="90" aria-label="Per-frame timeline showing confirmed, predicted and rolled back frames"></canvas>
     </div>
@@ -185,8 +175,8 @@
 
   <!-- ad-slot: leaderboard (AdSense) goes here once approved -->
   <!-- monetise-slot: Polar.sh checkout for a "drop-in rollback session for your own game" pack -->
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>What you are actually looking at</h2>
     <p>Most explanations of netcode are a diagram with arrows. This is the real thing running twice. The page holds two entirely separate game clients. Each one has its own copy of the match, its own input history, its own predictions, and no privileged knowledge of what the other is doing. Everything they know about each other arrives as packets over a simulated link, and that link is yours to abuse: turn latency up, add jitter until packets overtake each other, drop one in five and see what survives.</p>
     <p>Because both clients are on screen at once, you can see the thing that is normally invisible. In rollback mode the two views drift apart for a few frames and then snap back into agreement, and the state check stays green a handful of frames behind the present. In naive mode they are already disagreeing on frame one, and by the time you notice they are playing different matches with different scores. That divergence is what a desync actually is, and it is why "just send the positions" quietly stops working the moment two players disagree about anything.</p>
@@ -232,36 +222,27 @@
       <li>Jitter at 60 ms. Packets arrive out of order, which is exactly why inputs are addressed by frame number rather than trusted to arrive in sequence.</li>
     </ul>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>What is rollback netcode, in short?</summary><p>It runs the game forward immediately using a guess for the other player's input, then restores a saved state and re-simulates the affected frames when the real input turns out to be different. Your own input is never delayed.</p></details>
     <details><summary>Is this a real game engine or a video?</summary><p>It is a real simulation. Two independent clients, two netcode stacks, a simulated link, and a deterministic integer physics step, all running live in your browser. Nothing is pre-recorded.</p></details>
     <details><summary>Does anything leave my device?</summary><p>No. There is no server involved and no data is sent anywhere. The page works offline once loaded.</p></details>
     <details><summary>Why does naive mode desync?</summary><p>Because it applies the peer's input on whatever frame it happens to arrive, so the two clients end up running different inputs on different frames. Once the states differ there is nothing to pull them back together.</p></details>
     <details><summary>Can I play a friend over the real internet here?</summary><p>Not in this build. The point of the sandbox is to control latency, jitter and loss precisely, which you cannot do against a real peer. The netcode itself is the same code you would run over a data channel.</p></details>
     <details><summary>Which games use rollback?</summary><p>It became standard in fighting games through GGPO and the rollback implementations that followed it, and the same idea shows up anywhere input latency matters more than perfect agreement on every single frame.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build things like this every day.</h3>
-    <p>Senior full-stack engineer, open to senior or contract work, fully remote. There is a lot more in <a href="lab.html">the lab</a> &mdash; a <a href="gambit.html">chess engine that shows its search</a>, a <a href="wasmscope.html">WebAssembly interpreter you can single-step</a> &mdash; or just <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, open to senior or contract work, fully remote. There is a lot more in <a href="lab.html">the lab</a> &mdash; a <a href="gambit.html">chess engine that shows its search</a>, a <a href="wasmscope.html">WebAssembly interpreter you can single-step</a> &mdash; or just <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>&copy; 2026 Harman Kamboj</span>
-  <span>Built in the browser &middot; <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>&copy; 2026 Harman Kamboj</span><span>Built in the browser &middot; <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
 "use strict";
-/* ---------- match the portfolio's saved theme ---------- */
-try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-  var th=T[localStorage.getItem("siteTheme")]; if(th){var r=document.documentElement.style; r.setProperty("--accent",th[0]);r.setProperty("--accent-2",th[1]);r.setProperty("--accentRGB",th[2]);r.setProperty("--surfaceRGB",th[3]);r.setProperty("--bg",th[4]);r.setProperty("--bg-2",th[5]);} }catch(e){}
+
 var CSS=getComputedStyle(document.documentElement);
 function cvar(n,f){ var v=CSS.getPropertyValue(n); return v?v.trim():f; }
-var COL_ME=cvar("--accent","#2be3b0"), COL_YOU=cvar("--warm","#ff9a4d"), COL_BAD=cvar("--bad","#ff5f56");
+var COL_ME=cvar("--accent","#3f7a55"), COL_YOU=cvar("--warm","#c2571f"), COL_BAD=cvar("--bad","#b3263c");
 
 /* =======================================================================
    1. THE GAME — deterministic, integers only, 16-int state
@@ -613,21 +594,21 @@ var ctxT=document.getElementById("cT").getContext("2d");
 function drawArena(g,c,label){
   var W=640,H=360, s=c.state;
   g.clearRect(0,0,W,H);
-  g.fillStyle="#050c0a"; g.fillRect(0,0,W,H);
-  g.strokeStyle="rgba(237,242,239,.10)"; g.lineWidth=1;
+  g.fillStyle="#eef4e8"; g.fillRect(0,0,W,H);
+  g.strokeStyle="rgba(45,36,64,.14)"; g.lineWidth=1;
   g.strokeRect(.5,.5,W-1,H-1);
   g.beginPath(); g.moveTo(W/2,0); g.lineTo(W/2,H); g.stroke();
   g.beginPath(); g.arc(W/2,H/2,44,0,6.2832); g.stroke();
   /* goals */
   var gh=GOAL/FP;
-  g.fillStyle="rgba(255,154,77,.13)"; g.fillRect(0,H/2-gh,7,gh*2);
-  g.fillStyle="rgba(43,227,176,.13)"; g.fillRect(W-7,H/2-gh,7,gh*2);
+  g.fillStyle="rgba(194,87,31,.16)"; g.fillRect(0,H/2-gh,7,gh*2);
+  g.fillStyle="rgba(63,122,85,.16)"; g.fillRect(W-7,H/2-gh,7,gh*2);
   /* ghost of the pre-rollback view */
   if(c.ghost&&c.ghostT>0){
     g.globalAlpha=c.ghostT/26;
     g.strokeStyle=COL_YOU; g.lineWidth=2;
     g.beginPath(); g.arc(c.ghost.x2/FP,c.ghost.y2/FP,PR/FP,0,6.2832); g.stroke();
-    g.strokeStyle="#cdd8d3";
+    g.strokeStyle="#2d2440";
     g.beginPath(); g.arc(c.ghost.bx/FP,c.ghost.by/FP,BR/FP,0,6.2832); g.stroke();
     g.globalAlpha=1;
   }
@@ -635,14 +616,14 @@ function drawArena(g,c,label){
   drawBlob(g,s[0]/FP,s[1]/FP,COL_ME,s[4]);
   drawBlob(g,s[5]/FP,s[6]/FP,COL_YOU,s[9]);
   /* ball */
-  g.fillStyle="#edf2ef";
+  g.fillStyle="#2d2440";
   g.beginPath(); g.arc(s[10]/FP,s[11]/FP,BR/FP,0,6.2832); g.fill();
   /* score + frame */
   g.font='600 26px ui-monospace,monospace'; g.textAlign="center";
-  g.fillStyle="rgba(237,242,239,.22)";
+  g.fillStyle="rgba(45,36,64,.22)";
   g.fillText(s[14]+" : "+s[15],W/2,40);
   g.font='11px ui-monospace,monospace'; g.textAlign="left";
-  g.fillStyle="rgba(237,242,239,.32)";
+  g.fillStyle="rgba(45,36,64,.6)";
   g.fillText(label+"  frame "+c.frame,10,H-10);
   /* predicted badge */
   var g1=c.guessed.has(c.frame-1)&&c.guessed.get(c.frame-1)===1;
@@ -659,10 +640,10 @@ function drawBlob(g,x,y,col,cd){
   g.fillStyle=col; g.globalAlpha=.9;
   g.beginPath(); g.arc(x,y,r,0,6.2832); g.fill(); g.globalAlpha=1;
   if(cd>0){
-    g.strokeStyle="rgba(237,242,239,.35)"; g.lineWidth=2;
+    g.strokeStyle="rgba(45,36,64,.35)"; g.lineWidth=2;
     g.beginPath(); g.arc(x,y,r+4,-1.5708,-1.5708+6.2832*(1-cd/DASHCD)); g.stroke();
   } else {
-    g.strokeStyle="rgba(237,242,239,.55)"; g.lineWidth=1.5;
+    g.strokeStyle="rgba(45,36,64,.6)"; g.lineWidth=1.5;
     g.beginPath(); g.arc(x,y,r+4,0,6.2832); g.stroke();
   }
 }
@@ -670,9 +651,9 @@ function drawBlob(g,x,y,col,cd){
 function drawWire(){
   var W=960,H=66,g=ctxW;
   g.clearRect(0,0,W,H);
-  g.strokeStyle="rgba(237,242,239,.10)";
+  g.strokeStyle="rgba(45,36,64,.14)";
   g.beginPath(); g.moveTo(0,20.5); g.lineTo(W,20.5); g.moveTo(0,45.5); g.lineTo(W,45.5); g.stroke();
-  g.font='10px ui-monospace,monospace'; g.fillStyle="rgba(237,242,239,.30)"; g.textAlign="left";
+  g.font='10px ui-monospace,monospace'; g.fillStyle="rgba(45,36,64,.6)"; g.textAlign="left";
   g.fillText("you → peer",6,14); g.fillText("peer → you",6,62);
   for(var i=0;i<link.q.length;i++){
     var m=link.q[i], span=m.at-m.sent;
@@ -702,18 +683,18 @@ function drawTimeline(){
     var x=i*cw;
     var k=A.kind.has(f)?A.kind.get(f):-1;
     if(k<0) continue;
-    g.fillStyle=(k===1)?"rgba(255,154,77,.75)":"rgba(43,227,176,.65)";
+    g.fillStyle=(k===1)?"rgba(194,87,31,.75)":"rgba(63,122,85,.65)";
     g.fillRect(x,base-16,Math.max(1,cw-1),16);
     if(A.rbAt.has(f)){
       var d=A.rbAt.get(f);
       var hgt=Math.min(52,4+d*6);
-      g.fillStyle="rgba(255,95,86,.85)";
+      g.fillStyle="rgba(179,38,60,.85)";
       g.fillRect(x,base-16-hgt,Math.max(1,cw-1),hgt);
     }
   }
-  g.strokeStyle="rgba(237,242,239,.14)";
+  g.strokeStyle="rgba(45,36,64,.16)";
   g.beginPath(); g.moveTo(0,base+.5); g.lineTo(W,base+.5); g.stroke();
-  g.font='10px ui-monospace,monospace'; g.fillStyle="rgba(237,242,239,.32)"; g.textAlign="left";
+  g.font='10px ui-monospace,monospace'; g.fillStyle="rgba(45,36,64,.6)"; g.textAlign="left";
   g.fillText("older",4,H-4); g.textAlign="right"; g.fillText("now · frame "+A.frame,W-4,H-4);
 }
 
@@ -835,7 +816,5 @@ updateStats();
 requestAnimationFrame(loop);
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

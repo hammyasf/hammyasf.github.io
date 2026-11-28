@@ -8,7 +8,7 @@
 <meta name="keywords" content="mandelbrot explorer, mandelbrot set, julia set, fractal zoom, fractal explorer online, webgl mandelbrot, fractal generator, deep zoom fractal, mandelbrot viewer, gpu fractal, fractal wallpaper, julia set explorer, mandelbrot online" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Fractal Lab — Real-Time Mandelbrot &amp; Julia Explorer" />
 <meta property="og:description" content="Zoom infinitely into the Mandelbrot set on your GPU, watch live Julia sets, and export 4K wallpapers. All in your browser, nothing uploaded." />
 <meta property="og:type" content="website" />
@@ -19,93 +19,78 @@
 <meta name="twitter:description" content="Real-time GPU fractal explorer with deep zoom, live Julia sets, and 4K export. Runs entirely in your browser." />
 <link rel="canonical" href="https://hammyasf.github.io/fractal-lab.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Fractal Lab","url":"https://hammyasf.github.io/fractal-lab.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebGL2)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Real-time Mandelbrot and Julia set explorer with GPU deep zoom, live Julia preview, color palettes, and 4K wallpaper export. Runs entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does this run a fractal renderer in the browser?","acceptedAnswer":{"@type":"Answer","text":"Every pixel is computed in parallel on your GPU with a WebGL2 fragment shader. There is no server. The escape-time iteration for the Mandelbrot and Julia sets runs thousands of times per pixel, all locally."}},{"@type":"Question","name":"How can it zoom so deep without turning blocky?","acceptedAnswer":{"@type":"Answer","text":"GPUs only do 32-bit single-precision math, which goes blocky after a moderate zoom. Fractal Lab emulates double precision in the shader using double-single arithmetic, so it stays sharp far deeper than a naive WebGL fractal."}},{"@type":"Question","name":"What is the difference between the Mandelbrot and Julia sets?","acceptedAnswer":{"@type":"Answer","text":"The Mandelbrot set is the map of which complex numbers c keep the iteration z = z^2 + c bounded. Each point of the Mandelbrot set corresponds to a whole Julia set. Fractal Lab shows the matching Julia set live as you move the cursor."}},{"@type":"Question","name":"Is anything uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. The whole tool is a single HTML page and all rendering happens on your device. Nothing is uploaded and there is no sign-up."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 10px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:22px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .stage{position:relative;width:100%;aspect-ratio:16/10;background:#000;overflow:hidden;touch-action:none;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the fractal's palettes live in the shader, so the view is a dark stitched window; the Julia preview is a little cream felt card pinned in its corner */
+  .stage{position:relative;width:100%;aspect-ratio:16/10;border-radius:22px;overflow:hidden;touch-action:none;background:url(kit/felt-texture.webp),var(--ink);box-shadow:0 4px 0 #1b1527,0 16px 30px rgba(45,36,64,.3);}
+  .stage::after{content:"";position:absolute;inset:9px;z-index:1;border:2px dashed rgba(246,234,214,.28);border-radius:15px;pointer-events:none;}
   @media(max-width:720px){.stage{aspect-ratio:4/5;}}
   #view{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair;}
-  .hud{position:absolute;left:12px;bottom:12px;font-family:var(--mono);font-size:11.5px;color:#dfeae6;background:rgba(0,0,0,.46);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px 11px;line-height:1.5;pointer-events:none;max-width:62%;}
-  .hud b{color:var(--accent);font-weight:500;}
-  .rendering{position:absolute;right:12px;bottom:12px;font-family:var(--mono);font-size:11px;color:#07100e;background:var(--accent);border-radius:8px;padding:5px 10px;opacity:0;transition:opacity .15s;pointer-events:none;}
-  .rendering.on{opacity:.95;}
-  .jbox{position:absolute;right:12px;top:12px;width:172px;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:8px;}
+  .hud{position:absolute;left:18px;bottom:18px;z-index:2;font-family:var(--mono);font-size:11.5px;color:var(--ink);background:url(kit/felt-texture.webp),rgba(255,247,234,.94);border-radius:12px;padding:8px 12px;line-height:1.5;rotate:-1deg;box-shadow:0 3px 0 #b9a58a,0 6px 14px rgba(27,21,39,.3);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;pointer-events:none;max-width:62%;}
+  .hud b{color:var(--coral-dk);font-weight:600;}
+  .rendering{position:absolute;right:18px;bottom:18px;z-index:2;font:600 12px/1 var(--display);color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);border-radius:999px;padding:7px 12px;box-shadow:0 2px 0 #96331f;opacity:0;transition:opacity .15s;pointer-events:none;}
+  .rendering.on{opacity:1;}
+  .jbox{position:absolute;right:18px;top:18px;z-index:2;width:172px;padding:9px;border-radius:16px;rotate:1.5deg;background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 3px 0 #b9a58a,0 10px 20px rgba(27,21,39,.35);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;}
   @media(max-width:560px){.jbox{width:128px;}}
-  .jbox canvas{width:100%;aspect-ratio:1/1;display:block;border-radius:8px;background:#000;}
-  .jbox .jl{font-family:var(--mono);font-size:10px;color:var(--muted);margin:6px 2px 4px;letter-spacing:.04em;text-transform:uppercase;}
-  .jbox button{width:100%;font-family:var(--mono);font-size:11.5px;color:#07100e;background:var(--accent);border:none;border-radius:7px;padding:7px;cursor:pointer;font-weight:600;}
-  .jbox button:hover{filter:brightness(1.08);}
-  .toolbar{display:flex;flex-wrap:wrap;gap:14px 22px;padding:16px 20px;align-items:center;border-top:1px solid var(--line);}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 15px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  input[type=range]{accent-color:var(--accent);width:130px;}
-  select{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:13px;}
+  .jbox canvas{width:100%;aspect-ratio:1/1;display:block;border-radius:10px;background:var(--ink);}
+  .jbox .jl{font:600 11px/1.2 var(--display);color:var(--faint);margin:8px 2px 6px;letter-spacing:.06em;text-transform:uppercase;}
+  .jbox button{width:100%;font:600 12.5px/1.2 var(--display);color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);border:none;border-radius:999px;padding:8px 6px;cursor:pointer;box-shadow:0 2px 0 #96331f;transition:transform .45s var(--spring-pop);}
+  .jbox button:hover{transform:translateY(-1px) scale(1.03);}
+  .jbox button:focus-visible{outline:3px solid var(--green);outline-offset:2px;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:18px 26px;padding:24px 6px 0;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl > label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl select{width:auto;min-width:150px;}
   .row{display:flex;align-items:center;gap:10px;}
-  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:34px;}
-  .chk{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12px;color:var(--muted);cursor:pointer;}
-  .chk input{accent-color:var(--accent);width:15px;height:15px;}
-  .btnbar{display:flex;flex-wrap:wrap;gap:10px;padding:0 20px 18px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .row input[type=range]{width:130px;}
+  .qval{font:600 13px var(--mono);color:var(--coral-dk);min-width:34px;}
+  .ctl > label.chk{display:flex;align-items:center;gap:8px;font:600 14px/1 var(--display);letter-spacing:0;text-transform:none;color:var(--ink);cursor:pointer;}
+  .btnbar{display:flex;flex-wrap:wrap;gap:10px;padding:24px 6px 0;}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:10px 17px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .tour{display:flex;flex-wrap:wrap;gap:8px;padding:2px 20px 18px;}
-  .tour .pill{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);background:rgba(var(--surfaceRGB),.4);padding:7px 13px;border-radius:100px;cursor:pointer;transition:.15s;}
-  .tour .pill:hover{border-color:var(--accent);color:var(--ink);}
-  .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#07100e;font-family:var(--mono);font-size:13px;font-weight:600;padding:10px 18px;border-radius:100px;opacity:0;transition:.25s;pointer-events:none;z-index:50;}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .tour{display:flex;flex-wrap:wrap;gap:8px;padding:18px 6px 0;}
+  .tour:empty{display:none;}
+  .tour .pill{font:600 13px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--mint);border:0;padding:9px 13px;border-radius:999px;cursor:pointer;box-shadow:0 2px 0 #cfdcc4;outline:1.5px dashed rgba(63,122,85,.35);outline-offset:-4px;transition:transform .45s var(--spring-pop);}
+  .tour .pill:hover{transform:translateY(-2px) rotate(-2deg);}
+  .tour .pill:focus-visible{outline:3px solid var(--green);outline-offset:2px;}
+  .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);font:600 14px/1 var(--display);padding:12px 18px;border-radius:999px;box-shadow:0 3px 0 #96331f,0 10px 22px rgba(45,36,64,.25);opacity:0;transition:.25s;pointer-events:none;z-index:50;}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
-  .nope{padding:40px 24px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:14px;display:none;}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:760px;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;max-width:760px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .nope{padding:40px 24px;text-align:center;color:var(--mute);font:600 15px/1.5 var(--display);display:none;}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Fractal Lab","url":"https://hammyasf.github.io/fractal-lab.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with WebGL2)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Real-time Mandelbrot and Julia set explorer with GPU deep zoom, live Julia preview, color palettes, and 4K wallpaper export. Runs entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does this run a fractal renderer in the browser?","acceptedAnswer":{"@type":"Answer","text":"Every pixel is computed in parallel on your GPU with a WebGL2 fragment shader. There is no server. The escape-time iteration for the Mandelbrot and Julia sets runs thousands of times per pixel, all locally."}},{"@type":"Question","name":"How can it zoom so deep without turning blocky?","acceptedAnswer":{"@type":"Answer","text":"GPUs only do 32-bit single-precision math, which goes blocky after a moderate zoom. Fractal Lab emulates double precision in the shader using double-single arithmetic, so it stays sharp far deeper than a naive WebGL fractal."}},{"@type":"Question","name":"What is the difference between the Mandelbrot and Julia sets?","acceptedAnswer":{"@type":"Answer","text":"The Mandelbrot set is the map of which complex numbers c keep the iteration z = z^2 + c bounded. Each point of the Mandelbrot set corresponds to a whole Julia set. Fractal Lab shows the matching Julia set live as you move the cursor."}},{"@type":"Question","name":"Is anything uploaded?","acceptedAnswer":{"@type":"Answer","text":"No. The whole tool is a single HTML page and all rendering happens on your device. Nothing is uploaded and there is no sign-up."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs on your GPU</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="sim">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-fractal-lab">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Fractal Lab</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-sim"/></svg></span>
+    <span class="tag chip">Free tool · runs on your GPU</span>
     <h1>Fractal Lab</h1>
     <p class="sub">Zoom into the Mandelbrot set in real time, watch the matching Julia set appear live as you move, and export a 4K wallpaper. Every pixel is computed on your GPU with emulated double precision for a deep, sharp zoom.</p>
-    <span class="priv">&#9889; 100% in your browser — nothing is uploaded</span>
+    <p class="priv">&#9889; 100% in your browser — nothing is uploaded</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="stage" id="stage">
       <canvas id="view"></canvas>
@@ -156,8 +141,8 @@
     <div class="tour" id="tour"></div>
     <div class="nope" id="nope">Your browser does not support WebGL2, which this tool needs to render fractals on the GPU. Try the latest Chrome, Edge, Firefox, or Safari on a desktop.</div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>The Mandelbrot set is the set of complex numbers c for which the simple rule z &rarr; z&sup2; + c, started at z = 0, never runs off to infinity. Color comes from how many steps a point takes to escape. That is a few thousand multiply-add operations for every single pixel, and Fractal Lab does all of them in parallel on your graphics card through a WebGL2 fragment shader. There is no server and no upload. The image you see was computed on your machine in the last few milliseconds.</p>
     <h2>How does it zoom so deep without going blocky?</h2>
@@ -167,33 +152,23 @@
     <h2>Make a wallpaper</h2>
     <p>Frame a view you like, pick a palette and color speed, and hit Export 4K wallpaper to download a 3840 by 2160 PNG rendered at full resolution. The share link button copies a URL that encodes the exact coordinates, zoom, palette, and mode, so you can bookmark a spot or send someone a deep-zoom location to land on instantly.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is anything uploaded to a server?</summary><p>No. The entire tool is one HTML file and all rendering happens on your device's GPU. Nothing leaves your browser and there is no sign-up.</p></details>
     <details><summary>Why does my fan spin up on deep zooms?</summary><p>Deep zooms need more iterations per pixel and use the emulated double-precision path, which is heavier GPU work. Lower the iteration count or turn off auto iterations if you want it lighter.</p></details>
     <details><summary>It looks blocky at extreme zoom. Why?</summary><p>Even emulated double precision eventually runs out of bits. To go arbitrarily deep you need arbitrary-precision arithmetic with perturbation theory, which is beyond what a single real-time shader does. Fractal Lab stays sharp far deeper than a standard WebGL fractal, but not infinitely.</p></details>
     <details><summary>Does it work on phones?</summary><p>It runs on modern mobile browsers with WebGL2, though deep zooms are slower and the screen is small. A desktop with a discrete GPU gives the smoothest experience.</p></details>
     <details><summary>How do I save an image?</summary><p>Use Export 4K wallpaper for a full-resolution PNG, or use the share link button to copy a URL that reopens the exact view.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <div class="toast" id="toast"></div>
-
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   var $=function(id){return document.getElementById(id);};
   var toast=function(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("on");},1600);};
@@ -536,8 +511,5 @@
   renderLoop();
 })();
 </script>
-<!-- AdSense / Polar.sh monetization slot (left intentionally empty for later) -->
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>
