@@ -353,6 +353,8 @@ html:active-view-transition-type(back)::view-transition-new(root) { animation: v
   /* kit animation is clamped; a tool's own spinners and carets (inside .tool-ui) show work and keep running */
   :not(.tool-ui, .tool-ui *), :not(.tool-ui, .tool-ui *)::before, :not(.tool-ui, .tool-ui *)::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; }
   .motion-ready .reveal:not(.in):not(.tool-ui .reveal), .reveal.in:not(.tool-ui .reveal) { opacity: 1; animation: none !important; }
+  /* the kit's own decoration still stops inside .tool-ui; .knit-progress shows work and keeps running */
+  .drop.is-over, .tabs > [aria-selected="true"]::after, .tabs > [aria-current="page"]::after, .seg input:checked + span, .seg > button[aria-pressed="true"], .tool-ui .status.show { animation: none !important; }
   /* pseudo-elements * cannot reach; one rule each, since an unknown vendor pseudo voids a selector list */
   .range::-webkit-slider-thumb, .tool-ui input[type=range]::-webkit-slider-thumb { transition: none !important; }
   .range::-moz-range-thumb, .tool-ui input[type=range]::-moz-range-thumb { transition: none !important; }
