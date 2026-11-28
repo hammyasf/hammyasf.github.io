@@ -8,7 +8,7 @@
 <meta name="keywords" content="text to speech, free tts, ai voice generator, natural text to speech, browser tts, kokoro tts, voice generator, tts no upload, text to speech online free, realistic ai voice, on-device tts, private text to speech" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="VoiceBox — natural text-to-speech, 100% in your browser" />
 <meta property="og:description" content="A real neural TTS model runs locally in your browser. 28 voices, download the WAV, nothing uploaded. Free, no sign-up, no API key." />
@@ -20,103 +20,84 @@
 <meta name="twitter:description" content="A real neural TTS model runs locally. 28 voices, download WAV, nothing uploaded. Free." />
 <link rel="canonical" href="https://hammyasf.github.io/voicebox.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preconnect" href="https://huggingface.co" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"VoiceBox — Text to Speech","url":"https://hammyasf.github.io/voicebox.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Natural text-to-speech with a neural model that runs entirely in the browser. 28 voices, WAV download, nothing uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does my text get sent to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The TTS model is downloaded once and runs entirely in your browser with WebAssembly or WebGPU. Your text never leaves your device, and there is no API key or account."}},{"@type":"Question","name":"How can a text-to-speech model run in a browser?","acceptedAnswer":{"@type":"Answer","text":"VoiceBox uses Kokoro, an 82-million-parameter open-weight TTS model compiled to ONNX and run through Transformers.js. The model file (about 86 MB) downloads once, is cached by your browser, and every subsequent generation is offline."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is completely free with no sign-up, no watermark, and no limit on how much text you convert. You can download the audio as a WAV file."}},{"@type":"Question","name":"What voices are available?","acceptedAnswer":{"@type":"Answer","text":"28 voices across American and British English, male and female, including warm, neutral, and soft styles. You can preview any of them before generating."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .pad{padding:22px;}
-  textarea{width:100%;min-height:148px;resize:vertical;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:14px;padding:16px;font-family:var(--body);font-size:16px;line-height:1.55;}
-  textarea:focus{outline:none;border-color:rgba(var(--accentRGB),.55);}
-  .meta-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-family:var(--mono);font-size:12px;color:var(--faint);}
-  .meta-row .ex{color:var(--accent);cursor:pointer;border:none;background:none;font-family:var(--mono);font-size:12px;}
-  .controls{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-end;margin-top:18px;}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  select{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:10px 12px;font-family:var(--body);font-size:14px;min-width:210px;}
-  select:focus{outline:none;border-color:rgba(var(--accentRGB),.55);}
-  input[type=range]{accent-color:var(--accent);width:150px;}
-  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:34px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:12px 22px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .pad{padding:0;}
+  textarea{width:100%;display:block;min-height:148px;resize:vertical;font-family:var(--body);font-size:16px;line-height:1.55;}
+  .meta-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;font:600 12.5px/1.2 var(--display);color:var(--faint);}
+  .meta-row .ex{font:600 13px/1.1 var(--display);color:var(--green);border:0;background:url(kit/felt-texture.webp),var(--mint);border-radius:999px;padding:8px 13px;cursor:pointer;outline:1.5px dashed rgba(63,122,85,.3);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .2s;}
+  .meta-row .ex:hover{transform:translateY(-1px) rotate(-2deg) scale(1.04);background:url(kit/felt-texture.webp),#e1ecd8;}
+  .controls{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-end;margin-top:20px;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl select{min-width:240px;cursor:pointer;}
+  .ctl input[type=range]{width:160px;}
+  .qval{font:600 13px/1 var(--display);color:var(--coral-dk);min-width:34px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 22px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:20px;}
-  .engine{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:inline-flex;align-items:center;gap:7px;}
-  .engine .gpu{color:var(--accent);}
-  .adv{margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;}
-  .adv input{accent-color:var(--accent);}
-  .status{display:none;margin:0 22px 22px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:rgba(var(--surfaceRGB),.5);}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:22px;padding-top:20px;border-top:2px dashed var(--line);}
+  .engine{display:inline-flex;align-items:center;gap:7px;font:600 12.5px/1.2 var(--display);color:var(--muted);background:url(kit/felt-texture.webp),var(--sand);padding:7px 12px;border-radius:999px;box-shadow:var(--sunk);}
+  .engine .gpu{color:var(--green);}
+  .adv{margin-top:16px;font:600 14px/1.3 var(--display);color:var(--ink);display:flex;align-items:center;gap:8px;}
+  /* status: a sunk stitched pocket with the knitted bar */
+  .status{display:none;margin:20px 0 0;padding:16px 18px;border-radius:18px;background:rgba(255,255,255,.55);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;}
   .status.show{display:block;}
-  .status .txt{font-size:14px;color:#cdd8d3;}
-  .status .txt b{color:var(--accent);}
-  .progwrap{margin-top:12px;height:7px;border-radius:6px;background:rgba(237,242,239,.10);overflow:hidden;display:none;}
+  .status .txt{font-size:14.5px;color:var(--ink);}
+  .status .txt b{color:var(--coral-dk);}
+  .progwrap{margin-top:12px;height:12px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;display:none;}
   .progwrap.show{display:block;}
-  .progbar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .25s var(--ease);}
+  .progbar{height:100%;width:0;border-radius:999px;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);background-size:8px 11px,auto;transition:width .25s var(--ease);}
   .progwrap.indet .progbar{width:38% !important;animation:slide 1.15s var(--ease) infinite;}
   @keyframes slide{0%{margin-left:-40%;}100%{margin-left:100%;}}
-  .player{display:none;margin:0 22px 22px;padding:18px;border:1px solid rgba(var(--accentRGB),.28);border-radius:16px;background:linear-gradient(150deg,rgba(var(--accentRGB),.10),rgba(var(--accentRGB),.02));}
-  .player.show{display:block;}
-  .wave{width:100%;height:84px;display:block;border-radius:10px;background:rgba(0,0,0,.18);}
+  /* the player: a coral-tinted felt cassette with the waveform on a cream strip */
+  .player{display:none;margin:20px 0 0;padding:18px;border-radius:20px;background:linear-gradient(rgba(255,247,234,.4) 0 0),url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 16%,var(--cream));box-shadow:0 3px 0 #e8c2b2,0 10px 20px rgba(84,46,30,.12);outline:2px dashed rgba(185,68,47,.35);outline-offset:-7px;}
+  .player.show{display:block;animation:rise .6s var(--spring-pop) both;}
+  .wave{width:100%;height:84px;display:block;border-radius:12px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:var(--sunk);}
   .pbar{display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap;}
-  .play{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#07100e;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .play{width:50px;height:50px;border-radius:50%;color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;box-shadow:0 3px 0 #96331f,0 6px 14px rgba(185,68,47,.3);transition:transform .45s var(--spring-pop);}
+  .play:hover{transform:scale(1.06);}
   .play svg{width:20px;height:20px;}
-  .pinfo{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  .pinfo b{color:var(--accent);}
+  .pinfo{font:600 13px/1.3 var(--display);color:var(--muted);}
+  .pinfo b{color:var(--coral-dk);font-weight:600;}
   .spacer{flex:1;}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;opacity:0;pointer-events:none;transition:.25s;z-index:99;}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);font:600 14px/1.2 var(--display);padding:11px 19px;border-radius:999px;box-shadow:0 3px 0 #96331f,0 10px 20px rgba(84,46,30,.2);opacity:0;pointer-events:none;transition:.25s;z-index:99;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  @media(max-width:560px){select{min-width:160px;}}
+  @media(max-width:560px){.ctl select{min-width:0;width:100%;}.ctl{width:100%;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"VoiceBox — Text to Speech","url":"https://hammyasf.github.io/voicebox.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Natural text-to-speech with a neural model that runs entirely in the browser. 28 voices, WAV download, nothing uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does my text get sent to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The TTS model is downloaded once and runs entirely in your browser with WebAssembly or WebGPU. Your text never leaves your device, and there is no API key or account."}},{"@type":"Question","name":"How can a text-to-speech model run in a browser?","acceptedAnswer":{"@type":"Answer","text":"VoiceBox uses Kokoro, an 82-million-parameter open-weight TTS model compiled to ONNX and run through Transformers.js. The model file (about 86 MB) downloads once, is cached by your browser, and every subsequent generation is offline."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is completely free with no sign-up, no watermark, and no limit on how much text you convert. You can download the audio as a WAV file."}},{"@type":"Question","name":"What voices are available?","acceptedAnswer":{"@type":"Answer","text":"28 voices across American and British English, male and female, including warm, neutral, and soft styles. You can preview any of them before generating."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · neural TTS runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-voicebox">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Text to Speech</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">Free tool · neural TTS runs in your browser</span>
     <h1>Text to Speech</h1>
     <p class="sub">Type anything and hear it spoken by a real neural voice model that runs entirely on your device. 28 voices, instant WAV download, nothing uploaded.</p>
-    <span class="priv">&#128274; 100% private — your text never leaves your browser</span>
+    <p class="priv">&#128274; 100% private — your text never leaves your browser</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="pad">
       <textarea id="text" spellcheck="true" placeholder="Type or paste text here…">In a quiet workshop on the edge of town, a small machine learned to speak. It had no connection to the outside world, yet every word it read aloud sounded warm and human. Try it yourself: type anything, pick a voice, and press generate.</textarea>
@@ -188,8 +169,8 @@
       <audio id="audio" hidden></audio>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>A real speech model, running on your machine</h2>
     <p>VoiceBox runs Kokoro, an open-weight neural text-to-speech model with 82 million parameters. Most "free" TTS sites stream your text to a server and read it back. This one does the opposite: the model downloads to your browser once, then every word you type is turned into audio locally, with no upload and no API key. That is why it keeps working even with your network disconnected after the first load.</p>
     <h2>How does this run in a browser?</h2>
@@ -197,33 +178,23 @@
     <h2>What it is good for</h2>
     <p>Drafting voiceovers and narration, proofreading by ear, making audio versions of articles and notes, accessibility, learning pronunciation, or just turning a script into a downloadable WAV without signing up for anything. Longer passages are split into sentences and stitched together automatically, so you can paste a whole paragraph and get one continuous clip.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Does my text get sent anywhere?</summary><p>No. The model runs inside your browser tab. Your text and the generated audio stay on your device. There is no account and no server call after the model file is fetched.</p></details>
     <details><summary>Why is the first run slow?</summary><p>The first time, your browser downloads the model (about 86 MB in default mode, or roughly 310 MB in WebGPU Turbo). It is cached afterward, so later runs start instantly and work offline.</p></details>
     <details><summary>Can I download the audio?</summary><p>Yes. Every result can be saved as a standard WAV file you can use anywhere, royalty-free.</p></details>
     <details><summary>Which browsers work best?</summary><p>Default mode works in Chrome, Edge, Firefox, and Safari. Turbo mode needs WebGPU, which is available in recent Chrome and Edge, and increasingly elsewhere.</p></details>
     <details><summary>Is the voice licensed for my use?</summary><p>Kokoro is released under the Apache 2.0 license, so the generated audio is free to use, including commercially.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <div class="toast" id="toast"></div>
-
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   var $ = function(id){ return document.getElementById(id); };
   var text=$("text"), voice=$("voice"), speed=$("speed"), speedv=$("speedv"), go=$("go"),
@@ -368,11 +339,11 @@
     var ctx=wave.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,cssW,cssH);
     if(!peaksArr) return;
     var n=peaksArr.length, mid=cssH/2, bw=cssW/n;
-    var acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#2be3b0";
+    var acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#b9442f";
     for(var i=0;i<n;i++){
       var h=Math.max(2, peaksArr[i]*(cssH*0.92));
       var played=(i/n)<=prog;
-      ctx.fillStyle = played ? acc : "rgba(147,168,161,.45)";
+      ctx.fillStyle = played ? acc : "rgba(108,99,128,.4)";
       var x=i*bw;
       ctx.fillRect(x, mid-h/2, Math.max(1,bw*0.62), h);
     }
@@ -420,8 +391,5 @@
   window.addEventListener("load",function(){ setTimeout(function(){ try{ ensureWorker(); if(!workerReady&&!modelLoading){ modelLoading=true; worker.postMessage({type:"load",useGPU:(turbo.checked&&hasWebGPU)}); } }catch(e){} },1400); });
 })();
 </script>
-<!-- Polar.sh / AdSense slot (left intentionally empty for later) -->
-<!-- Analytics: Cloudflare Web Analytics beacon (public client token). -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

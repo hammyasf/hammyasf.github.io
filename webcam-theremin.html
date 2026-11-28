@@ -8,7 +8,7 @@
 <meta name="keywords" content="webcam theremin, play theremin online, online theremin, air synth, hand tracking instrument, play music with your hands, gesture synthesizer, theremin simulator, hand tracking synth, mediapipe hands, no upload" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Webcam Theremin — play music with your hands" />
 <meta property="og:description" content="Wave your hands at your webcam to play a synth in real time. Hand tracking and sound both run in your browser. Nothing uploaded." />
 <meta property="og:type" content="website" />
@@ -19,88 +19,74 @@
 <meta name="twitter:description" content="Wave your hands at your webcam to play a synth in real time, entirely in your browser. Nothing uploaded." />
 <link rel="canonical" href="https://hammyasf.github.io/webcam-theremin.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the stage: a cream felt sheet with a dashed seam; camera video or the mouse pad draws on it */
+  .stagewrap{position:relative;width:100%;aspect-ratio:4/3;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 50% 40%,rgba(255,253,248,.7),transparent 65%),url(kit/felt-texture.webp),var(--cream);box-shadow:var(--sunk),inset 0 0 0 2px var(--line);}
+  .stagewrap::after{content:"";position:absolute;inset:8px;border:2px dashed var(--line-2);border-radius:16px;pointer-events:none;z-index:3;}
+  #stage{position:absolute;inset:0;width:100%;height:100%;display:block;}
+  .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;padding:28px;background:radial-gradient(80% 80% at 50% 40%,rgba(255,247,234,.55),rgba(255,247,234,.9));z-index:2;}
+  .overlay.hidden{display:none;}
+  .overlay h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3.4vw,30px);color:var(--ink);}
+  .overlay p{color:var(--muted);font-size:15.5px;max-width:460px;}
+  .overlay .small{color:var(--faint);font:600 13px/1.4 var(--display);}
+  .hud{position:absolute;top:18px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none;z-index:2;}
+  .hud .chip{border-radius:14px;padding:9px 14px;font:600 13px/1.3 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 2px 0 #e2cdb0,0 6px 12px rgba(45,36,64,.18);outline:1.5px dashed var(--line-2);outline-offset:-5px;}
+  .hud .chip:first-child{rotate:-2deg;}
+  .hud .chip:last-child{rotate:1.5deg;}
+  .hud .chip b{color:var(--coral-dk);}
+  .hud .note{font-family:var(--display);font-size:28px;font-weight:600;line-height:1;color:var(--coral-dk);}
+  .spin{width:42px;height:42px;border-radius:50%;border:4px dashed rgba(45,36,64,.2);border-top:4px solid var(--coral);animation:sp 1s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  .pbar{width:240px;max-width:70vw;height:12px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;}
+  .pbar > i{display:block;height:100%;width:0;border-radius:999px;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);background-size:8px 11px,auto;transition:width .15s;}
+  .controls{display:flex;flex-wrap:wrap;gap:18px 26px;padding:22px 0 0;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl select{min-width:170px;cursor:pointer;}
+  .seg{flex-wrap:wrap;border-radius:24px;}
+  .ctl input[type=range]{width:150px;}
+  .rv{font:600 13px/1 var(--display);color:var(--coral-dk);min-width:30px;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:20px;padding-top:20px;border-top:2px dashed var(--line);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 22px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .hint{font:600 13px/1.4 var(--display);color:var(--muted);}
+  @media(max-width:560px){.stagewrap:has(> .overlay:not(.hidden)){aspect-ratio:auto;min-height:440px;}.overlay{gap:12px;padding:22px 18px;}.ctl select{min-width:0;width:100%;}.controls .ctl:nth-child(-n+2){flex:1 1 100%;}}
+</style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Webcam Theremin","url":"https://hammyasf.github.io/webcam-theremin.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser with a camera)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Play a synthesizer with your hands using your webcam. Real-time hand tracking and audio run entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my camera video uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The hand-tracking model and the synthesizer both run locally in your browser. Your camera feed never leaves your device and nothing is recorded or sent to a server."}},{"@type":"Question","name":"How does it run hand tracking without a server?","acceptedAnswer":{"@type":"Answer","text":"It loads Google's MediaPipe hand-landmark model into your browser and runs it on your own GPU through WebAssembly and WebGL. It finds 21 points on each hand around 30 times a second and maps their position to pitch and volume."}},{"@type":"Question","name":"Do I need a webcam?","acceptedAnswer":{"@type":"Answer","text":"A webcam gives you the full theremin experience, but there is also a mouse mode so you can play the same synth with your pointer if you have no camera or do not want to grant access."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up and no limits."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .stagewrap{position:relative;width:100%;aspect-ratio:4/3;background:#050a09;border-bottom:1px solid var(--line);overflow:hidden;}
-  #stage{position:absolute;inset:0;width:100%;height:100%;display:block;}
-  .overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;padding:24px;background:radial-gradient(80% 80% at 50% 40%,rgba(5,10,9,.35),rgba(5,10,9,.82));}
-  .overlay.hidden{display:none;}
-  .overlay h2{font-family:var(--display);font-weight:600;font-size:clamp(20px,3.4vw,28px);}
-  .overlay p{color:#cdd8d3;font-size:15px;max-width:440px;}
-  .overlay .small{color:var(--muted);font-size:13px;font-family:var(--mono);}
-  .hud{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;gap:12px;pointer-events:none;font-family:var(--mono);}
-  .hud .chip{background:rgba(5,10,9,.6);border:1px solid var(--line-2);border-radius:10px;padding:7px 12px;font-size:12.5px;color:var(--ink);backdrop-filter:blur(4px);}
-  .hud .chip b{color:var(--accent);}
-  .hud .note{font-family:var(--display);font-size:26px;font-weight:600;line-height:1;}
-  .spin{width:34px;height:34px;border-radius:50%;border:3px solid rgba(var(--accentRGB),.25);border-top-color:var(--accent);animation:sp 1s linear infinite;}
-  @keyframes sp{to{transform:rotate(360deg);}}
-  .pbar{width:240px;max-width:70vw;height:7px;border-radius:100px;background:rgba(255,255,255,.1);overflow:hidden;}
-  .pbar > i{display:block;height:100%;width:0;background:var(--accent);transition:width .15s;}
-  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:18px 24px;align-items:flex-end;}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  select{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:9px 11px;font-family:var(--mono);font-size:13px;}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  input[type=range]{accent-color:var(--accent);width:150px;}
-  .rv{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:30px;}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 24px 22px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .hint{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-</style>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-webcam-theremin">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Webcam Theremin</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>Webcam Theremin</h1>
     <p class="sub">Wave your hands in front of your camera and play a synthesizer in the air, like a theremin. Right hand sets the pitch, left hand sets the volume. The hand tracking and the sound both run entirely on your machine.</p>
-    <span class="priv">&#128247; 100% private — your camera feed never leaves your device</span>
+    <p class="priv">&#128247; 100% private — your camera feed never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="stagewrap">
       <canvas id="stage"></canvas>
@@ -165,8 +151,8 @@
       <span class="hint" id="hint">Tip: keep your hand inside the frame. One hand plays; raise a second hand to ride the volume.</span>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>A theremin is the instrument you play without touching it: you move your hands near two antennas and the pitch and volume follow. This version swaps the antennas for your webcam. It loads Google's MediaPipe hand-landmark model into your browser and runs it on your own GPU, finding twenty-one points on each hand about thirty times a second. The vertical position of your hand becomes a note, a second hand rides the volume, and a small synthesizer built with the Web Audio API turns that into sound. Every part of this happens locally, so there is no upload, no latency from a round trip, and nothing is recorded.</p>
     <h2>How does it run without a server?</h2>
@@ -174,30 +160,21 @@
     <h2>Things to try</h2>
     <p>Switch the scale to minor pentatonic or blues and you almost cannot hit a wrong note, which makes it fun to improvise. Pick a sawtooth wave and add reverb for a spacey lead. Pinch your thumb and finger together to add vibrato, the wobble a real theremin player makes with tiny hand movements. Switch pitch mode to continuous for the genuine sliding theremin sound, with no notes to snap to.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my camera uploaded anywhere?</summary><p>No. The hand tracking and the synthesizer both run locally in your browser. Your camera feed never leaves your device and nothing is recorded or sent to a server.</p></details>
     <details><summary>How is the hand tracking done?</summary><p>It uses Google's MediaPipe hand-landmark model running on your GPU through WebAssembly. It detects 21 points on each hand many times a second and maps their position to pitch and volume.</p></details>
     <details><summary>Do I need a webcam?</summary><p>For the full experience, yes. But there is a mouse mode so you can play the same synth with your pointer if you have no camera or prefer not to grant access.</p></details>
     <details><summary>Why is there a short wait the first time?</summary><p>The hand-tracking model is about 8 MB and downloads once. After that your browser caches it and the tool starts quickly.</p></details>
     <details><summary>It is silent or laggy. What helps?</summary><p>Use a desktop browser with a real GPU, good lighting, and keep your whole hand in the frame. Chrome and Edge tend to give the smoothest tracking.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script type="module">
-// match the portfolio's saved theme
-try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-  var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+
 
 // ---------- PURE helpers (unit-tested) ----------
 const NOTE_NAMES=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
@@ -297,7 +274,7 @@ function fail(msg){ loadingOv.classList.add("hidden"); overlay.classList.remove(
 
 function drawHand(lm,w,h){
   const CONN=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
-  const acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#2be3b0";
+  const acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#b9442f";
   ctx.lineWidth=3; ctx.strokeStyle=acc; ctx.fillStyle="#fff";
   const X=p=>(1-p.x)*w, Y=p=>p.y*h; // mirrored
   ctx.beginPath(); for(const [a,b] of CONN){ ctx.moveTo(X(lm[a]),Y(lm[a])); ctx.lineTo(X(lm[b]),Y(lm[b])); } ctx.stroke();
@@ -349,9 +326,9 @@ window.addEventListener("pointerup",()=>{ mouseActive=false; });
 function updMouse(e){ const r=stage.getBoundingClientRect(); mx=clamp((e.clientX-r.left)/r.width,0,1); my=clamp((e.clientY-r.top)/r.height,0,1); }
 function loopMouse(){
   if(!running||mode!=="mouse") return; raf=requestAnimationFrame(loopMouse);
-  const w=stage.width,h=stage.height; ctx.fillStyle="#050a09"; ctx.fillRect(0,0,w,h);
-  const acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#2be3b0";
-  ctx.strokeStyle="rgba(255,255,255,.08)"; for(let i=1;i<8;i++){ ctx.beginPath(); ctx.moveTo(i/8*w,0); ctx.lineTo(i/8*w,h); ctx.stroke(); }
+  const w=stage.width,h=stage.height; ctx.fillStyle="#fff7ea"; ctx.fillRect(0,0,w,h);
+  const acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#b9442f";
+  ctx.strokeStyle="rgba(45,36,64,.12)"; for(let i=1;i<8;i++){ ctx.beginPath(); ctx.moveTo(i/8*w,0); ctx.lineTo(i/8*w,h); ctx.stroke(); }
   const rootPc=rootSel.selectedIndex, notes=buildScale(rootPc,3,3,scaleSel.value);
   const tP=clamp(mx,0,1); let freq,label;
   if(pitchMode==="glide"){ const midi=notes[0]+tP*(notes[notes.length-1]-notes[0]); freq=midiToFreq(midi); label=noteName(midi); }
@@ -372,11 +349,5 @@ startBtn.onclick=startCamera; mouseBtn.onclick=startMouse; stopBtn.onclick=stopA
 resizeStage();
 window.__thereminBoot=true;
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
-<!-- AdSense slot (enable later):
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script>
--->
-<!-- Polar.sh support slot (enable later) -->
 </body>
 </html>

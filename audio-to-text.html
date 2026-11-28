@@ -8,7 +8,7 @@
 <meta name="keywords" content="audio to text, transcribe audio, speech to text, whisper in browser, audio to subtitles, generate srt, audio to srt, free transcription, transcribe audio no upload, speech to text free" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Free Audio to Text — Whisper transcription in your browser" />
 <meta property="og:description" content="A real Whisper AI model transcribes audio entirely on your device. No upload, no sign-up. Export transcript, SRT and VTT subtitles." />
 <meta property="og:type" content="website" />
@@ -19,99 +19,83 @@
 <meta name="twitter:description" content="A real Whisper model transcribes audio on-device. No upload, no sign-up. TXT, SRT, VTT export." />
 <link rel="canonical" href="https://hammyasf.github.io/audio-to-text.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Audio to Text — Whisper in your browser","url":"https://hammyasf.github.io/audio-to-text.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Transcribe audio to text and subtitles with a Whisper AI model that runs entirely in the browser. Private, no upload, exports TXT, SRT and VTT.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my audio uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The Whisper model is downloaded once to your browser and every file is transcribed on your own device. Your audio never leaves your computer."}},{"@type":"Question","name":"Is it really free with no limits?","acceptedAnswer":{"@type":"Answer","text":"Yes. No sign-up, no minutes cap, no watermark. Because it runs on your machine there is no per-minute cost to pass on to you."}},{"@type":"Question","name":"What model does it use?","acceptedAnswer":{"@type":"Answer","text":"It runs OpenAI's Whisper (base) in your browser via transformers.js, on WebGPU when available and WebAssembly otherwise. The first run downloads the model (about 80 MB) and then caches it."}},{"@type":"Question","name":"Can I get subtitles?","acceptedAnswer":{"@type":"Answer","text":"Yes. It produces timestamped segments and you can export them as SRT or VTT subtitle files, or as plain text."}},{"@type":"Question","name":"What languages are supported?","acceptedAnswer":{"@type":"Answer","text":"Whisper is multilingual and auto-detects the spoken language. You can also have it translate the audio into English."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .drop{padding:42px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
-  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
-  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
-  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
-  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .drop{padding:42px 24px;text-align:center;margin:0 0 18px;cursor:pointer;}
+  .drop:focus-visible{outline:3px solid var(--green);outline-offset:3px;}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:23px;}
+  .drop p{color:var(--muted);font-size:14.5px;margin-top:8px;}
+  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .btn-rec{background:#ff5a5a;color:#0c0606;}
-  .opts{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:0 24px 6px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  .opts label{display:inline-flex;align-items:center;gap:7px;cursor:pointer;}
-  .opts select{font-family:var(--mono);font-size:12.5px;background:rgba(var(--surfaceRGB),.7);color:var(--ink);border:1px solid var(--line-2);border-radius:8px;padding:6px 9px;cursor:pointer;}
-  .status{margin:0 18px 18px;border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:rgba(var(--surfaceRGB),.5);font-family:var(--mono);font-size:13px;color:var(--muted);display:none;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-rec{background:url(kit/felt-texture.webp),var(--coral-dk);box-shadow:0 3px 0 #7d2a1c,0 6px 14px rgba(185,68,47,.3);}
+  .opts{display:flex;align-items:center;gap:14px 22px;flex-wrap:wrap;padding:0 0 4px;font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .opts label{display:inline-flex;align-items:center;gap:10px;cursor:pointer;}
+  .opts select{text-transform:none;letter-spacing:0;cursor:pointer;}
+  #engine{font:600 12.5px/1.2 var(--display);letter-spacing:0;text-transform:none;color:var(--muted);background:url(kit/felt-texture.webp),var(--sand);padding:7px 12px;border-radius:999px;box-shadow:var(--sunk);}
+  .status{margin:18px 0 0;padding:14px 18px;border-radius:18px;background:rgba(255,255,255,.55);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;font-family:var(--mono);font-size:13px;display:none;}
   .status.show{display:block;}
-  .status b{color:var(--accent);}
-  .prog{height:7px;border-radius:6px;background:rgba(237,242,239,.1);overflow:hidden;margin-top:10px;}
-  .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s;}
+  .prog{height:12px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;margin-top:10px;}
+  .prog i{display:block;height:100%;width:0;border-radius:999px;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);background-size:8px 11px,auto;transition:width .2s;}
   .prog.indet i{width:35%;animation:slide 1.1s var(--ease) infinite;}
   @keyframes slide{0%{margin-left:-35%;}100%{margin-left:100%;}}
-  .reclive{display:none;align-items:center;justify-content:center;gap:12px;margin:0 18px 18px;font-family:var(--mono);font-size:13px;color:#ff8a8a;}
+  .reclive{display:none;align-items:center;justify-content:center;gap:12px;margin:18px 0 0;padding:12px 18px;border-radius:999px;font:600 14px/1.2 var(--display);color:var(--coral-dk);background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 12%,var(--cream));outline:2px dashed rgba(185,68,47,.4);outline-offset:-6px;flex-wrap:wrap;}
   .reclive.show{display:flex;}
-  .reclive .blink{width:11px;height:11px;border-radius:50%;background:#ff5a5a;animation:bk 1s steps(2,start) infinite;}
+  .reclive .blink{width:12px;height:12px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 4px rgba(232,96,76,.2);animation:bk 1s steps(2,start) infinite;}
   @keyframes bk{50%{opacity:.2;}}
-  .result{display:none;padding:6px 24px 24px;}
-  .result.show{display:block;}
-  .rhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:10px 0 12px;}
-  .rhead .ttl{font-family:var(--display);font-weight:600;font-size:18px;}
+  /* the transcript: a sheet of paper with a ruled list of timestamped lines */
+  .result{display:none;margin-top:20px;padding:20px 22px 22px;border-radius:20px;background:linear-gradient(rgba(255,255,255,.72) 0 0),url(kit/felt-texture.webp),var(--white);box-shadow:0 3px 0 #e2cdb0,0 12px 24px rgba(84,46,30,.14);outline:2px dashed var(--line-2);outline-offset:-8px;}
+  .result.show{display:block;animation:rise .6s var(--spring-pop) both;}
+  .rhead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 14px;}
+  .rhead .ttl{font:600 12.5px/1.2 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--coral-dk);}
   .exports{display:flex;gap:8px;flex-wrap:wrap;}
-  .exports button{font-family:var(--mono);font-size:12.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:8px 13px;border-radius:8px;cursor:pointer;background:transparent;white-space:nowrap;transition:background .2s;}
-  .exports button:hover{background:rgba(var(--accentRGB),.1);}
-  .ta{width:100%;min-height:150px;resize:vertical;font-family:var(--body);font-size:15.5px;line-height:1.7;color:var(--ink);background:rgba(var(--surfaceRGB),.4);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
-  .segs{margin-top:16px;border-top:1px solid var(--line);}
-  .seg{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line);font-size:15px;}
-  .seg .t{font-family:var(--mono);font-size:11.5px;color:var(--accent);padding-top:2px;}
-  .seg .t b{display:block;color:var(--faint);font-weight:400;}
-  .seg .x{color:#dbe4e0;}
-  @media(max-width:520px){.seg{grid-template-columns:74px 1fr;}}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#07100e;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 20px;border-radius:100px;opacity:0;pointer-events:none;transition:.25s;z-index:99;}
+  .exports button{font:600 12.5px/1 var(--display);color:var(--coral-dk);border:0;padding:8px 13px;border-radius:999px;cursor:pointer;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 2px 0 #e2cdb0;white-space:nowrap;transition:transform .45s var(--spring-pop);}
+  .exports button:hover{transform:translateY(-1px);}
+  .ta{width:100%;display:block;min-height:150px;resize:vertical;font-family:var(--body);font-size:15.5px;line-height:1.7;}
+  .segs{margin-top:16px;border-top:2px dashed var(--line);}
+  /* a transcript row (felt.css's .seg control styling is undone here) */
+  .segs .seg{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:11px 2px;border-radius:0;background:none;box-shadow:none;max-width:none;overflow:visible;border-bottom:2px dashed var(--line);font-size:15px;}
+  .seg .t{font:600 12px/1.3 var(--display);color:var(--coral-dk);padding-top:2px;}
+  .seg .t b{display:block;color:var(--faint);font-weight:600;}
+  .seg .x{color:var(--ink);}
+  @media(max-width:520px){.segs .seg{grid-template-columns:74px 1fr;}.result{padding:18px 16px;}.reclive{border-radius:18px;}}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);font:600 14px/1.2 var(--display);padding:11px 20px;border-radius:999px;box-shadow:0 3px 0 #96331f,0 10px 20px rgba(84,46,30,.2);opacity:0;pointer-events:none;transition:.25s;z-index:99;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Audio to Text — Whisper in your browser","url":"https://hammyasf.github.io/audio-to-text.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Transcribe audio to text and subtitles with a Whisper AI model that runs entirely in the browser. Private, no upload, exports TXT, SRT and VTT.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my audio uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The Whisper model is downloaded once to your browser and every file is transcribed on your own device. Your audio never leaves your computer."}},{"@type":"Question","name":"Is it really free with no limits?","acceptedAnswer":{"@type":"Answer","text":"Yes. No sign-up, no minutes cap, no watermark. Because it runs on your machine there is no per-minute cost to pass on to you."}},{"@type":"Question","name":"What model does it use?","acceptedAnswer":{"@type":"Answer","text":"It runs OpenAI's Whisper (base) in your browser via transformers.js, on WebGPU when available and WebAssembly otherwise. The first run downloads the model (about 80 MB) and then caches it."}},{"@type":"Question","name":"Can I get subtitles?","acceptedAnswer":{"@type":"Answer","text":"Yes. It produces timestamped segments and you can export them as SRT or VTT subtitle files, or as plain text."}},{"@type":"Question","name":"What languages are supported?","acceptedAnswer":{"@type":"Answer","text":"Whisper is multilingual and auto-detects the spoken language. You can also have it translate the audio into English."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · Whisper runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-audio-to-text">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Audio to Text</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">Free tool · Whisper runs in your browser</span>
     <h1>Audio to Text</h1>
     <p class="sub">Drop in a recording and a real Whisper AI model transcribes it, right here on your device. No upload, no sign-up, no minute limits. Get clean text plus timestamped SRT and VTT subtitles.</p>
-    <span class="priv">&#128274; 100% private — the model runs locally, your audio never leaves your device</span>
+    <p class="priv">&#128274; 100% private — the model runs locally, your audio never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add audio">
       <h2>Drop an audio or video file here</h2>
@@ -133,7 +117,7 @@
       <label>Engine <span id="engine">detecting…</span></label>
     </div>
 
-    <div class="reclive" id="reclive"><span class="blink"></span> Recording <span id="recTime">0:00</span> — <a href="#" id="recStop" style="color:#ff8a8a;text-decoration:underline;">stop &amp; transcribe</a></div>
+    <div class="reclive" id="reclive"><span class="blink"></span> Recording <span id="recTime">0:00</span> — <a href="#" id="recStop" style="color:#b9442f;text-decoration:underline;">stop &amp; transcribe</a></div>
 
     <div class="status" id="status"><span id="statusText">Preparing…</span><div class="prog" id="progWrap" style="display:none;"><i id="progBar"></i></div></div>
 
@@ -151,8 +135,8 @@
       <div class="segs" id="segs"></div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How does this run locally?</h2>
     <p>This page runs OpenAI's Whisper speech-recognition model directly in your browser using transformers.js. When your device supports WebGPU it runs on the GPU; otherwise it falls back to WebAssembly on the CPU. The model downloads once (about 80 MB) and is then cached, so later files start instantly. Your audio is decoded and transcribed on your own machine, which is why there is no upload, no queue, and nothing private leaving your device.</p>
     <h2>Why on-device matters</h2>
@@ -160,36 +144,20 @@
     <h2>Transcript and subtitles</h2>
     <p>You get an editable transcript plus a list of timestamped segments. Export plain text for notes, or SRT and VTT subtitle files to drop straight into a video editor or upload alongside a clip. Whisper is multilingual and detects the spoken language automatically, and you can switch the task to translate non-English audio into English text.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my audio uploaded anywhere?</summary><p>No. The Whisper model is downloaded to your browser and every file is transcribed locally. Your audio never touches a server.</p></details>
     <details><summary>Is it free, and are there limits?</summary><p>Completely free, no sign-up, no per-minute cap, no watermark. It runs on your machine, so there is no cost to pass on.</p></details>
     <details><summary>Why is the first run slow?</summary><p>The first time, the model downloads (about 80 MB) and your browser caches it. After that it loads instantly and transcription is much faster, especially on a machine with WebGPU.</p></details>
     <details><summary>What can I export?</summary><p>An editable text transcript, a plain .txt file, and SRT or VTT subtitle files with timestamps for video.</p></details>
     <details><summary>Does it work on phones?</summary><p>It runs in modern mobile browsers, but transcription is heavy. A laptop or desktop, ideally with WebGPU, is faster and more reliable for longer recordings.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>AI runs in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>AI runs in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <div class="toast" id="toast">Copied</div>
-
-<script>
-(function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
 <script>
 (function(){
   "use strict";
@@ -362,8 +330,5 @@
   window.addEventListener("load",function(){ setTimeout(function(){ try{ ensureWorker(); if(!workerReady&&!modelLoading){ modelLoading=true; worker.postMessage({type:"load",useGPU:hasWebGPU}); } }catch(e){} },1200); });
 })();
 </script>
-<!-- Polar.sh / AdSense slot (left intentionally empty for later) -->
-<!-- Analytics: Cloudflare Web Analytics beacon (public client token). -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

@@ -8,7 +8,7 @@
 <meta name="keywords" content="rep counter, ai rep counter, pushup counter, squat counter, webcam workout counter, count reps automatically, pose detection workout, exercise counter online, form checker, ai workout tracker" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="AI Rep Counter — count reps with your webcam" />
 <meta property="og:description" content="A real AI pose model counts your squats, push-ups, curls and more, entirely in your browser. Nothing is uploaded." />
 <meta property="og:type" content="website" />
@@ -19,93 +19,78 @@
 <meta name="twitter:description" content="A real AI pose model counts your reps in the browser. Private, no upload, no sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/rep-counter.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"AI Rep Counter","url":"https://hammyasf.github.io/rep-counter.html","applicationCategory":"HealthApplication","operatingSystem":"Any (web browser with a camera)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Count workout reps automatically from your webcam using an on-device pose-detection AI model. Squats, push-ups, curls, sit-ups, jumping jacks. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my camera video uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The pose-detection model runs entirely in your browser using WebAssembly and your GPU. Your camera frames are processed on your device and never sent to any server."}},{"@type":"Question","name":"How does it count reps?","acceptedAnswer":{"@type":"Answer","text":"A pose model finds 33 body landmarks in each camera frame. The app measures the relevant joint angle for your chosen exercise (knee angle for squats, elbow angle for push-ups and curls, and so on) and counts a rep each time you complete a full range-of-motion cycle."}},{"@type":"Question","name":"Which exercises are supported?","acceptedAnswer":{"@type":"Answer","text":"Squats, push-ups, bicep curls, sit-ups, and jumping jacks, with live form feedback and range-of-motion tracking for each."}},{"@type":"Question","name":"Do I need to install anything?","acceptedAnswer":{"@type":"Answer","text":"No. It runs in any modern browser with a webcam. There is no sign-up and no app to download."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--warn:#ffb454;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:980px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:980px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 12px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .ex-row{display:flex;flex-wrap:wrap;gap:10px;padding:18px 18px 6px;}
-  .ex{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--muted);border:1px solid var(--line-2);border-radius:100px;padding:9px 16px;font-family:var(--body);font-weight:500;font-size:14px;cursor:pointer;transition:.15s;}
-  .ex:hover{border-color:rgba(var(--accentRGB),.5);color:var(--ink);}
-  .ex.on{background:var(--accent);color:#07100e;border-color:var(--accent);font-weight:700;}
-  .stage{position:relative;margin:16px 18px;border-radius:16px;overflow:hidden;background:#05100d;aspect-ratio:4/3;border:1px solid var(--line);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  :root{--warn:#8a5a00;}
+  .ex-row{display:flex;flex-wrap:wrap;gap:10px;padding:0 0 16px;}
+  .ex{display:inline-flex;align-items:center;gap:8px;font:600 14px/1 var(--display);color:var(--ink);border:0;border-radius:999px;padding:10px 16px;cursor:pointer;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 2px 0 #e2cdb0;transition:transform .45s var(--spring-pop),background-color .2s;}
+  .ex:hover{transform:translateY(-2px) rotate(-1.5deg);}
+  .ex.on{color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);box-shadow:0 2px 0 #96331f;outline:1.5px dashed rgba(255,247,234,.6);outline-offset:-4px;}
+  /* the stage: a cream felt mat with a dashed seam; the camera (or the demo skeleton) plays on it */
+  .stage{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:4/3;background:radial-gradient(circle at 50% 40%,rgba(255,253,248,.7),transparent 65%),url(kit/felt-texture.webp),var(--cream);box-shadow:var(--sunk),inset 0 0 0 2px var(--line);}
+  .stage::after{content:"";position:absolute;inset:8px;border:2px dashed var(--line-2);border-radius:16px;pointer-events:none;z-index:5;}
   .stage video,.stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);}
   .stage video{opacity:.96;}
-  .empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:14px;z-index:3;}
-  .empty h2{font-family:var(--display);font-weight:600;font-size:24px;}
-  .empty p{color:var(--muted);font-size:14px;max-width:420px;}
-  .hud{position:absolute;left:0;right:0;bottom:0;z-index:4;display:flex;align-items:flex-end;justify-content:space-between;gap:14px;padding:16px 18px;pointer-events:none;
-    background:linear-gradient(0deg,rgba(3,9,7,.78),rgba(3,9,7,0));}
+  .empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;gap:14px;z-index:3;}
+  .empty h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,28px);color:var(--ink);}
+  .empty p{color:var(--muted);font-size:15px;max-width:440px;}
+  .hud{position:absolute;left:0;right:0;bottom:0;z-index:4;display:flex;align-items:flex-end;justify-content:space-between;gap:14px;padding:18px 22px;pointer-events:none;
+    background:linear-gradient(0deg,rgba(255,247,234,.94),rgba(255,247,234,0));}
   .repbox{display:flex;flex-direction:column;}
-  .repbox .rn{font-family:var(--display);font-weight:700;font-size:clamp(54px,11vw,90px);line-height:.92;color:var(--accent);text-shadow:0 2px 24px rgba(var(--accentRGB),.4);}
-  .repbox .rl{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#cdd8d3;margin-top:2px;}
-  .hud-r{text-align:right;font-family:var(--mono);font-size:12.5px;color:#cdd8d3;display:flex;flex-direction:column;gap:5px;}
-  .hud-r .fb{font-family:var(--body);font-weight:700;font-size:15px;color:var(--accent);max-width:240px;}
+  .repbox .rn{font-family:var(--display);font-weight:700;font-size:clamp(54px,11vw,90px);line-height:.92;color:var(--coral-dk);text-shadow:0 3px 0 rgba(84,46,30,.14);}
+  .repbox .rl{font:600 12px/1.2 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin-top:4px;}
+  .hud-r{text-align:right;font:600 12.5px/1.2 var(--display);color:var(--ink);display:flex;flex-direction:column;gap:6px;}
+  .hud-r .fb{font:600 16px/1.25 var(--display);color:var(--green);max-width:240px;}
   .hud-r .fb.warn{color:var(--warn);}
-  .gauge{width:160px;max-width:42vw;height:8px;border-radius:5px;background:rgba(255,255,255,.14);overflow:hidden;margin-left:auto;}
-  .gauge i{display:block;height:100%;width:0;background:var(--accent);transition:width .08s linear;}
-  .badge{position:absolute;top:12px;left:12px;z-index:4;font-family:var(--mono);font-size:11.5px;color:#cdd8d3;background:rgba(3,9,7,.6);border:1px solid var(--line);padding:5px 10px;border-radius:100px;display:flex;align-items:center;gap:7px;}
-  .badge .ld{width:8px;height:8px;border-radius:50%;background:var(--warn);box-shadow:0 0 8px var(--warn);}
-  .badge.live .ld{background:var(--accent);box-shadow:0 0 8px var(--accent);}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:4px 18px 18px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .gauge{width:160px;max-width:42vw;height:10px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;margin-left:auto;}
+  .gauge i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(#f07a66,var(--coral) 60%,#d4513e);transition:width .08s linear;}
+  .badge{position:absolute;top:16px;left:16px;z-index:4;font:600 12px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 2px 0 #e2cdb0;padding:7px 11px;border-radius:999px;display:flex;align-items:center;gap:7px;}
+  .badge .ld{width:10px;height:10px;border-radius:50%;background:#d6a43a;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15);}
+  .badge.live .ld{background:var(--green);box-shadow:inset 0 -2px 0 rgba(0,0,0,.15),0 0 0 3px rgba(63,122,85,.2);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:18px;padding-top:18px;border-top:2px dashed var(--line);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .stat-strip{display:flex;flex-wrap:wrap;gap:10px 26px;padding:0 18px 18px;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  .stat-strip b{color:var(--accent);font-weight:500;}
-  .toggle{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;}
-  .toggle input{accent-color:var(--accent);width:16px;height:16px;}
-  .note{padding:0 18px 16px;font-family:var(--mono);font-size:12px;color:var(--faint);}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){.hud-r .fb{max-width:150px;font-size:13px;}.gauge{width:110px;}}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .stat-strip{display:flex;flex-wrap:wrap;gap:10px;padding:16px 0 0;}
+  .stat-strip > span{font:600 13px/1 var(--display);color:var(--ink);border-radius:999px;padding:8px 13px;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 2px 0 #e2cdb0;}
+  .stat-strip b{color:var(--coral-dk);font-weight:600;}
+  .toggle{display:inline-flex;align-items:center;gap:10px;font:600 14px/1.2 var(--display);color:var(--ink);cursor:pointer;}
+  .note{margin:16px 0 0;padding:14px 18px;border-radius:16px;color:var(--coral-dk);background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 12%,var(--cream));outline:2px dashed rgba(185,68,47,.4);outline-offset:-6px;font-size:14.5px;}
+  @media(max-width:560px){.stage:has(> .empty:not([style*="none"])){aspect-ratio:auto;min-height:400px;}.hud{padding:14px 16px;}.hud-r .fb{max-width:150px;font-size:14px;}.gauge{width:110px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"AI Rep Counter","url":"https://hammyasf.github.io/rep-counter.html","applicationCategory":"HealthApplication","operatingSystem":"Any (web browser with a camera)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Count workout reps automatically from your webcam using an on-device pose-detection AI model. Squats, push-ups, curls, sit-ups, jumping jacks. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my camera video uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The pose-detection model runs entirely in your browser using WebAssembly and your GPU. Your camera frames are processed on your device and never sent to any server."}},{"@type":"Question","name":"How does it count reps?","acceptedAnswer":{"@type":"Answer","text":"A pose model finds 33 body landmarks in each camera frame. The app measures the relevant joint angle for your chosen exercise (knee angle for squats, elbow angle for push-ups and curls, and so on) and counts a rep each time you complete a full range-of-motion cycle."}},{"@type":"Question","name":"Which exercises are supported?","acceptedAnswer":{"@type":"Answer","text":"Squats, push-ups, bicep curls, sit-ups, and jumping jacks, with live form feedback and range-of-motion tracking for each."}},{"@type":"Question","name":"Do I need to install anything?","acceptedAnswer":{"@type":"Answer","text":"No. It runs in any modern browser with a webcam. There is no sign-up and no app to download."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · AI runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-rep-counter">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">AI Rep Counter</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">Free tool · AI runs in your browser</span>
     <h1>AI Rep Counter</h1>
     <p class="sub">Point your webcam at yourself and it counts your squats, push-ups, curls, sit-ups and jumping jacks automatically — with live form feedback. A real pose-tracking model runs on your device, so your camera never leaves your machine.</p>
-    <span class="priv">&#128274; 100% private — your camera feed never leaves your device</span>
+    <p class="priv">&#128274; 100% private — your camera feed never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="ex-row" id="exRow">
       <button class="ex on" data-ex="squat">Squats</button>
@@ -151,8 +136,8 @@
     </div>
     <div class="note" id="errNote" style="display:none;"></div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it counts your reps</h2>
     <p>When you start your camera, the page loads a pose-detection model called MediaPipe Pose Landmarker. On every frame it finds 33 points on your body — shoulders, elbows, wrists, hips, knees, ankles and more. From those points it measures the one joint angle that defines your chosen exercise: the knee angle for squats, the elbow angle for push-ups and curls, the hip angle for sit-ups, and the shoulder angle for jumping jacks.</p>
     <p>A small state machine watches that angle. Each time you move from the resting position, through the full range of the movement, and back, it logs one rep. It also tracks how deep you went and how long the rep took, so it can nudge you when your range of motion gets shallow or your tempo drifts.</p>
@@ -161,32 +146,22 @@
     <h2>Tips for an accurate count</h2>
     <p>Stand back far enough that your whole body is in frame, with even lighting and a reasonably clear background. For squats and push-ups a side-on angle reads depth best; for curls and jumping jacks face the camera. Loose, contrasting clothing helps the model find your joints. If the count pauses, it usually means part of your body left the frame.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my camera video uploaded anywhere?</summary><p>No. The pose model runs entirely in your browser. Frames are processed on your device and never sent to a server, which is why it is private and works offline once the model has loaded.</p></details>
     <details><summary>Which exercises does it support?</summary><p>Squats, push-ups, bicep curls, sit-ups, and jumping jacks, each with its own joint-angle logic, range-of-motion gauge, and form feedback.</p></details>
     <details><summary>Why is the first load slow?</summary><p>It downloads the pose model (about 5&nbsp;MB) once. After that your browser caches it, so future visits start almost instantly.</p></details>
     <details><summary>It is not counting — what is wrong?</summary><p>Make sure your whole body is in frame and well lit. The counter only advances when it can clearly see the joints for your exercise, so step back or improve the lighting if it stalls.</p></details>
     <details><summary>Does it work on my phone?</summary><p>Yes, in most modern mobile browsers. Prop the phone up so it can see your full body. Performance depends on your device, but the lite model is tuned to run smoothly on phones.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- ===== core app + rep engine (plain script, unit-tested in Node) ===== -->
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   /* ---------- pure geometry + rep engine (also exported for Node tests) ---------- */
   function clamp(v,lo,hi){ return v<lo?lo:v>hi?hi:v; }
@@ -328,7 +303,7 @@
 
   var curKey="squat", counter=new RepCounter("squat");
   var landmarker=null, stream=null, raf=null, demoT=null, running=false, mode=null, setStart=0;
-  var accent=function(){ return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#2be3b0"; };
+  var accent=function(){ return getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#b9442f"; };
 
   document.querySelectorAll(".ex").forEach(function(b){
     b.addEventListener("click",function(){
@@ -358,7 +333,7 @@
     ctx.lineWidth=Math.max(3,w*0.006); ctx.strokeStyle=accent(); ctx.lineCap="round";
     ctx.shadowColor=accent(); ctx.shadowBlur=12;
     for(var i=0;i<CONN.length;i++){ var a=lm[CONN[i][0]],b=lm[CONN[i][1]]; if(!a||!b)continue; if((a.visibility!=null&&a.visibility<0.4)||(b.visibility!=null&&b.visibility<0.4))continue; ctx.beginPath(); ctx.moveTo(a.x*w,a.y*h); ctx.lineTo(b.x*w,b.y*h); ctx.stroke(); }
-    ctx.shadowBlur=0; ctx.fillStyle="#fff";
+    ctx.shadowBlur=0; ctx.fillStyle="#2d2440";
     var pts=[0,11,12,13,14,15,16,23,24,25,26,27,28];
     for(var j=0;j<pts.length;j++){ var p=lm[pts[j]]; if(!p)continue; if(p.visibility!=null&&p.visibility<0.4)continue; ctx.beginPath(); ctx.arc(p.x*w,p.y*h,Math.max(3.5,w*0.008),0,7); ctx.fill(); }
     ctx.restore();
@@ -475,8 +450,6 @@
   repL.textContent=EXERCISES[curKey].label;
 })();
 </script>
-
-<!-- ===== MediaPipe loader (ES module) ===== -->
 <script type="module">
   try{
     const m = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs");
@@ -484,11 +457,5 @@
     if(window.__onMP) window.__onMP();
   }catch(e){ console.warn("MediaPipe failed to load", e); }
 </script>
-
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
-
-<!-- AdSense / Polar.sh monetization slot (left intentionally empty for later) -->
-
 </body>
 </html>

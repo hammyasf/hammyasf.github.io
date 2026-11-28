@@ -8,7 +8,7 @@
 <meta name="keywords" content="redact pii, pii redactor, remove personal data from text, redact text online, anonymize text, scrub pii, redact before chatgpt, redact names emails, no upload pii, on-device pii detection" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Redact PII Online — 100% in Your Browser" />
 <meta property="og:description" content="Strip names, emails, phones, SSNs, cards, IPs and secrets from text. A real AI model runs locally — nothing is uploaded." />
 <meta property="og:type" content="website" />
@@ -19,108 +19,98 @@
 <meta name="twitter:description" content="Strip names, emails, phones, SSNs, cards, IPs and secrets from text. A real AI model runs locally, nothing uploaded." />
 <link rel="canonical" href="https://hammyasf.github.io/redactor.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PII Redactor","url":"https://hammyasf.github.io/redactor.html","applicationCategory":"SecurityApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Detect and redact personal data (names, emails, phones, SSNs, credit cards, IPs, secrets) from text entirely in your browser. A real on-device AI model finds names, organizations and places. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. All detection runs in your browser. The pattern matching is local JavaScript, and the AI name detector is a real model that downloads once and runs on your own device. Your text never leaves your machine."}},{"@type":"Question","name":"What kinds of personal data does it find?","acceptedAnswer":{"@type":"Answer","text":"Emails, phone numbers, credit card numbers (Luhn-checked), US Social Security numbers, IP addresses and common API keys/secrets are matched instantly with patterns. With AI detection enabled, it also finds people's names, organizations and locations."}},{"@type":"Question","name":"How does the AI name detection run without uploading my text?","acceptedAnswer":{"@type":"Answer","text":"It uses a named-entity-recognition transformer model (BERT-NER) compiled to run in the browser via Transformers.js and WebAssembly. The model downloads once (about 50 MB), is cached, and then all inference happens locally on your device."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up and no limits."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:980px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:980px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:36px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5.2vw,50px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:22px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .panel-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid var(--line);}
-  .panel-h .ttl{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* three sheets of paper sewn into the patch: the input, the controls, the output */
+  .panel{margin:0 0 18px;overflow:hidden;background:linear-gradient(rgba(255,255,255,.72) 0 0),url(kit/felt-texture.webp),var(--white);box-shadow:0 3px 0 #e2cdb0,0 10px 20px rgba(84,46,30,.12);outline-color:var(--line);transition:outline-color .2s;}
+  .panel:last-child{margin-bottom:0;}
+  .panel:nth-child(2){background:linear-gradient(rgba(255,247,234,.45) 0 0),url(kit/felt-texture.webp),var(--cream);}
+  .panel:focus-within{outline-color:var(--green);}
+  .panel-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px 12px;border-bottom:2px dashed var(--line);}
+  .panel-h .ttl{font:600 12.5px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  #count{color:var(--coral-dk);}
   .tools{display:flex;gap:8px;flex-wrap:wrap;}
   .ed{position:relative;}
-  textarea{width:100%;min-height:200px;resize:vertical;background:transparent;border:none;color:var(--ink);font-family:var(--mono);font-size:13.5px;line-height:1.65;padding:18px;outline:none;}
-  .ed.over::after{content:"Drop a .txt, .md, .log, .csv or .json file";position:absolute;inset:8px;border:2px dashed var(--accent);border-radius:14px;background:rgba(var(--accentRGB),.07);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;color:var(--accent);pointer-events:none;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+  .ed textarea,.out-ta{width:100%;display:block;min-height:200px;resize:vertical;background:transparent;border:0;border-radius:0;box-shadow:none;outline:0;color:var(--ink);font-family:var(--mono);font-size:13.5px;line-height:1.65;padding:18px;}
+  .ed textarea:focus,.ed textarea:focus-visible,.out-ta:focus,.out-ta:focus-visible{outline:0;box-shadow:none;background:transparent;}
+  .ed.over::after{content:"Drop a .txt, .md, .log, .csv or .json file";position:absolute;inset:8px;border:3px dashed var(--coral);border-radius:16px;background:rgba(255,247,234,.9);display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;font:600 16px/1.3 var(--display);color:var(--coral-dk);pointer-events:none;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:10px 17px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .controls{padding:16px 18px;display:flex;flex-direction:column;gap:16px;}
-  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
-  .row .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);width:100%;margin-bottom:-4px;}
-  .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-2);border-radius:100px;padding:7px 13px;font-family:var(--mono);font-size:12.5px;color:var(--ink);cursor:pointer;user-select:none;transition:.15s;background:transparent;}
-  .chip .sw{width:9px;height:9px;border-radius:50%;}
-  .chip .ct{color:var(--faint);font-size:11.5px;}
-  .chip.off{opacity:.42;}
-  .chip.ai{border-style:dashed;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .controls{padding:18px;display:flex;flex-direction:column;gap:18px;}
+  .row{display:flex;flex-wrap:wrap;gap:9px;align-items:center;}
+  .row .lbl{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);width:100%;margin-bottom:-2px;}
+  /* entity chips: white felt pills with a colour bead; switched-off ones fade */
+  .chip{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:999px;padding:8px 13px;font:600 13px/1 var(--display);color:var(--ink);cursor:pointer;user-select:none;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 2px 0 #e2cdb0;transition:transform .45s var(--spring-pop),opacity .2s;}
+  .chip:hover{transform:translateY(-1px) rotate(-1.5deg);}
+  .chip .sw{width:11px;height:11px;border-radius:50%;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15),0 0 0 1px rgba(45,36,64,.25);}
+  .chip .ct{color:var(--faint);font-size:12px;}
+  .chip.off{opacity:.45;box-shadow:none;}
+  .chip.ai{outline:1.5px dashed var(--line-2);outline-offset:-4px;}
   .chip.ai.locked{opacity:.5;cursor:not-allowed;}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  .ai-box{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border:1px solid var(--line);border-radius:14px;padding:13px 15px;background:rgba(var(--surfaceRGB),.4);}
-  .ai-box .txt{font-size:13.5px;color:#cdd8d3;flex:1;min-width:200px;}
-  .ai-box .txt b{color:var(--ink);}
-  .prog{height:6px;background:rgba(237,242,239,.1);border-radius:100px;overflow:hidden;margin-top:8px;display:none;}
-  .prog > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .25s;}
-  .status{font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .status b{color:var(--accent);}
-  .tabs{display:flex;gap:4px;}
-  .tabs button{background:transparent;border:1px solid var(--line-2);color:var(--muted);padding:7px 14px;border-radius:100px;font-family:var(--mono);font-size:12.5px;cursor:pointer;}
-  .tabs button.on{background:rgba(var(--accentRGB),.14);border-color:rgba(var(--accentRGB),.4);color:var(--accent);}
-  .view{padding:18px;font-family:var(--mono);font-size:13.5px;line-height:1.75;white-space:pre-wrap;word-break:break-word;min-height:160px;}
-  .view.hl mark{border-radius:4px;padding:1px 3px;color:#07100e;font-weight:600;}
-  .out-ta{width:100%;min-height:200px;resize:vertical;background:rgba(var(--surfaceRGB),.4);border:none;color:var(--ink);font-family:var(--mono);font-size:13.5px;line-height:1.65;padding:18px;outline:none;border-top:1px solid var(--line);}
-  .empty{padding:40px 24px;text-align:center;color:var(--muted);font-size:14px;}
-  .empty b{color:var(--ink);font-family:var(--display);font-size:18px;display:block;margin-bottom:6px;}
-  .barfoot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-top:1px solid var(--line);}
-  /* entity colors */
-  .sw-email,mark.t-email{background:#2be3b0;}
-  .sw-phone,mark.t-phone{background:#5ad1ff;}
-  .sw-name,mark.t-name{background:#ffd166;}
-  .sw-org,mark.t-org{background:#f78c6b;}
-  .sw-location,mark.t-location{background:#c792ea;}
-  .sw-ssn,mark.t-ssn{background:#ff6b6b;}
-  .sw-creditcard,mark.t-creditcard{background:#ff8fab;}
-  .sw-ip,mark.t-ip{background:#82aaff;}
-  .sw-secret,mark.t-secret{background:#ff5370;}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){textarea,.out-ta{font-size:13px;}}
+  /* the AI box: a butter felt note */
+  .ai-box{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-radius:16px;padding:14px 16px;background:url(kit/felt-texture.webp),color-mix(in srgb,var(--butter) 26%,var(--cream));outline:2px dashed rgba(214,164,58,.55);outline-offset:-6px;}
+  .ai-box .txt{font-size:14px;line-height:1.55;color:var(--ink);flex:1;min-width:200px;}
+  .ai-box .txt b{color:var(--ink);font-family:var(--display);font-weight:600;}
+  .prog{height:12px;overflow:hidden;margin-top:8px;display:none;}
+  .prog > i{display:block;height:100%;width:0;transition:width .25s;}
+  .status{font:600 13px/1.3 var(--display);}
+  .status b{font-weight:600;}
+  .seg{flex-wrap:wrap;border-radius:24px;}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;}
+  .tabs button{border:0;color:var(--muted);background:transparent;padding:8px 14px;border-radius:999px;font:600 13px/1 var(--display);cursor:pointer;transition:background-color .2s,color .2s;}
+  .tabs button:hover{color:var(--ink);}
+  .tabs button.on{color:var(--coral-dk);background:url(kit/felt-texture.webp),var(--white);box-shadow:0 2px 0 #e2cdb0;outline:1.5px dashed rgba(185,68,47,.35);outline-offset:-4px;}
+  .view{padding:18px;font-family:var(--mono);font-size:13.5px;line-height:1.85;white-space:pre-wrap;word-break:break-word;min-height:160px;color:var(--ink);}
+  .view.hl mark{border-radius:5px;padding:1px 4px;color:var(--ink);font-weight:600;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
+  .empty{padding:40px 24px;text-align:center;color:var(--muted);font-size:14.5px;}
+  .empty b{color:var(--ink);font-family:var(--display);font-weight:600;font-size:19px;display:block;margin-bottom:6px;}
+  .barfoot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-top:2px dashed var(--line);}
+  /* entity colours: felt dyes light enough for ink lettering */
+  .sw-email,mark.t-email{background:#b9dea2;}
+  .sw-phone,mark.t-phone{background:#a9cbee;}
+  .sw-name,mark.t-name{background:#f6d27a;}
+  .sw-org,mark.t-org{background:#f5ab98;}
+  .sw-location,mark.t-location{background:#d6bdee;}
+  .sw-ssn,mark.t-ssn{background:#f29a8a;}
+  .sw-creditcard,mark.t-creditcard{background:#f6b3cb;}
+  .sw-ip,mark.t-ip{background:#bccaf3;}
+  .sw-secret,mark.t-secret{background:#ee8f8f;}
+  @media(max-width:560px){.ed textarea,.out-ta{font-size:13px;}.panel-h{padding:12px 14px 10px;}.controls{padding:16px 14px;}.barfoot{padding:14px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PII Redactor","url":"https://hammyasf.github.io/redactor.html","applicationCategory":"SecurityApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Detect and redact personal data (names, emails, phones, SSNs, credit cards, IPs, secrets) from text entirely in your browser. A real on-device AI model finds names, organizations and places. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. All detection runs in your browser. The pattern matching is local JavaScript, and the AI name detector is a real model that downloads once and runs on your own device. Your text never leaves your machine."}},{"@type":"Question","name":"What kinds of personal data does it find?","acceptedAnswer":{"@type":"Answer","text":"Emails, phone numbers, credit card numbers (Luhn-checked), US Social Security numbers, IP addresses and common API keys/secrets are matched instantly with patterns. With AI detection enabled, it also finds people's names, organizations and locations."}},{"@type":"Question","name":"How does the AI name detection run without uploading my text?","acceptedAnswer":{"@type":"Answer","text":"It uses a named-entity-recognition transformer model (BERT-NER) compiled to run in the browser via Transformers.js and WebAssembly. The model downloads once (about 50 MB), is cached, and then all inference happens locally on your device."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up and no limits."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-redactor">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">PII Redactor</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>PII Redactor</h1>
     <p class="sub">Paste text or drop a file and strip out personal data before you share it, paste it into an AI, or file a bug report. Emails, phones, cards, SSNs, IPs and secrets are caught instantly, and a real AI model finds names, companies and places — all on your own device.</p>
-    <span class="priv">&#128274; 100% private — your text never leaves your browser</span>
+    <p class="priv">&#128274; 100% private — your text never leaves your browser</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="panel-h">
       <span class="ttl">Input</span>
@@ -176,8 +166,8 @@
       <span class="status" id="foot"></span>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>Everything happens locally. The structured data — emails, phone numbers, credit card numbers, Social Security numbers, IP addresses and common API keys — is matched the instant you type, using carefully written patterns in plain JavaScript. Credit card candidates are confirmed with the Luhn checksum so random 16-digit numbers do not get flagged by mistake.</p>
     <p>Names are the hard part, because there is no pattern for "this is a person." So when you turn on AI detection, the page loads a real named-entity-recognition transformer (a BERT model fine-tuned on the CoNLL-2003 task) compiled to run in your browser with Transformers.js and WebAssembly. It reads the text and labels people, organizations and locations. The model downloads once, is cached by your browser, and from then on it runs offline on your own machine. No text, and no file you drop in, is ever sent anywhere.</p>
@@ -186,38 +176,19 @@
     <h2>Pick a redaction style</h2>
     <p>Tags replace each match with a label like [EMAIL] or [NAME]. Consistent tags add a stable number so the same person stays "[NAME_1]" everywhere — useful when you want an AI to keep following who is who without learning their real identity. Blackout simply covers the text with blocks for a screenshot-ready result.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my text uploaded anywhere?</summary><p>No. Pattern matching is local JavaScript and the AI model runs in your browser via WebAssembly. Your text and any file you drop in never leave your device.</p></details>
     <details><summary>What does it detect?</summary><p>Emails, phone numbers, credit cards (Luhn-verified), US SSNs, IP addresses and common secrets/API keys instantly. With AI detection on, also names, organizations and locations.</p></details>
     <details><summary>Why does the AI model need to download?</summary><p>Running a real model locally means the weights have to live on your device. It is about 50 MB, downloads once, and your browser caches it so the next visit is instant and works offline.</p></details>
     <details><summary>Is detection perfect?</summary><p>No automated redactor is. Patterns are high-precision but unusual formats can slip through, and the AI name model can miss or over-tag. Always review the redacted output before sharing anything sensitive.</p></details>
     <details><summary>Does it work on my phone?</summary><p>Yes. The instant pattern detection works everywhere. The AI model also runs on mobile, just a little slower to load.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- ==== AdSense / Polar.sh monetization slot (left intentionally empty for later) ====
-<ins class="adsbygoogle" style="display:block" data-ad-client="" data-ad-slot="" data-ad-format="auto"></ins>
--->
-
-<script>
-(function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
   "use strict";
@@ -496,8 +467,5 @@
   render();
 })();
 </script>
-
-<!-- Analytics: Cloudflare Web Analytics beacon -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

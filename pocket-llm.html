@@ -8,7 +8,7 @@
 <meta name="keywords" content="browser llm, run llm in browser, private ai chat, local llm chat, offline ai chat, webllm, on-device ai, no api key chat, run llama in browser, chatgpt alternative private, webgpu llm, in browser ai" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Pocket LLM — a real AI model, 100% in your browser" />
 <meta property="og:description" content="Chat with a real LLM running on your own GPU. No server, no API key, private, and it works offline after the first download." />
 <meta property="og:type" content="website" />
@@ -19,116 +19,102 @@
 <meta name="twitter:description" content="A real LLM running locally on your GPU. Private, offline-capable, no sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/pocket-llm.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://esm.sh" crossorigin>
-<link rel="preconnect" href="https://huggingface.co" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Pocket LLM","url":"https://hammyasf.github.io/pocket-llm.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser with WebGPU)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Chat with a real large language model that runs entirely in your browser on your GPU, with no server, no API key, and full privacy. Works offline after the model downloads once.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does my chat get sent to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The whole model runs in your browser on your own GPU using WebGPU. Your prompts and the model's replies never leave your device. The only network request is the one-time download of the model weights from a public model host."}},{"@type":"Question","name":"How can a real LLM run in a browser tab?","acceptedAnswer":{"@type":"Answer","text":"The model weights are compiled to run with WebGPU, the browser's modern GPU compute API. WebLLM loads a quantized model and runs the same matrix math a server would, directly on your graphics card. No backend is involved."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. After a model downloads once, its weights are cached by the browser. You can reload the page, turn off your internet, and keep chatting entirely offline."}},{"@type":"Question","name":"Is it free and is there a sign-up?","acceptedAnswer":{"@type":"Answer","text":"It is completely free with no account and no API key. Because the model runs on your own hardware there is no per-message cost to anyone."}},{"@type":"Question","name":"What do I need to run it?","acceptedAnswer":{"@type":"Answer","text":"A browser with WebGPU support, such as a recent desktop Chrome or Edge, and a few hundred megabytes to a couple of gigabytes of free memory depending on the model you pick. Smaller models run on modest laptops."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:960px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:960px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5.2vw,50px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .toolbar{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;padding:18px 20px;border-bottom:1px solid var(--line);}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  select,input[type=text],textarea{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:10px 12px;font-family:var(--body);font-size:14px;}
-  select{min-width:230px;font-family:var(--mono);font-size:13px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:11px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;white-space:nowrap;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .toolbar{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;padding:0 0 16px;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl select{min-width:260px;cursor:pointer;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;white-space:nowrap;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .btn-sm{font-size:12.5px;padding:8px 13px;}
-  .status{display:flex;align-items:center;gap:10px;padding:12px 20px;font-family:var(--mono);font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--line);flex-wrap:wrap;}
-  .status .led{width:9px;height:9px;border-radius:50%;background:var(--faint);flex:none;}
-  .status.ready .led{background:var(--accent);box-shadow:0 0 10px rgba(var(--accentRGB),.8);}
-  .status.busy .led{background:var(--accent-2);animation:pulse 1s infinite;}
-  .status.err .led{background:#ff6a6a;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-sm{font-size:13.5px;padding:9px 15px;}
+  /* the model status: a sand felt pill with an LED bead */
+  .status{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;background:linear-gradient(rgba(255,247,234,.45) 0 0),url(kit/felt-texture.webp),var(--sand);box-shadow:var(--sunk);font-family:var(--mono);font-size:12.5px;flex-wrap:wrap;}
+  #statusText{flex:1 1 180px;min-width:0;}
+  .status .led{width:11px;height:11px;border-radius:50%;background:var(--line-2);flex:none;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);}
+  .status.ready .led{background:var(--green);box-shadow:inset 0 -2px 0 rgba(0,0,0,.15),0 0 0 4px rgba(63,122,85,.18);}
+  .status.busy .led{background:var(--coral);animation:pulse 1s infinite;}
+  .status.err .led{background:var(--coral-dk);}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-  .prog{height:6px;background:rgba(var(--accentRGB),.12);border-radius:6px;overflow:hidden;flex:1;min-width:120px;max-width:280px;display:none;}
-  .prog > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .25s;}
-  .persona{display:flex;flex-wrap:wrap;gap:8px;padding:14px 20px 4px;align-items:center;}
-  .chip{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);padding:6px 11px;border-radius:100px;cursor:pointer;background:transparent;transition:.15s;}
-  .chip:hover{color:var(--ink);border-color:rgba(var(--accentRGB),.4);}
-  .chip.on{background:var(--accent);color:#07100e;border-color:var(--accent);font-weight:600;}
-  .sysrow{padding:6px 20px 16px;}
-  .sysrow textarea{width:100%;min-height:42px;resize:vertical;font-size:13px;color:#cdd8d3;}
-  .sysrow .hint{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:6px;}
-  .chat{padding:6px 20px 8px;max-height:56vh;min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+  .prog{height:10px;overflow:hidden;flex:1;min-width:120px;max-width:280px;display:none;}
+  .prog > i{display:block;height:100%;width:0%;transition:width .25s;}
+  .persona{display:flex;flex-wrap:wrap;gap:8px;padding:18px 0 10px;align-items:center;}
+  .chip{font:600 13px/1 var(--display);color:var(--ink);border:0;padding:9px 14px;border-radius:999px;cursor:pointer;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 2px 0 #e2cdb0;transition:transform .45s var(--spring-pop),background-color .2s;}
+  .chip:hover{transform:translateY(-2px) rotate(-1.5deg);}
+  .chip.on{color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);box-shadow:0 2px 0 #96331f;outline:1.5px dashed rgba(255,247,234,.6);outline-offset:-4px;}
+  .sysrow{padding:0 0 4px;}
+  .sysrow textarea{width:100%;display:block;min-height:60px;resize:vertical;font-size:14px;}
+  .sysrow .hint{font:600 12.5px/1.4 var(--display);color:var(--faint);margin-top:8px;}
+  .sysrow .hint b{color:var(--ink);font-weight:600;}
+  .sysrow .hint a{color:var(--coral-dk);}
+  .chat{margin-top:16px;padding:16px 18px;max-height:56vh;min-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;border-radius:20px;background:rgba(var(--surfaceRGB),.55);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;}
   .msg{display:flex;gap:12px;align-items:flex-start;}
-  .msg .av{width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:700;}
-  .msg.user .av{background:rgba(var(--accentRGB),.16);color:var(--accent);}
-  .msg.bot .av{background:rgba(237,242,239,.08);color:var(--ink);}
+  .msg .av{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;font:700 12px/1 var(--display);box-shadow:0 2px 0 rgba(84,46,30,.22);}
+  .msg.user .av{background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);}
+  .msg.bot .av{background:url(kit/felt-texture.webp),var(--butter);color:var(--ink);}
   .msg .bub{flex:1;min-width:0;}
-  .msg .who{font-family:var(--mono);font-size:11px;color:var(--faint);margin-bottom:3px;letter-spacing:.05em;text-transform:uppercase;}
-  .msg .bub .body{font-size:15px;color:#e6efea;word-wrap:break-word;overflow-wrap:anywhere;}
+  .msg .who{font:600 11.5px/1.2 var(--display);color:var(--faint);margin-bottom:4px;letter-spacing:.06em;text-transform:uppercase;}
+  .msg .bub .body{font-size:15px;color:var(--ink);word-wrap:break-word;overflow-wrap:anywhere;}
+  .msg.user .bub .body{display:inline-block;padding:10px 15px;border-radius:4px 18px 18px 18px;background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 14%,var(--cream));}
   .msg .body p{margin:8px 0;}
   .msg .body p:first-child{margin-top:0;}
   .msg .body ul{margin:8px 0 8px 20px;}
-  .msg .body strong{color:#fff;}
-  .msg .body code{font-family:var(--mono);font-size:13px;background:rgba(237,242,239,.08);padding:1px 5px;border-radius:5px;}
-  .msg .body pre{background:#06100d;border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;margin:10px 0;}
-  .msg .body pre code{background:none;padding:0;font-size:12.5px;line-height:1.55;color:#d7e6df;}
-  .cursor{display:inline-block;width:8px;height:15px;background:var(--accent);margin-left:1px;vertical-align:text-bottom;animation:blink 1s steps(2) infinite;}
+  .msg .body strong{color:var(--ink);}
+  .msg .body code{font-family:var(--mono);font-size:13px;background:var(--sand);padding:1px 5px;border-radius:5px;}
+  /* code blocks: an ink felt chalkboard with cream chalk */
+  .msg .body pre{background:url(kit/felt-texture.webp),var(--ink);border-radius:14px;padding:14px 16px;overflow-x:auto;margin:10px 0;box-shadow:0 3px 0 #1d1730;}
+  .msg .body pre code{background:none;padding:0;font-size:12.5px;line-height:1.6;color:var(--cream);}
+  .cursor{display:inline-block;width:8px;height:15px;background:var(--coral);border-radius:2px;margin-left:1px;vertical-align:text-bottom;animation:blink 1s steps(2) infinite;}
   @keyframes blink{50%{opacity:0}}
-  .empty{text-align:center;padding:34px 10px;color:var(--muted);}
+  .empty{text-align:center;padding:30px 10px;color:var(--muted);}
   .empty h2{font-family:var(--display);font-weight:600;font-size:22px;color:var(--ink);margin-bottom:8px;}
   .examples{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px;}
-  .ex{font-size:13px;color:#cdd8d3;border:1px solid var(--line-2);padding:8px 13px;border-radius:100px;cursor:pointer;transition:.15s;background:transparent;}
-  .ex:hover{border-color:rgba(var(--accentRGB),.5);color:#fff;}
-  .composer{display:flex;gap:10px;align-items:flex-end;padding:14px 20px;border-top:1px solid var(--line);}
-  .composer textarea{flex:1;min-height:48px;max-height:160px;resize:none;font-size:15px;}
-  .composer textarea:disabled{opacity:.5;}
-  .metrics{display:flex;gap:16px;flex-wrap:wrap;padding:0 20px 16px;font-family:var(--mono);font-size:12px;color:var(--faint);}
-  .metrics b{color:var(--accent);font-weight:500;}
-  .note{padding:14px 20px;font-size:14px;color:#ffd9b0;background:rgba(255,150,80,.06);border-bottom:1px solid var(--line);display:none;}
+  .ex{font:600 13.5px/1.2 var(--display);color:var(--green);border:0;padding:9px 14px;border-radius:999px;cursor:pointer;background:url(kit/felt-texture.webp),var(--mint);outline:1.5px dashed rgba(63,122,85,.3);outline-offset:-4px;transition:transform .45s var(--spring-pop);}
+  .ex:hover{transform:translateY(-1px) rotate(-2deg);}
+  .composer{display:flex;gap:10px;align-items:flex-end;padding:16px 0 0;}
+  .composer textarea{flex:1;min-height:52px;max-height:160px;resize:none;font-size:15px;}
+  .composer textarea:disabled{opacity:.55;}
+  .metrics{display:flex;gap:16px;flex-wrap:wrap;padding:14px 4px 0;font:600 12.5px/1.3 var(--display);color:var(--faint);}
+  .metrics b{color:var(--coral-dk);font-weight:600;}
+  .note{margin:0 0 16px;padding:14px 18px;border-radius:16px;font-size:14.5px;color:#7a4a00;background:url(kit/felt-texture.webp),color-mix(in srgb,var(--butter) 28%,var(--cream));outline:2px dashed rgba(214,164,58,.6);outline-offset:-6px;display:none;}
   .note.show{display:block;}
-  .note a{color:var(--accent);}
-  section.copy{padding:24px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:26px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){.toolbar{gap:10px;}select{min-width:0;width:100%;}.ctl{width:100%;}}
+  .note a{color:var(--coral-dk);}
+  @media(max-width:560px){.toolbar{gap:10px;}.ctl select{min-width:0;width:100%;}.ctl{width:100%;}.status{border-radius:18px;}.chat{padding:14px 12px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Pocket LLM","url":"https://hammyasf.github.io/pocket-llm.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser with WebGPU)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Chat with a real large language model that runs entirely in your browser on your GPU, with no server, no API key, and full privacy. Works offline after the model downloads once.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does my chat get sent to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The whole model runs in your browser on your own GPU using WebGPU. Your prompts and the model's replies never leave your device. The only network request is the one-time download of the model weights from a public model host."}},{"@type":"Question","name":"How can a real LLM run in a browser tab?","acceptedAnswer":{"@type":"Answer","text":"The model weights are compiled to run with WebGPU, the browser's modern GPU compute API. WebLLM loads a quantized model and runs the same matrix math a server would, directly on your graphics card. No backend is involved."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. After a model downloads once, its weights are cached by the browser. You can reload the page, turn off your internet, and keep chatting entirely offline."}},{"@type":"Question","name":"Is it free and is there a sign-up?","acceptedAnswer":{"@type":"Answer","text":"It is completely free with no account and no API key. Because the model runs on your own hardware there is no per-message cost to anyone."}},{"@type":"Question","name":"What do I need to run it?","acceptedAnswer":{"@type":"Answer","text":"A browser with WebGPU support, such as a recent desktop Chrome or Edge, and a few hundred megabytes to a couple of gigabytes of free memory depending on the model you pick. Smaller models run on modest laptops."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs on your own GPU</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-pocket-llm">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Pocket LLM</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">Free tool · runs on your own GPU</span>
     <h1>Pocket LLM</h1>
     <p class="sub">A real large language model, running entirely inside this browser tab on your GPU. No server, no API key, no sign-up. Your conversation never leaves your device, and once a model downloads it keeps working with your internet off.</p>
-    <span class="priv">&#128274; 100% private — nothing you type is ever sent anywhere</span>
+    <p class="priv">&#128274; 100% private — nothing you type is ever sent anywhere</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="note" id="note"></div>
 
@@ -165,8 +151,8 @@
       <span><b>on your device</b></span>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>Pick a model and press Load. The first time, your browser downloads the model's weights from a public model host and caches them, which takes anywhere from a few seconds to a couple of minutes depending on the model size and your connection. After that, every reply is generated locally on your graphics card through WebGPU. There is no backend, no queue, and no per-message cost, because the inference happens on your own hardware.</p>
     <h2>How is a full LLM running in my browser?</h2>
@@ -176,27 +162,20 @@
     <h2>Good things to try</h2>
     <p>Ask it to rewrite a paragraph in a friendlier tone, brainstorm names for a project, explain a concept simply, draft a reply, summarize notes you paste in, or write a small code snippet. The persona buttons set a system prompt for common jobs, and you can write your own. Share your exact setup with a teammate using the persona link, which carries your chosen model and system prompt but never your conversation.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Does my conversation get sent to a server?</summary><p>No. The model runs in your browser on your GPU. Your prompts and the replies never leave your device. The only network request is the one-time download of the model weights.</p></details>
     <details><summary>What do I need to run it?</summary><p>A browser with WebGPU, such as a recent desktop Chrome or Edge, and some free memory. Smaller models need a few hundred megabytes; larger ones a couple of gigabytes. If your browser does not support WebGPU, the page will tell you.</p></details>
     <details><summary>Does it really work offline?</summary><p>Yes. Once a model has downloaded, its weights are cached. You can go offline, reload, and keep chatting. Cached models are marked in the picker.</p></details>
     <details><summary>Why is the first load slow?</summary><p>It is downloading the model, which can be hundreds of megabytes. That happens once per model, then it is instant on future visits because the weights are cached locally.</p></details>
     <details><summary>Is it as good as ChatGPT?</summary><p>These are small models chosen to run on consumer hardware, so they are not as capable as the largest hosted models. They are genuinely useful for rewriting, drafting, brainstorming, and quick questions, with the trade-off being full privacy and no cost.</p></details>
     <details><summary>Is it free?</summary><p>Completely free, no account and no API key. Because it runs on your own machine, there is nothing to bill.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Runs on your GPU · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Runs on your GPU · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 /* ===== PURE HELPERS START (unit-tested in Node; no DOM/browser deps) ===== */
 function escapeHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
@@ -289,9 +268,7 @@ if(typeof module!=="undefined" && module.exports){ module.exports={escapeHtml:es
 
 (function(){
   if(typeof document==="undefined") return;
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   // jsdelivr's bundle is first: esm.sh's web-llm build breaks at engine-create
   // time ("dirname is not a function"), so we prefer the jsdelivr +esm bundle.
@@ -576,10 +553,5 @@ if(typeof module!=="undefined" && module.exports){ module.exports={escapeHtml:es
   boot();
 })();
 </script>
-<!-- Monetization slots (left intentionally empty for now):
-     AdSense: paste the <script> + <ins class="adsbygoogle"> here once approved.
-     Polar.sh: paste a "support this tool" button here. -->
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

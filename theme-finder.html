@@ -8,7 +8,7 @@
 <meta name="keywords" content="cluster text by meaning, group similar text, theme finder, thematic analysis tool, group survey responses by theme, categorize feedback, affinity diagram tool, semantic clustering online, ai text clustering, code open ended responses" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Theme Finder — group text by meaning, in your browser" />
 <meta property="og:description" content="Paste messy text and a real AI model groups it into themes by meaning. 100% on-device, nothing uploaded." />
 <meta property="og:type" content="website" />
@@ -19,92 +19,81 @@
 <meta name="twitter:description" content="Paste messy text and a real AI model groups it into themes by meaning. On-device, private." />
 <link rel="canonical" href="https://hammyasf.github.io/theme-finder.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Theme Finder","url":"https://hammyasf.github.io/theme-finder.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Group survey responses, reviews and notes into themes by meaning using an on-device AI embedding model. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI embedding model runs entirely in your browser. Your text never leaves your device, which is why it is safe for confidential feedback and survey data."}},{"@type":"Question","name":"How does it group text by meaning?","acceptedAnswer":{"@type":"Answer","text":"Each line is turned into a 384-dimension vector by a sentence-embedding model (all-MiniLM-L6-v2) running on-device. Lines with similar meaning end up close together, and a k-means pass groups them into themes. It is meaning-based, so it groups 'shipping was slow' and 'my order took forever' together even with no shared words."}},{"@type":"Question","name":"What can I use it for?","acceptedAnswer":{"@type":"Answer","text":"Coding open-ended survey answers, grouping customer feedback or reviews, sorting support tickets, affinity-mapping research notes, de-duplicating ideas, and triaging any long list of short text into themes."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up. The model downloads once (about 25 MB) and is then cached for instant use."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  textarea#src{width:calc(100% - 36px);margin:18px;height:190px;resize:vertical;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:14px;padding:14px 16px;font-family:var(--mono);font-size:13.5px;line-height:1.7;}
-  textarea#src:focus{outline:none;border-color:var(--accent);}
-  .controls{display:flex;flex-wrap:wrap;gap:16px 22px;padding:0 24px 8px;align-items:center;}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  select#k{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:13px;}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:14px 24px 22px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  textarea#src{width:100%;display:block;height:190px;resize:vertical;font-family:var(--mono);font-size:13.5px;line-height:1.7;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:18px 0 4px;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .ctl select{min-width:210px;cursor:pointer;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:18px;padding-top:18px;border-top:2px dashed var(--line);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:12px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
   .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .linkish{background:none;border:none;color:var(--accent);font-family:var(--mono);font-size:12.5px;cursor:pointer;padding:0;}
-  .summary{font-family:var(--mono);font-size:13px;color:var(--muted);}
-  .summary b{color:var(--accent);}
-  .status{display:none;margin:0 24px 18px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:rgba(var(--surfaceRGB),.5);font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  /* the load buttons: mint felt chips */
+  .linkish{align-self:flex-start;font:600 13px/1.1 var(--display);color:var(--green);border:0;background:url(kit/felt-texture.webp),var(--mint);border-radius:999px;padding:10px 14px;cursor:pointer;outline:1.5px dashed rgba(63,122,85,.3);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .2s;}
+  .linkish:hover{transform:translateY(-1px) rotate(-2deg) scale(1.04);background:url(kit/felt-texture.webp),#e1ecd8;}
+  .summary{font:600 13px/1.3 var(--display);color:var(--muted);}
+  .summary b{color:var(--coral-dk);font-weight:600;}
+  .status{display:none;margin:18px 0 0;padding:14px 18px;border-radius:18px;background:rgba(255,255,255,.55);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;font-family:var(--mono);font-size:13px;}
   .status.show{display:block;}
-  .status b{color:var(--accent);}
-  .prog{height:7px;border-radius:99px;background:rgba(var(--accentRGB),.14);margin-top:10px;overflow:hidden;display:none;}
+  .prog{height:12px;margin-top:10px;overflow:hidden;display:none;}
   .prog.show{display:block;}
-  .prog>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .25s;}
-  .stat{display:none;flex-wrap:wrap;gap:10px 26px;align-items:center;padding:2px 24px 6px;font-family:var(--mono);font-size:13px;color:var(--muted);}
+  .prog>i{display:block;height:100%;width:0;transition:width .25s;}
+  .stat{display:none;flex-wrap:wrap;gap:10px;align-items:center;padding:18px 0 4px;font:600 13px/1.2 var(--display);color:var(--muted);}
   .stat.show{display:flex;}
-  .stat b{color:var(--ink);}
-  .themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;padding:14px 24px 24px;}
-  .theme{border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px;background:rgba(var(--surfaceRGB),.45);position:relative;overflow:hidden;}
-  .theme::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--tc,var(--accent));}
+  .stat b{color:var(--coral-dk);font-weight:600;}
+  /* each theme: a white felt card with a coloured selvage down its edge */
+  .themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:14px 0 0;}
+  .themes:empty{padding:0;}
+  .theme{border-radius:18px;padding:16px 18px 14px 22px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);outline:1.5px dashed var(--line-2);outline-offset:-6px;position:relative;overflow:hidden;}
+  .theme:nth-child(odd){rotate:-.5deg;}
+  .theme:nth-child(even){rotate:.4deg;}
+  .theme::before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:var(--tc,var(--accent));}
   .theme .top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
-  .theme .name{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.01em;text-transform:capitalize;}
-  .theme .cnt{font-family:var(--mono);font-size:12px;color:var(--tc,var(--accent));white-space:nowrap;}
-  .theme .quote{margin-top:9px;font-size:14px;color:#cdd8d3;font-style:italic;border-left:2px solid var(--line-2);padding-left:10px;}
+  .theme .name{font-family:var(--display);font-weight:600;font-size:18px;color:var(--ink);text-transform:capitalize;}
+  .theme .cnt{font:600 12.5px/1 var(--display);color:var(--tc,var(--accent));white-space:nowrap;}
+  .theme .quote{margin-top:10px;font-size:14.5px;color:var(--ink);font-style:italic;border-left:3px dashed var(--line-2);padding-left:11px;}
   .theme ul{list-style:none;margin-top:12px;max-height:0;overflow:hidden;transition:max-height .3s var(--ease);}
   .theme ul.open{max-height:1400px;overflow:auto;}
-  .theme li{font-size:13px;color:var(--muted);padding:6px 0;border-top:1px solid var(--line);word-break:break-word;}
-  .theme .toggle{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--tc,var(--accent));background:none;border:none;cursor:pointer;padding:0;}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .theme li{font-size:13.5px;color:var(--muted);padding:7px 0;border-top:2px dashed var(--line);word-break:break-word;}
+  .theme .toggle{margin-top:10px;font:600 13px/1 var(--display);color:var(--tc,var(--accent));background:none;border:none;cursor:pointer;padding:4px 0;}
+  .theme .toggle:hover{text-decoration:underline;}
+  @media(max-width:560px){.ctl select{min-width:0;width:100%;}.controls .ctl:first-child{width:100%;}.themes{grid-template-columns:1fr;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Theme Finder","url":"https://hammyasf.github.io/theme-finder.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Group survey responses, reviews and notes into themes by meaning using an on-device AI embedding model. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my text uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The AI embedding model runs entirely in your browser. Your text never leaves your device, which is why it is safe for confidential feedback and survey data."}},{"@type":"Question","name":"How does it group text by meaning?","acceptedAnswer":{"@type":"Answer","text":"Each line is turned into a 384-dimension vector by a sentence-embedding model (all-MiniLM-L6-v2) running on-device. Lines with similar meaning end up close together, and a k-means pass groups them into themes. It is meaning-based, so it groups 'shipping was slow' and 'my order took forever' together even with no shared words."}},{"@type":"Question","name":"What can I use it for?","acceptedAnswer":{"@type":"Answer","text":"Coding open-ended survey answers, grouping customer feedback or reviews, sorting support tickets, affinity-mapping research notes, de-duplicating ideas, and triaging any long list of short text into themes."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up. The model downloads once (about 25 MB) and is then cached for instant use."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · AI runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="ai">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-theme-finder">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Theme Finder</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-ai"/></svg></span>
+    <span class="tag chip">Free tool · AI runs in your browser</span>
     <h1>Theme Finder</h1>
     <p class="sub">Paste a pile of survey answers, reviews, or notes — one per line — and a real AI model groups them into themes by <em>meaning</em>, not keywords. It runs entirely on your device.</p>
-    <span class="priv">&#128274; 100% private — the model runs locally, your text never leaves your device</span>
+    <p class="priv">&#128274; 100% private — the model runs locally, your text never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <textarea id="src" placeholder="Paste one item per line…&#10;e.g. survey responses, app reviews, support tickets, feedback, ideas, notes&#10;&#10;The more lines you give it, the better the themes."></textarea>
     <div class="controls">
@@ -134,8 +123,8 @@
     <div class="stat" id="stat"></div>
     <div class="themes" id="themes"></div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>What it does</h2>
     <p>Drop in any long list of short text — open-ended survey answers, app-store reviews, customer feedback, support tickets, user-research notes, a brain-dump of ideas — and Theme Finder sorts it into a handful of themes. Because it groups by meaning, it puts "checkout kept crashing" and "the payment screen froze" in the same theme even though they share no words. You get a labelled bucket for each theme, a representative quote, the full list of items in it, and a CSV you can take into a spreadsheet.</p>
     <h2>How it works (and how it runs locally)</h2>
@@ -143,36 +132,19 @@
     <h2>Why on-device matters</h2>
     <p>Feedback and survey data are often confidential. Sending them to a cloud API can be a non-starter for legal, privacy, or contract reasons. Here nothing is uploaded — the model executes on your own machine — so you can throw real, sensitive data at it without it ever leaving the page. It is also free, has no row limits, and keeps working with your network off.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my text uploaded anywhere?</summary><p>No. The AI model runs locally in your browser via WebAssembly/WebGPU. Your text never touches a server, which is why it is safe for confidential feedback and survey data.</p></details>
     <details><summary>How is this different from keyword grouping?</summary><p>It groups by meaning, not matching words. "Shipping was slow" and "my order took forever" go in the same theme even with nothing in common on the surface, because the embedding model understands they mean the same thing.</p></details>
     <details><summary>How many lines should I give it?</summary><p>It works from a handful, but themes get sharper with more — 30 to a few hundred lines is the sweet spot. It handles over a thousand; very large lists are limited only by your device's memory.</p></details>
     <details><summary>Can I control the number of themes?</summary><p>Yes. Leave it on Auto and it picks a sensible number, or set an exact count. Changing the count re-groups instantly without re-loading the model.</p></details>
     <details><summary>Is it free?</summary><p>Completely free, no sign-up. The model downloads once (~25 MB) and is cached after that.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- Monetization slots for later: AdSense / Polar.sh upgrade slot goes here. -->
-
-<script>
-(function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script type="module">
 import { pipeline, env } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1";
 env.allowLocalModels = false;
@@ -314,7 +286,7 @@ var srcEl=document.getElementById("src"), kEl=document.getElementById("k"),
     statEl=document.getElementById("stat"), themesEl=document.getElementById("themes"),
     sampleBtn=document.getElementById("sample"), pickBtn=document.getElementById("pick"), fileEl=document.getElementById("file");
 
-var PALETTE=["#2be3b0","#7c9cff","#ffb14e","#ff6a8b","#9b8cff","#43d4e6","#c2e34e","#ff8e5e","#5ee0a8","#e89bff","#7fd1ff","#ffd166"];
+var PALETTE=["#3f7a55","#3d6da3","#8a5a00","#b9442f","#7b4fb0","#1f7a73","#56702a","#a8481c","#a8325f","#9a3f8f","#2e6f9e","#866000"];
 var SAMPLE=[
 "Shipping took almost two weeks, way longer than promised","My order still has not arrived after 10 days","Delivery was super fast, got it the next morning","The package showed up damaged and soaking wet","Tracking never updated so I had no idea where it was","Got my parcel in 2 days, really impressed with the speed",
 "The app crashes every time I open the camera","Checkout freezes on the payment step and I lose my cart","It keeps logging me out randomly","The new update made the whole thing really laggy","Search bar does nothing when I tap it","Photos fail to upload about half the time",
@@ -446,7 +418,5 @@ sampleBtn.addEventListener("click",function(){ srcEl.value=SAMPLE.join("\n"); la
 pickBtn.addEventListener("click",function(){ fileEl.click(); });
 fileEl.addEventListener("change",function(){ var f=fileEl.files[0]; if(!f)return; var rd=new FileReader(); rd.onload=function(){ srcEl.value=String(rd.result); lastItems=null; var c=parseItems(srcEl.value).length; sumEl.textContent=c+" lines loaded — click Find themes"; }; rd.readAsText(f); });
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>
