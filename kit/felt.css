@@ -275,9 +275,10 @@ label:has(> .switch), .tool-ui label:has(> input[type=checkbox]) { display: inli
 .tip:hover::after, .tip:focus-visible::after { opacity: 1; transform: translate(-50%, 0) scale(1); transition: transform .5s var(--spring-pop), opacity .12s; }
 .tip:hover::before, .tip:focus-visible::before { opacity: 1; transform: translate(-50%, 0) rotate(45deg) scale(1); transition: transform .5s var(--spring-pop), opacity .12s; }
 
-/* footer: a seam across the bottom */
+/* footer: a seam across the bottom. The bottom padding is room for the fixed Menu button (.xfab: 16px off the edge, ~44px tall)
+   so at the end of the page it floats below the footer's links, never on them (scripts/xfab-check.mjs checks it). */
 .site-foot {
-  width: min(1120px, 100% - 32px); margin: 72px auto 0; padding: 22px 4px 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  width: min(1120px, 100% - 32px); margin: 72px auto 0; padding: 22px 4px 84px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
   gap: 10px 24px; color: var(--mute); font-size: 14px; border-top: 2px dashed var(--thread);
 }
 .site-foot nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
