@@ -8,7 +8,7 @@
 <meta name="keywords" content="how flexbox works, flexbox playground, flex-grow vs flex-basis, flex-shrink explained, justify-content, align-items, css flexbox tutorial, flexbox algorithm, min-width auto flexbox, flexbox layout engine" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Freespace — see exactly how CSS flexbox lays out your page" />
 <meta property="og:description" content="A from-scratch flexbox engine running side by side with your browser's, with the algorithm's every step shown in live numbers." />
@@ -20,121 +20,108 @@
 <meta name="twitter:description" content="A from-scratch flexbox engine running side by side with your browser's own, step by step." />
 <link rel="canonical" href="https://hammyasf.github.io/flexbox-lab.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Freespace — Flexbox Lab","url":"https://hammyasf.github.io/flexbox-lab.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A CSS flexbox layout engine written from scratch that runs beside your browser's own layout, showing the algorithm step by step with live numbers.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between flex-basis and width?","acceptedAnswer":{"@type":"Answer","text":"flex-basis is the size an item starts at before any free space is handed out or taken away, measured along the main axis. width is a normal CSS size. If flex-basis is anything other than auto it wins over width on the main axis. If flex-basis is auto, the item falls back to its width, and if that is auto too it falls back to the size of its content."}},{"@type":"Question","name":"Why does flex-grow: 2 not make an item twice as wide?","acceptedAnswer":{"@type":"Answer","text":"flex-grow does not divide the container, it divides the leftover free space. Every item starts at its flex base size, the leftover space is split in proportion to the grow factors, and each item keeps its base size plus its share. An item with grow 2 gets twice the extra space, not twice the width."}},{"@type":"Question","name":"Why does my flex item refuse to shrink below its content?","acceptedAnswer":{"@type":"Answer","text":"A flex item's min-width defaults to auto, not zero, which resolves to an automatic minimum size roughly the size of its content. Shrinking stops there and the item overflows instead. Setting min-width: 0 (or min-height: 0 in a column) is the usual fix."}},{"@type":"Question","name":"Is anything uploaded when I use this?","acceptedAnswer":{"@type":"Answer","text":"No. The layout engine, the comparison against your browser and the fuzz test all run locally in your browser tab. There is no server and nothing is sent anywhere."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);--warn:#ffb454;--bad:#ff6a6a;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1180px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a{color:var(--muted);}nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 10px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.2vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:720px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  :root{--warn:#8a5a00;--bad:#b3263c;--teal:43,118,114;}
   .app{margin:26px 0 10px;display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;align-items:start;}
-  @media(max-width:960px){.app{grid-template-columns:1fr;}}
-  .panel{border:1px solid var(--line);border-radius:18px;background:rgba(var(--surfaceRGB),.55);}
-  .panel h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500;padding:14px 16px 0;}
-  .pad{padding:14px 16px 16px;}
+  /* on narrow screens the stage scrolls inside its pocket (the containers keep their exact pixel widths), so the page never scrolls sideways */
+  @media(max-width:960px){.app{grid-template-columns:minmax(0,1fr);}}
+  .panel h3{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:18px 20px 0;}
+  .pad{padding:14px 18px 18px;}
   .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;}
   .row label{font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap;}
-  .row .v{font-family:var(--mono);font-size:11.5px;color:var(--accent);min-width:44px;text-align:right;}
-  select,input[type=number],input[type=text]{background:rgba(var(--surfaceRGB),.85);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:6px 8px;font-family:var(--mono);font-size:12px;max-width:100%;}
-  select{width:158px;}
-  input[type=range]{accent-color:var(--accent);width:130px;}
-  input[type=number]{width:66px;}
+  .row .v{font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--coral-dk);min-width:44px;text-align:right;}
+  .tool-ui select,.tool-ui input[type=number]{padding:7px 10px;font:500 12px/1.3 var(--mono);border-radius:10px;max-width:100%;}
+  .tool-ui select{width:158px;padding-right:26px;background-position:right 9px center;background-size:10px auto;}
+  .tool-ui input[type=range]{width:130px;}
+  .tool-ui input[type=number]{width:66px;}
+  .tool-ui input[type=number]:disabled{opacity:.5;}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
-  .chip{font-family:var(--mono);font-size:12px;padding:5px 11px;border-radius:8px;border:1px solid var(--line-2);color:var(--muted);cursor:pointer;background:transparent;transition:.15s;}
-  .chip.on{background:var(--accent);color:#07100e;border-color:var(--accent);font-weight:600;}
-  .chip.mini{padding:4px 8px;font-size:11px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line-2);font-weight:500;}
+  .chip{font:600 12.5px/1 var(--mono);padding:7px 12px;border-radius:999px;border:0;color:var(--muted);cursor:pointer;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);outline:0;transition:transform .45s var(--spring-pop),background-color .2s,color .2s;}
+  .chip:hover{color:var(--ink);transform:translateY(-1px) rotate(-1.5deg);}
+  .chip.on{background:url(kit/felt-texture.webp),var(--green);color:var(--white);box-shadow:0 3px 0 #2c5a3d,0 6px 14px rgba(63,122,85,.25);outline:1.5px dashed rgba(255,247,234,.55);outline-offset:-4px;}
+  .chip.on:hover{color:var(--white);}
+  .chip.mini{padding:6px 10px;font-size:11.5px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:11px 18px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px) scale(1.03);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn.ghost{color:var(--ink);background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
+  .btn.ghost::before{content:none;}
   .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
-  .stagebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--line);}
-  .badge{font-family:var(--mono);font-size:11.5px;padding:5px 10px;border-radius:100px;border:1px solid rgba(var(--accentRGB),.35);color:var(--accent);}
-  .badge.bad{border-color:rgba(255,106,106,.5);color:var(--bad);}
-  .stagewrap{padding:16px;display:grid;gap:14px;}
+  .stagebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 18px 14px;border-bottom:2px dashed var(--line);}
+  .badge{font:600 12px/1.2 var(--mono);padding:7px 12px;border-radius:999px;color:var(--green);background:url(kit/felt-texture.webp),var(--mint);outline:1.5px dashed rgba(63,122,85,.35);outline-offset:-4px;}
+  .badge.bad{color:var(--bad);background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 14%,var(--cream));outline-color:rgba(179,38,60,.4);}
+  .stagewrap{padding:18px;display:grid;gap:16px;overflow-x:auto;}
   .stage{position:relative;}
-  .stage .cap{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:7px;display:flex;gap:8px;align-items:center;}
+  .stage .cap{font:600 11.5px/1.3 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;display:flex;gap:8px;align-items:center;}
   /* outline, not border: a border would shrink the container's content box
-     by 2px and the comparison against the browser would be unfair */
-  .box{position:relative;outline:1px dashed var(--line-2);outline-offset:-1px;border-radius:10px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.018) 0 8px,transparent 8px 16px);max-width:100%;}
-  .fitem{position:absolute;border-radius:7px;background:rgba(var(--accentRGB),.16);border:1px solid rgba(var(--accentRGB),.55);color:var(--ink);font-family:var(--mono);font-size:11.5px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;transition:background .15s,border-color .15s;}
-  .fitem.sel{background:rgba(var(--accentRGB),.34);border-color:var(--accent);box-shadow:0 0 0 2px rgba(var(--accentRGB),.3);}
-  .fitem.hl{background:var(--warn);color:#1a1000;border-color:var(--warn);}
+  by 2px and the comparison against the browser would be unfair */
+  .box{position:relative;outline:2px dashed var(--line-2);outline-offset:-1px;border-radius:10px;background:repeating-linear-gradient(45deg,rgba(45,36,64,.035) 0 8px,transparent 8px 16px),var(--cream);box-shadow:var(--sunk);}
+  .fitem{position:absolute;border-radius:7px;background:rgba(var(--accentRGB),.14);border:1px solid rgba(var(--accentRGB),.55);color:var(--ink);font-family:var(--mono);font-size:11.5px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;transition:background .15s,border-color .15s;}
+  .fitem.sel{background:rgba(var(--accentRGB),.28);border-color:var(--accent);box-shadow:0 0 0 2px rgba(var(--accentRGB),.3);}
+  .fitem.hl{background:var(--butter);color:var(--ink);border-color:#d6a43a;}
   .fitem .lb{font-weight:600;}
-  .fitem .sz{opacity:.65;font-size:10px;margin-left:6px;}
+  .fitem .sz{opacity:.75;font-size:10px;margin-left:6px;}
   /* no border and no overflow:hidden here on purpose: a border would change
-     the measured size, and overflow:hidden switches off the automatic
-     minimum size, which is one of the things this page is about */
-  .bitem{border-radius:7px;background:rgba(20,195,201,.14);box-shadow:inset 0 0 0 1px rgba(20,195,201,.5);color:var(--ink);font-family:var(--mono);font-size:11.5px;display:block;overflow:visible;}
+  the measured size, and overflow:hidden switches off the automatic
+  minimum size, which is one of the things this page is about */
+  .bitem{border-radius:7px;background:rgba(var(--teal),.13);box-shadow:inset 0 0 0 1px rgba(var(--teal),.55);color:var(--ink);font-family:var(--mono);font-size:11.5px;display:block;overflow:visible;}
   .bitem > div{flex:0 0 auto;}
   .ghostrect{position:absolute;border:1.5px dashed var(--accent);border-radius:7px;pointer-events:none;}
   .ovbadge{position:absolute;right:6px;top:6px;font-family:var(--mono);font-size:10px;color:var(--faint);}
-  .trace{border-top:1px solid var(--line);}
-  .step{border-bottom:1px solid var(--line);padding:12px 16px;}
-  .step .st{font-family:var(--mono);font-size:11.5px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;}
-  .step .sd{font-size:13.5px;color:#cdd8d3;margin-top:5px;}
+  .trace{border-top:2px dashed var(--line);margin-top:14px;}
+  .step{border-bottom:2px dashed var(--line);padding:14px 20px;}
+  .step:last-child{border-bottom:0;}
+  .step .st{font:600 12px/1.3 var(--mono);color:var(--coral-dk);letter-spacing:.06em;text-transform:uppercase;}
+  .step .sd{font-size:14px;color:var(--ink);margin-top:5px;line-height:1.55;}
   .step table{width:100%;border-collapse:collapse;margin-top:8px;font-family:var(--mono);font-size:11.5px;}
-  .step th{text-align:left;color:var(--faint);font-weight:500;padding:3px 8px 3px 0;border-bottom:1px solid var(--line);white-space:nowrap;}
-  .step td{padding:3px 8px 3px 0;color:var(--muted);border-bottom:1px solid rgba(237,242,239,.05);white-space:nowrap;}
-  .step td.k{color:var(--ink);}
-  .step td em{color:var(--warn);font-style:normal;}
+  .step th{text-align:left;color:var(--faint);font-weight:600;padding:4px 8px 4px 0;border-bottom:2px solid var(--line);white-space:nowrap;}
+  .step td{padding:4px 8px 4px 0;color:var(--muted);border-bottom:1px solid rgba(45,36,64,.08);white-space:nowrap;}
+  .step td.k{color:var(--ink);font-weight:600;}
+  .step td em{color:var(--warn);font-style:normal;font-weight:600;}
   .step .frozen{color:var(--faint);}
   .scroll{overflow-x:auto;}
-  .cssout{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:pre;overflow-x:auto;padding:14px 16px;line-height:1.6;}
-  .cssout .p{color:var(--accent);}
-  .fuzz{padding:14px 16px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .fuzz b{color:var(--ink);font-weight:500;}
-  .bar{height:6px;border-radius:100px;background:rgba(237,242,239,.08);overflow:hidden;margin-top:8px;}
-  .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s;}
+  .cssout{font-family:var(--mono);font-size:12.5px;color:var(--ink);white-space:pre;overflow-x:auto;margin:14px 18px;padding:14px 16px;line-height:1.6;border-radius:14px;background:#fffbf4;box-shadow:var(--sunk);outline:1.5px dashed var(--line-2);outline-offset:-5px;}
+  .cssout .p{color:var(--coral-dk);}
+  .fuzz{padding:16px 18px;border-top:2px dashed var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .fuzz b{color:var(--ink);font-weight:600;}
+  .bar{height:10px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;margin-top:12px;}
+  .bar i{display:block;height:100%;border-radius:999px;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);background-size:8px 11px,auto;width:0;transition:width .2s;}
   .note{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:10px;line-height:1.6;}
-  section.copy{margin:34px 0;max-width:760px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:26px;letter-spacing:-.02em;margin:26px 0 10px;}
-  section.copy p{color:#c3d0cb;margin-top:10px;font-size:16px;}
-  section.copy code{font-family:var(--mono);font-size:13.5px;color:var(--accent);background:rgba(var(--accentRGB),.08);padding:1px 5px;border-radius:5px;}
-  .faq{max-width:760px;margin:20px 0 30px;}
-  .faq details{border-top:1px solid var(--line);padding:14px 0;}
-  .faq summary{cursor:pointer;font-family:var(--display);font-weight:500;font-size:17px;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq summary:before{content:"+ ";color:var(--accent);}
-  .faq details[open] summary:before{content:"– ";}
-  .faq p{color:var(--muted);margin-top:8px;font-size:15px;}
-  .cta{border:1px solid rgba(var(--accentRGB),.28);background:rgba(var(--accentRGB),.05);border-radius:18px;padding:24px;max-width:760px;margin:10px 0 30px;}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:21px;}
-  .cta p{color:var(--muted);margin-top:8px;font-size:15px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Freespace — Flexbox Lab","url":"https://hammyasf.github.io/flexbox-lab.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A CSS flexbox layout engine written from scratch that runs beside your browser's own layout, showing the algorithm step by step with live numbers.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the difference between flex-basis and width?","acceptedAnswer":{"@type":"Answer","text":"flex-basis is the size an item starts at before any free space is handed out or taken away, measured along the main axis. width is a normal CSS size. If flex-basis is anything other than auto it wins over width on the main axis. If flex-basis is auto, the item falls back to its width, and if that is auto too it falls back to the size of its content."}},{"@type":"Question","name":"Why does flex-grow: 2 not make an item twice as wide?","acceptedAnswer":{"@type":"Answer","text":"flex-grow does not divide the container, it divides the leftover free space. Every item starts at its flex base size, the leftover space is split in proportion to the grow factors, and each item keeps its base size plus its share. An item with grow 2 gets twice the extra space, not twice the width."}},{"@type":"Question","name":"Why does my flex item refuse to shrink below its content?","acceptedAnswer":{"@type":"Answer","text":"A flex item's min-width defaults to auto, not zero, which resolves to an automatic minimum size roughly the size of its content. Shrinking stops there and the item overflows instead. Setting min-width: 0 (or min-height: 0 in a column) is the usual fix."}},{"@type":"Question","name":"Is anything uploaded when I use this?","acceptedAnswer":{"@type":"Answer","text":"No. The layout engine, the comparison against your browser and the fuzz test all run locally in your browser tab. There is no server and nothing is sent anywhere."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">Lab</a><a href="blog.html">Writing</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Layout engine · Explorable</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="dev">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-flexbox-lab">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Freespace</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-dev"/></svg></span>
+    <span class="tag chip">Layout engine · Explorable</span>
     <h1>Freespace</h1>
     <p class="sub">A complete CSS flexbox layout engine, written from scratch in plain JavaScript, laying out the same boxes your browser does — side by side, with every step of the algorithm and its actual numbers on screen. Move a slider and watch where the free space really goes.</p>
-    <span class="priv">Runs entirely in your browser · nothing uploaded</span>
+    <p class="priv">Runs entirely in your browser · nothing uploaded</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="app">
     <!-- ============ LEFT: controls ============ -->
     <div>
@@ -189,11 +176,11 @@
         </div>
         <div class="stagewrap" id="stagewrap">
           <div class="stage" id="stageA">
-            <div class="cap"><span style="width:9px;height:9px;border-radius:2px;background:rgba(43,227,176,.6);display:inline-block"></span> My engine — 640 lines of JavaScript, no libraries</div>
+            <div class="cap"><span style="width:9px;height:9px;border-radius:2px;background:rgba(185,68,47,.6);display:inline-block"></span> My engine — 640 lines of JavaScript, no libraries</div>
             <div class="box" id="boxA"></div>
           </div>
           <div class="stage" id="stageB">
-            <div class="cap"><span style="width:9px;height:9px;border-radius:2px;background:rgba(20,195,201,.6);display:inline-block"></span> Your browser — real <span style="color:var(--muted)">display:flex</span></div>
+            <div class="cap"><span style="width:9px;height:9px;border-radius:2px;background:rgba(43,118,114,.6);display:inline-block"></span> Your browser — real <span style="color:var(--muted)">display:flex</span></div>
             <div class="box" id="boxB"></div>
           </div>
         </div>
@@ -220,8 +207,8 @@
   <!-- AdSense slot (leave empty until approved)
   <div class="adslot" data-slot="flexbox-lab-mid"></div> -->
   <!-- Polar.sh / sponsor slot: <div id="sponsor"></div> -->
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How this works</h2>
     <p>Flexbox has a reputation for being unpredictable, and it isn't. It runs a fixed algorithm, written down in the CSS Flexible Box Layout spec, and the reason it feels arbitrary is that the algorithm is invisible: you change <code>flex-grow</code>, boxes move, and you are left guessing why.</p>
     <p>So I implemented that algorithm. The panel on the left drives a flexbox layout engine I wrote from scratch in plain JavaScript, with no libraries: it works out each item's flex base size, breaks items into lines, runs the spec's loop for resolving flexible lengths (including freezing items that hit a min or max and redistributing what's left), sizes and stretches the lines on the cross axis, then applies <code>justify-content</code>, <code>align-content</code> and <code>align-self</code>. Every intermediate number it computes is printed under the stage as it happens.</p>
@@ -236,25 +223,19 @@
     <h2>What this engine does not do</h2>
     <p>It covers the parts of flexbox you use daily: both directions and their reverses, wrapping and wrap-reverse, gaps, grow, shrink, basis, min and max on both axes, order, margins, <code>justify-content</code>, <code>align-items</code>, <code>align-content</code> and <code>align-self</code>. It deliberately leaves out baseline alignment, auto margins, percentage lengths, aspect ratios and writing modes, and each item carries an explicit content size instead of real text, so intrinsic text measurement never enters into it. Those exclusions are why the comparison against your browser is a fair one rather than a rigged one.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>What is the difference between flex-basis and width?</summary><p>flex-basis is the size an item starts at along the main axis, before any free space is handed out or taken away. If it is anything other than <code>auto</code> it wins over width on the main axis. If it is <code>auto</code>, the item falls back to its width, and if that is auto too, to the size of its content.</p></details>
     <details><summary>Why does flex-grow: 2 not make an item twice as wide?</summary><p>Because grow divides the leftover free space, not the container. Each item keeps its base size and gains a share of what is left, so the final ratio depends on where the items started.</p></details>
     <details><summary>Why does my flex item refuse to shrink below its content?</summary><p>min-width defaults to auto on flex items, which resolves to an automatic minimum size based on the content rather than zero. Set <code>min-width: 0</code> in a row, or <code>min-height: 0</code> in a column.</p></details>
     <details><summary>Is anything uploaded?</summary><p>No. The engine, the comparison and the fuzz test all run in your browser tab. There is no server and nothing is sent anywhere.</p></details>
     <details><summary>Does it match Chrome, Firefox and Safari?</summary><p>It is checked live against whichever browser you are using right now, since the comparison box is that browser's own flex layout. The badge tells you the truth for your engine, not mine.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build something like this every day.</h3>
-    <p>Senior full-stack engineer, open to senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a>, read the <a href="blog.html">writing</a>, or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, open to senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a>, read the <a href="blog.html">writing</a>, or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 /*ENGINE-START*/
 /* ------------------------------------------------------------------
@@ -953,11 +934,8 @@ window.__flexSelfTest = function(n){
 
 /* ================= boot ================= */
 (function(){
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
 })();
 loadPreset(0);
 </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

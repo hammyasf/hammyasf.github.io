@@ -8,7 +8,7 @@
 <meta name="keywords" content="wasm disassembler, webassembly disassembler online, wasm to wat, view wasm file, wasm debugger, webassembly debugger, wasm inspector, wat viewer, webassembly interpreter, step through wasm, wasm bytecode, wasm analyzer" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Wasmscope — WebAssembly disassembler &amp; step debugger" />
 <meta property="og:description" content="Open any .wasm file, read its real disassembly, then single-step the bytecode and watch the operand stack. 100% in your browser, nothing uploaded." />
 <meta property="og:type" content="website" />
@@ -19,104 +19,90 @@
 <meta name="twitter:description" content="Open any .wasm file, read its disassembly, then single-step the bytecode and watch the operand stack. 100% in your browser." />
 <link rel="canonical" href="https://hammyasf.github.io/wasmscope.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  :root{--bad:#b3263c;--dye-imm:#7b4fb0;}
+  .btn{display:inline-flex;align-items:center;gap:7px;font-size:14px;padding:11px 17px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s,opacity .2s;}
+  .btn:hover{transform:translateY(-2px) scale(1.03);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+  .load{margin:0;border:3px dashed rgba(232,96,76,.45);border-radius:22px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:inset 0 8px 16px rgba(84,46,30,.1);padding:22px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;transition:transform .6s var(--spring-pop),border-color .2s,background-color .2s,box-shadow .3s;}
+  .load.over{transform:scale(1.01) rotate(-.4deg);border-color:var(--coral);border-style:solid;background:url(kit/felt-texture.webp),var(--white);box-shadow:inset 0 2px 0 var(--white),0 18px 34px rgba(84,46,30,.2);}
+  .load p{font-family:var(--mono);font-size:12.5px;color:var(--faint);flex:1;min-width:220px;}
+  .load p b{color:var(--ink);}
+  .app{display:grid;grid-template-columns:280px minmax(0,1fr) 340px;gap:16px;margin:22px 0 4px;align-items:start;}
+  .panel{overflow:hidden;}
+  .panel h2{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:16px 18px 12px;border-bottom:2px dashed var(--line);}
+  .panel .body{padding:12px 16px 14px;max-height:520px;overflow:auto;}
+  .kv{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:12px;padding:3px 0;color:var(--muted);}
+  .kv b{color:var(--ink);font-weight:600;}
+  .fn{display:block;width:100%;text-align:left;background:transparent;border:none;border-radius:10px;padding:6px 9px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background-color .15s,color .15s;}
+  .fn:hover{background:rgba(var(--accentRGB),.08);color:var(--ink);}
+  .fn.on{background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 14%,var(--cream));color:#96331f;font-weight:600;box-shadow:inset 3px 0 0 var(--coral);}
+  .fn .ix{color:var(--faint);}
+  .fn .ex{color:var(--green);font-size:10px;margin-left:6px;}
+  #code{position:relative;font-family:var(--mono);font-size:12.5px;line-height:1.62;max-height:520px;overflow:auto;padding:10px 0 14px;background:#fffbf4;}
+  .ln{display:flex;gap:0;padding:0 16px;white-space:pre;}
+  .ln:hover{background:rgba(45,36,64,.045);}
+  .ln .off{color:var(--faint);width:62px;flex:none;user-select:none;}
+  .ln .tx{color:var(--ink);}
+  .ln .tx .op{color:var(--coral-dk);font-weight:600;}
+  .ln .tx .imm{color:var(--dye-imm);}
+  .ln .tx .cm{color:var(--faint);font-style:italic;}
+  .ln.cur{background:#fbe7b5;box-shadow:inset 3px 0 0 var(--coral);}
+  .ln.cur .off{color:#96331f;font-weight:600;}
+  .ln.cur .tx{color:var(--ink);}
+  .ctlrow{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;border-bottom:2px dashed var(--line);align-items:center;}
+  .tool-ui select,.tool-ui input[type=text]{font:500 12.5px/1.3 var(--mono);padding:10px 14px;max-width:100%;}
+  .tool-ui select{padding-right:36px;background-position:right 13px center;}
+  .sm{font-family:var(--mono);font-size:11px;color:var(--faint);}
+  .stackitem{font-family:var(--mono);font-size:12px;display:flex;justify-content:space-between;gap:10px;padding:5px 10px;border-radius:9px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 2px 0 var(--line);margin-bottom:5px;}
+  .stackitem b{color:var(--coral-dk);font-weight:600;}
+  .stackitem.top{background:url(kit/felt-texture.webp),#fbe7b5;box-shadow:0 2px 0 #e2c27a;}
+  .stackitem.top b{color:#96331f;}
+  .empty{font-family:var(--mono);font-size:11.5px;color:var(--faint);padding:4px 0;}
+  .badge{display:inline-block;font:600 11.5px/1.2 var(--mono);padding:6px 11px;border-radius:999px;color:var(--muted);background:url(kit/felt-texture.webp),var(--white);outline:1.5px dashed var(--line-2);outline-offset:-4px;}
+  .badge.ok{color:var(--green);background:url(kit/felt-texture.webp),var(--mint);outline-color:rgba(63,122,85,.35);}
+  .badge.bad{color:var(--bad);background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 14%,var(--cream));outline-color:rgba(179,38,60,.4);}
+  .res{font-family:var(--mono);font-size:13px;color:var(--ink);word-break:break-all;}
+  #err{display:none;margin:14px 0 0;padding:12px 16px;border-radius:14px;background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 14%,var(--cream));outline:2px dashed rgba(179,38,60,.4);outline-offset:-5px;color:#96331f;font-family:var(--mono);font-size:12.5px;}
+  #hex{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:var(--muted);white-space:pre;overflow:auto;max-height:180px;}
+  #hex .a{color:var(--faint);}
+  @media(max-width:1060px){.app{grid-template-columns:minmax(0,1fr);}.panel .body,#code{max-height:360px;}}
+</style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Wasmscope — WebAssembly disassembler and step debugger","url":"https://hammyasf.github.io/wasmscope.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any modern web browser","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A WebAssembly binary inspector, WAT disassembler and stepping interpreter that runs entirely in the browser. Open any .wasm file, read its sections and disassembly, then execute it one instruction at a time while watching the operand stack, locals and linear memory.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my .wasm file uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The file is read with the FileReader API and parsed in JavaScript on your own machine. There is no server, no API call and no analytics on the file contents. You can load the page once and then use it offline."}},{"@type":"Question","name":"How can it step through WebAssembly? Browsers do not expose that.","acceptedAnswer":{"@type":"Answer","text":"They do not, so this page does not use the browser's WebAssembly engine to step. It contains a second, independent WebAssembly interpreter written from scratch in JavaScript: it decodes the binary into an instruction list, then executes one instruction at a time against its own operand stack, locals, globals and linear memory. That is what makes the stack visible."}},{"@type":"Question","name":"How do I know the interpreter is correct?","acceptedAnswer":{"@type":"Answer","text":"Every run is checked against your browser's real WebAssembly engine. The same module is instantiated natively, the same export is called with the same arguments, and the two results are compared and shown side by side. The interpreter is also differential-tested offline against Node's engine across 128 numeric opcodes and roughly 28,700 value cases, including division traps, float rounding and integer overflow edge cases."}},{"@type":"Question","name":"Which parts of WebAssembly are supported?","acceptedAnswer":{"@type":"Answer","text":"Parsing and disassembly cover the full MVP instruction set plus the saturating-truncation and bulk-memory opcodes. Execution covers integer and floating point arithmetic, comparisons and conversions, locals, globals, all structured control flow including br_table, direct and indirect calls, and linear memory loads and stores. SIMD (v128) and reference-type instructions are decoded but not executed. Imported functions are stubbed and return zero, which the page tells you when it happens."}},{"@type":"Question","name":"Where do I get a .wasm file to try?","acceptedAnswer":{"@type":"Answer","text":"There is a sample module built into the page so you can start immediately. Beyond that, any Rust, C, Go, AssemblyScript or Zig project that targets wasm32 produces one, and most sites that use WebAssembly load a .wasm file you can save from your browser's network panel."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1180px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:720px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 15px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s,opacity .2s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
-  .load{margin:24px 0 0;border:1px dashed var(--line-2);border-radius:18px;background:rgba(var(--surfaceRGB),.5);padding:20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;transition:.18s;}
-  .load.over{border-color:var(--accent);background:rgba(var(--accentRGB),.08);}
-  .load p{font-family:var(--mono);font-size:12.5px;color:var(--faint);flex:1;min-width:220px;}
-  .app{display:grid;grid-template-columns:280px minmax(0,1fr) 340px;gap:16px;margin:18px 0 8px;align-items:start;}
-  .panel{border:1px solid var(--line);border-radius:16px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .panel h2{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);font-weight:500;padding:12px 14px;border-bottom:1px solid var(--line);}
-  .panel .body{padding:12px 14px;max-height:520px;overflow:auto;}
-  .kv{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:12px;padding:3px 0;color:var(--muted);}
-  .kv b{color:var(--ink);font-weight:500;}
-  .fn{display:block;width:100%;text-align:left;background:transparent;border:none;border-radius:8px;padding:6px 8px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .fn:hover{background:rgba(var(--accentRGB),.09);color:var(--ink);}
-  .fn.on{background:rgba(var(--accentRGB),.16);color:var(--accent);}
-  .fn .ix{color:var(--faint);}
-  .fn .ex{color:var(--accent-2);font-size:10px;margin-left:6px;}
-  #code{position:relative;font-family:var(--mono);font-size:12.5px;line-height:1.62;max-height:520px;overflow:auto;padding:10px 0 14px;}
-  .ln{display:flex;gap:0;padding:0 14px;white-space:pre;}
-  .ln:hover{background:rgba(237,242,239,.04);}
-  .ln .off{color:#5d6d67;width:62px;flex:none;user-select:none;}
-  .ln .tx{color:#cdd8d3;}
-  .ln .tx .op{color:var(--accent);}
-  .ln .tx .imm{color:#e6c07b;}
-  .ln .tx .cm{color:#5d6d67;}
-  .ln.cur{background:rgba(var(--accentRGB),.17);}
-  .ln.cur .off{color:var(--accent);}
-  .ln.cur .tx{color:#fff;}
-  .ctlrow{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line);align-items:center;}
-  select,input[type=text]{font-family:var(--mono);font-size:12.5px;background:rgba(4,7,10,.5);color:var(--ink);border:1px solid var(--line-2);border-radius:9px;padding:7px 10px;max-width:100%;}
-  input[type=text]{width:100%;}
-  .sm{font-family:var(--mono);font-size:11px;color:var(--faint);}
-  .stackitem{font-family:var(--mono);font-size:12px;display:flex;justify-content:space-between;gap:10px;padding:4px 8px;border-radius:7px;background:rgba(237,242,239,.04);margin-bottom:4px;}
-  .stackitem b{color:var(--accent);font-weight:500;}
-  .stackitem.top{background:rgba(var(--accentRGB),.14);}
-  .empty{font-family:var(--mono);font-size:11.5px;color:var(--faint);padding:4px 0;}
-  .badge{display:inline-block;font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:100px;border:1px solid var(--line-2);color:var(--muted);}
-  .badge.ok{color:var(--accent);border-color:rgba(var(--accentRGB),.4);background:rgba(var(--accentRGB),.1);}
-  .badge.bad{color:#ff8a6a;border-color:rgba(255,138,106,.4);background:rgba(255,138,106,.1);}
-  .res{font-family:var(--mono);font-size:13px;color:var(--ink);word-break:break-all;}
-  #err{display:none;margin:14px 0;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,138,106,.4);background:rgba(255,138,106,.09);color:#ffb9a4;font-family:var(--mono);font-size:12.5px;}
-  #hex{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:#a8b8b2;white-space:pre;overflow:auto;max-height:180px;}
-  #hex .a{color:#5d6d67;}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:820px;}
-  section.copy li{color:#cdd8d3;font-size:16px;margin:6px 0 6px 22px;}
-  section.copy code{font-family:var(--mono);font-size:.92em;background:rgba(var(--accentRGB),.1);padding:1px 6px;border-radius:5px;color:var(--accent);}
-  .faq{border-top:1px solid var(--line);margin-top:14px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:1060px){.app{grid-template-columns:1fr;}.panel .body,#code{max-height:360px;}}
-</style>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Developer tool · runs on your machine</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="dev">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-wasmscope">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Wasmscope</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-dev"/></svg></span>
+    <span class="tag chip">Developer tool · runs on your machine</span>
     <h1>Wasmscope</h1>
     <p class="sub">Open any <code style="font-family:var(--mono);font-size:.85em">.wasm</code> file and actually read it — sections, exports, memory, and a real disassembly. Then run it <em>one instruction at a time</em> and watch the operand stack move. The browser can't step WebAssembly, so this page carries its own interpreter.</p>
-    <span class="priv">&#9889; Nothing is uploaded — the file never leaves your machine</span>
+    <p class="priv">&#9889; Nothing is uploaded — the file never leaves your machine</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="load" id="drop">
     <button class="btn" id="btnSample">Load the sample module</button>
     <button class="btn btn-out" id="btnPick">Open a .wasm file</button>
@@ -183,8 +169,8 @@
       </div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>Wait — the browser can't step WebAssembly</h2>
     <p>That's right, and that's the whole point. <code>WebAssembly.instantiate</code> hands you a compiled function you can call, and nothing else. There is no API to pause it, read its operand stack, or ask what instruction it is on. DevTools can do it because it talks to the engine over a debugger protocol that pages don't get.</p>
     <p>So this page doesn't ask the browser. It carries a second WebAssembly implementation, written from scratch in about a thousand lines of plain JavaScript: a binary decoder for the module format, a disassembler that prints the text format, and an interpreter with its own operand stack, locals, globals, table and linear memory. Because the stack is just a JavaScript array, it can be drawn on screen after every instruction.</p>
@@ -203,27 +189,20 @@
 
     <h2>Limits, honestly</h2>
     <p>Decoding covers the MVP instruction set plus saturating truncation and bulk memory. Execution covers arithmetic, comparisons, conversions, locals, globals, all structured control flow, direct and indirect calls, and memory loads and stores. SIMD (<code>v128</code>) instructions are decoded but will stop execution rather than pretend. Imported functions are stubbed to return zero, so a module built for WASI or heavy JS glue will parse and disassemble perfectly but won't run end to end — the page says so when it happens. It is an interpreter, so it's thousands of times slower than the engine next to it; that's the trade for being able to see inside.</p>
-
-    <div class="faq">
-      <details open><summary>Is my file uploaded anywhere?</summary><p>No. It's read with <code>FileReader</code> and parsed in JavaScript on your machine. No server, no API call. Load the page once and it works offline.</p></details>
+  </section>
+  <section class="tool-faq">
+    <details open><summary>Is my file uploaded anywhere?</summary><p>No. It's read with <code>FileReader</code> and parsed in JavaScript on your machine. No server, no API call. Load the page once and it works offline.</p></details>
       <details><summary>Why is my module's function called <code>f12</code>?</summary><p>Most release builds strip the optional <code>name</code> custom section. When it's present, real function names are used; when it isn't, exports supply names and everything else falls back to its index. Building with debug info keeps the names.</p></details>
       <details><summary>It says imported functions were stubbed.</summary><p>The module expects functions from its host (JavaScript glue, WASI, an environment import). This page has no host to supply them, so calls to them return zero instead of trapping. Disassembly is unaffected; execution results past that point aren't meaningful.</p></details>
       <details><summary>Can it handle a large file?</summary><p>Parsing and disassembly handle multi-megabyte modules fine. Stepping is capped so a runaway loop can't hang the tab — Run stops after a large instruction budget and tells you.</p></details>
       <details><summary>Where can I get a .wasm to try?</summary><p>There's one built into the page. Otherwise, any Rust, C, Zig, Go or AssemblyScript project targeting <code>wasm32</code> emits one, and you can save any <code>.wasm</code> a site loads from your browser's network panel.</p></details>
-    </div>
-
-    <div class="cta">
-      <h3>I build things like this</h3>
-      <p>I'm Harman, a full-stack engineer. This page is a WebAssembly decoder, disassembler and interpreter in one file, with no dependencies. If you need someone who'll go this far down the stack, <a href="index.html#contact">let's talk</a> — or see <a href="lab.html">the rest of the lab</a>.</p>
-    </div>
   </section>
+  <aside class="tool-cta patch">
+    <h3>I build things like this</h3>
+    <p>I'm Harman, a full-stack engineer. This page is a WebAssembly decoder, disassembler and interpreter in one file, with no dependencies. If you need someone who'll go this far down the stack, <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">let's talk</a> — or see <a href="lab.html">the rest of the lab</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 /* Wasmscope engine — from-scratch WebAssembly binary parser, WAT disassembler
    and a stepping interpreter. No dependencies. Runs in a browser or in node. */
@@ -1191,7 +1170,7 @@ function renderOverview(){
   m.sections.slice().sort(function(a,b){ return b.size-a.size; }).forEach(function(s){
     var pct = Math.round(s.size/tot*100);
     h.push('<div style="margin:5px 0"><div class="kv" style="padding:0"><span>'+esc(s.name)+'</span><b>'+fmtBytes(s.size)+'</b></div>'+
-      '<div style="height:4px;border-radius:3px;background:rgba(237,242,239,.08);overflow:hidden"><div style="height:100%;width:'+Math.max(pct,1)+'%;background:var(--accent);opacity:.8"></div></div></div>');
+      '<div style="height:4px;border-radius:3px;background:rgba(45,36,64,.1);overflow:hidden"><div style="height:100%;width:'+Math.max(pct,1)+'%;background:var(--accent);opacity:.8"></div></div></div>');
   });
 
   if (m.imports.length){
@@ -1460,8 +1439,5 @@ select(+$('expSel').value); syncArgHint();
 window.__wasmscopeBoot = true;
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
-<!-- Ad slot / Polar.sh support slot can go here later. -->
 </body>
 </html>

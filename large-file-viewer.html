@@ -8,7 +8,7 @@
 <meta name="keywords" content="large file viewer, open large file online, view large log file, large text file viewer, grep online, search large file, open big csv, view huge file browser, log viewer online, gigabyte file viewer, open file too big for editor" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Loupe — Large File Viewer &amp; Log Search" />
 <meta property="og:description" content="Open and search multi-gigabyte logs, CSVs and JSONL in your browser. Regex, instant scroll, gzip, match timeline. Nothing uploaded." />
@@ -20,106 +20,96 @@
 <meta name="twitter:description" content="Open and search multi-gigabyte files in your browser. Regex, gzip, match timeline. Private, no upload." />
 <link rel="canonical" href="https://hammyasf.github.io/large-file-viewer.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Loupe — Large File Viewer","url":"https://hammyasf.github.io/large-file-viewer.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Open and search multi-gigabyte log, CSV and JSONL files entirely in the browser with regex search, virtual scrolling, gzip support and a match timeline. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does it open files too big for my editor?","acceptedAnswer":{"@type":"Answer","text":"Loupe never loads the whole file into memory. It streams the file in chunks to build a sparse line index, then reads only the few kilobytes you are currently looking at. Memory stays bounded no matter how big the file is, so it can open files larger than your available RAM."}},{"@type":"Question","name":"Is my file uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs locally in your browser using the File and Streams APIs and a Web Worker. Your file never leaves your device, which is why it works on private logs and is instant."}},{"@type":"Question","name":"Can it open gzipped (.gz) files?","acceptedAnswer":{"@type":"Answer","text":"Yes. Loupe decompresses .gz files on the fly using the browser's built-in DecompressionStream, so you can drop a compressed log straight in without unzipping it first."}},{"@type":"Question","name":"What file types work?","acceptedAnswer":{"@type":"Answer","text":"Any line-based text file: server and application logs, CSV and TSV, JSONL/NDJSON, plain text dumps, and their gzipped versions. It is built for line-oriented data."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1180px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .drop{padding:54px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
-  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  :root{--warn:#7a4a00;}
+  .panel{margin:0;overflow:hidden;}
+  .drop{padding:54px 24px;text-align:center;margin:18px;cursor:pointer;}
   .drop h2{font-family:var(--display);font-weight:600;font-size:23px;}
   .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
-  .drop .or{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
+  .drop p b{color:var(--ink);}
+  .drop .or{margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .drop:focus-visible{outline:3px solid var(--green);outline-offset:3px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:11px 18px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px) scale(1.03);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
   .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
   /* toolbar */
-  .toolbar{display:none;flex-wrap:wrap;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);}
+  .toolbar{display:none;flex-wrap:wrap;gap:12px;align-items:center;padding:16px 18px 14px;border-bottom:2px dashed var(--line);}
   .fileinfo{display:flex;flex-direction:column;gap:2px;min-width:0;margin-right:auto;}
-  .fileinfo .fn{font-family:var(--mono);font-size:13.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw;}
+  .fileinfo .fn{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw;}
   .fileinfo .fm{font-family:var(--mono);font-size:11.5px;color:var(--muted);}
-  .fileinfo .fm b{color:var(--accent);}
-  .search{display:flex;align-items:center;gap:8px;flex:1 1 320px;min-width:240px;border:1px solid var(--line-2);border-radius:12px;padding:6px 10px;background:rgba(var(--surfaceRGB),.6);}
-  .search input{flex:1;background:transparent;border:none;outline:none;color:var(--ink);font-family:var(--mono);font-size:13.5px;}
-  .search input::placeholder{color:var(--faint);}
-  .toggle{font-family:var(--mono);font-size:12px;color:var(--faint);border:1px solid var(--line-2);border-radius:7px;padding:5px 8px;cursor:pointer;user-select:none;transition:.15s;}
-  .toggle.on{background:rgba(var(--accentRGB),.15);color:var(--accent);border-color:rgba(var(--accentRGB),.5);}
+  .fileinfo .fm b{color:var(--coral-dk);}
+  .search{display:flex;align-items:center;gap:8px;flex:1 1 320px;min-width:240px;border-radius:999px;padding:6px 8px 6px 14px;background:var(--white);box-shadow:var(--sunk),0 0 0 2px var(--line);transition:box-shadow .2s;}
+  .search:focus-within{box-shadow:var(--sunk),0 0 0 3px rgba(63,122,85,.35);outline:2px dashed var(--green);outline-offset:-6px;}
+  .tool-ui .search input{flex:1;min-width:0;width:auto;background:transparent;border:none;border-radius:0;box-shadow:none;outline:none;padding:6px 2px;color:var(--ink);font:500 13.5px/1.3 var(--mono);}
+  .tool-ui .search input::placeholder{color:var(--faint);}
+  .tool-ui .search input:focus-visible{outline:none;box-shadow:none;}
+  .toggle{font:600 12px/1 var(--mono);color:var(--muted);border-radius:999px;padding:7px 10px;cursor:pointer;user-select:none;background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 2px 0 var(--line);transition:background-color .2s,color .2s,transform .45s var(--spring-pop);}
+  .toggle:hover{color:var(--ink);transform:translateY(-1px);}
+  .toggle.on{background:url(kit/felt-texture.webp),var(--green);color:var(--white);box-shadow:0 2px 0 #2c5a3d;}
   .navbtns{display:flex;align-items:center;gap:6px;}
-  .navbtns button{font-family:var(--mono);font-size:13px;color:var(--ink);background:transparent;border:1px solid var(--line-2);border-radius:8px;width:32px;height:32px;cursor:pointer;}
-  .navbtns button:hover{border-color:var(--accent);}
+  .navbtns button{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--ink);background:url(kit/felt-texture.webp),var(--white);border:0;border-radius:50%;width:36px;height:36px;cursor:pointer;box-shadow:var(--shadow-btn);transition:transform .45s var(--spring-pop);}
+  .navbtns button:hover{transform:translateY(-2px) scale(1.06);}
+  .navbtns button:active{transform:translateY(2px) scale(.94);transition-duration:.08s;}
   .matchcount{font-family:var(--mono);font-size:12.5px;color:var(--muted);white-space:nowrap;}
-  .matchcount b{color:var(--accent);}
+  .matchcount b{color:var(--coral-dk);}
   /* viewer */
   .viewerwrap{display:none;}
   .viewer-row{display:flex;align-items:stretch;}
-  .viewer{position:relative;flex:1;height:68vh;min-height:360px;overflow:auto;background:rgba(0,0,0,.22);font-family:var(--mono);font-size:13px;line-height:20px;}
+  .viewer{position:relative;flex:1;height:68vh;min-height:360px;overflow:auto;background:#fffbf4;font-family:var(--mono);font-size:13px;line-height:20px;}
   .spacer{position:relative;width:100%;}
   .lines{position:absolute;left:0;top:0;right:0;will-change:transform;}
   .ln{display:flex;white-space:pre;height:20px;}
-  .ln .num{flex:0 0 auto;width:88px;text-align:right;padding-right:14px;color:var(--faint);user-select:none;border-right:1px solid var(--line);position:sticky;left:0;background:rgba(7,16,14,.85);}
-  .ln .tx{padding-left:14px;color:#d7e2dd;overflow:hidden;}
+  .ln .num{flex:0 0 auto;width:88px;text-align:right;padding-right:14px;color:var(--faint);user-select:none;border-right:2px solid var(--line);position:sticky;left:0;background:var(--sand);}
+  .ln .tx{padding-left:14px;color:var(--ink);overflow:hidden;}
   .ln.hit{background:rgba(var(--accentRGB),.07);}
-  .ln .tx mark{background:var(--accent);color:#06100d;border-radius:2px;padding:0 1px;}
-  .ln .tx mark.cur{background:#fff;box-shadow:0 0 0 2px var(--accent);}
-  .minimap{flex:0 0 16px;height:68vh;min-height:360px;background:rgba(0,0,0,.3);border-left:1px solid var(--line);position:relative;cursor:pointer;}
+  .ln .tx mark{background:#fbe7b5;color:var(--ink);border-radius:3px;padding:0 1px;box-shadow:inset 0 -2px 0 #d6a43a;}
+  .ln .tx mark.cur{background:var(--coral-btn);color:var(--white);box-shadow:0 0 0 2px var(--coral-dk);}
+  .minimap{flex:0 0 16px;height:68vh;min-height:360px;background:var(--sand);border-left:2px solid var(--line);position:relative;cursor:pointer;}
   .minimap canvas{display:block;width:16px;height:100%;}
-  .mm-view{position:absolute;left:0;right:0;border:1px solid rgba(var(--accentRGB),.6);background:rgba(var(--accentRGB),.08);pointer-events:none;}
+  .mm-view{position:absolute;left:0;right:0;border:1px solid rgba(var(--accentRGB),.6);background:rgba(var(--accentRGB),.1);pointer-events:none;}
   /* progress */
-  .progress{display:none;padding:14px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  .progress .track{height:6px;border-radius:4px;background:rgba(237,242,239,.1);margin-top:8px;overflow:hidden;}
-  .progress .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .12s linear;}
+  .progress{display:none;padding:16px 18px;border-bottom:2px dashed var(--line);font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .progress .track{height:10px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);margin-top:10px;overflow:hidden;}
+  .progress .fill{height:100%;width:0;border-radius:999px;background:var(--knit),linear-gradient(90deg,var(--coral),var(--green));background-size:8px 11px,auto;transition:width .12s linear;}
   .note{font-family:var(--mono);font-size:12px;color:var(--faint);padding:0 18px 14px;}
-  .note.warn{color:#ffd27a;}
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:780px;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;max-width:780px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .note.warn{color:var(--warn);background:url(kit/felt-texture.webp),#fbe7b5;margin:14px 18px;padding:11px 15px;border-radius:14px;outline:2px dashed rgba(122,74,0,.3);outline-offset:-5px;}
   @media(max-width:680px){.fileinfo .fn{max-width:60vw;}.search{flex-basis:100%;order:3;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Loupe — Large File Viewer","url":"https://hammyasf.github.io/large-file-viewer.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Open and search multi-gigabyte log, CSV and JSONL files entirely in the browser with regex search, virtual scrolling, gzip support and a match timeline. Nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does it open files too big for my editor?","acceptedAnswer":{"@type":"Answer","text":"Loupe never loads the whole file into memory. It streams the file in chunks to build a sparse line index, then reads only the few kilobytes you are currently looking at. Memory stays bounded no matter how big the file is, so it can open files larger than your available RAM."}},{"@type":"Question","name":"Is my file uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. Everything runs locally in your browser using the File and Streams APIs and a Web Worker. Your file never leaves your device, which is why it works on private logs and is instant."}},{"@type":"Question","name":"Can it open gzipped (.gz) files?","acceptedAnswer":{"@type":"Answer","text":"Yes. Loupe decompresses .gz files on the fly using the browser's built-in DecompressionStream, so you can drop a compressed log straight in without unzipping it first."}},{"@type":"Question","name":"What file types work?","acceptedAnswer":{"@type":"Answer","text":"Any line-based text file: server and application logs, CSV and TSV, JSONL/NDJSON, plain text dumps, and their gzipped versions. It is built for line-oriented data."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free dev tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="dev">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-large-file-viewer">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Loupe — Large File Viewer</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-dev"/></svg></span>
+    <span class="tag chip">Free dev tool · runs in your browser</span>
     <h1>Loupe — Large File Viewer</h1>
     <p class="sub">Open and search files too big for your editor — multi-gigabyte logs, CSVs, and JSONL. Regex search, instant scrolling, gzip support, and a timeline that shows where your matches are. Nothing is uploaded.</p>
-    <span class="priv">&#128274; 100% private — your file is never uploaded, it stays on your device</span>
+    <p class="priv">&#128274; 100% private — your file is never uploaded, it stays on your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <!-- empty state -->
     <div class="drop" id="drop" tabindex="0" role="button" aria-label="Open a file">
@@ -173,8 +163,8 @@
       </div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>Open files that crash your text editor</h2>
     <p>VS Code, Sublime, and Notepad all try to read the whole file into memory, so a multi-gigabyte log brings them to their knees or refuses to open at all. Loupe takes the opposite approach. It streams the file in chunks to build a tiny line index, then reads only the few kilobytes you are actually looking at. Memory stays flat whether the file is 10 megabytes or 30 gigabytes, so you can open the file that was too big to open.</p>
     <h2>How it works</h2>
@@ -182,31 +172,22 @@
     <h2>Why it is private and fast</h2>
     <p>There is no server in the loop. The file is read with the browser's File and Streams APIs and processed in a worker on your own machine, so it never leaves your device. That is what makes it safe for production logs with customer data in them, and it is also why it is instant: there is no upload to wait on and no queue to sit in.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>How can it open a file bigger than my RAM?</summary><p>It never holds the whole file in memory. It streams through the file once to build a sparse index of line offsets (a few megabytes even for a huge file), then reads only the small slice you are currently viewing. Memory usage stays bounded regardless of file size.</p></details>
     <details><summary>Is my file uploaded anywhere?</summary><p>No. Everything happens locally in your browser. Your file is never sent to a server, which is why it works on private and production logs.</p></details>
     <details><summary>Does it support gzipped logs?</summary><p>Yes, in browsers that support DecompressionStream (Chrome, Edge, and recent Safari and Firefox). Drop a <code>.gz</code> file and it is decompressed on the fly. If your browser lacks it, plain files still work.</p></details>
     <details><summary>What about regular expressions?</summary><p>Toggle the <b>.*</b> button to treat your query as a JavaScript regular expression, with an optional case-sensitive toggle. Otherwise it is a fast plain-text search. Matches are highlighted inline and mapped on the timeline.</p></details>
     <details><summary>What file types does it handle?</summary><p>Any line-based text: server and app logs, CSV, TSV, JSONL/NDJSON, and plain text dumps, plus their gzipped versions.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build a tool like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 })();
 
 /* ---------------- Worker (indexer + searcher), inlined via Blob URL ---------------- */
@@ -420,7 +401,7 @@ self.onmessage = async (e)=>{
     else if(m.type==='indexed'){ onIndexed(m); }
     else if(m.type==='searchProgress'){ if(m.token===searchToken) mc.innerHTML='Searching… '+Math.round(m.pct*100)+'%'; }
     else if(m.type==='searchDone'){ if(m.token===searchToken) onSearchDone(m); }
-    else if(m.type==='searchError'){ if(m.token===searchToken){ mc.innerHTML='<span style="color:#ff8d6e">bad regex</span>'; clearMatches(); } }
+    else if(m.type==='searchError'){ if(m.token===searchToken){ mc.innerHTML='<span style="color:#b3263c">bad regex</span>'; clearMatches(); } }
     else if(m.type==='fatal'){ hideProgress(); showWarn('Something went wrong: '+m.message); }
   }
 
@@ -586,7 +567,7 @@ self.onmessage = async (e)=>{
     ctx.clearRect(0,0,W,H);
     if(!curHist){ return; }
     var max=1; for(var i=0;i<curHist.length;i++) if(curHist[i]>max) max=curHist[i];
-    var acc = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#2be3b0';
+    var acc = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#b9442f';
     for(var b=0;b<curHist.length;b++){
       var v=curHist[b]; if(!v) continue;
       var y = Math.floor(b/curHist.length*H);
@@ -656,8 +637,5 @@ self.onmessage = async (e)=>{
   }
 })();
 </script>
-<!-- AdSense / Polar.sh monetization slot — intentionally left empty for now -->
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

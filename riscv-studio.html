@@ -8,7 +8,7 @@
 <meta name="keywords" content="risc-v emulator online, risc-v simulator, rv32i emulator, risc-v assembler, learn risc-v, risc-v ide, assembly emulator browser, risc-v playground, online cpu simulator, risc-v online, riscv interpreter, single step assembly" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="RISC-V Studio — a real RISC-V CPU in your browser" />
 <meta property="og:description" content="Write RISC-V assembly and single-step a real RV32I core in your browser. See every register, memory byte, and the machine-code encoding, live." />
 <meta property="og:type" content="website" />
@@ -19,122 +19,104 @@
 <meta name="twitter:description" content="Assemble and single-step real RV32I assembly in your browser. Live registers, memory, and machine-code decode." />
 <link rel="canonical" href="https://hammyasf.github.io/riscv-studio.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"RISC-V Studio","url":"https://hammyasf.github.io/riscv-studio.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A from-scratch RV32I assembler and CPU simulator that runs entirely in the browser. Write RISC-V assembly, assemble it to real machine code, and single-step the processor while watching registers, memory and the instruction encoding.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does this run on a server?","acceptedAnswer":{"@type":"Answer","text":"No. The assembler and the RV32I CPU are written in JavaScript and run entirely in your browser tab. Nothing you type is uploaded, and it works offline once the page loads."}},{"@type":"Question","name":"Which RISC-V instructions are supported?","acceptedAnswer":{"@type":"Answer","text":"The full RV32I base integer instruction set: arithmetic and logic (add, sub, and, or, xor, shifts, slt), immediates, loads and stores of bytes/halfwords/words, branches, jal and jalr, lui and auipc, and ecall. Common pseudo-instructions like li, la, mv, j, call, ret, nop and the branch-with-zero forms are expanded automatically."}},{"@type":"Question","name":"Is it a real emulator or just a script?","acceptedAnswer":{"@type":"Answer","text":"It is a real fetch-decode-execute cycle. Your assembly is turned into actual 32-bit RV32I machine code that is placed in a simulated memory, and the CPU fetches each word from memory, decodes the opcode and register fields, and executes it. The tool shows you the exact binary encoding of each instruction."}},{"@type":"Question","name":"How do the system calls work?","acceptedAnswer":{"@type":"Answer","text":"ecall uses the RARS/venus convention: put a service number in a7 and arguments in a0. Service 1 prints an integer, 4 prints a string, 11 prints a character, 34 prints hex, and 10 or 93 exits the program."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, no limits. It is one of a series of tools I build and share."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);
-    --c-op:#ff6a3d;--c-rd:#2be3b0;--c-f3:#b07cff;--c-rs1:#3da5ff;--c-rs2:#ffcf4d;--c-f7:#ff7fb0;--c-imm:#57d9c9;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1160px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1160px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,50px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:720px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* instruction-field dyes: light felt, the bits on them are ink */
+  :root{--c-op:#f08a72;--c-rd:#8fbf6a;--c-f3:#b49ad6;--c-rs1:#8fb0d0;--c-rs2:#f2c14e;--c-f7:#e86a9a;--c-imm:#7cc4b6;--bad:#b3263c;}
   /* IDE layout */
-  .ide{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;margin:24px 0;}
+  .ide{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;margin:0;}
   @media(max-width:900px){.ide{grid-template-columns:1fr;}}
-  .panel{border:1px solid var(--line);border-radius:16px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .ph{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+  .panel{overflow:hidden;}
+  .ph{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 11px;border-bottom:2px dashed var(--line);font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
   .ph .r{display:flex;gap:8px;align-items:center;}
-  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);}
-  select,.mini{background:rgba(var(--surfaceRGB),.7);border:1px solid var(--line-2);color:var(--ink);border-radius:9px;padding:8px 10px;font-family:var(--mono);font-size:12.5px;cursor:pointer;}
-  .btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 15px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .12s,opacity .12s;}
-  .btn:hover{transform:translateY(-1px);}
-  .btn[disabled]{opacity:.35;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .btn-out:hover{border-color:var(--accent);}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:14px 16px 12px;border-bottom:2px dashed var(--line);}
+  .tool-ui select,.mini{width:auto;font:500 12.5px/1.3 var(--mono);padding:9px 14px;border-radius:999px;cursor:pointer;}
+  .tool-ui select{padding-right:34px;background-position:right 12px center;background-size:11px auto;}
+  .mini{border:0;color:var(--ink);background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);transition:transform .45s var(--spring-pop);}
+  button.mini:hover{transform:translateY(-1px) rotate(-2deg);}
+  .ph select.mini{padding:7px 30px 7px 12px;font-size:12px;text-transform:none;letter-spacing:0;}
+  .btn{display:inline-flex;align-items:center;gap:6px;font-size:14px;padding:10px 16px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s,opacity .12s;}
+  .btn:hover{transform:translateY(-2px) scale(1.03);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
   .grow{flex:1;}
-  .speedwrap{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--faint);}
-  input[type=range]{accent-color:var(--accent);width:96px;}
-
-  .editor-wrap{display:flex;height:432px;background:rgba(4,10,8,.5);}
-  #gutter{width:46px;flex:none;overflow:hidden;font-family:var(--mono);font-size:13px;line-height:21px;padding:14px 8px 14px 0;text-align:right;color:var(--faint);white-space:pre;user-select:none;background:rgba(0,0,0,.18);}
+  .speedwrap{display:flex;align-items:center;gap:8px;font:600 11.5px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);}
+  .tool-ui input[type=range]{width:96px;}
+  .editor-wrap{display:flex;height:432px;background:#fffbf4;transition:box-shadow .2s;}
+  .editor-wrap:focus-within{box-shadow:inset 0 0 0 2px rgba(63,122,85,.4);}
+  #gutter{width:46px;flex:none;overflow:hidden;font-family:var(--mono);font-size:13px;line-height:21px;padding:14px 8px 14px 0;text-align:right;color:var(--faint);white-space:pre;user-select:none;background:url(kit/felt-texture.webp),var(--sand);box-shadow:inset -2px 0 0 var(--line);}
   .code-scroll{position:relative;flex:1;overflow:hidden;}
-  #hl{position:absolute;left:0;right:0;height:21px;top:14px;background:rgba(var(--accentRGB),.16);border-left:3px solid var(--accent);display:none;pointer-events:none;z-index:0;}
-  #code{position:relative;z-index:1;width:100%;height:100%;background:transparent;color:var(--ink);font-family:var(--mono);font-size:13px;line-height:21px;padding:14px 14px 14px 12px;resize:none;border:none;outline:none;white-space:pre;overflow:auto;caret-color:var(--accent);}
-  .status{padding:10px 14px;font-family:var(--mono);font-size:12px;border-top:1px solid var(--line);color:var(--muted);min-height:38px;}
-  .status.err{color:#ff7d63;}
-  .status.ok{color:var(--accent);}
-
+  #hl{position:absolute;left:0;right:0;height:21px;top:14px;background:#fbe7b5;border-left:3px solid var(--coral);display:none;pointer-events:none;z-index:0;}
+  #code{position:relative;z-index:1;width:100%;height:100%;min-height:0;background:transparent;color:var(--ink);font-family:var(--mono);font-size:13px;font-weight:400;line-height:21px;padding:14px 14px 14px 12px;resize:none;border:none;border-radius:0;box-shadow:none;outline:none;white-space:pre;overflow:auto;caret-color:var(--coral-dk);}
+  .status{padding:11px 16px;font-family:var(--mono);font-size:12px;border-top:2px dashed var(--line);color:var(--muted);min-height:38px;}
+  .status b{color:var(--ink);}
+  .status.err{color:var(--bad);}
+  .status.ok{color:var(--green);}
   /* registers */
-  .regwrap{padding:10px;display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+  .regwrap{padding:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
   @media(max-width:520px){.regwrap{grid-template-columns:repeat(2,1fr);}}
-  .reg{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:rgba(0,0,0,.14);transition:background .3s,border-color .3s;}
+  .reg{border-radius:10px;padding:6px 9px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 2px 0 var(--line);transition:background-color .3s,box-shadow .3s;}
   .reg .rn{font-family:var(--mono);font-size:10px;color:var(--faint);display:flex;justify-content:space-between;}
-  .reg .rn b{color:var(--muted);font-weight:500;}
+  .reg .rn b{color:var(--muted);font-weight:600;}
   .reg .rv{font-family:var(--mono);font-size:12.5px;color:var(--ink);margin-top:2px;overflow:hidden;text-overflow:ellipsis;}
-  .reg.hot{background:rgba(var(--accentRGB),.16);border-color:var(--accent);}
+  .reg.hot{background:url(kit/felt-texture.webp),#fbe7b5;box-shadow:0 2px 0 #e2c27a,0 0 0 2px var(--coral);}
   .reg.zero .rv{color:var(--faint);}
-  .pcbar{display:flex;gap:16px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  .pcbar b{color:var(--accent);}
-
+  .pcbar{display:flex;gap:16px;flex-wrap:wrap;padding:11px 16px;border-top:2px dashed var(--line);font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .pcbar b{color:var(--coral-dk);}
   /* current instruction decode */
-  .cur{padding:12px 14px;font-family:var(--mono);font-size:12.5px;}
+  .cur{padding:14px 16px;font-family:var(--mono);font-size:12.5px;}
   .cur .line1{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;}
-  .cur .mnem{color:var(--accent);font-size:15px;font-weight:500;}
+  .cur .mnem{color:var(--coral-dk);font-size:15px;font-weight:600;}
   .cur .addr{color:var(--faint);}
-  .bits{display:flex;flex-wrap:wrap;gap:3px;margin:12px 0 4px;}
-  .bf{border-radius:6px;padding:4px 6px 3px;text-align:center;min-width:26px;}
-  .bf .bb{font-size:11px;letter-spacing:.5px;color:#04100c;font-weight:600;}
-  .bf .bl{font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;color:rgba(4,16,12,.72);margin-top:1px;}
+  .bits{display:flex;flex-wrap:wrap;gap:4px;margin:12px 0 4px;}
+  .bf{border-radius:8px;padding:5px 7px 4px;text-align:center;min-width:26px;box-shadow:inset 0 -2px 0 rgba(84,46,30,.18),0 2px 0 rgba(84,46,30,.12);}
+  .bf .bb{font-size:11px;letter-spacing:.5px;color:var(--ink);font-weight:600;}
+  .bf .bl{font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink);margin-top:1px;}
   .decode-note{color:var(--muted);margin-top:8px;}
   .decode-note em{color:var(--ink);font-style:normal;}
-
   /* console + memory */
-  .console{height:150px;overflow:auto;padding:12px 14px;font-family:var(--mono);font-size:13px;white-space:pre-wrap;word-break:break-word;color:#d9f5ec;}
+  .console{height:150px;overflow:auto;padding:12px 16px;font-family:var(--mono);font-size:13px;white-space:pre-wrap;word-break:break-word;color:var(--ink);background:#fffbf4;}
   .console .cempty{color:var(--faint);}
-  .memwrap{padding:10px 12px 14px;overflow:auto;max-height:230px;}
+  .memwrap{padding:12px 14px 14px;overflow:auto;max-height:230px;}
   .memrow{font-family:var(--mono);font-size:12px;white-space:pre;line-height:1.55;color:var(--muted);}
   .memrow .ma{color:var(--faint);}
   .memrow .mb{color:var(--ink);}
-  .memrow .hotb{background:rgba(var(--accentRGB),.28);color:#04100c;border-radius:3px;}
+  .memrow .hotb{background:#fbe7b5;color:var(--ink);border-radius:3px;box-shadow:inset 0 -2px 0 var(--coral);}
   .memrow .asc{color:var(--faint);}
-
-  /* copy */
-  section.copy{padding:26px 0 6px;max-width:820px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,3vw,29px);margin:30px 0 8px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:11px 0;}
-  section.copy code{font-family:var(--mono);font-size:14px;background:rgba(var(--accentRGB),.1);padding:2px 6px;border-radius:5px;color:var(--accent);}
-  .faq{border-top:1px solid var(--line);margin-top:12px;max-width:820px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:30px 0;padding:28px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));max-width:820px;}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:23px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"RISC-V Studio","url":"https://hammyasf.github.io/riscv-studio.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A from-scratch RV32I assembler and CPU simulator that runs entirely in the browser. Write RISC-V assembly, assemble it to real machine code, and single-step the processor while watching registers, memory and the instruction encoding.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does this run on a server?","acceptedAnswer":{"@type":"Answer","text":"No. The assembler and the RV32I CPU are written in JavaScript and run entirely in your browser tab. Nothing you type is uploaded, and it works offline once the page loads."}},{"@type":"Question","name":"Which RISC-V instructions are supported?","acceptedAnswer":{"@type":"Answer","text":"The full RV32I base integer instruction set: arithmetic and logic (add, sub, and, or, xor, shifts, slt), immediates, loads and stores of bytes/halfwords/words, branches, jal and jalr, lui and auipc, and ecall. Common pseudo-instructions like li, la, mv, j, call, ret, nop and the branch-with-zero forms are expanded automatically."}},{"@type":"Question","name":"Is it a real emulator or just a script?","acceptedAnswer":{"@type":"Answer","text":"It is a real fetch-decode-execute cycle. Your assembly is turned into actual 32-bit RV32I machine code that is placed in a simulated memory, and the CPU fetches each word from memory, decodes the opcode and register fields, and executes it. The tool shows you the exact binary encoding of each instruction."}},{"@type":"Question","name":"How do the system calls work?","acceptedAnswer":{"@type":"Answer","text":"ecall uses the RARS/venus convention: put a service number in a7 and arguments in a0. Service 1 prints an integer, 4 prints a string, 11 prints a character, 34 prints hex, and 10 or 93 exits the program."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, no limits. It is one of a series of tools I build and share."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="dev">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-riscv-studio">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">RISC-V Studio</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-dev"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>RISC-V Studio</h1>
     <p class="sub">Write RISC-V assembly, assemble it to real machine code, and single-step a genuine RV32I processor — all in this tab. Watch every register, every byte of memory, and the exact instruction encoding change as your program runs.</p>
-    <span class="priv">&#9889; Real fetch-decode-execute, 100% in your browser. Nothing is uploaded.</span>
+    <p class="priv">&#9889; Real fetch-decode-execute, 100% in your browser. Nothing is uploaded.</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="ide">
     <!-- LEFT: editor -->
     <div class="panel">
@@ -179,8 +161,8 @@
       </div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>What this actually is</h2>
     <p>RISC-V Studio is a small computer, built from scratch in JavaScript, living inside your browser tab. When you press Assemble, a two-pass assembler turns your text into real 32-bit RV32I machine code and lays it out in a simulated 128&nbsp;KB memory, exactly the way a linker would. Then the CPU does what a real core does: it fetches the word at the program counter, decodes the opcode and register fields out of the raw bits, executes it, and moves on. There is no interpreter shortcut and no server call. What you watch stepping across the registers is the genuine RV32I instruction set doing its thing.</p>
     <h2>How to drive it</h2>
@@ -190,35 +172,19 @@
     <h2>Why build it in the browser</h2>
     <p>Learning assembly usually means installing a toolchain or a Java simulator before you can run a single instruction. This removes all of that. It is a genuinely useful way to see what a CPU does at the bottom, and because everything runs locally it is instant and private — your code never leaves your machine.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is this a real emulator or a trick?</summary><p>Real. Your assembly is encoded to actual RV32I machine-code words that are stored in memory, and the CPU fetches, decodes and executes them one at a time. The tool shows you the exact 32-bit encoding of each instruction, split into its hardware fields.</p></details>
     <details><summary>Which instructions and pseudo-instructions work?</summary><p>All of RV32I, plus common pseudo-instructions: li, la, mv, j, jr, call, ret, nop, neg, not, seqz, snez, and the beqz/bnez/blez/bgez/bltz/bgtz/bgt/ble family. Multiply and divide (the M extension) and floating point are not included.</p></details>
     <details><summary>How do I print output?</summary><p>Use ecall. Put a service number in register a7 and your value in a0: 1 prints an integer, 4 prints a null-terminated string at the address in a0, 11 prints a character, 34 prints a hex number, and 10 or 93 exits.</p></details>
     <details><summary>Does it work offline?</summary><p>Yes. Once the page has loaded, the assembler and CPU are just JavaScript in your tab, so it keeps working with no connection.</p></details>
     <details><summary>Is it free?</summary><p>Completely free, no sign-up, no limits. It is one of a series of tools I build and share.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- match the portfolio's saved theme (runs before paint) -->
-<script>
-(function(){
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
-<!-- ===================== RV32I ENGINE (inlined, node-tested) ===================== -->
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 /* ============================================================================
    RISC-V Studio engine — a from-scratch RV32I assembler + CPU.
@@ -799,8 +765,6 @@
 })(typeof self !== "undefined" ? self : this);
 
 </script>
-
-<!-- ===================== UI ===================== -->
 <script>
 (function(){
   var RV = window.RV;
@@ -1172,10 +1136,5 @@ done:
   doAssemble();   // first-run magic: assembled and ready
 })();
 </script>
-
-<!-- shared site enhancer: command palette, theme, analytics beacon -->
-<script src="enhance.js" defer></script>
-<!-- Analytics: Cloudflare Web Analytics beacon (also injected by enhance.js; direct tag kept as fallback). -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

@@ -8,7 +8,7 @@
 <meta name="keywords" content="csv to dashboard, visualize csv online, csv dashboard, csv chart maker, interactive csv viewer, cross filter dashboard, explore csv, csv analytics online, csv pivot, no upload csv" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Instant CSV Dashboard — cross-filter any CSV in your browser" />
 <meta property="og:description" content="Drop a CSV and get linked, brushable charts. Click one chart and every other chart re-filters instantly. 100% private, nothing uploaded." />
 <meta property="og:type" content="website" />
@@ -19,125 +19,111 @@
 <meta name="twitter:description" content="Drop a CSV, click any chart, watch every chart re-filter live. Private, no sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/csv-dashboard.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Instant CSV Dashboard","url":"https://hammyasf.github.io/csv-dashboard.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Drop a CSV and get an interactive cross-filtering dashboard. Click any chart to filter every other chart, live. Runs entirely in the browser, nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my CSV uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The file is parsed and analysed entirely in your browser with JavaScript. Your data never leaves your device, so it works offline and stays private."}},{"@type":"Question","name":"What is cross-filtering?","acceptedAnswer":{"@type":"Answer","text":"Click a bar or drag a range on any chart and every other chart instantly re-aggregates to show only the matching rows. It is the brushing-and-linking interaction used in business intelligence tools, running live on your own data."}},{"@type":"Question","name":"How big a file can it handle?","acceptedAnswer":{"@type":"Answer","text":"Tens of thousands of rows stay smooth because the cross-filter engine works over typed integer indexes, not the raw text. Very large files are limited only by your device's memory."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, and no limits on how many files you explore."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1120px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .drop{padding:46px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
-  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  .panel{margin:0;overflow:hidden;}
+  .drop{padding:46px 24px;text-align:center;margin:18px;cursor:pointer;}
   .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
   .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
-  .drop .or{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
+  .drop .or{margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .drop:focus-visible{outline:3px solid var(--green);outline-offset:3px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:11px 18px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px) scale(1.03);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
   .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .err{margin:0 18px 18px;padding:12px 16px;border:1px solid #ff6a6a55;background:#ff6a6a14;border-radius:12px;color:#ffb3b3;font-size:14px;display:none;}
-  .toolbar{display:none;flex-wrap:wrap;gap:14px 22px;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line);}
+  .err{margin:0 18px 18px;padding:12px 16px;border-radius:14px;background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 14%,var(--cream));outline:2px dashed rgba(179,38,60,.4);outline-offset:-5px;color:#96331f;font-size:14px;display:none;}
+  .toolbar{display:none;flex-wrap:wrap;gap:14px 22px;align-items:center;padding:20px 22px 18px;border-bottom:2px dashed var(--line);}
   .toolbar .fileinfo{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  .toolbar .fileinfo b{color:var(--accent);font-weight:400;}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);}
+  .toolbar .fileinfo b{color:var(--coral-dk);font-weight:600;}
+  .ctl{display:flex;flex-direction:column;gap:7px;}
+  .ctl label{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
   .row-i{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  select,input[type=text]{background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:13px;}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:8px 13px;font-family:var(--mono);font-size:12.5px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
-  .chk{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12.5px;color:var(--muted);cursor:pointer;}
-  .chk input{accent-color:var(--accent);}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;padding:14px 22px 0;}
-  .chip{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12px;color:var(--ink);background:rgba(var(--accentRGB),.13);border:1px solid rgba(var(--accentRGB),.3);padding:5px 10px;border-radius:100px;}
-  .chip b{color:var(--accent);font-weight:500;}
-  .chip .x{cursor:pointer;color:var(--faint);font-weight:700;}.chip .x:hover{color:var(--ink);}
-  .stats{display:none;flex-wrap:wrap;gap:26px;padding:18px 22px;border-bottom:1px solid var(--line);}
+  .tool-ui select,.tool-ui input[type=text]{width:auto;font:500 13px/1.3 var(--mono);padding:10px 14px;}
+  .tool-ui select{padding-right:36px;background-position:right 13px center;}
+  .tool-ui .seg > button{font:600 13px/1 var(--mono);padding:9px 13px;}
+  .tool-ui label.chk{font:500 12.5px/1.3 var(--mono);color:var(--muted);gap:10px;cursor:pointer;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;padding:16px 22px 0;}
+  .chip{display:inline-flex;align-items:center;gap:7px;font:500 12px/1.2 var(--mono);color:var(--ink);background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 12%,var(--cream));padding:7px 12px;border-radius:999px;outline:1.5px dashed rgba(185,68,47,.35);outline-offset:-4px;}
+  .chip b{color:#96331f;font-weight:600;}
+  .chip .x{cursor:pointer;color:var(--faint);font-weight:700;}
+  .chip .x:hover{color:var(--ink);}
+  .stats{display:none;flex-wrap:wrap;gap:14px;padding:20px 22px;border-bottom:2px dashed var(--line);}
+  .stat{padding:12px 16px 10px;border-radius:16px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 3px 0 #e2cdb0,0 8px 16px rgba(84,46,30,.1);outline:1.5px dashed var(--thread);outline-offset:-5px;rotate:-.7deg;}
+  .stat:nth-child(even){rotate:.6deg;background:url(kit/felt-texture.webp),var(--white);}
   .stat .v{font-family:var(--display);font-weight:600;font-size:26px;letter-spacing:-.01em;color:var(--ink);}
-  .stat .v.acc{color:var(--accent);}
-  .stat .l{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:2px;}
+  .stat .v.acc{color:var(--coral-dk);}
+  .stat .l{font:600 11.5px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:3px;}
   .facets{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;padding:20px 22px;}
-  .facet{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(var(--surfaceRGB),.4);min-width:0;}
+  .facet{border-radius:18px;padding:16px 18px;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 3px 0 #e2cdb0,0 8px 18px rgba(84,46,30,.1);outline:1.5px dashed var(--line-2);outline-offset:-6px;min-width:0;}
   .facet .fh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
-  .facet .fh .name{font-family:var(--display);font-weight:600;font-size:15px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .facet .fh .name{font-family:var(--display);font-weight:600;font-size:15.5px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .facet .fh .kind{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);}
-  .facet .clr{font-family:var(--mono);font-size:11px;color:var(--accent);cursor:pointer;visibility:hidden;}
+  .facet .clr{font:600 11.5px/1 var(--mono);color:var(--coral-dk);cursor:pointer;visibility:hidden;}
   .facet .clr.show{visibility:visible;}
-  .barlist{display:flex;flex-direction:column;gap:3px;max-height:260px;overflow:auto;}
-  .barrow{position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:5px 8px;border-radius:7px;cursor:pointer;font-size:13px;overflow:hidden;}
-  .barrow .fill{position:absolute;inset:0;background:rgba(var(--accentRGB),.14);border-radius:7px;z-index:0;transition:width .2s var(--ease);}
-  .barrow .lbl{position:relative;z-index:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);}
-  .barrow .val{position:relative;z-index:1;font-family:var(--mono);font-size:12px;color:var(--faint);}
-  .barrow:hover{background:rgba(var(--accentRGB),.05);}
-  .barrow.sel .fill{background:rgba(var(--accentRGB),.34);}
-  .barrow.sel .lbl{color:var(--ink);}.barrow.sel .val{color:var(--accent);}
+  .barlist{display:flex;flex-direction:column;gap:4px;max-height:260px;overflow:auto;}
+  .barrow{flex:none;position:relative;display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:5px 9px;border-radius:9px;cursor:pointer;font-size:13px;overflow:hidden;background:var(--sand);}
+  .barrow .fill{position:absolute;inset:0;background:var(--knit),rgba(232,96,76,.3);background-size:8px 11px,auto;border-radius:9px;z-index:0;transition:width .2s var(--ease);}
+  .barrow .lbl{position:relative;z-index:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);}
+  .barrow .val{position:relative;z-index:1;font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .barrow:hover{box-shadow:inset 0 0 0 2px rgba(var(--accentRGB),.35);}
+  .barrow.sel .fill{background:var(--knit),linear-gradient(#f39a86,#f08a72);background-size:8px 11px,auto;}
+  .barrow.sel .lbl{color:var(--ink);font-weight:700;}
+  .barrow.sel .val{color:var(--ink);font-weight:600;}
   .barrow.dim{opacity:.42;}
   .more{font-family:var(--mono);font-size:11px;color:var(--faint);padding:5px 8px;}
   .histwrap{position:relative;}
-  canvas.hist{display:block;width:100%;height:120px;cursor:crosshair;touch-action:none;}
-  .histax{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:4px;}
-  .histread{font-family:var(--mono);font-size:11.5px;color:var(--accent);margin-top:6px;min-height:16px;}
+  canvas.hist{display:block;width:100%;height:120px;cursor:crosshair;touch-action:none;border-radius:10px;background:var(--cream);box-shadow:var(--sunk);}
+  .histax{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:5px;}
+  .histread{font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--coral-dk);margin-top:6px;min-height:16px;}
   .tablewrap{display:none;padding:0 22px 22px;}
   .tablehead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 2px;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  .tscroll{overflow:auto;border:1px solid var(--line);border-radius:12px;max-height:420px;}
+  .tscroll{overflow:auto;border-radius:16px;max-height:420px;background:#fffbf4;box-shadow:var(--sunk),0 0 0 2px var(--line);}
   table{border-collapse:collapse;width:100%;font-size:13px;}
-  thead th{position:sticky;top:0;background:#0c1815;text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);padding:9px 12px;border-bottom:1px solid var(--line-2);white-space:nowrap;}
-  tbody td{padding:8px 12px;border-bottom:1px solid var(--line);color:#cdd8d3;white-space:nowrap;max-width:280px;overflow:hidden;text-overflow:ellipsis;}
+  thead th{position:sticky;top:0;background:url(kit/felt-texture.webp),var(--sand);text-align:left;font:600 11.5px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);padding:10px 12px;border-bottom:2px solid var(--line-2);white-space:nowrap;}
+  tbody td{padding:8px 12px;border-bottom:1px solid var(--line);color:var(--ink);white-space:nowrap;max-width:280px;overflow:hidden;text-overflow:ellipsis;}
   tbody td.num{font-family:var(--mono);text-align:right;color:var(--ink);}
-  tbody tr:hover td{background:rgba(var(--accentRGB),.04);}
+  tbody tr:hover td{background:rgba(var(--accentRGB),.05);}
   .chooser{position:relative;}
-  .chooser .pop{display:none;position:absolute;z-index:30;top:calc(100% + 8px);left:0;width:260px;max-height:320px;overflow:auto;background:#0c1815;border:1px solid var(--line-2);border-radius:12px;padding:10px;box-shadow:0 24px 60px rgba(0,0,0,.5);}
+  .chooser .pop{display:none;position:absolute;z-index:30;top:calc(100% + 8px);left:0;width:280px;max-height:320px;overflow:auto;background:url(kit/felt-texture.webp),var(--cream);border-radius:16px;padding:10px;box-shadow:0 3px 0 #e2cdb0,0 22px 44px rgba(84,46,30,.26);outline:1.5px dashed var(--thread);outline-offset:-5px;}
   .chooser.open .pop{display:block;}
-  .chooser .pop .ci{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;font-size:13px;color:var(--muted);cursor:pointer;}
-  .chooser .pop .ci:hover{background:rgba(var(--accentRGB),.06);}
-  .chooser .pop .ci input{accent-color:var(--accent);}
+  .chooser .pop .ci{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:10px;font:500 13px/1.3 var(--body);color:var(--ink);cursor:pointer;}
+  .chooser .pop .ci:hover{background:rgba(var(--accentRGB),.07);}
   .chooser .pop .ci .k{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--faint);text-transform:uppercase;}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:560px){.stats{gap:18px;}.stat .v{font-size:22px;}}
+  @media(max-width:560px){.stats{gap:12px;}.stat .v{font-size:22px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Instant CSV Dashboard","url":"https://hammyasf.github.io/csv-dashboard.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Drop a CSV and get an interactive cross-filtering dashboard. Click any chart to filter every other chart, live. Runs entirely in the browser, nothing is uploaded.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my CSV uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The file is parsed and analysed entirely in your browser with JavaScript. Your data never leaves your device, so it works offline and stays private."}},{"@type":"Question","name":"What is cross-filtering?","acceptedAnswer":{"@type":"Answer","text":"Click a bar or drag a range on any chart and every other chart instantly re-aggregates to show only the matching rows. It is the brushing-and-linking interaction used in business intelligence tools, running live on your own data."}},{"@type":"Question","name":"How big a file can it handle?","acceptedAnswer":{"@type":"Answer","text":"Tens of thousands of rows stay smooth because the cross-filter engine works over typed integer indexes, not the raw text. Very large files are limited only by your device's memory."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, and no limits on how many files you explore."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="dev">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-csv-dashboard">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Instant CSV Dashboard</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-dev"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>Instant CSV Dashboard</h1>
     <p class="sub">Drop a CSV and get a live dashboard. Click any chart or drag across a range and every other chart re-filters in the same instant. The whole engine runs on your machine.</p>
-    <span class="priv">&#128274; 100% private — your file never leaves your device</span>
+    <p class="priv">&#128274; 100% private — your file never leaves your device</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add a CSV file">
       <h2>Drop a CSV file here</h2>
@@ -178,8 +164,8 @@
       <div class="tscroll"><table id="table"><thead></thead><tbody></tbody></table></div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>What this does</h2>
     <p>Most CSV viewers show you a table. This one turns a CSV into a set of linked charts so you can actually explore it. Pick a slice on one chart and the rest of the dashboard answers the question "and what does everything else look like for just those rows?" That brushing-and-linking interaction is the core of how analysts read data, and here it works on your own file with no setup and no upload.</p>
     <h2>How does this run entirely in the browser?</h2>
@@ -187,30 +173,21 @@
     <h2>Tips</h2>
     <p>Click several bars in a category to select more than one at once. Drag left-to-right across a histogram to keep a numeric or date range, and double-click the chart to clear it. Switch the measure from Records to Sum or Average of a numeric column to see totals instead of row counts. When you have the slice you want, export it back out as a clean CSV.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my CSV uploaded anywhere?</summary><p>No. The file is read and analysed entirely in your browser. It never touches a server, which is why it is instant, private, and works offline.</p></details>
     <details><summary>What is cross-filtering?</summary><p>Click a bar or drag a range on any chart and every other chart instantly re-aggregates to show only the matching rows. It is the same brushing-and-linking you see in business intelligence dashboards, running live on your own data.</p></details>
     <details><summary>How large a file can it handle?</summary><p>Tens of thousands of rows stay smooth because filtering happens over typed integer indexes rather than raw text. Very large files are bounded only by your device's memory.</p></details>
     <details><summary>Does it support TSV or other delimiters?</summary><p>Yes. Comma and tab files are detected automatically, along with quoted fields and common date formats.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   /* ---------- elements ---------- */
   var $=function(id){return document.getElementById(id);};
@@ -720,8 +697,5 @@
   function pad(n){ return n<10?("0"+n):(""+n); }
 })();
 </script>
-<!-- AdSense / Polar.sh monetization slot — paste unit here when ready. -->
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

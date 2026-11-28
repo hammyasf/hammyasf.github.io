@@ -8,7 +8,7 @@
 <meta name="keywords" content="bundle size explorer, source map explorer online, analyze bundle size, javascript bundle analyzer, webpack bundle analyzer online, treemap bundle size, source map visualizer, reduce bundle size, why is my bundle so big, source-map-explorer online, no upload" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Bundle Size Explorer" />
 <meta property="og:description" content="Drop a JS bundle + its source map, get a zoomable treemap of what's taking up space. Runs entirely in your browser, no upload." />
 <meta property="og:type" content="website" />
@@ -19,108 +19,93 @@
 <meta name="twitter:description" content="See what's bloating your JS bundle with a zoomable treemap. Private, in-browser, no install." />
 <link rel="canonical" href="https://hammyasf.github.io/bundlescope.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Bundle Size Explorer","url":"https://hammyasf.github.io/bundlescope.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Drop a minified JS bundle and its source map to see a zoomable treemap of which files and npm packages take up space. Runs entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my bundle uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The source map is parsed and your bundle is measured entirely in your browser using a Web Worker. Nothing is uploaded, which is why it works on private and internal code."}},{"@type":"Question","name":"What do I need to provide?","acceptedAnswer":{"@type":"Answer","text":"Your minified bundle (the .js file) and its source map. The map can be a separate .map file you drop alongside the .js, or an inline base64 map embedded in the .js. Most bundlers (webpack, Vite, Rollup, esbuild, Parcel) can emit source maps."}},{"@type":"Question","name":"How does it know how big each file is?","acceptedAnswer":{"@type":"Answer","text":"It decodes the source map's VLQ mappings and walks every byte of the generated bundle, attributing each run of generated code to the original source file it came from. This is the same technique the source-map-explorer CLI uses, but with no install."}},{"@type":"Question","name":"Does it work for any bundler?","acceptedAnswer":{"@type":"Answer","text":"Yes. It reads standard Source Map v3, including indexed (sectioned) maps, so webpack, Vite, Rollup, esbuild and Parcel output all work as long as a source map is available."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, no limits."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .drop{padding:42px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
-  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  :root{--bad:#b3263c;}
+  .panel{margin:0 0 22px;overflow:hidden;}
+  .drop{padding:42px 24px;text-align:center;margin:18px;cursor:pointer;}
   .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
   .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
+  .drop p b{color:var(--ink);}
   .drop .mini{font-size:12px;color:var(--faint);margin-top:10px;font-family:var(--mono);}
+  .drop:focus-visible{outline:3px solid var(--green);outline-offset:3px;}
   .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 24px 22px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;padding:12px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px) scale(1.03);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
   .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
   .status{font-family:var(--mono);font-size:13px;color:var(--muted);}
-  .status b{color:var(--accent);}
-  .err{color:#ff9a8a;}
-  .prog{height:4px;background:rgba(var(--accentRGB),.15);border-radius:3px;overflow:hidden;margin:0 24px 18px;display:none;}
-  .prog i{display:block;height:100%;width:30%;background:var(--accent);border-radius:3px;animation:slide 1.1s var(--ease) infinite;}
+  .err{color:var(--bad);}
+  .prog{height:8px;overflow:hidden;margin:0 24px 18px;display:none;}
+  .prog i{display:block;height:100%;width:30%;animation:slide 1.1s var(--ease) infinite;}
   @keyframes slide{0%{margin-left:-30%}100%{margin-left:100%}}
   /* results */
   #results{display:none;}
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;padding:4px 24px 6px;}
-  .card{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(var(--surfaceRGB),.4);}
-  .card .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .card .v{font-family:var(--display);font-weight:600;font-size:22px;margin-top:6px;color:var(--ink);}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;padding:4px 2px 8px;}
+  .card{border-radius:16px;padding:14px 16px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 3px 0 #e2cdb0,0 8px 16px rgba(84,46,30,.1);outline:1.5px dashed var(--thread);outline-offset:-5px;rotate:-.6deg;}
+  .card:nth-child(even){rotate:.7deg;background:url(kit/felt-texture.webp),var(--white);}
+  .card .l{font:600 11.5px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .card .v{font-family:var(--display);font-weight:600;font-size:22px;margin-top:6px;color:var(--ink);word-break:break-word;}
   .card .v small{font-size:12px;color:var(--muted);font-family:var(--mono);font-weight:400;}
-  .toolbar{display:flex;flex-wrap:wrap;gap:14px 20px;align-items:center;padding:14px 24px 6px;}
-  .toolbar label{font-family:var(--mono);font-size:12px;color:var(--muted);display:inline-flex;gap:8px;align-items:center;cursor:pointer;}
-  .toolbar input[type=search]{flex:1;min-width:160px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:9px 12px;font-family:var(--mono);font-size:13px;}
-  .toolbar input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;}
-  .crumb{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:8px 24px 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
-  .crumb a{color:var(--accent);cursor:pointer;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:14px 20px;align-items:center;padding:16px 2px 6px;}
+  .tool-ui .toolbar label{font:500 12.5px/1.3 var(--mono);color:var(--muted);display:inline-flex;gap:10px;align-items:center;cursor:pointer;}
+  .toolbar input[type=search]{flex:1;width:auto;min-width:160px;font:500 13px/1.3 var(--mono);padding:11px 16px;}
+  .crumb{font:500 12.5px/1.4 var(--mono);color:var(--muted);padding:8px 2px 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
+  .crumb a{color:var(--coral-dk);font-weight:600;cursor:pointer;}
   .crumb span.sep{color:var(--faint);}
-  .mapwrap{position:relative;margin:12px 24px 6px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#060d0b;}
-  #treemap{display:block;width:100%;height:540px;cursor:pointer;}
-  #tip{position:absolute;pointer-events:none;background:rgba(6,13,11,.96);border:1px solid var(--line-2);border-radius:9px;padding:8px 11px;font-family:var(--mono);font-size:11.5px;color:var(--ink);max-width:320px;display:none;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.5);}
-  #tip .p{color:var(--accent);word-break:break-all;margin-bottom:3px;}
+  .mapwrap{position:relative;margin:12px 0 6px;border-radius:18px;overflow:hidden;padding:3px;background:url(kit/felt-texture.webp),var(--sand);box-shadow:var(--sunk),0 0 0 2px var(--line);}
+  #treemap{display:block;width:100%;height:540px;cursor:pointer;border-radius:14px;}
+  #tip{position:absolute;pointer-events:none;background:url(kit/felt-texture.webp),var(--cream);border-radius:12px;padding:9px 12px;font-family:var(--mono);font-size:11.5px;color:var(--ink);max-width:320px;display:none;z-index:5;box-shadow:0 3px 0 #e2cdb0,0 12px 26px rgba(84,46,30,.24);outline:1.5px dashed var(--thread);outline-offset:-4px;}
+  #tip .p{color:var(--coral-dk);font-weight:600;word-break:break-all;margin-bottom:3px;}
   #tip .s{color:var(--muted);}
-  .legend{display:flex;flex-wrap:wrap;gap:10px 16px;padding:6px 24px 4px;font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+  .legend{display:flex;flex-wrap:wrap;gap:10px 16px;padding:8px 2px 4px;font-family:var(--mono);font-size:11.5px;color:var(--muted);}
   .legend span{display:inline-flex;align-items:center;gap:6px;}
-  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block;}
-  .list{padding:8px 24px 24px;}
-  .list h3{font-family:var(--display);font-weight:600;font-size:16px;margin:10px 0;color:var(--ink);}
-  .row{display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
-  .row:hover{background:rgba(var(--accentRGB),.05);}
+  .legend i{width:12px;height:12px;border-radius:4px;display:inline-block;box-shadow:inset 0 -2px 0 rgba(84,46,30,.2);}
+  .list{padding:8px 2px 4px;}
+  .list h3{font-family:var(--display);font-weight:600;font-size:17px;margin:12px 0;color:var(--ink);}
+  .row{display:grid;grid-template-columns:1fr auto;gap:8px 16px;align-items:center;padding:9px 8px;border-bottom:2px dashed var(--line);border-radius:8px;cursor:pointer;transition:background-color .15s;}
+  .row:hover{background:rgba(var(--accentRGB),.06);}
   .row .nm{font-family:var(--mono);font-size:12.5px;color:var(--ink);word-break:break-all;}
   .row .nm .dir{color:var(--faint);}
   .row .meta{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;}
-  .row .meta b{color:var(--accent);}
-  .rowbar{grid-column:1 / -1;height:5px;background:rgba(var(--accentRGB),.1);border-radius:3px;overflow:hidden;}
-  .rowbar i{display:block;height:100%;background:var(--accent);border-radius:3px;}
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  section.copy code{font-family:var(--mono);font-size:14px;background:rgba(var(--accentRGB),.1);color:var(--accent);padding:2px 6px;border-radius:6px;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .row .meta b{color:var(--coral-dk);}
+  .rowbar{grid-column:1 / -1;height:7px;background:var(--sand);box-shadow:var(--sunk);border-radius:999px;overflow:hidden;}
+  .rowbar i{display:block;height:100%;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);background-size:8px 11px,auto;border-radius:999px;}
   @media(max-width:560px){#treemap{height:420px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Bundle Size Explorer","url":"https://hammyasf.github.io/bundlescope.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Drop a minified JS bundle and its source map to see a zoomable treemap of which files and npm packages take up space. Runs entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my bundle uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The source map is parsed and your bundle is measured entirely in your browser using a Web Worker. Nothing is uploaded, which is why it works on private and internal code."}},{"@type":"Question","name":"What do I need to provide?","acceptedAnswer":{"@type":"Answer","text":"Your minified bundle (the .js file) and its source map. The map can be a separate .map file you drop alongside the .js, or an inline base64 map embedded in the .js. Most bundlers (webpack, Vite, Rollup, esbuild, Parcel) can emit source maps."}},{"@type":"Question","name":"How does it know how big each file is?","acceptedAnswer":{"@type":"Answer","text":"It decodes the source map's VLQ mappings and walks every byte of the generated bundle, attributing each run of generated code to the original source file it came from. This is the same technique the source-map-explorer CLI uses, but with no install."}},{"@type":"Question","name":"Does it work for any bundler?","acceptedAnswer":{"@type":"Answer","text":"Yes. It reads standard Source Map v3, including indexed (sectioned) maps, so webpack, Vite, Rollup, esbuild and Parcel output all work as long as a source map is available."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, no limits."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free dev tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="dev">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-bundlescope">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Bundle Size Explorer</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-dev"/></svg></span>
+    <span class="tag chip">Free dev tool · runs in your browser</span>
     <h1>Bundle Size Explorer</h1>
     <p class="sub">Drop a minified JS bundle and its source map. Get a zoomable treemap of exactly which files and npm packages are eating your bundle, decoded byte-by-byte from the source map right here in the tab.</p>
-    <span class="priv">&#128274; 100% private — your bundle is parsed locally and never uploaded</span>
+    <p class="priv">&#128274; 100% private — your bundle is parsed locally and never uploaded</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add bundle and source map">
       <h2>Drop your bundle + source map</h2>
@@ -152,8 +137,8 @@
       <div id="rows"></div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>A JavaScript source map records, for every position in your minified bundle, which original file and line it came from. This tool decodes those mappings (the compact base64 VLQ ones) and walks the whole generated file, attributing each run of bytes to the original source it maps back to. Add it all up per file and you get a precise picture of what is actually in your bundle. The same idea powers the <code>source-map-explorer</code> CLI, except here there is nothing to install and nothing to upload.</p>
     <h2>How is this running in my browser?</h2>
@@ -163,27 +148,19 @@
     <h2>How to read the treemap</h2>
     <p>Each rectangle is a file, sized by how many bytes it contributes to the bundle. Click any folder to zoom in, and use the breadcrumb to climb back out. Turn on "Group node_modules by package" to roll every dependency up to its top-level package, which is usually the fastest way to spot the one library that is quietly costing you 200&nbsp;KB.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my bundle uploaded anywhere?</summary><p>No. Parsing and measurement run entirely in your browser in a Web Worker. Your files never touch a server, so it is safe for private and internal code.</p></details>
     <details><summary>What exactly do I drop in?</summary><p>Your minified bundle and its source map. That can be a <code>.js</code> plus a separate <code>.map</code>, or a single <code>.js</code> with an inline base64 source map. If you only have the <code>.map</code>, drop the matching <code>.js</code> too so byte sizes can be measured.</p></details>
     <details><summary>Which bundlers are supported?</summary><p>Any tool that emits a standard Source Map v3: webpack, Vite, Rollup, esbuild, Parcel, and more. Indexed (sectioned) maps are handled as well.</p></details>
     <details><summary>Why is some space marked "unmapped"?</summary><p>Bundler runtime, license banners, and other generated glue often have no source mapping. That space is grouped as "[unmapped]" so the totals always add up to your real bundle size.</p></details>
     <details><summary>Are the sizes bytes or gzipped?</summary><p>The treemap and per-file numbers are raw (minified) bytes, matching how source-map-explorer reports. The summary also shows the true gzipped size of the whole bundle, measured in-browser.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>&copy; 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- Worker: decode source map + attribute bytes + gzip. Plain JS, instantiated via Blob URL. -->
+<footer class="site-foot"><span>&copy; 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script type="javascript/worker" id="worker-src">
 var B64="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 var B64INV={};for(var _i=0;_i<B64.length;_i++)B64INV[B64.charAt(_i)]=_i;
@@ -197,12 +174,9 @@ function attributeSectioned(content,map){var lineStart=computeLineStarts(content
 function gzipSize(str){return new Promise(function(resolve){try{if(typeof CompressionStream==="undefined"){resolve(null);return;}var enc=new TextEncoder().encode(str);var cs=new CompressionStream("gzip");var stream=new Blob([enc]).stream().pipeThrough(cs);new Response(stream).arrayBuffer().then(function(ab){resolve(ab.byteLength);}).catch(function(){resolve(null);});}catch(e){resolve(null);}});}
 onmessage=function(e){var d=e.data;try{var map=typeof d.mapText==="string"?JSON.parse(d.mapText):d.mapText;if(!map||(map.version!==3&&!map.sections))throw new Error("Not a valid Source Map v3 (missing version or mappings).");var res=attribute(d.js,map);gzipSize(d.js).then(function(gz){res.gzip=gz;res.ok=true;postMessage(res);});}catch(err){postMessage({ok:false,error:String(err&&err.message||err)});}};
 </script>
-
 <script>
 (function(){
-  // theme — match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   // ---- VLQ encoder (only used by the in-page sample generator) ----
   var B64="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -351,7 +325,7 @@ onmessage=function(e){var d=e.data;try{var map=typeof d.mapText==="string"?JSON.
 
   function topSegment(path){ var i=path.indexOf("/"); return i===-1?path:path.slice(0,i); }
   function hueFor(path){ var top=topSegment(path); if(hue[top]===undefined){ hue[top]=(hueSeed*47+12)%360; hueSeed++; } return hue[top]; }
-  function fillFor(node,depthInView){ if(node.path==="[unmapped]")return "hsl(0,0%,32%)"; var h=hueFor(node.path); var baseAccent=getComputedStyle(document.documentElement).getPropertyValue("--accent"); var l=node.isDir?34:46; var s=node.isDir?38:58; return "hsl("+h+","+s+"%,"+l+"%)"; }
+  function fillFor(node,depthInView){ if(node.path==="[unmapped]")return "#a99fb5"; var h=hueFor(node.path); var baseAccent=getComputedStyle(document.documentElement).getPropertyValue("--accent"); var l=node.isDir?34:46; var s=node.isDir?38:58; return "hsl("+h+","+s+"%,"+l+"%)"; }
 
   function setupCanvas(){
     var dpr=Math.min(window.devicePixelRatio||1,2);
@@ -374,16 +348,16 @@ onmessage=function(e){var d=e.data;try{var map=typeof d.mapText==="string"?JSON.
       if(t.w<1||t.h<1)continue;
       ctx.fillStyle=fillFor(n);
       ctx.fillRect(t.x,t.y,t.w-1,t.h-1);
-      if(i===hoverTile){ ctx.fillStyle="rgba(255,255,255,.14)"; ctx.fillRect(t.x,t.y,t.w-1,t.h-1); }
+      if(i===hoverTile){ ctx.fillStyle="rgba(255,247,234,.3)"; ctx.fillRect(t.x,t.y,t.w-1,t.h-1); }
       // label
       if(t.w>54&&t.h>24){
         ctx.save();
         ctx.beginPath();ctx.rect(t.x+5,t.y+4,t.w-9,t.h-7);ctx.clip();
-        ctx.fillStyle="rgba(0,0,0,.78)";
+        ctx.fillStyle="rgba(45,36,64,.92)";
         ctx.font='600 12px "JetBrains Mono",monospace';
         var label=n.name+(n.isDir?"/":"");
         ctx.fillText(label,t.x+6,t.y+5);
-        if(t.h>40){ ctx.font='11px "JetBrains Mono",monospace'; ctx.fillStyle="rgba(0,0,0,.6)"; ctx.fillText(fmtSize(n.value),t.x+6,t.y+21); }
+        if(t.h>40){ ctx.font='11px "JetBrains Mono",monospace'; ctx.fillStyle="rgba(45,36,64,.78)"; ctx.fillText(fmtSize(n.value),t.x+6,t.y+21); }
         ctx.restore();
       }
     }
@@ -394,7 +368,7 @@ onmessage=function(e){var d=e.data;try{var map=typeof d.mapText==="string"?JSON.
     var sizes=currentSizes(); var tops={};
     Object.keys(sizes).forEach(function(k){ var t=topSegment(k); tops[t]=(tops[t]||0)+sizes[k]; });
     var arr=Object.keys(tops).map(function(k){return {k:k,v:tops[k]};}).sort(function(a,b){return b.v-a.v;}).slice(0,8);
-    legend.innerHTML=arr.map(function(x){ var color=x.k==="[unmapped]"?"hsl(0,0%,32%)":"hsl("+hueFor(x.k+"/")+",52%,46%)"; return '<span><i style="background:'+color+'"></i>'+escapeHtml(x.k)+' · '+fmtSize(x.v)+'</span>'; }).join("");
+    legend.innerHTML=arr.map(function(x){ var color=x.k==="[unmapped]"?"#a99fb5":"hsl("+hueFor(x.k+"/")+",52%,46%)"; return '<span><i style="background:'+color+'"></i>'+escapeHtml(x.k)+' · '+fmtSize(x.v)+'</span>'; }).join("");
   }
 
   function renderCrumb(){
@@ -516,11 +490,5 @@ onmessage=function(e){var d=e.data;try{var map=typeof d.mapText==="string"?JSON.
   window.__bsSample=buildSample;
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
-<!-- AdSense slot (enable later):
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
--->
-<!-- Polar.sh "buy me a coffee" slot (enable later) -->
 </body>
 </html>

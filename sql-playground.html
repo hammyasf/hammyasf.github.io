@@ -8,7 +8,7 @@
 <meta name="keywords" content="query csv with sql, sql on csv online, duckdb wasm, browser sql, csv sql query, parquet viewer online, run sql in browser, query json with sql, sql playground, no upload sql" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Browser SQL Playground — query CSV &amp; Parquet with DuckDB" />
 <meta property="og:description" content="Run real analytical SQL on CSV, Parquet, and JSON in your browser. A full DuckDB runs client-side via WebAssembly. No upload, no sign-up." />
 <meta property="og:type" content="website" />
@@ -19,109 +19,94 @@
 <meta name="twitter:description" content="Query CSV, Parquet, and JSON with real SQL, 100% client-side. No upload, no sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/sql-playground.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Browser SQL Playground","url":"https://hammyasf.github.io/sql-playground.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Run analytical SQL on CSV, Parquet and JSON files entirely in the browser with DuckDB compiled to WebAssembly. No upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my files uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. A full DuckDB database runs inside your browser via WebAssembly. Your files are read locally and never leave your device."}},{"@type":"Question","name":"What file types can I query?","acceptedAnswer":{"@type":"Answer","text":"CSV and TSV, Parquet, and JSON or NDJSON. Each file you drop in becomes a table you can query with standard SQL."}},{"@type":"Question","name":"How large a file can it handle?","acceptedAnswer":{"@type":"Answer","text":"DuckDB is a columnar analytical engine, so it handles files with hundreds of thousands of rows comfortably. The practical limit is your device's memory, not an arbitrary server cap."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up. The DuckDB engine downloads once and is then cached by your browser."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);--err:#ff7a6b;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:720px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
-  .app{margin:26px 0;display:grid;grid-template-columns:260px 1fr;gap:18px;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  :root{--err:#b3263c;}
+  .app{margin:0;display:grid;grid-template-columns:260px 1fr;gap:18px;}
   @media(max-width:820px){.app{grid-template-columns:1fr;}}
-  .side{border:1px solid var(--line);border-radius:18px;background:rgba(var(--surfaceRGB),.55);padding:16px;height:fit-content;}
-  .side h3{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;}
-  .drop{padding:22px 14px;text-align:center;border:2px dashed var(--line-2);border-radius:14px;transition:border-color .2s,background .2s;cursor:pointer;}
-  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
-  .drop b{font-family:var(--display);font-weight:600;font-size:15px;display:block;}
+  .side{border-radius:20px;background:rgba(var(--surfaceRGB),.5);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;padding:18px;height:fit-content;}
+  .side h3{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;}
+  .drop{padding:22px 14px;text-align:center;cursor:pointer;}
+  .drop b{font-family:var(--display);font-weight:600;font-size:15px;display:block;color:var(--ink);}
   .drop span{color:var(--muted);font-size:12.5px;}
-  .tablebtn{width:100%;text-align:left;background:transparent;border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-top:8px;cursor:pointer;color:var(--ink);transition:.15s;}
-  .tablebtn:hover{border-color:rgba(var(--accentRGB),.45);background:rgba(var(--accentRGB),.05);}
-  .tablebtn .tn{font-family:var(--mono);font-size:13px;color:var(--accent);word-break:break-all;}
+  .drop:focus-visible{outline:3px solid var(--green);outline-offset:3px;}
+  .tablebtn{width:100%;text-align:left;background:url(kit/felt-texture.webp),var(--cream);border:0;border-radius:12px;padding:10px 12px;margin-top:9px;cursor:pointer;color:var(--ink);box-shadow:0 2px 0 var(--line);outline:1.5px dashed var(--line-2);outline-offset:-4px;transition:transform .45s var(--spring-pop),background-color .15s;}
+  .tablebtn:hover{transform:translateY(-1px) rotate(-.6deg);background:url(kit/felt-texture.webp),var(--white);}
+  .tablebtn.open{background:url(kit/felt-texture.webp),var(--white);outline-color:rgba(185,68,47,.4);}
+  .tablebtn .tn{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--coral-dk);word-break:break-all;}
   .tablebtn .tm{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:2px;}
   .cols{margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.5;display:none;}
   .tablebtn.open .cols{display:block;}
-  .sample{margin-top:14px;width:100%;font-family:var(--body);font-weight:700;font-size:13px;padding:10px 14px;border-radius:100px;background:transparent;border:1px solid var(--line-2);color:var(--ink);cursor:pointer;transition:.15s;}
-  .sample:hover{border-color:var(--accent);color:var(--accent);}
-
-  .main{min-width:0;border:1px solid var(--line);border-radius:18px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;display:flex;flex-direction:column;}
-  .ed{position:relative;}
-  textarea#sql{width:100%;min-height:148px;resize:vertical;background:rgba(0,0,0,.25);color:var(--ink);border:none;border-bottom:1px solid var(--line);padding:16px 18px;font-family:var(--mono);font-size:14px;line-height:1.65;outline:none;tab-size:2;}
+  .sample{margin-top:16px;width:100%;font:600 14px/1.1 var(--display);padding:12px 14px;border-radius:999px;border:0;color:var(--ink);background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .sample:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 5px 0 #e2cdb0,0 10px 20px rgba(84,46,30,.18);}
+  .sample:active{transform:translateY(2px) scale(.97);transition-duration:.08s;}
+  .main{min-width:0;border-radius:20px;background:rgba(var(--surfaceRGB),.5);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;overflow:hidden;display:flex;flex-direction:column;}
+  .ed{position:relative;transition:box-shadow .2s;}
+  .ed:focus-within{box-shadow:inset 0 0 0 2px rgba(63,122,85,.4);}
+  textarea#sql{width:100%;min-height:148px;resize:vertical;background:#fffbf4;color:var(--ink);border:none;border-bottom:2px dashed var(--line);border-radius:20px 20px 0 0;box-shadow:none;padding:18px 20px;font-family:var(--mono);font-size:14px;font-weight:400;line-height:1.65;outline:none;tab-size:2;}
   textarea#sql::placeholder{color:var(--faint);}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 18px;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:14px 18px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:11px 18px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px) scale(1.03);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
   .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;font-size:13px;padding:9px 14px;}
+  .btn-out{font-size:13.5px;padding:10px 15px;}
   .kbd{font-family:var(--mono);font-size:11px;color:var(--faint);margin-left:auto;}
   .status{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding:0 18px 4px;min-height:18px;}
-  .status .ok{color:var(--accent);}
+  .status .ok{color:var(--green);}
   .status .bad{color:var(--err);}
-  .loadwrap{padding:14px 18px;}
-  .progress{height:6px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;}
-  .progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .3s;}
-  .err{margin:0 18px 14px;padding:12px 14px;border:1px solid rgba(255,122,107,.4);background:rgba(255,122,107,.08);border-radius:12px;color:#ffb3a8;font-family:var(--mono);font-size:13px;white-space:pre-wrap;display:none;}
+  .loadwrap{padding:16px 18px;}
+  .progress{height:10px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;margin-top:4px;}
+  .progress i{display:block;height:100%;width:0;border-radius:999px;background:var(--knit),linear-gradient(90deg,var(--coral),var(--green));background-size:8px 11px,auto;transition:width .3s;}
+  .err{margin:0 18px 14px;padding:12px 16px;border-radius:14px;background:url(kit/felt-texture.webp),color-mix(in srgb,var(--coral) 14%,var(--cream));outline:2px dashed rgba(179,38,60,.4);outline-offset:-5px;color:#96331f;font-family:var(--mono);font-size:13px;white-space:pre-wrap;display:none;}
   .resmeta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:6px 18px 0;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  .resmeta b{color:var(--accent);}
+  .resmeta b{color:var(--coral-dk);}
   .resmeta-actions{margin-left:auto;display:flex;gap:8px;}
-  .tablebox{overflow:auto;max-height:60vh;margin:12px 18px 18px;border:1px solid var(--line);border-radius:12px;}
+  .tablebox{overflow:auto;max-height:60vh;margin:12px 18px 18px;border-radius:16px;background:#fffbf4;box-shadow:var(--sunk),0 0 0 2px var(--line);}
   table.res{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;}
   table.res th,table.res td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap;}
-  table.res th{position:sticky;top:0;background:#0a1512;color:var(--accent);font-weight:500;z-index:1;border-bottom:1px solid var(--line-2);}
-  table.res th .ty{display:block;color:var(--faint);font-size:10px;letter-spacing:.04em;}
-  table.res td{color:#d4ded9;}
+  table.res th{position:sticky;top:0;background:url(kit/felt-texture.webp),var(--sand);color:var(--ink);font-weight:600;z-index:1;border-bottom:2px solid var(--line-2);}
+  table.res th .ty{display:block;color:var(--faint);font-size:10px;font-weight:400;letter-spacing:.04em;}
+  table.res td{color:var(--ink);}
   table.res td.num{text-align:right;}
   table.res td.nul{color:var(--faint);font-style:italic;}
   table.res tr:hover td{background:rgba(var(--accentRGB),.05);}
   .empty{padding:40px 18px;text-align:center;color:var(--muted);font-size:14px;}
-  .empty code{font-family:var(--mono);background:rgba(255,255,255,.06);padding:2px 6px;border-radius:5px;color:var(--accent);}
-
-  section.copy{padding:24px 0 10px;max-width:760px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;max-width:760px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));max-width:760px;}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  .empty code{font-family:var(--mono);background:var(--sand);padding:2px 7px;border-radius:6px;color:var(--coral-dk);}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Browser SQL Playground","url":"https://hammyasf.github.io/sql-playground.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Run analytical SQL on CSV, Parquet and JSON files entirely in the browser with DuckDB compiled to WebAssembly. No upload.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are my files uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. A full DuckDB database runs inside your browser via WebAssembly. Your files are read locally and never leave your device."}},{"@type":"Question","name":"What file types can I query?","acceptedAnswer":{"@type":"Answer","text":"CSV and TSV, Parquet, and JSON or NDJSON. Each file you drop in becomes a table you can query with standard SQL."}},{"@type":"Question","name":"How large a file can it handle?","acceptedAnswer":{"@type":"Answer","text":"DuckDB is a columnar analytical engine, so it handles files with hundreds of thousands of rows comfortably. The practical limit is your device's memory, not an arbitrary server cap."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free with no sign-up. The DuckDB engine downloads once and is then cached by your browser."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="dev">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-sql-playground">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Browser SQL Playground</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-dev"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>Browser SQL Playground</h1>
     <p class="sub">Drop in a CSV, Parquet, or JSON file and query it with real analytical SQL. A full DuckDB database runs inside your browser through WebAssembly, so your data never leaves your device.</p>
-    <span class="priv">&#128274; 100% private — a real database runs locally, nothing is uploaded</span>
+    <p class="priv">&#128274; 100% private — a real database runs locally, nothing is uploaded</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="app">
     <aside class="side">
       <h3>Data</h3>
@@ -157,8 +142,8 @@
       </div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>This page loads DuckDB, a fast columnar analytics database, compiled to WebAssembly. When you drop in a file it is registered directly with the engine and exposed as a table, so a query like <code>SELECT * FROM your_file</code> runs against your real data. Because the whole engine lives in the page, there is no server round trip, no upload queue, and no privacy trade off. The first run downloads the engine once and your browser caches it after that.</p>
     <h2>What you can do with it</h2>
@@ -166,35 +151,21 @@
     <h2>Why run a database in the browser?</h2>
     <p>Uploading a data file to some random online tool to run one query is a privacy risk you do not need to take. Here the data stays on your machine, the queries are instant because nothing travels over the network, and there are no row caps or paywalls. It is the same engine data engineers run on the command line, just sitting in a tab.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is my data uploaded anywhere?</summary><p>No. DuckDB runs entirely in your browser via WebAssembly. Files are read locally and never sent to a server, which is why it works offline once the engine is cached.</p></details>
     <details><summary>Which file formats are supported?</summary><p>CSV and TSV, Parquet, and JSON or NDJSON. Drop several files and each becomes its own table, so you can join across them.</p></details>
     <details><summary>How big a file can I query?</summary><p>DuckDB is built for analytics, so hundreds of thousands of rows are no problem. The real limit is your device's available memory rather than an arbitrary server cap.</p></details>
     <details><summary>Can I run more than one statement?</summary><p>Yes. Separate statements with semicolons and they run in order. The results shown are from the last statement that returns rows, so you can create temporary tables and then select from them.</p></details>
     <details><summary>Does it work on my phone?</summary><p>It runs on modern mobile browsers, but the engine is a few megabytes and large files use real memory, so a laptop is the better experience for heavy work.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>A real database in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- AdSense slot (enable later):
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXX" data-ad-slot="XXXX" data-ad-format="auto"></ins>
--->
-<!-- Polar.sh "support / hire" slot (enable later) -->
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>A real database in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script type="module">
-  // ---- match the portfolio's saved theme ----
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   const $ = (id) => document.getElementById(id);
   const sqlEl=$("sql"), runBtn=$("run"), csvBtn=$("csvBtn"), jsonBtn=$("jsonBtn"),
@@ -499,8 +470,5 @@
     finally{ sampleBtn.textContent="Load sample dataset"; sampleBtn.disabled=false; }
   });
 </script>
-
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

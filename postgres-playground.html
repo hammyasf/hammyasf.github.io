@@ -8,7 +8,7 @@
 <meta name="keywords" content="postgres in browser, online postgres playground, run postgres online, postgres sandbox, try postgres online, postgres wasm, browser postgres, learn sql, sql playground, db fiddle postgres, postgres repl, pglite" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Postgres Playground — real PostgreSQL in your browser" />
 <meta property="og:description" content="A real PostgreSQL 18 database running entirely in your browser via WebAssembly. Write SQL, persist data locally, share a query as a link. No install, no upload." />
 <meta property="og:type" content="website" />
@@ -19,103 +19,96 @@
 <meta name="twitter:description" content="A real PostgreSQL database running in your browser via WebAssembly. Persistent, private, shareable. No install." />
 <link rel="canonical" href="https://hammyasf.github.io/postgres-playground.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Postgres Playground","url":"https://hammyasf.github.io/postgres-playground.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real PostgreSQL database compiled to WebAssembly that runs entirely in your browser. Write SQL, create tables, run queries, persist data locally, and share a query as a link.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this really PostgreSQL?","acceptedAnswer":{"@type":"Answer","text":"Yes. It runs the actual PostgreSQL engine compiled to WebAssembly (via PGlite). SELECT version() reports a genuine PostgreSQL 18 build. It is a single-connection embedded Postgres, not a hosted server."}},{"@type":"Question","name":"Is my data uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The database runs inside your browser tab. Your tables and rows are stored locally in your browser using IndexedDB and never leave your device."}},{"@type":"Question","name":"Does my data survive a page reload?","acceptedAnswer":{"@type":"Answer","text":"Yes. The database is persisted to your browser's IndexedDB, so your schema and data are still there when you come back. You can wipe it any time with Reset database."}},{"@type":"Question","name":"How big is the download?","acceptedAnswer":{"@type":"Answer","text":"The Postgres WebAssembly build is about 3 MB gzipped. It downloads once and is then cached by your browser, so later visits start fast."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, and no limits on how many queries you run."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);--bad:#ff6b6b;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1140px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1140px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .status{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line-2);padding:6px 12px;border-radius:100px;}
-  .status .led{width:8px;height:8px;border-radius:50%;background:var(--faint);}
-  .status.ready .led{background:var(--accent);box-shadow:0 0 10px rgba(var(--accentRGB),.8);}
-  .status.busy .led{background:#ffd166;box-shadow:0 0 10px rgba(255,209,102,.8);animation:pulse 1s var(--ease) infinite;}
-  .status.err .led{background:var(--bad);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  :root{--bad:#b3263c;}
+  /* the hero's privacy badge and the engine's status, side by side */
+  .pills{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:20px;}
+  .tool > .hero .pills .priv{margin:0;}
+  @media(max-width:720px){.tool > .hero > .pills{grid-column:1 / -1;}}
+  .status{display:inline-flex;align-items:center;gap:9px;font:600 12.5px/1.2 var(--mono);color:var(--muted);padding:9px 14px;border-radius:999px;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 2px 0 #e2cdb0,0 6px 12px rgba(84,46,30,.1);outline:1.5px dashed var(--thread);outline-offset:-4px;rotate:-.8deg;}
+  .status .led{width:10px;height:10px;border-radius:50%;background:var(--faint);box-shadow:inset 0 -1px 0 rgba(0,0,0,.2);}
+  .status.ready{color:var(--green);}
+  .status.ready .led{background:var(--green);box-shadow:0 0 0 3px rgba(63,122,85,.22);}
+  .status.busy .led{background:var(--butter);box-shadow:0 0 0 3px rgba(242,193,78,.4);animation:pulse 1s var(--ease) infinite;}
+  .status.err{color:var(--bad);}
+  .status.err .led{background:var(--bad);box-shadow:0 0 0 3px rgba(179,38,60,.2);}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
-  .app{display:grid;grid-template-columns:248px 1fr;gap:18px;margin:24px 0;}
-  @media(max-width:840px){.app{grid-template-columns:1fr;}}
-  .side{border:1px solid var(--line);border-radius:18px;background:rgba(var(--surfaceRGB),.55);padding:16px;align-self:start;}
-  .side h3{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;}
-  .schema{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow:auto;}
-  .tbl{border:1px solid var(--line);border-radius:10px;overflow:hidden;}
-  .tbl > summary{list-style:none;cursor:pointer;padding:9px 11px;font-family:var(--mono);font-size:13px;color:var(--ink);display:flex;align-items:center;gap:7px;background:rgba(var(--surfaceRGB),.5);}
+  .app{display:grid;grid-template-columns:248px 1fr;gap:18px;margin:0;}
+  @media(max-width:840px){.app{grid-template-columns:minmax(0,1fr);}}
+  .side{border-radius:20px;background:rgba(var(--surfaceRGB),.5);box-shadow:var(--sunk);outline:2px dashed var(--line);outline-offset:-7px;padding:18px;align-self:start;}
+  .side h3{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;}
+  .schema{display:flex;flex-direction:column;gap:7px;max-height:340px;overflow:auto;padding:2px 2px 4px;}
+  .tool-ui .tbl{border-radius:12px;overflow:hidden;background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 2px 0 var(--line);outline:1.5px dashed var(--line-2);outline-offset:-4px;}
+  .tool-ui .tbl > summary{list-style:none;cursor:pointer;padding:9px 34px 9px 12px;border-radius:12px;font:600 13px/1.3 var(--mono);color:var(--ink);display:flex;align-items:center;gap:7px;background:none;}
+  .tool-ui .tbl > summary::after{right:9px;width:18px;height:18px;margin-top:-9px;background:linear-gradient(var(--ink) 0 0) center / 8px 2px no-repeat,linear-gradient(var(--ink) 0 0) center / 2px 8px no-repeat,url(kit/felt-texture.webp),var(--butter);box-shadow:inset 0 -2px 0 rgba(0,0,0,.14),0 1px 0 #d6a43a;}
   .tbl > summary::-webkit-details-marker{display:none;}
-  .tbl > summary:hover{color:var(--accent);}
-  .tbl .cols{padding:4px 11px 9px 26px;}
+  .tbl > summary:hover{color:var(--coral-dk);}
+  .tbl .cols{padding:2px 12px 10px 24px;}
   .tbl .col{font-family:var(--mono);font-size:12px;color:var(--muted);padding:2px 0;display:flex;justify-content:space-between;gap:10px;}
   .tbl .col .ty{color:var(--faint);}
   .side .empty{font-size:13px;color:var(--faint);line-height:1.5;}
-  .side .btnrow{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
-  .panel{border:1px solid var(--line);border-radius:18px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;display:flex;flex-direction:column;}
-  .edwrap{position:relative;}
-  textarea#sql{width:100%;min-height:188px;resize:vertical;background:#06100d;color:var(--ink);border:none;border-bottom:1px solid var(--line);padding:16px 18px;font-family:var(--mono);font-size:13.5px;line-height:1.6;outline:none;tab-size:2;}
-  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;font-size:13px;padding:9px 14px;}
-  .btn-out:hover{border-color:rgba(var(--accentRGB),.5);}
+  .side .btnrow{display:flex;flex-direction:column;gap:9px;margin-top:16px;}
+  .panel{overflow:hidden;display:flex;flex-direction:column;}
+  .edwrap{position:relative;transition:box-shadow .2s;}
+  .edwrap:focus-within{box-shadow:inset 0 0 0 2px rgba(63,122,85,.4);}
+  textarea#sql{width:100%;min-height:188px;resize:vertical;background:#fffbf4;color:var(--ink);border:none;border-bottom:2px dashed var(--line);border-radius:20px 20px 0 0;box-shadow:none;padding:18px 20px;font-family:var(--mono);font-size:13.5px;font-weight:400;line-height:1.6;outline:none;tab-size:2;}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 16px;border-bottom:2px dashed var(--line);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:11px 18px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px) scale(1.03);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-out{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 13.5px/1.1 var(--display);padding:10px 15px;border:0;border-radius:999px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn-out:hover{transform:translateY(-2px) rotate(-1deg);}
+  .btn-out:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn-out[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
   .kbd{font-family:var(--mono);font-size:11px;color:var(--faint);}
   .spacer{flex:1;}
   .resultwrap{overflow:auto;max-height:460px;}
   table.res{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;}
-  table.res th{position:sticky;top:0;background:#0a1714;text-align:left;padding:9px 12px;border-bottom:1px solid var(--line-2);color:var(--accent);white-space:nowrap;}
+  table.res th{position:sticky;top:0;background:url(kit/felt-texture.webp),var(--sand);text-align:left;padding:10px 12px;border-bottom:2px solid var(--line-2);color:var(--ink);white-space:nowrap;}
   table.res th .ty{display:block;color:var(--faint);font-weight:400;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;margin-top:2px;}
-  table.res td{padding:7px 12px;border-bottom:1px solid var(--line);color:#d7e2dd;white-space:pre;max-width:380px;overflow:hidden;text-overflow:ellipsis;vertical-align:top;}
-  table.res tr:hover td{background:rgba(var(--accentRGB),.04);}
+  table.res td{padding:7px 12px;border-bottom:1px solid var(--line);color:var(--ink);white-space:pre;max-width:380px;overflow:hidden;text-overflow:ellipsis;vertical-align:top;}
+  table.res tr:hover td{background:rgba(var(--accentRGB),.05);}
   table.res td.null{color:var(--faint);font-style:italic;}
-  .msgbar{padding:11px 16px;font-family:var(--mono);font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;}
-  .msgbar b{color:var(--accent);}
+  .msgbar{padding:12px 16px;font-family:var(--mono);font-size:12.5px;color:var(--muted);border-top:2px dashed var(--line);display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;}
+  .msgbar b{color:var(--coral-dk);}
   .msgbar.err{color:var(--bad);}
   .msgbar .grow{flex:1;}
   .hist{margin-top:14px;}
-  .hist .item{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding:7px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .hist .item:hover{border-color:rgba(var(--accentRGB),.5);color:var(--ink);}
-  .banner{margin:0 0 16px;padding:12px 16px;border:1px solid rgba(var(--accentRGB),.3);border-radius:12px;background:rgba(var(--accentRGB),.06);font-size:14px;color:#cdd8d3;display:none;}
+  .hist .item{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding:8px 11px;border-radius:10px;margin-bottom:6px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 2px 0 var(--line);transition:color .15s,transform .45s var(--spring-pop);}
+  .hist .item:hover{color:var(--ink);transform:translateX(2px);}
+  .banner{margin:0 0 18px;padding:13px 17px;border-radius:16px;background:url(kit/felt-texture.webp),#fbe7b5;outline:2px dashed rgba(122,74,0,.3);outline-offset:-5px;font-size:14px;color:var(--ink);word-break:break-word;display:none;}
   .banner.show{display:block;}
-  section.copy{padding:24px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  section.copy ol{color:#cdd8d3;font-size:16.5px;margin:12px 0 12px 22px;}
-  section.copy ol li{margin:7px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Postgres Playground","url":"https://hammyasf.github.io/postgres-playground.html","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real PostgreSQL database compiled to WebAssembly that runs entirely in your browser. Write SQL, create tables, run queries, persist data locally, and share a query as a link.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this really PostgreSQL?","acceptedAnswer":{"@type":"Answer","text":"Yes. It runs the actual PostgreSQL engine compiled to WebAssembly (via PGlite). SELECT version() reports a genuine PostgreSQL 18 build. It is a single-connection embedded Postgres, not a hosted server."}},{"@type":"Question","name":"Is my data uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The database runs inside your browser tab. Your tables and rows are stored locally in your browser using IndexedDB and never leave your device."}},{"@type":"Question","name":"Does my data survive a page reload?","acceptedAnswer":{"@type":"Answer","text":"Yes. The database is persisted to your browser's IndexedDB, so your schema and data are still there when you come back. You can wipe it any time with Reset database."}},{"@type":"Question","name":"How big is the download?","acceptedAnswer":{"@type":"Answer","text":"The Postgres WebAssembly build is about 3 MB gzipped. It downloads once and is then cached by your browser, so later visits start fast."}},{"@type":"Question","name":"Is it free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely free, no sign-up, and no limits on how many queries you run."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="dev">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-postgres-playground">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Postgres Playground</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-dev"/></svg></span>
+    <span class="tag chip">Free tool · runs in your browser</span>
     <h1>Postgres Playground</h1>
     <p class="sub">A real PostgreSQL database, compiled to WebAssembly, running entirely inside this tab. Create tables, run joins and window functions, and your data is saved locally between visits. Nothing is uploaded.</p>
     <div class="pills">
@@ -123,7 +116,7 @@
       <span class="status" id="engine"><span class="led"></span><span id="engineTxt">Booting Postgres…</span></span>
     </div>
   </header>
-
+  <section class="tool-ui patch">
   <div class="banner" id="banner"></div>
 
   <div class="app">
@@ -145,7 +138,7 @@
         <textarea id="sql" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
       </div>
       <div class="toolbar">
-        <button class="btn" id="run" disabled>Run <span class="kbd" style="color:#07100e;opacity:.7;">&#8984;&#8629;</span></button>
+        <button class="btn" id="run" disabled>Run <span class="kbd" style="color:var(--white);opacity:.7;">&#8984;&#8629;</span></button>
         <button class="btn-out" id="share">Copy share link</button>
         <button class="btn-out" id="csv" disabled>Export CSV</button>
         <button class="btn-out" id="json" disabled>Export JSON</button>
@@ -156,8 +149,8 @@
       <div class="msgbar" id="msg"><span class="grow">Booting a PostgreSQL instance in your browser. This downloads about 3 MB once, then it is cached.</span></div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>This page loads PostgreSQL itself, compiled to WebAssembly through the PGlite project, and starts it inside your browser tab. When you press Run, your SQL is handed to a genuine Postgres query planner and executor, not a re-implementation. That is why <code>SELECT version()</code> returns a real PostgreSQL 18 build, and why joins, CTEs, window functions, generated columns, JSON operators, and transactions all behave exactly like they do on a server.</p>
     <p>Your tables and rows are written to your browser's IndexedDB, so the database is still there when you come back tomorrow. There is no server, no connection string, and no account. You can wipe everything instantly with Reset database.</p>
@@ -171,31 +164,22 @@
       <li>Create your own tables, insert rows, reload the page, and watch your data still be there.</li>
     </ol>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is this really PostgreSQL?</summary><p>Yes. It is the actual Postgres engine compiled to WebAssembly, not a clone. <code>SELECT version()</code> reports a genuine PostgreSQL 18 build. It runs as a single-connection embedded database, so it is perfect for development and learning rather than serving production traffic.</p></details>
     <details><summary>Is my data uploaded anywhere?</summary><p>No. The whole database runs in your browser. Your schema and rows are stored locally in IndexedDB and never touch a server, which is why it works offline once the engine has loaded.</p></details>
     <details><summary>Will my data still be here after I close the tab?</summary><p>Yes, it persists in your browser's IndexedDB. Use Reset database to start fresh. Clearing your browser site data will also remove it.</p></details>
     <details><summary>How big is the download?</summary><p>About 3 MB gzipped for the Postgres WebAssembly build. It downloads once and is then cached, so repeat visits start quickly.</p></details>
     <details><summary>What can it not do?</summary><p>It is a single embedded instance, so there are no multiple concurrent connections or replication. Some server-only features and extensions are unavailable, but core SQL, transactions, and most data types work just like a normal Postgres.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   var PGLITE_URL = "https://cdn.jsdelivr.net/npm/@electric-sql/pglite@0.5.3/dist/index.js";
   var DB_NAME = "idb://harman_pg_playground";
@@ -514,10 +498,5 @@
   boot();
 })();
 </script>
-<!-- Monetization slots (left intentionally empty for now):
-     AdSense: paste the <script> + <ins class="adsbygoogle"> unit here once approved.
-     Polar.sh: paste a "Support this tool" checkout button here. -->
-<!-- Analytics: Cloudflare Web Analytics beacon -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>
