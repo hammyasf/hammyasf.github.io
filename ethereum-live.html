@@ -8,7 +8,7 @@
 <meta name="keywords" content="ethereum live, watch ethereum transactions live, ethereum block explorer live, real time ethereum, ethereum transaction visualizer, live blockchain, ethereum network activity, eth gas tracker live, blockchain visualizer, mempool visualizer" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Ethereum Live — Watch the Blockchain in Real Time" />
 <meta property="og:description" content="A live, animated view of Ethereum mainnet that runs entirely in your browser. Watch new blocks land and transactions decode into swaps, transfers and NFT trades." />
@@ -20,113 +20,97 @@
 <meta name="twitter:description" content="A live, animated view of Ethereum mainnet, 100% in your browser. New blocks and decoded transactions, in real time." />
 <link rel="canonical" href="https://hammyasf.github.io/ethereum-live.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Ethereum Live","url":"https://hammyasf.github.io/ethereum-live.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A live, animated view of the Ethereum mainnet that runs entirely in your browser. Watch new blocks land and transactions decode into swaps, transfers, NFT trades and contract calls in real time.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this real Ethereum data?","acceptedAnswer":{"@type":"Answer","text":"Yes. Your browser talks directly to public Ethereum JSON-RPC nodes and pulls each new block as it is mined, roughly every 12 seconds. Nothing is simulated when a node is reachable."}},{"@type":"Question","name":"How does it know what each transaction is doing?","acceptedAnswer":{"@type":"Answer","text":"It reads the first four bytes of each transaction's calldata, the function selector, and matches it against known signatures like an ERC-20 transfer, a Uniswap swap, an approval or an NFT trade. Contracts with no recipient are deploys, and value-only transactions with empty calldata are plain ETH transfers."}},{"@type":"Question","name":"Do I need a wallet or a sign-up?","acceptedAnswer":{"@type":"Answer","text":"No. There is no wallet connection, no account and no tracking of you. It only reads public chain data, the same data any block explorer shows."}},{"@type":"Question","name":"Why does it sometimes say demo mode?","acceptedAnswer":{"@type":"Answer","text":"Free public RPC nodes occasionally rate-limit or go down. If every node is unreachable, the page falls back to a built-in sample block so you can still see how it works, and it keeps retrying the live network in the background."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);
-    --c-eth:#36e0c8;--c-erc20:#4aa8ff;--c-swap:#b07cff;--c-nft:#ff5fa2;--c-approve:#ffb13d;--c-deploy:#7CFF6B;--c-call:#8aa0a8;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:30px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
-  .stage{margin:22px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .statusbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12.5px;}
-  .conn{display:inline-flex;align-items:center;gap:8px;color:var(--muted);}
-  .conn .led{width:9px;height:9px;border-radius:50%;background:var(--faint);box-shadow:0 0 0 0 rgba(var(--accentRGB),.5);}
-  .conn.live .led{background:var(--accent);animation:pulse 2s infinite;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the mempool as a felt bubble pool: transactions are dyed felt bubbles on a cream ground (white labels), blocks are tilted felt tags on a rail, the hovered transaction a stitched card */
+  :root{--c-eth:#2b7672;--c-erc20:#3d6da3;--c-swap:#7b4fb0;--c-nft:#a8325f;--c-approve:#946500;--c-deploy:#3f7a55;--c-call:#6c6380;}
+  .stage{margin:0;border-radius:22px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--sunk),0 3px 0 #e6d2b5;outline:2px dashed var(--line);outline-offset:-7px;overflow:hidden;}
+  .statusbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 20px 14px;border-bottom:2px dashed var(--line);font-size:13px;}
+  .conn{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font:600 14px/1.3 var(--display);}
+  .conn .led{width:10px;height:10px;border-radius:50%;background:var(--faint);box-shadow:0 0 0 0 rgba(63,122,85,.5);}
+  .conn.live .led{background:var(--green);animation:pulse 2s infinite;}
   .conn.demo .led{background:var(--c-approve);}
-  .conn.err .led{background:#ff5f56;}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(var(--accentRGB),.55);}70%{box-shadow:0 0 0 7px rgba(var(--accentRGB),0);}100%{box-shadow:0 0 0 0 rgba(var(--accentRGB),0);}}
+  .conn.err .led{background:var(--coral);}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(63,122,85,.55);}70%{box-shadow:0 0 0 7px rgba(63,122,85,0);}100%{box-shadow:0 0 0 0 rgba(63,122,85,0);}}
   .statusbar .spacer{flex:1;}
-  .sbtn{font-family:var(--mono);font-size:12.5px;color:var(--ink);background:transparent;border:1px solid var(--line-2);border-radius:8px;padding:7px 12px;cursor:pointer;transition:.15s;}
-  .sbtn:hover{border-color:var(--accent);color:var(--accent);}
-
-  .rail{display:flex;gap:10px;padding:14px 18px 4px;overflow-x:auto;scrollbar-width:thin;}
-  .blk{flex:0 0 auto;min-width:118px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(var(--surfaceRGB),.5);transition:border-color .25s,transform .25s var(--ease);}
+  .sbtn{display:inline-flex;align-items:center;font:600 13.5px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--white);border:0;border-radius:999px;padding:10px 15px;cursor:pointer;text-decoration:none;box-shadow:var(--shadow-btn);transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .sbtn:hover{transform:translateY(-2px);}
+  .sbtn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .rail{display:flex;gap:12px;padding:18px 20px 8px;overflow-x:auto;scrollbar-width:thin;}
+  .blk{flex:0 0 auto;min-width:122px;border-radius:14px;padding:11px 13px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 3px 0 #e2cdb0,0 6px 12px rgba(84,46,30,.1);outline:1.5px dashed rgba(45,36,64,.2);outline-offset:-5px;transition:transform .45s var(--spring-pop);}
+  .blk:nth-child(odd){rotate:-.8deg;}
+  .blk:nth-child(even){rotate:.7deg;}
   .blk.new{animation:slideIn .45s var(--ease);}
   @keyframes slideIn{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:none;}}
-  .blk .bn{font-family:var(--mono);font-size:13px;color:var(--accent);}
+  .blk .bn{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--coral-dk);}
   .blk .bm{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:5px;line-height:1.5;}
-  .blk .gbar{height:4px;border-radius:3px;background:rgba(237,242,239,.1);margin-top:7px;overflow:hidden;}
-  .blk .gbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));}
-
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(116px,1fr));gap:1px;background:var(--line);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:12px;}
-  .stat{background:var(--bg-2);padding:13px 16px;}
-  .stat .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
+  .blk .gbar{height:6px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);margin-top:8px;overflow:hidden;}
+  .blk .gbar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--leaf),var(--green));}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(116px,1fr));gap:12px;padding:12px 20px 18px;margin-top:4px;}
+  .stat{padding:11px 14px;border-radius:14px;background:url(kit/felt-texture.webp),var(--mint);box-shadow:0 3px 0 #cfdcc4;outline:1.5px dashed rgba(63,122,85,.3);outline-offset:-5px;}
+  .stat .l{font:600 11.5px/1.2 var(--display);letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
   .stat .v{font-family:var(--display);font-weight:600;font-size:21px;margin-top:4px;letter-spacing:-.01em;}
   .stat .v small{font-size:12px;color:var(--muted);font-family:var(--mono);font-weight:400;}
-
-  .canvas-wrap{position:relative;}
+  .canvas-wrap{position:relative;border-top:2px dashed var(--line);background:linear-gradient(rgba(255,251,244,.7) 0 0),url(kit/felt-texture.webp),var(--cream);}
   #c{display:block;width:100%;height:420px;}
   @media(max-width:560px){#c{height:340px;}}
-  .legend{position:absolute;left:14px;top:12px;display:flex;flex-wrap:wrap;gap:7px 12px;max-width:72%;pointer-events:none;}
-  .legend span{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--muted);}
-  .legend span i{width:9px;height:9px;border-radius:50%;}
-  .hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:11px;color:var(--faint);pointer-events:none;}
-  .card{position:absolute;right:14px;top:14px;width:min(330px,82%);background:rgba(7,16,14,.94);border:1px solid var(--line-2);border-radius:14px;padding:15px 16px;backdrop-filter:blur(8px);display:none;z-index:6;box-shadow:0 20px 50px rgba(0,0,0,.5);}
+  .legend{position:absolute;left:16px;top:14px;display:flex;flex-wrap:wrap;gap:7px 12px;max-width:72%;pointer-events:none;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;font:600 12px/1.3 var(--display);color:var(--muted);}
+  .legend span i{width:10px;height:10px;border-radius:50%;}
+  .hint{position:absolute;right:16px;bottom:12px;font-size:12px;color:var(--faint);pointer-events:none;}
+  .card{position:absolute;right:16px;top:16px;width:min(330px,82%);color:var(--ink);background:url(kit/felt-texture.webp),var(--white);border-radius:16px;padding:16px 18px;display:none;z-index:6;rotate:.6deg;box-shadow:0 4px 0 #e2cdb0,0 18px 36px rgba(84,46,30,.24);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-6px;}
   .card.on{display:block;}
-  .card .ct{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;}
+  .card .ct{font:600 12px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;}
   .card .cv{font-family:var(--display);font-weight:600;font-size:22px;margin:5px 0 10px;}
-  .card .row{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:11.5px;padding:5px 0;border-top:1px solid var(--line);}
-  .card .row .k{color:var(--faint);}.card .row .val{color:var(--ink);text-align:right;word-break:break-all;}
-  .card a.es{display:inline-block;margin-top:11px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:7px 12px;border-radius:8px;}
-  .card .x{position:absolute;right:11px;top:9px;cursor:pointer;color:var(--faint);font-family:var(--mono);font-size:15px;}
-
-  .feed{max-height:230px;overflow:auto;border-top:1px solid var(--line);}
-  .feed .fh{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:12px 18px 6px;position:sticky;top:0;background:var(--bg-2);}
-  .frow{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:9px 18px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;cursor:pointer;transition:background .15s;}
-  .frow:hover{background:rgba(var(--accentRGB),.05);}
-  .frow .dot{width:9px;height:9px;border-radius:50%;}
+  .card .row{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:11.5px;padding:6px 0;border-top:1.5px dashed var(--line);}
+  .card .row .k{color:var(--faint);}
+  .card .row .val{color:var(--ink);text-align:right;word-break:break-all;}
+  .card a.es{display:inline-block;margin-top:12px;font:600 13px/1 var(--display);color:var(--white);background:url(kit/felt-texture.webp),var(--coral-btn);padding:10px 14px;border-radius:999px;text-decoration:none;box-shadow:0 3px 0 #96331f;}
+  .card .x{position:absolute;right:13px;top:9px;cursor:pointer;color:var(--muted);font-size:18px;}
+  .feed{max-height:230px;overflow:auto;border-top:2px dashed var(--line);}
+  .feed .fh{font:600 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:14px 20px 8px;position:sticky;top:0;background:url(kit/felt-texture.webp),var(--white);}
+  .frow{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:9px 20px;border-top:1.5px solid var(--line);font-family:var(--mono);font-size:12px;cursor:pointer;transition:background .15s;}
+  .frow:hover{background:rgba(143,191,106,.12);}
+  .frow .dot{width:10px;height:10px;border-radius:50%;}
   .frow .desc{color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .frow .desc b{color:var(--muted);font-weight:400;}
-  .frow .amt{color:var(--accent);white-space:nowrap;}
+  .frow .amt{color:var(--coral-dk);white-space:nowrap;}
   .frow.flash{animation:flash .8s var(--ease);}
-  @keyframes flash{from{background:rgba(var(--accentRGB),.16);}to{background:transparent;}}
-
-  section.copy{padding:30px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+  @keyframes flash{from{background:rgba(143,191,106,.3);}to{background:transparent;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Ethereum Live","url":"https://hammyasf.github.io/ethereum-live.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A live, animated view of the Ethereum mainnet that runs entirely in your browser. Watch new blocks land and transactions decode into swaps, transfers, NFT trades and contract calls in real time.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this real Ethereum data?","acceptedAnswer":{"@type":"Answer","text":"Yes. Your browser talks directly to public Ethereum JSON-RPC nodes and pulls each new block as it is mined, roughly every 12 seconds. Nothing is simulated when a node is reachable."}},{"@type":"Question","name":"How does it know what each transaction is doing?","acceptedAnswer":{"@type":"Answer","text":"It reads the first four bytes of each transaction's calldata, the function selector, and matches it against known signatures like an ERC-20 transfer, a Uniswap swap, an approval or an NFT trade. Contracts with no recipient are deploys, and value-only transactions with empty calldata are plain ETH transfers."}},{"@type":"Question","name":"Do I need a wallet or a sign-up?","acceptedAnswer":{"@type":"Answer","text":"No. There is no wallet connection, no account and no tracking of you. It only reads public chain data, the same data any block explorer shows."}},{"@type":"Question","name":"Why does it sometimes say demo mode?","acceptedAnswer":{"@type":"Answer","text":"Free public RPC nodes occasionally rate-limit or go down. If every node is unreachable, the page falls back to a built-in sample block so you can still see how it works, and it keeps retrying the live network in the background."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · live on-chain · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="live">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-ethereum-live">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Ethereum, live.</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-live"/></svg></span>
+    <span class="tag chip">Free tool · live on-chain · runs in your browser</span>
     <h1>Ethereum, live.</h1>
     <p class="sub">Watch the Ethereum mainnet build itself in real time. Every new block lands here within seconds of being mined, and each transaction is decoded straight from its calldata into a swap, a transfer, an NFT trade or a contract call. No wallet, no sign-up.</p>
-    <span class="priv">&#9889; Reads public chain data directly from your browser &mdash; nothing about you is sent anywhere</span>
+    <p class="priv">&#9889; Reads public chain data directly from your browser &mdash; nothing about you is sent anywhere</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="stage">
     <div class="statusbar">
       <span class="conn" id="conn"><span class="led"></span><span id="connTxt">Connecting to Ethereum&hellip;</span></span>
@@ -166,8 +150,8 @@
       <div class="fh">Live transaction feed</div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>Your browser opens a direct connection to public Ethereum JSON-RPC nodes and asks for the newest block, then keeps polling for the next one. A block arrives roughly every twelve seconds, carrying a few hundred transactions. The page pulls each block with its full transaction list, renders the transactions as rising bubbles sized by the amount of ETH they move, and streams the notable ones into the live feed. All of this happens on your machine. There is no backend, no database and no account, the same public data a block explorer shows, just animated as it happens.</p>
     <h2>How a transaction is decoded</h2>
@@ -175,30 +159,21 @@
     <h2>Why build it in the browser</h2>
     <p>Most dashboards that look like this run a server that talks to a node and pushes data to you. This one cuts out the middle. Because the decoding and the rendering both run client-side, it costs nothing to host, it cannot leak anything about you, and it is a small proof that the modern web platform can do a lot more than people expect. If a free node rate-limits or drops, it rotates to another, and if every node is unreachable it shows a built-in sample block so the page is never blank.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is this real Ethereum data?</summary><p>Yes. Your browser talks straight to public Ethereum nodes and pulls each new block as it is mined, about every twelve seconds. Nothing is simulated while a node is reachable. If it ever shows demo mode, that means every free node was temporarily unreachable and it is replaying a sample block while it retries.</p></details>
     <details><summary>How does it know what each transaction does?</summary><p>It reads the first four bytes of the transaction's calldata, the function selector, and matches it against known signatures such as an ERC-20 transfer, a Uniswap swap, an approval, or an NFT trade. Transactions with no recipient are contract deploys, and value-only transactions with empty data are plain ETH transfers.</p></details>
     <details><summary>Do I need a wallet?</summary><p>No. There is no wallet connection and nothing to sign. It only reads public chain data, so there is no risk to any account of yours.</p></details>
     <details><summary>Does it work on mobile?</summary><p>Yes. It is just fetch and canvas, so it runs on phones and in every modern browser. On a slow network the feed simply updates a little less often.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build things like this for a living.</h3>
-    <p>Senior full-stack and Web3 engineer, available for senior or contract work, fully remote. I have shipped on-chain frontends, indexers and DeFi tooling. See the rest of the <a href="lab.html">lab</a>, read about <a href="web3.html">my Web3 work</a>, or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack and Web3 engineer, available for senior or contract work, fully remote. I have shipped on-chain frontends, indexers and DeFi tooling. See the rest of the <a href="lab.html">lab</a>, read about <a href="web3.html">my Web3 work</a>, or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 (function(){
-  // ---- match the portfolio's saved theme (instant, before enhance.js loads) ----
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
+  
 
   // ================= transaction decoding =================
   // First 4 bytes of calldata = function selector. Map well-known ones to a category.
@@ -223,13 +198,13 @@
     "0xa22cb465":"nft" // setApprovalForAll
   };
   var CATS={
-    eth:{label:"ETH transfer",color:"#36e0c8"},
-    erc20:{label:"Token transfer",color:"#4aa8ff"},
-    swap:{label:"DEX swap",color:"#b07cff"},
-    nft:{label:"NFT activity",color:"#ff5fa2"},
-    approve:{label:"Approval",color:"#ffb13d"},
-    deploy:{label:"Contract deploy",color:"#7CFF6B"},
-    call:{label:"Contract call",color:"#8aa0a8"}
+    eth:{label:"ETH transfer",color:"#2b7672"},
+    erc20:{label:"Token transfer",color:"#3d6da3"},
+    swap:{label:"DEX swap",color:"#7b4fb0"},
+    nft:{label:"NFT activity",color:"#a8325f"},
+    approve:{label:"Approval",color:"#946500"},
+    deploy:{label:"Contract deploy",color:"#3f7a55"},
+    call:{label:"Contract call",color:"#6c6380"}
   };
   function toBig(hex){ try{ return BigInt(hex||"0x0"); }catch(e){ return 0n; } }
   function categorize(tx){
@@ -338,7 +313,7 @@
     var dt=Math.min(0.05,(now-last)/1000); last=now;
     ctx.clearRect(0,0,W,H);
     // faint baseline glow
-    var grd=ctx.createLinearGradient(0,H,0,H-60); grd.addColorStop(0,"rgba(255,255,255,0.04)"); grd.addColorStop(1,"rgba(255,255,255,0)");
+    var grd=ctx.createLinearGradient(0,H,0,H-60); grd.addColorStop(0,"rgba(45,36,64,0.05)"); grd.addColorStop(1,"rgba(45,36,64,0)");
     ctx.fillStyle=grd; ctx.fillRect(0,H-60,W,60);
     for(var i=bubbles.length-1;i>=0;i--){
       var b=bubbles[i]; var age=now-b.born;
@@ -357,8 +332,8 @@
       ctx.globalAlpha=a*(isHi?1:0.82);
       ctx.fillStyle=b.color; ctx.shadowColor=b.color; ctx.shadowBlur=isHi?22:10; ctx.fill();
       ctx.shadowBlur=0;
-      if(isHi){ ctx.globalAlpha=a; ctx.lineWidth=2; ctx.strokeStyle="#fff"; ctx.stroke(); }
-      if(b.r>20 && b.eth>=0.05){ ctx.globalAlpha=a; ctx.fillStyle="#06110d"; ctx.font="600 11px "+ "ui-monospace,monospace"; ctx.textAlign="center"; ctx.fillText(fmtEth(b.eth),b.x,b.y+4); }
+      if(isHi){ ctx.globalAlpha=a; ctx.lineWidth=2; ctx.strokeStyle="#2d2440"; ctx.stroke(); }
+      if(b.r>20 && b.eth>=0.05){ ctx.globalAlpha=a; ctx.fillStyle="#ffffff"; ctx.font="600 11px "+ "ui-monospace,monospace"; ctx.textAlign="center"; ctx.fillText(fmtEth(b.eth),b.x,b.y+4); }
     }
     ctx.globalAlpha=1;
     requestAnimationFrame(frame);
@@ -493,6 +468,5 @@
   start();
 })();
 </script>
-<script src="enhance.js" defer></script>
 </body>
 </html>

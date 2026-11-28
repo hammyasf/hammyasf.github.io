@@ -8,7 +8,7 @@
 <meta name="keywords" content="ethereum gas tracker, eip-1559, base fee, eth burned, gas fee estimator, ethereum gas live, is gas cheap right now, gwei tracker, ethereum fee market, ultrasound money, gas price now, ethereum burn" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Ethereum Gas &amp; Burn, Live" />
 <meta property="og:description" content="The EIP-1559 fee market, live in your browser. Base fee, gas usage, ETH burned, and what a transaction costs right now." />
@@ -20,110 +20,104 @@
 <meta name="twitter:description" content="Watch the EIP-1559 fee market work in real time. Base fee, gas usage, ETH burned. No wallet, no sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/ember.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://ethereum-rpc.publicnode.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Ethereum Gas & Burn, Live","url":"https://hammyasf.github.io/ember.html","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A live view of the Ethereum EIP-1559 fee market: base fee, gas usage against the block target, ETH burned per block and cumulatively, and the current cost of common transactions. Reads public JSON-RPC directly from the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Where does the data come from?","acceptedAnswer":{"@type":"Answer","text":"Straight from an Ethereum node. Your browser calls public JSON-RPC endpoints (eth_feeHistory and eth_getBlockByNumber) directly, with no server of mine in between. If one endpoint is slow it fails over to another, and the page opens on a recent snapshot so you see numbers immediately."}},{"@type":"Question","name":"What is the base fee and why is ETH burned?","acceptedAnswer":{"@type":"Answer","text":"Since EIP-1559 (August 2021) every block has a base fee per gas that the protocol sets automatically. The base fee portion of every transaction is burned — permanently removed from supply — rather than paid to the validator. This tool multiplies the base fee by the gas each block used to show exactly how much ETH was burned."}},{"@type":"Question","name":"How is the next base fee predicted?","acceptedAnswer":{"@type":"Answer","text":"It is not a guess. EIP-1559 sets the next block's base fee by a fixed rule: if a block uses more than the 50% target it rises by up to 12.5%, if less it falls, in proportion to how far from target it was. The node reports that exact next base fee, and this page also computes it from the formula so you can see the mechanism."}},{"@type":"Question","name":"What do the transaction cost estimates mean?","acceptedAnswer":{"@type":"Answer","text":"They take the current base fee plus a typical priority fee (the median tip from recent blocks) and multiply by the gas a common action uses — about 21,000 for an ETH transfer, more for a token transfer, a swap or an NFT mint. The dollar figure uses a live ETH price. They are estimates; your wallet quotes the exact number at send time."}},{"@type":"Question","name":"Do I need a wallet or account?","acceptedAnswer":{"@type":"Answer","text":"No. There is no wallet connection, no sign-up and nothing to install. It only reads public chain data, so it can never touch your funds."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--up:#ff7a59;--down:#2be3b0;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1000px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 6px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
-  .live{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .live .pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(var(--accentRGB),.6);animation:pl 1.8s infinite;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the fee market on felt: a live pill sewn on the hero, stats as tilted felt tags, panels as pockets (tool.css .panel), the fullness gauge knitted across a sand track; rising fees are coral thread, falling ones green */
+  :root{--up:#b9442f;--down:#3f7a55;}
+  .live{justify-self:start;display:inline-flex;align-items:center;gap:9px;margin-top:18px;font:600 14px/1.3 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),rgba(255,255,255,.82);padding:9px 15px 9px 13px;border-radius:999px;rotate:-.6deg;box-shadow:0 2px 0 #e2cdb0,0 6px 12px rgba(84,46,30,.1);outline:2px dashed var(--t-dk,var(--green));outline-offset:-5px;}
+  .live .pulse{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(63,122,85,.6);animation:pl 1.8s infinite;}
   .live.stale .pulse{background:var(--faint);box-shadow:none;animation:none;}
-  .live.stale{color:var(--faint);border-color:var(--line-2);}
-  @keyframes pl{0%{box-shadow:0 0 0 0 rgba(var(--accentRGB),.55);}70%{box-shadow:0 0 0 8px rgba(var(--accentRGB),0);}100%{box-shadow:0 0 0 0 rgba(var(--accentRGB),0);}}
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:26px 0 8px;}
-  .stat{border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:rgba(var(--surfaceRGB),.55);}
-  .stat .l{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
+  .live.stale{color:var(--muted);outline-color:var(--line-2);}
+  @keyframes pl{0%{box-shadow:0 0 0 0 rgba(63,122,85,.55);}70%{box-shadow:0 0 0 8px rgba(63,122,85,0);}100%{box-shadow:0 0 0 0 rgba(63,122,85,0);}}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:0 0 22px;}
+  .stat{border-radius:16px;padding:16px 18px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 3px 0 #e2cdb0,0 8px 16px rgba(84,46,30,.1);outline:1.5px dashed rgba(45,36,64,.22);outline-offset:-6px;}
+  .stat:nth-child(odd){rotate:-.8deg;}
+  .stat:nth-child(even){rotate:.7deg;}
+  .stat .l{font:600 12px/1.2 var(--display);letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
   .stat .v{font-family:var(--display);font-weight:600;font-size:30px;letter-spacing:-.01em;margin-top:6px;line-height:1.05;transition:color .25s;}
   .stat .v small{font-family:var(--mono);font-size:13px;font-weight:400;color:var(--muted);letter-spacing:0;}
-  .stat .d{font-family:var(--mono);font-size:12px;margin-top:6px;color:var(--muted);}
-  .stat .d.up{color:var(--up);} .stat .d.down{color:var(--down);}
-  .panel{margin:22px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.5);overflow:hidden;}
-  .phead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:18px 22px 0;}
-  .phead h2{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:-.01em;}
-  .phead .hint{font-family:var(--mono);font-size:11.5px;color:var(--faint);}
+  .stat .d{font-size:13px;margin-top:6px;color:var(--muted);}
+  .stat .d.up{color:var(--up);font-weight:700;}
+  .stat .d.down{color:var(--down);font-weight:700;}
+  .panel{margin:0 0 22px;overflow:hidden;}
+  .panel:last-of-type{margin-bottom:0;}
+  .phead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:22px 24px 0;}
+  .phead h2{font-family:var(--display);font-weight:600;font-size:21px;letter-spacing:-.01em;}
+  .phead .hint{font-size:13px;color:var(--faint);}
   .cols{display:grid;grid-template-columns:1.3fr 1fr;gap:0;}
   @media(max-width:760px){.cols{grid-template-columns:1fr;}}
-  .chartbox{padding:16px 22px 22px;}
+  .chartbox{padding:16px 24px 24px;}
   canvas.chart{width:100%;height:220px;display:block;border-radius:12px;}
-  .mech{padding:18px 22px 22px;border-left:1px solid var(--line);}
-  @media(max-width:760px){.mech{border-left:none;border-top:1px solid var(--line);}}
-  .gauge{margin:6px 0 4px;}
-  .gtrack{position:relative;height:26px;border-radius:8px;background:rgba(var(--accentRGB),.08);border:1px solid var(--line);overflow:hidden;}
-  .gfill{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,rgba(var(--accentRGB),.5),rgba(var(--accentRGB),.85));transition:width .5s var(--ease),background .3s;}
+  .mech{padding:20px 24px 24px;border-left:2px dashed var(--line);}
+  @media(max-width:760px){.mech{border-left:none;border-top:2px dashed var(--line);}}
+  .gauge{position:relative;margin:6px 0 4px;}
+  .gtrack{position:relative;height:28px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;}
+  .gfill{position:absolute;left:0;top:0;bottom:0;width:0%;border-radius:999px;background:linear-gradient(90deg,rgba(var(--accentRGB),.5),rgba(var(--accentRGB),.85));transition:width .5s var(--ease),background .3s;}
   .gtarget{position:absolute;top:-4px;bottom:-4px;left:50%;width:2px;background:var(--ink);opacity:.8;}
-  .gtlab{position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:4px;white-space:nowrap;}
-  .mech .cap{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:20px;line-height:1.55;}
+  .gtlab{position:absolute;left:50%;top:100%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:4px;white-space:nowrap;}
+  .mech .cap{font-size:14px;color:var(--muted);margin-top:22px;line-height:1.6;}
   .mech .verdict{font-family:var(--display);font-weight:600;font-size:17px;margin-top:14px;}
-  .mech .verdict.up{color:var(--up);} .mech .verdict.down{color:var(--down);}
-  .costs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;padding:6px 22px 22px;}
-  .cost{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:rgba(var(--surfaceRGB),.4);}
-  .cost .n{font-family:var(--body);font-weight:700;font-size:14.5px;}
+  .mech .verdict.up{color:var(--up);}
+  .mech .verdict.down{color:var(--down);}
+  .costs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;padding:10px 24px 22px;}
+  .cost{border-radius:16px;padding:14px 16px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);outline:1.5px dashed rgba(45,36,64,.18);outline-offset:-5px;}
+  .cost .n{font-family:var(--display);font-weight:600;font-size:16px;}
   .cost .g{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:2px;}
-  .cost .usd{font-family:var(--display);font-weight:600;font-size:24px;margin-top:10px;}
+  .cost .usd{font-family:var(--display);font-weight:600;font-size:25px;margin-top:10px;color:var(--coral-dk);}
   .cost .eth{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px;}
-  .feed{display:grid;gap:0;padding:4px 10px 14px;}
-  .frow{display:grid;grid-template-columns:96px 1fr 84px 90px;gap:10px;align-items:center;padding:11px 12px;border-radius:10px;font-family:var(--mono);font-size:13px;}
-  .frow:nth-child(odd){background:rgba(var(--accentRGB),.03);}
+  .feed{display:grid;gap:0;padding:4px 12px 16px;}
+  .frow{display:grid;grid-template-columns:96px 1fr 84px 90px;gap:10px;align-items:center;padding:11px 12px;border-radius:12px;font-family:var(--mono);font-size:13px;}
+  .frow:nth-child(odd){background:rgba(243,232,214,.6);}
   .frow.new{animation:fin .6s var(--ease);}
-  @keyframes fin{from{background:rgba(var(--accentRGB),.16);}to{}}
-  .frow .bk{color:var(--accent);}
-  .frow .bar{position:relative;height:8px;border-radius:5px;background:rgba(237,242,239,.08);overflow:hidden;}
-  .frow .bar i{position:absolute;left:0;top:0;bottom:0;background:rgba(var(--accentRGB),.6);border-radius:5px;}
-  .frow .bar i.hot{background:var(--up);}
+  @keyframes fin{from{background:rgba(143,191,106,.32);}to{}}
+  .frow .bk{color:var(--coral-dk);font-weight:700;}
+  .frow .bar{position:relative;height:10px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;}
+  .frow .bar i{position:absolute;left:0;top:0;bottom:0;background:rgba(var(--accentRGB),.6);border-radius:999px;}
+  .frow .bar i.hot{background:var(--coral);}
   .frow .bf{color:var(--muted);text-align:right;}
   .frow .bn{color:var(--ink);text-align:right;}
-  .fhdr{display:grid;grid-template-columns:96px 1fr 84px 90px;gap:10px;padding:6px 12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);}
+  .fhdr{display:grid;grid-template-columns:96px 1fr 84px 90px;gap:10px;padding:10px 24px 6px;font:600 11.5px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);}
   .fhdr span:nth-child(3),.fhdr span:nth-child(4){text-align:right;}
-  .note{padding:0 22px 20px;font-family:var(--mono);font-size:11.5px;color:var(--faint);}
-  #fail{display:none;margin:22px 0;padding:22px;border:1px solid rgba(255,122,89,.4);border-radius:16px;background:rgba(255,122,89,.06);}
-  #fail h2{font-family:var(--display);font-weight:600;font-size:19px;color:#ffb59f;}
-  #fail p{color:#cdd8d3;font-size:15px;margin-top:8px;}
-  #fail button{margin-top:14px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;}
-  section.copy{padding:32px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:32px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;max-width:760px;}
-  .faq{border-top:1px solid var(--line);margin-top:16px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:34px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h2{font-family:var(--display);font-weight:600;font-size:24px;margin-bottom:8px;}
-  .cta p{color:#cdd8d3;margin-bottom:16px;}
-  .cta a{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;}
-  footer{border-top:1px solid var(--line);margin-top:40px;padding:26px 0;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  footer a{color:var(--faint);} footer a:hover{color:var(--ink);}
+  .note{padding:0 24px 22px;font-size:13px;color:var(--faint);}
+  #fail{display:none;margin:0 0 22px;padding:22px 24px;border-radius:18px;background:url(kit/felt-texture.webp),#fbe3d9;box-shadow:0 3px 0 #efc3b3;outline:2px dashed rgba(185,68,47,.35);outline-offset:-7px;}
+  #fail h2{font-family:var(--display);font-weight:600;font-size:20px;color:#96331f;}
+  #fail p{color:var(--ink);font-size:15px;margin-top:8px;}
+  #fail button{margin-top:14px;font:600 14.5px/1 var(--display);padding:12px 20px;border-radius:999px;background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);border:none;cursor:pointer;box-shadow:0 3px 0 #96331f;}
+  @media(max-width:600px){.frow,.fhdr{grid-template-columns:72px 1fr 64px 72px;gap:8px;font-size:12px;}.fhdr{padding-inline:20px;}.phead{padding:20px 18px 0;}.chartbox,.costs{padding-inline:18px;}.mech{padding-inline:18px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Ethereum Gas & Burn, Live","url":"https://hammyasf.github.io/ember.html","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A live view of the Ethereum EIP-1559 fee market: base fee, gas usage against the block target, ETH burned per block and cumulatively, and the current cost of common transactions. Reads public JSON-RPC directly from the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Where does the data come from?","acceptedAnswer":{"@type":"Answer","text":"Straight from an Ethereum node. Your browser calls public JSON-RPC endpoints (eth_feeHistory and eth_getBlockByNumber) directly, with no server of mine in between. If one endpoint is slow it fails over to another, and the page opens on a recent snapshot so you see numbers immediately."}},{"@type":"Question","name":"What is the base fee and why is ETH burned?","acceptedAnswer":{"@type":"Answer","text":"Since EIP-1559 (August 2021) every block has a base fee per gas that the protocol sets automatically. The base fee portion of every transaction is burned — permanently removed from supply — rather than paid to the validator. This tool multiplies the base fee by the gas each block used to show exactly how much ETH was burned."}},{"@type":"Question","name":"How is the next base fee predicted?","acceptedAnswer":{"@type":"Answer","text":"It is not a guess. EIP-1559 sets the next block's base fee by a fixed rule: if a block uses more than the 50% target it rises by up to 12.5%, if less it falls, in proportion to how far from target it was. The node reports that exact next base fee, and this page also computes it from the formula so you can see the mechanism."}},{"@type":"Question","name":"What do the transaction cost estimates mean?","acceptedAnswer":{"@type":"Answer","text":"They take the current base fee plus a typical priority fee (the median tip from recent blocks) and multiply by the gas a common action uses — about 21,000 for an ETH transfer, more for a token transfer, a swap or an NFT mint. The dollar figure uses a live ETH price. They are estimates; your wallet quotes the exact number at send time."}},{"@type":"Question","name":"Do I need a wallet or account?","acceptedAnswer":{"@type":"Answer","text":"No. There is no wallet connection, no sign-up and nothing to install. It only reads public chain data, so it can never touch your funds."}}]}</script>
 </head>
-<body>
-<nav><a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a><div class="r"><a href="lab.html">The Lab</a><a href="index.html#contact">Hire me</a></div></nav>
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">The Lab · Web3 live</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="live">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-ember">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Ethereum gas &amp; burn, live.</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-live"/></svg></span>
+    <span class="tag chip">The Lab · Web3 live</span>
     <h1>Ethereum gas &amp; burn, live.</h1>
     <p class="sub">Watch the EIP-1559 fee market work block by block: the base fee, how full each block is against its target, and the ETH being burned in real time. Read straight from a node in your browser &mdash; no wallet, no sign-up.</p>
     <div class="live stale" id="livepill"><span class="pulse"></span><span id="livetxt">Connecting to the chain&hellip;</span></div>
   </header>
-
+  <section class="tool-ui patch">
   <div id="fail">
     <h2>Can't reach an Ethereum node right now</h2>
     <p>This tool reads public JSON-RPC endpoints directly from your browser, and all of them are unreachable at the moment (often a network block or a brief outage). The numbers above are the last snapshot it loaded with.</p>
@@ -173,8 +167,8 @@
 
   <!-- ADSENSE-SLOT: place responsive display unit here once approved -->
   <!-- POLAR-SLOT: optional "support the Lab" button -->
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>What you're watching</h2>
     <p>Every twelve seconds or so, Ethereum produces a block, and this page reads it the instant it lands. The headline number is the <strong>base fee</strong>: a price per unit of gas that the network sets for itself, with no auction and no miner in the loop. It exists because of <strong>EIP-1559</strong>, the fee-market upgrade that went live in August 2021, and it is the reason the chart above is usually so smooth &mdash; the base fee can only move a little from block to block.</p>
 
@@ -185,39 +179,20 @@
     <h2>How this runs in your browser</h2>
     <p>There is no backend here. Your browser calls Ethereum's public JSON-RPC directly &mdash; <code>eth_feeHistory</code> for the base fee, fullness and tip percentiles across recent blocks, and <code>eth_getBlockByNumber</code> for the latest block's details. It cycles through several no-key public nodes and fails over if one is slow, and it opens on a recent snapshot so you never stare at a blank screen. Nothing is uploaded, no wallet is connected, and it only ever reads &mdash; so it physically cannot touch anyone's funds.</p>
   </section>
-
-  <div class="cta">
-    <h2>I build things like this.</h2>
-    <p>I'm Harman, a senior full-stack and Web3 engineer. I shipped the web platform for a top-10 crypto and build fast, private tools that run entirely client-side. Open to remote roles.</p>
-    <a href="index.html#contact">Get in touch &rarr;</a>
-  </div>
-
-  <section class="copy">
-    <div class="faq">
-      <details><summary>Is this a real, live number or a demo?</summary><p>Real and live. The page opens on a recent snapshot so there is something to look at instantly, then it starts polling actual Ethereum nodes every few seconds and the block feed fills in with real blocks as they are produced.</p></details>
+  <section class="tool-faq">
+    <details><summary>Is this a real, live number or a demo?</summary><p>Real and live. The page opens on a recent snapshot so there is something to look at instantly, then it starts polling actual Ethereum nodes every few seconds and the block feed fills in with real blocks as they are produced.</p></details>
       <details><summary>Why is the base fee so low / high right now?</summary><p>The base fee simply reflects demand for blockspace. When lots of people are transacting, blocks run fuller than target and the base fee climbs; when the chain is quiet it drifts down toward the floor. Watch the gauge and the chart together and you can see the cause and effect directly.</p></details>
       <details><summary>What is gwei?</summary><p>A gwei is one-billionth of an ETH, the unit gas prices are quoted in. A base fee of 10 gwei means each unit of gas costs 0.00000001 ETH; a simple transfer uses 21,000 units, so it would cost about 0.00021 ETH in base fee before the tip.</p></details>
       <details><summary>Does it work on mobile?</summary><p>Yes. It is just reading data and drawing a small chart, so it runs anywhere with a browser and a connection. No wallet app or extension is needed.</p></details>
       <details><summary>Can I trust the cost estimates for a real transaction?</summary><p>Use them as a live gauge of whether gas is cheap or expensive, not as an exact quote. Real transactions vary in how much gas they use, and your wallet computes the precise fee when you sign. This shows typical costs at the current base fee plus a median tip.</p></details>
-    </div>
+<p style="font-family:var(--mono);font-size:12px;color:var(--faint);margin:8px 0 4px">More in <a href="lab.html">The Lab</a> &middot; <a href="ethereum-live.html">Ethereum Live</a> &middot; <a href="index.html">portfolio</a></p>
   </section>
-
-  <p style="font-family:var(--mono);font-size:12px;color:var(--faint);margin:8px 0 4px">More in <a href="lab.html">The Lab</a> &middot; <a href="ethereum-live.html">Ethereum Live</a> &middot; <a href="index.html">portfolio</a></p>
+  <aside class="tool-cta patch">
+    <h3>I build things like this.</h3>
+    <p>I'm Harman, a senior full-stack and Web3 engineer. I shipped the web platform for a top-10 crypto and build fast, private tools that run entirely client-side. Open to remote roles. <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Get in touch &rarr;</a></p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>&copy; 2026 Harman Kamboj</span>
-  <span>Reads public chain data · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- theme bootstrap (match the portfolio's saved theme) -->
-<script>
-(function(){
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
+<footer class="site-foot"><span>&copy; 2026 Harman Kamboj</span><span>Reads public chain data · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script>
 /*__EMBER_HELPERS_START__*/
 "use strict";
@@ -277,7 +252,6 @@ if(typeof module!=="undefined"&&module.exports){
   module.exports={weiToGwei,weiToEth,nextBaseFee,burnEth,txCostEth,fmtGwei,fmtEth,fmtUsd,pctFull};
 }
 </script>
-
 <script>
 (function(){
   "use strict";
@@ -381,7 +355,7 @@ if(typeof module!=="undefined"&&module.exports){
     // fullness gauge + verdict from last block
     var fill=$("gfill"); fill.style.width=H.pctFull(last.ratio)+"%";
     fill.style.background = last.ratio>TARGET_RATIO
-      ? "linear-gradient(90deg,rgba(255,122,89,.55),rgba(255,122,89,.9))"
+      ? "linear-gradient(90deg,rgba(232,96,76,.55),rgba(232,96,76,.9))"
       : "linear-gradient(90deg,rgba(var(--accentRGB),.5),rgba(var(--accentRGB),.85))";
     var verdict=$("verdict");
     if(last.ratio>TARGET_RATIO+0.002){ verdict.className="verdict up"; verdict.textContent="Fuller than target → base fee rising"; }
@@ -436,7 +410,7 @@ if(typeof module!=="undefined"&&module.exports){
     ctx.clearRect(0,0,w,h);
     var data=blocks.slice(-30);
     if(data.length<2) return;
-    var acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#2be3b0";
+    var acc=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#b9442f";
     var accRGB=getComputedStyle(document.documentElement).getPropertyValue("--accentRGB").trim()||"43,227,176";
     var gvals=data.map(function(b){return H.weiToGwei(b.base);});
     var mn=Math.min.apply(null,gvals), mx=Math.max.apply(null,gvals);
@@ -466,7 +440,7 @@ if(typeof module!=="undefined"&&module.exports){
     // last point
     ctx.beginPath(); ctx.arc(x(n-1),y(gvals[n-1]),3.5,0,7); ctx.fillStyle=acc; ctx.fill();
     // labels
-    ctx.fillStyle="rgba(147,168,161,.9)"; ctx.font="11px "+(getComputedStyle(document.body).getPropertyValue("--mono")||"monospace");
+    ctx.fillStyle="rgba(108,99,128,.95)"; ctx.font="11px "+(getComputedStyle(document.body).getPropertyValue("--mono")||"monospace");
     ctx.textAlign="left"; ctx.fillText(mx.toFixed(mx<10?2:1)+" gwei",padL+2,padT-2);
     ctx.textAlign="right"; ctx.fillText(mn.toFixed(mn<10?2:1),w-padR-2,padT+ih+16);
     ctx.textAlign="left"; ctx.fillText("#"+data[0].n.toLocaleString("en-US"),padL+2,padT+ih+16);
@@ -548,7 +522,5 @@ if(typeof module!=="undefined"&&module.exports){
   });
 })();
 </script>
-<script src="enhance.js" defer></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

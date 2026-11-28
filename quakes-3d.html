@@ -8,7 +8,7 @@
 <meta name="keywords" content="earthquakes today, recent earthquakes, live earthquake map, earthquake tracker, 3d earthquake globe, earthquake map 3d, usgs earthquake map, real time earthquakes, latest earthquakes, earthquake visualization, seismic activity map, ring of fire map" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Quakes 3D — Live Earthquake Map on a 3D Globe" />
 <meta property="og:description" content="Every earthquake on Earth, plotted live on a 3D globe with time-lapse playback. Real-time USGS data, in your browser." />
@@ -20,110 +20,92 @@
 <meta name="twitter:description" content="Every earthquake on Earth, live on a 3D globe with time-lapse. Real-time USGS data, in your browser." />
 <link rel="canonical" href="https://hammyasf.github.io/quakes-3d.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="preconnect" href="https://earthquake.usgs.gov" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Quakes 3D — Live Earthquake Map","url":"https://hammyasf.github.io/quakes-3d.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time 3D globe that plots every earthquake on Earth from live USGS data, with time-lapse playback and magnitude filters. Runs entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Where does the earthquake data come from?","acceptedAnswer":{"@type":"Answer","text":"Live from the U.S. Geological Survey (USGS) public earthquake feeds. The map auto-refreshes, so new quakes appear within minutes of being reported."}},{"@type":"Question","name":"Is this real-time?","acceptedAnswer":{"@type":"Answer","text":"Yes. It pulls the USGS real-time GeoJSON feed and refreshes automatically. You can view the last 24 hours, 7 days, or 30 days, and replay them as a time-lapse."}},{"@type":"Question","name":"Does it run on my device?","acceptedAnswer":{"@type":"Answer","text":"Yes. The 3D globe is rendered in your browser with WebGL. The only thing it fetches is the public USGS earthquake feed. Nothing about you is uploaded and there is no sign-up."}},{"@type":"Question","name":"What do the colors and sizes mean?","acceptedAnswer":{"@type":"Answer","text":"Each dot is one earthquake. Bigger and warmer (orange to red) means a larger magnitude; smaller and cooler (green to blue) means a smaller one. Depth and exact magnitude show when you click a quake."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
-  .app{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .stage{position:relative;width:100%;height:min(70vh,640px);min-height:420px;background:radial-gradient(120% 120% at 50% 30%,#0a1a18,#060d0c 70%);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* the globe stays a night window (its land, grid and quake colours are shader numbers and a magnitude scale); felt tags are pinned on it, the controls are sewn on below */
+  .app{margin:0;}
+  .stage{position:relative;width:100%;height:min(70vh,640px);min-height:420px;border-radius:22px;overflow:hidden;background:url(kit/felt-texture.webp),radial-gradient(120% 120% at 50% 30%,#463a63,var(--ink) 70%);box-shadow:0 4px 0 #1b1527,0 16px 30px rgba(45,36,64,.3);}
+  .stage::after{content:"";position:absolute;inset:9px;border-radius:15px;border:2px dashed rgba(246,234,214,.26);pointer-events:none;}
   #globe{position:absolute;inset:0;display:block;width:100%;height:100%;cursor:grab;touch-action:none;}
   #globe:active{cursor:grabbing;}
   .overlay{position:absolute;inset:0;pointer-events:none;}
   .hud{position:absolute;pointer-events:auto;}
-  .stats{top:14px;left:14px;display:flex;flex-direction:column;gap:8px;}
-  .stat{background:rgba(7,16,14,.72);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:9px 13px;min-width:120px;}
-  .stat .l{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+  .stats{top:20px;left:20px;display:flex;flex-direction:column;gap:9px;}
+  .stat{background:url(kit/felt-texture.webp),rgba(255,247,234,.95);border-radius:12px;padding:9px 14px;min-width:124px;color:var(--ink);box-shadow:0 3px 0 #b9a58a,0 6px 14px rgba(27,21,39,.3);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;}
+  .stat:nth-child(odd){rotate:-1.2deg;}
+  .stat:nth-child(even){rotate:.9deg;}
+  .stat .l{font:600 11px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
   .stat .v{font-family:var(--display);font-weight:600;font-size:21px;margin-top:2px;line-height:1.1;}
   .stat .v small{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;}
-  .legend{bottom:14px;left:14px;background:rgba(7,16,14,.72);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:10px 13px;}
-  .legend .lt{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:7px;}
-  .legbar{height:9px;width:200px;border-radius:6px;background:linear-gradient(90deg,#4db3e6,#33d9a6,#8ce64d,#fad13f,#ff8c2e,#ff4d33,#ffd9f2);}
-  .legsc{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;width:200px;}
-  .loadwrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:rgba(6,13,12,.6);backdrop-filter:blur(3px);}
-  .spin{width:42px;height:42px;border-radius:50%;border:3px solid rgba(var(--accentRGB),.25);border-top-color:var(--accent);animation:sp 1s linear infinite;}
+  .legend{bottom:20px;left:20px;background:url(kit/felt-texture.webp),rgba(255,247,234,.95);border-radius:12px;padding:10px 14px;color:var(--ink);rotate:.8deg;box-shadow:0 3px 0 #b9a58a,0 6px 14px rgba(27,21,39,.3);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;}
+  .legend .lt{font:600 11px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:7px;}
+  /* the scale the globe's dots are coloured by (magColor in the script): content, kept as drawn */
+  .legbar{height:10px;width:200px;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(45,36,64,.25);background:linear-gradient(90deg,#4db3e6,#33d9a6,#8ce64d,#fad13f,#ff8c2e,#ff4d33,#ffd9f2);}
+  .legsc{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px;width:200px;}
+  .loadwrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:rgba(45,36,64,.6);backdrop-filter:blur(3px);}
+  .spin{width:42px;height:42px;border-radius:50%;border:4px solid rgba(255,247,234,.22);border-top-color:var(--butter);animation:sp 1s linear infinite;}
   @keyframes sp{to{transform:rotate(360deg);}}
-  .loadwrap p{font-family:var(--mono);font-size:13px;color:var(--muted);}
-  .err{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:24px;background:rgba(6,13,12,.78);}
-  .err h3{font-family:var(--display);font-weight:600;font-size:20px;}
-  .err p{font-size:14px;color:var(--muted);max-width:420px;}
-
-  .tip{position:absolute;pointer-events:none;z-index:6;max-width:240px;background:rgba(7,16,14,.94);border:1px solid var(--line-2);border-radius:12px;padding:11px 13px;opacity:0;transform:translateY(4px);transition:opacity .12s;}
+  .loadwrap p{font:600 14px/1.3 var(--display);color:var(--cream);}
+  .err{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:24px;background:url(kit/felt-texture.webp),rgba(45,36,64,.9);color:var(--cream);}
+  .err h3{font-family:var(--display);font-weight:600;font-size:22px;color:var(--cream);}
+  .err p{font-size:14.5px;color:rgba(255,247,234,.82);max-width:420px;}
+  .tip{position:absolute;pointer-events:none;z-index:6;max-width:240px;color:var(--ink);background:url(kit/felt-texture.webp),var(--cream);border-radius:14px;padding:12px 14px;box-shadow:0 3px 0 #b9a58a,0 10px 22px rgba(27,21,39,.35);outline:1.5px dashed rgba(45,36,64,.25);outline-offset:-5px;opacity:0;transform:translateY(4px);transition:opacity .12s;}
   .tip.on{opacity:1;}
   .tip .m{font-family:var(--display);font-weight:600;font-size:18px;}
   .tip .m b{color:var(--accent);}
-  .tip .pl{font-size:13px;color:#cdd8d3;margin:3px 0 6px;line-height:1.35;}
+  .tip .pl{font-size:13px;color:var(--muted);margin:3px 0 6px;line-height:1.35;}
   .tip .meta{font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:2px;}
-  .tip .badge{display:inline-block;font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:5px;margin-top:6px;}
-  .badge.tsu{background:rgba(61,165,255,.18);color:#7cc0ff;}
-  .badge.alert{background:rgba(255,106,61,.18);color:#ff9a6a;}
-
-  .controls{display:flex;flex-wrap:wrap;gap:16px 24px;padding:16px 22px;align-items:center;border-top:1px solid var(--line);}
-  .ctl{display:flex;flex-direction:column;gap:7px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
-  .seg{display:flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;}
-  .seg button{background:transparent;color:var(--muted);border:none;padding:9px 14px;font-family:var(--mono);font-size:13px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:600;}
+  .tip .badge{display:inline-block;font:600 11px/1.3 var(--display);padding:3px 8px;border-radius:999px;margin-top:6px;}
+  .badge.tsu{background:var(--sky);color:#2f5784;}
+  .badge.alert{background:#fbd9cf;color:#96331f;}
+  .controls{display:flex;flex-wrap:wrap;gap:16px 26px;padding:22px 6px 0;align-items:flex-end;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label,.scrub label{font:600 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
   input[type=range]{accent-color:var(--accent);width:150px;vertical-align:middle;}
-  .qval{font-family:var(--mono);font-size:13px;color:var(--accent);min-width:30px;display:inline-block;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14px;padding:10px 18px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
-  .scrub{flex:1;min-width:220px;display:flex;flex-direction:column;gap:7px;}
+  .qval{font-family:var(--mono);font-size:13px;color:var(--coral-dk);min-width:30px;display:inline-block;letter-spacing:0;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;padding:11px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px) rotate(-1deg);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn-out{font-weight:600;}
+  .scrub{flex:1;min-width:220px;display:flex;flex-direction:column;gap:8px;}
   .scrub .row{display:flex;align-items:center;gap:12px;}
   #seek{flex:1;accent-color:var(--accent);}
   #playLabel{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:148px;text-align:right;}
-
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:620px){.stat{min-width:96px;padding:7px 10px;}.stat .v{font-size:17px;}.legbar,.legsc{width:150px;}.stats{gap:6px;}}
+  @media(max-width:620px){.stat{min-width:96px;padding:7px 10px;}.stat .v{font-size:17px;}.legbar,.legsc{width:150px;}.stats{gap:6px;top:16px;left:16px;}.legend{bottom:16px;left:16px;}#playLabel{min-width:0;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Quakes 3D — Live Earthquake Map","url":"https://hammyasf.github.io/quakes-3d.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time 3D globe that plots every earthquake on Earth from live USGS data, with time-lapse playback and magnitude filters. Runs entirely in the browser.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Where does the earthquake data come from?","acceptedAnswer":{"@type":"Answer","text":"Live from the U.S. Geological Survey (USGS) public earthquake feeds. The map auto-refreshes, so new quakes appear within minutes of being reported."}},{"@type":"Question","name":"Is this real-time?","acceptedAnswer":{"@type":"Answer","text":"Yes. It pulls the USGS real-time GeoJSON feed and refreshes automatically. You can view the last 24 hours, 7 days, or 30 days, and replay them as a time-lapse."}},{"@type":"Question","name":"Does it run on my device?","acceptedAnswer":{"@type":"Answer","text":"Yes. The 3D globe is rendered in your browser with WebGL. The only thing it fetches is the public USGS earthquake feed. Nothing about you is uploaded and there is no sign-up."}},{"@type":"Question","name":"What do the colors and sizes mean?","acceptedAnswer":{"@type":"Answer","text":"Each dot is one earthquake. Bigger and warmer (orange to red) means a larger magnitude; smaller and cooler (green to blue) means a smaller one. Depth and exact magnitude show when you click a quake."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Live data · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="live">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-quakes-3d">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Quakes 3D — Live Earthquake Globe</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-live"/></svg></span>
+    <span class="tag chip">Live data · runs in your browser</span>
     <h1>Quakes 3D — Live Earthquake Globe</h1>
     <p class="sub">Every earthquake on Earth, plotted live on a 3D globe straight from the USGS feed. Spin it, filter by magnitude, and hit play to watch a whole month of quakes ripple across the planet.</p>
-    <span class="priv">&#9889; Live USGS data · auto-refreshes · no sign-up</span>
+    <p class="priv">&#9889; Live USGS data · auto-refreshes · no sign-up</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="app">
     <div class="stage">
       <canvas id="globe"></canvas>
@@ -168,8 +150,8 @@
       </div>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>A live window into the planet's seismic pulse</h2>
     <p>Somewhere on Earth, the ground is moving right now. The USGS records tens of thousands of earthquakes every month, the vast majority far too small to feel. This map pulls that live feed and paints each one onto a 3D globe so you can actually see the shape of it: the Pacific Ring of Fire glowing along the plate boundaries, aftershock clusters lighting up around a big event, and the steady background hum of micro-quakes everywhere else.</p>
     <h2>How it works</h2>
@@ -177,35 +159,23 @@
     <h2>Reading the map</h2>
     <p>Colour and size both track magnitude. Small quakes are little and cool-coloured, blue through green; as magnitude climbs they grow and warm up through yellow and orange to red, and the rare great quakes flare almost white. Depth isn't drawn directly to keep the globe readable, but it's there in the details when you click. The brightest pulsing marker is the single most recent event in the current window.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Is the data real and current?</summary><p>Yes. It comes straight from the USGS real-time earthquake feeds and the map refreshes on a timer, so new events appear within minutes of being reported. USGS is the authoritative source for global earthquake data.</p></details>
     <details><summary>Does anything get uploaded from my device?</summary><p>No. The only network request is to the public USGS feed to download the earthquake list. Everything else — the 3D globe, the time-lapse, the filtering — happens locally in your browser. There's no sign-up and no tracking of you.</p></details>
     <details><summary>Why don't I see tiny quakes in the 30-day view?</summary><p>The 30-day window uses the magnitude 2.5-and-above feed so it stays fast and the planet doesn't disappear under a million dots. The 24-hour and 7-day views include the smaller ones. The magnitude slider filters further on top of that.</p></details>
     <details><summary>What do I need to run it?</summary><p>Any modern browser with WebGL, which is essentially all of them. It works on phones too, though a big 30-day view is smoother on a laptop.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build a tool like this every day.</h3>
-    <p>Senior full-stack engineer, open to senior or contract roles, fully remote. Browse the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, open to senior or contract roles, fully remote. Browse the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Data: USGS · Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Data: USGS · Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
   // ---- match the portfolio's saved theme ----
-  var accentHex = "#2be3b0";
-  try{
-    var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")];
-    if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]); accentHex=t[0];}
-  }catch(e){}
+  var accentHex = "#8fbf6a";
 
   if(!window.THREE){ showError("This map needs WebGL and the 3D library, which didn't load.","Couldn't start the globe"); return; }
 
@@ -630,8 +600,5 @@
   updateScrubLabel();
 })();
 </script>
-<!-- Monetization slot: AdSense / Polar.sh can be added here later. -->
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

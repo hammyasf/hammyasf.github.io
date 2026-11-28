@@ -8,7 +8,7 @@
 <meta name="keywords" content="online whiteboard, collaborative whiteboard, free whiteboard, multiplayer whiteboard, whiteboard no login, shared whiteboard, real time whiteboard, online whiteboard free, draw together online, team whiteboard, virtual whiteboard, whiteboard with friends, live cursors" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Liveboard — real-time collaborative whiteboard" />
 <meta property="og:description" content="Share a link and draw together live. See everyone's cursors in real time. No sign-up, nothing stored." />
@@ -20,116 +20,102 @@
 <meta name="twitter:description" content="Share a link, draw together live with cursors. No sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/liveboard.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Liveboard","url":"https://hammyasf.github.io/liveboard.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free real-time collaborative whiteboard. Share a link and draw together live with shared cursors, no sign-up.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an account to use the whiteboard?","acceptedAnswer":{"@type":"Answer","text":"No. There is no sign-up and no install. Open the page, share the link, and anyone who opens it draws on the same board with you instantly."}},{"@type":"Question","name":"Is my drawing stored on a server?","acceptedAnswer":{"@type":"Answer","text":"No. The board lives in the browsers of the people in the room and is relayed live between them. Nothing is written to a database. When everyone leaves the room, the board is gone."}},{"@type":"Question","name":"How many people can draw at once?","acceptedAnswer":{"@type":"Answer","text":"A handful of people can collaborate comfortably in real time. It is built for small teams, classes, and friends, not for hundreds at once."}},{"@type":"Question","name":"How do I invite someone?","acceptedAnswer":{"@type":"Answer","text":"Click Copy link and send it. The link contains the room code, so anyone who opens it lands on the exact same board and starts drawing with you live."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:30px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
-  /* App */
-  .app{margin:22px 0 8px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .toolbar{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line);background:rgba(var(--surfaceRGB),.6);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* a shared cream drawing board pinned in a white felt frame: felt tool buttons on top, round ink swatches (the pens' own colours), paper sticky notes, a stitched status seam */
+  .app{margin:0;border-radius:22px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--sunk),0 3px 0 #e6d2b5;outline:2px dashed var(--line);outline-offset:-7px;overflow:hidden;}
+  .toolbar{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:16px 18px 14px;border-bottom:2px dashed var(--line);}
   .tgroup{display:flex;align-items:center;gap:6px;}
-  .tbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:38px;height:38px;border-radius:10px;border:1px solid var(--line-2);background:transparent;color:var(--muted);cursor:pointer;transition:.15s;font-family:var(--mono);font-size:13px;}
-  .tbtn:hover{color:var(--ink);border-color:var(--accent);}
-  .tbtn.on{background:var(--accent);color:#07100e;border-color:var(--accent);}
+  .tbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:40px;height:40px;border-radius:14px;border:0;background:url(kit/felt-texture.webp),var(--white);color:var(--ink);cursor:pointer;box-shadow:var(--shadow-btn);transition:transform .45s var(--spring-pop),box-shadow .2s,background-color .2s,color .2s;font-family:var(--mono);font-size:13px;}
+  .tbtn:hover{transform:translateY(-2px) rotate(-3deg);}
+  .tbtn:active{transform:translateY(2px) scale(.94);transition-duration:.08s;}
+  .tbtn.on{background:url(kit/felt-texture.webp),var(--green);color:var(--white);box-shadow:0 3px 0 #2c5a3d,0 6px 12px rgba(63,122,85,.28);}
   .tbtn svg{width:19px;height:19px;}
-  .swatches{display:flex;gap:6px;align-items:center;}
-  .sw{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s;}
-  .sw:hover{transform:scale(1.12);}
-  .sw.on{border-color:var(--ink);box-shadow:0 0 0 2px rgba(0,0,0,.4) inset;}
-  .sizes{display:flex;gap:6px;align-items:center;}
-  .sizebtn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line-2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-  .sizebtn.on{border-color:var(--accent);}
+  .swatches{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+  .sw{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .45s var(--spring-pop);box-shadow:0 0 0 1.5px rgba(45,36,64,.3) inset,0 2px 0 rgba(84,46,30,.18);}
+  .sw:hover{transform:scale(1.15) rotate(-6deg);}
+  .sw.on{border-color:var(--white);box-shadow:0 0 0 2.5px var(--ink),0 3px 0 rgba(84,46,30,.25);transform:scale(1.1);}
+  .sizes{display:flex;gap:4px;align-items:center;padding:4px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);}
+  .sizebtn{width:34px;height:34px;border-radius:50%;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background-color .2s,box-shadow .2s;}
+  .sizebtn.on{background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);}
   .sizebtn i{display:block;border-radius:50%;background:var(--muted);}
-  .sizebtn.on i{background:var(--accent);}
+  .sizebtn.on i{background:var(--coral-dk);}
   .spacer{flex:1 1 auto;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;white-space:nowrap;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:11px 18px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;white-space:nowrap;}
+  .btn:hover{transform:translateY(-2px) rotate(-1deg);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn-out{font-weight:600;}
   .who{display:flex;align-items:center;gap:8px;}
   .avs{display:flex;}
-  .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:#07100e;margin-left:-8px;border:2px solid var(--bg-2);}
+  .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:600 12px/1 var(--display);color:var(--ink);margin-left:-8px;border:2px solid var(--white);box-shadow:0 2px 0 rgba(84,46,30,.2);}
   .av:first-child{margin-left:0;}
-  .cnt{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .cnt{font:600 13px/1 var(--display);color:var(--muted);}
   .namewrap{display:flex;align-items:center;gap:6px;}
-  .nameinput{width:120px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:7px 10px;font-family:var(--mono);font-size:12.5px;}
-
-  .stage{position:relative;width:100%;aspect-ratio:16/10;background:#0e1a17;overflow:hidden;touch-action:none;}
+  .tool-ui .nameinput{width:130px;padding:10px 14px;font-family:var(--mono);font-size:12.5px;}
+  .stage{position:relative;width:100%;aspect-ratio:16/10;background:var(--cream);overflow:hidden;touch-action:none;}
   #board{position:absolute;inset:0;width:100%;height:100%;display:block;}
   #surface{position:absolute;inset:0;cursor:crosshair;}
   #notes,#cursors{position:absolute;inset:0;pointer-events:none;}
-  .note{position:absolute;width:170px;min-height:120px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35);pointer-events:auto;display:flex;flex-direction:column;overflow:hidden;font-family:var(--body);}
-  .note .nh{height:22px;cursor:grab;display:flex;align-items:center;justify-content:flex-end;padding:0 6px;background:rgba(0,0,0,.12);}
-  .note .nh button{background:transparent;border:none;color:rgba(0,0,0,.55);cursor:pointer;font-size:14px;line-height:1;padding:2px 4px;}
-  .note textarea{flex:1;border:none;background:transparent;resize:none;outline:none;padding:8px 10px;font-family:var(--body);font-size:14px;color:#1a1a1a;line-height:1.4;}
+  .note{position:absolute;width:170px;min-height:120px;border-radius:6px 6px 14px 6px;box-shadow:0 3px 0 rgba(84,46,30,.18),0 10px 22px rgba(84,46,30,.24);pointer-events:auto;display:flex;flex-direction:column;overflow:hidden;font-family:var(--body);rotate:-1deg;}
+  .note:nth-child(even){rotate:1.2deg;}
+  .note .nh{height:24px;cursor:grab;display:flex;align-items:center;justify-content:flex-end;padding:0 6px;background:rgba(45,36,64,.1);border-bottom:1.5px dashed rgba(45,36,64,.22);}
+  .note .nh button{background:transparent;border:none;color:rgba(45,36,64,.75);cursor:pointer;font-size:15px;line-height:1;padding:2px 4px;}
+  .note textarea{flex:1;border:none;background:transparent;resize:none;outline:none;padding:8px 10px;font-family:var(--body);font-size:14px;color:var(--ink);line-height:1.4;}
+  .tool-ui .note textarea{width:auto;border-radius:0;box-shadow:none;background:transparent;padding:8px 10px;font:500 14px/1.4 var(--body);}
+  .tool-ui .note textarea:focus-visible{outline:2px dashed rgba(45,36,64,.4);outline-offset:-4px;box-shadow:none;}
   .cursor{position:absolute;transform:translate(-2px,-2px);transition:left .08s linear,top .08s linear;will-change:left,top;}
-  .cursor svg{display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));}
-  .cursor .lbl{position:absolute;left:14px;top:14px;font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:8px;color:#07100e;white-space:nowrap;font-weight:700;}
-
-  .statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .conn{display:inline-flex;align-items:center;gap:7px;}
-  .led{width:8px;height:8px;border-radius:50%;background:var(--faint);box-shadow:0 0 8px currentColor;}
-  .led.live{background:#2be3b0;color:#2be3b0;}
-  .led.off{background:#ff6a5d;color:#ff6a5d;}
+  .cursor svg{display:block;filter:drop-shadow(0 1px 2px rgba(45,36,64,.4));}
+  .cursor .lbl{position:absolute;left:14px;top:14px;font:600 11.5px/1.3 var(--display);padding:2px 8px;border-radius:8px;color:var(--ink);white-space:nowrap;}
+  .statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 18px;border-top:2px dashed var(--line);font-size:13px;color:var(--muted);}
+  .statusbar #room{font-family:var(--mono);font-size:12px;}
+  .conn{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:600;}
+  .led{width:10px;height:10px;border-radius:50%;background:var(--faint);box-shadow:0 0 0 3px rgba(122,100,80,.18);}
+  .led.live{background:var(--green);box-shadow:0 0 0 3px rgba(63,122,85,.22);}
+  .led.off{background:var(--coral);box-shadow:0 0 0 3px rgba(232,96,76,.22);}
   .hint{color:var(--faint);}
-
-  /* intro overlay */
-  .intro{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(7,16,14,.78);backdrop-filter:blur(4px);text-align:center;padding:24px;}
-  .intro .card{max-width:460px;}
-  .intro h3{font-family:var(--display);font-weight:600;font-size:26px;}
-  .intro p{color:#cdd8d3;font-size:15px;margin-top:10px;}
+  /* intro overlay: a felt card over a sand veil */
+  .intro{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(243,232,214,.78);backdrop-filter:blur(4px);text-align:center;padding:24px;}
+  .intro .card{max-width:460px;padding:28px 30px 26px;border-radius:22px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:var(--shadow-patch);outline:2px dashed var(--thread);outline-offset:-8px;rotate:-.6deg;}
+  .intro h3{font-family:var(--display);font-weight:600;font-size:26px;color:var(--ink);}
+  .intro p{color:var(--muted);font-size:15.5px;margin-top:10px;}
   .intro .row{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
-  .toast{position:absolute;left:50%;bottom:18px;transform:translateX(-50%) translateY(20px);z-index:40;background:var(--ink);color:#07100e;font-family:var(--mono);font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:100px;opacity:0;transition:.25s;pointer-events:none;}
+  .toast{position:absolute;left:50%;bottom:18px;width:max-content;transform:translateX(-50%) translateY(20px);z-index:40;background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);font:600 14px/1 var(--display);padding:11px 18px;border-radius:999px;box-shadow:0 3px 0 #96331f,0 8px 18px rgba(84,46,30,.22);opacity:0;transition:transform .5s var(--spring-pop),opacity .2s;pointer-events:none;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-  section.copy{padding:24px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:640px){.nameinput{width:88px;}.hint{display:none;}}
+  @media(max-width:640px){.tool-ui .nameinput{width:100px;}.hint{display:none;}.toolbar{padding:14px 12px 12px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Liveboard","url":"https://hammyasf.github.io/liveboard.html","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free real-time collaborative whiteboard. Share a link and draw together live with shared cursors, no sign-up.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an account to use the whiteboard?","acceptedAnswer":{"@type":"Answer","text":"No. There is no sign-up and no install. Open the page, share the link, and anyone who opens it draws on the same board with you instantly."}},{"@type":"Question","name":"Is my drawing stored on a server?","acceptedAnswer":{"@type":"Answer","text":"No. The board lives in the browsers of the people in the room and is relayed live between them. Nothing is written to a database. When everyone leaves the room, the board is gone."}},{"@type":"Question","name":"How many people can draw at once?","acceptedAnswer":{"@type":"Answer","text":"A handful of people can collaborate comfortably in real time. It is built for small teams, classes, and friends, not for hundreds at once."}},{"@type":"Question","name":"How do I invite someone?","acceptedAnswer":{"@type":"Answer","text":"Click Copy link and send it. The link contains the room code, so anyone who opens it lands on the exact same board and starts drawing with you live."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · real-time, no sign-up</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="live">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-liveboard">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Liveboard</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-live"/></svg></span>
+    <span class="tag chip">Free tool · real-time, no sign-up</span>
     <h1>Liveboard</h1>
     <p class="sub">A whiteboard you draw on together. Share the link, watch everyone's cursors move in real time, and sketch or drop sticky notes side by side. No account, nothing stored.</p>
-    <span class="priv">&#9889; Live multiplayer — share the link, draw together instantly</span>
+    <p class="priv">&#9889; Live multiplayer — share the link, draw together instantly</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="app">
     <div class="toolbar">
       <div class="tgroup" id="tools">
@@ -179,8 +165,8 @@
       <span id="room"></span>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>Every board is a private room with its own link. When you open the page you are dropped into a fresh room, and the room code rides in the URL. Send that link to anyone and the moment they open it they are on the same canvas as you, with a live cursor that you can see moving as they draw. Pen strokes, highlighter, the eraser, and sticky notes all stream to everyone in the room as they happen.</p>
     <h2>How is it live without a server I have to run?</h2>
@@ -188,38 +174,24 @@
     <h2>Good things to try</h2>
     <p>Run a quick standup sketch with a teammate, explain a bug with a diagram while you talk, play a round of pictionary, plan a trip on a shared map sketch, or teach someone a concept by drawing it as they watch. Open the link on your phone and your laptop at the same time and use the phone as a second drawing surface. When you want to keep the result, hit Save PNG.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Do I need to sign up?</summary><p>No. There is no account and no install. Open the page, copy the link, and share it. Anyone who opens the link joins your board instantly.</p></details>
     <details><summary>Is anything saved or uploaded?</summary><p>No. The board is relayed live between the browsers in the room and is never written to a database. When everyone closes the tab, the board is gone. If you want to keep it, use Save PNG.</p></details>
     <details><summary>How many people can it handle?</summary><p>It is built for small groups, a handful of people drawing together comfortably in real time, like a team, a class, or friends. It is not meant for hundreds of simultaneous editors.</p></details>
     <details><summary>Can I undo someone else's drawing?</summary><p>Undo removes your own most recent stroke. Anyone can use Clear to wipe the whole board for everyone, so use it with care.</p></details>
     <details><summary>Does it work on mobile?</summary><p>Yes, you can draw with your finger. It works best with a stylus or a mouse, but touch is fully supported.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build a tool like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Real-time in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- Ad slot (commented for later):
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXImage" data-ad-slot="XX" data-ad-format="auto"></ins>
--->
-<!-- Monetization (Polar.sh) slot for a future Pro: persistent boards, bigger rooms. -->
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Real-time in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
   "use strict";
-  // ---- match the portfolio's saved theme ----
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var tt=T[localStorage.getItem("siteTheme")]; if(tt){var r=document.documentElement.style; r.setProperty("--accent",tt[0]);r.setProperty("--accent-2",tt[1]);r.setProperty("--accentRGB",tt[2]);r.setProperty("--surfaceRGB",tt[3]);r.setProperty("--bg",tt[4]);r.setProperty("--bg-2",tt[5]);} }catch(e){}
+  
 
   // ---- Supabase config (anon/publishable key is public and safe to embed; no tables, broadcast+presence only) ----
   var SUPA_URL="https://cunynpmbjogrexkrxbwf.supabase.co";
@@ -241,7 +213,7 @@
     return others.length>0 && others[0]===selfId;
   }
   function strokeStyle(tool,color,size){
-    if(tool==="eraser") return {op:"source-over",stroke:"#f7f9f8",width:size*3.2,alpha:1};
+    if(tool==="eraser") return {op:"source-over",stroke:"#fffbf4",width:size*3.2,alpha:1};
     if(tool==="marker") return {op:"source-over",stroke:color,width:size*3.0,alpha:0.32};
     return {op:"source-over",stroke:color,width:size,alpha:1};
   }
@@ -300,7 +272,7 @@
       dirty=false;
       ctx.globalCompositeOperation="source-over"; ctx.globalAlpha=1;
       ctx.clearRect(0,0,W,H);
-      ctx.fillStyle="#f7f9f8"; ctx.fillRect(0,0,W,H);
+      ctx.fillStyle="#fffbf4"; ctx.fillRect(0,0,W,H);
       for(var i=0;i<strokes.length;i++) drawStroke(strokes[i]);
       for(var k in inprog) if(inprog.hasOwnProperty(k)) drawStroke(inprog[k]);
       ctx.globalCompositeOperation="source-over"; ctx.globalAlpha=1;
@@ -455,10 +427,10 @@
   document.getElementById("introGo").addEventListener("click",hideIntro);
   document.getElementById("png").addEventListener("click",function(){
     var tmp=document.createElement("canvas"); tmp.width=W; tmp.height=H; var tx=tmp.getContext("2d");
-    tx.fillStyle="#f7f9f8"; tx.fillRect(0,0,W,H);
+    tx.fillStyle="#fffbf4"; tx.fillRect(0,0,W,H);
     tx.drawImage(canvas,0,0);
     // burn notes into the export
-    for(var id in notes){ if(notes.hasOwnProperty(id)){ var n=notes[id]; tx.fillStyle=n.color; tx.fillRect(n.x,n.y,170,120); tx.fillStyle="#1a1a1a"; tx.font="22px sans-serif"; wrapText(tx,n.text||"",n.x+12,n.y+34,146,26); } }
+    for(var id in notes){ if(notes.hasOwnProperty(id)){ var n=notes[id]; tx.fillStyle=n.color; tx.fillRect(n.x,n.y,170,120); tx.fillStyle="#2d2440"; tx.font="22px sans-serif"; wrapText(tx,n.text||"",n.x+12,n.y+34,146,26); } }
     tmp.toBlob(function(b){ var a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="liveboard-"+room+".png"; a.click(); });
   });
   function wrapText(ctx2,text,x,y,maxW,lh){ var words=String(text).split(/\s+/),line="",yy=y; for(var i=0;i<words.length;i++){ var test=line+words[i]+" "; if(ctx2.measureText(test).width>maxW&&line){ ctx2.fillText(line,x,yy); line=words[i]+" "; yy+=lh; if(yy>y+96)return; } else line=test; } ctx2.fillText(line,x,yy); }
@@ -534,7 +506,5 @@
   window.__lbBoot=true;
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

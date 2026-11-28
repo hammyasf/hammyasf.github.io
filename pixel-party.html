@@ -8,7 +8,7 @@
 <meta name="keywords" content="collaborative pixel art, multiplayer pixel canvas, pixel art together, online pixel art editor, r place clone, place pixel canvas, draw pixel art with friends, shared pixel canvas, pixel art maker online, real time pixel art, pixel art game, make pixel art online free, multiplayer drawing" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Pixel Party — collaborative pixel art canvas, live" />
 <meta property="og:description" content="Share a link and place pixels together in real time. See live cursors, watch the art grow, replay the build. No sign-up." />
@@ -20,107 +20,90 @@
 <meta name="twitter:description" content="Share a link, place pixels together in real time with live cursors. No sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/pixel-party.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Pixel Party","url":"https://hammyasf.github.io/pixel-party.html","applicationCategory":"DesignApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free real-time collaborative pixel art canvas. Share a link and place pixels together live with shared cursors, no sign-up.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an account to draw pixel art together?","acceptedAnswer":{"@type":"Answer","text":"No. There is no sign-up and no install. Open the page, share the link, and anyone who opens it places pixels on the same canvas with you instantly."}},{"@type":"Question","name":"How is it live without a server I have to run?","acceptedAnswer":{"@type":"Answer","text":"Every pixel you place is broadcast over a realtime message channel to the other browsers in the room, which paint it onto their own copy of the grid. Presence (who is here and which cell their cursor is on) rides the same channel. When you join, one person already in the room hands you the whole canvas in a single message, so you see all the art that already exists."}},{"@type":"Question","name":"Can I save the pixel art?","acceptedAnswer":{"@type":"Answer","text":"Yes. Hit Save PNG to download a crisp, upscaled image of the canvas at any time. You can also hit Replay to watch a fast timelapse of how the art was built."}},{"@type":"Question","name":"How many people can paint at once?","acceptedAnswer":{"@type":"Answer","text":"A handful of people can paint together comfortably in real time. It is built for friends, classes, and small teams rather than thousands at once."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:30px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
-  .app{margin:22px 0 8px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .toolbar{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line);background:rgba(var(--surfaceRGB),.6);}
-  .tgroup{display:flex;align-items:center;gap:6px;}
-  .palette{display:flex;gap:5px;align-items:center;flex-wrap:wrap;max-width:330px;}
-  .sw{width:24px;height:24px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:transform .12s;box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;}
-  .sw:hover{transform:scale(1.12);}
-  .sw.on{border-color:var(--ink);box-shadow:0 0 0 2px rgba(0,0,0,.4) inset;}
-  .sw.eraser{background:repeating-conic-gradient(#cfd8d4 0% 25%,#fff 0% 50%) 50%/10px 10px;display:flex;align-items:center;justify-content:center;}
-  .tbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 10px;border-radius:10px;border:1px solid var(--line-2);background:transparent;color:var(--muted);cursor:pointer;transition:.15s;font-family:var(--mono);font-size:12.5px;}
-  .tbtn:hover{color:var(--ink);border-color:var(--accent);}
-  .tbtn.on{background:var(--accent);color:#07100e;border-color:var(--accent);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* a shared pixel board pinned in a sand tray: felt tool strip on top, the board's own paper colours (a content palette) in the middle, a stitched status seam below */
+  .app{margin:0;border-radius:22px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--sunk),0 3px 0 #e6d2b5;outline:2px dashed var(--line);outline-offset:-7px;overflow:hidden;}
+  .toolbar{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:16px 18px 14px;border-bottom:2px dashed var(--line);}
+  .tgroup{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .palette{display:flex;gap:6px;align-items:center;flex-wrap:wrap;max-width:340px;}
+  .sw{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .45s var(--spring-pop);box-shadow:0 0 0 1.5px rgba(45,36,64,.3) inset,0 2px 0 rgba(84,46,30,.18);}
+  .sw:hover{transform:scale(1.15) rotate(-6deg);}
+  .sw.on{border-color:var(--white);box-shadow:0 0 0 2.5px var(--ink),0 3px 0 rgba(84,46,30,.25);transform:scale(1.1);}
+  .sw.eraser{background:repeating-conic-gradient(#e2d3bd 0% 25%,var(--white) 0% 50%) 50%/10px 10px;display:flex;align-items:center;justify-content:center;}
+  .tbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:38px;padding:0 13px;border-radius:999px;border:0;background:url(kit/felt-texture.webp),var(--white);color:var(--ink);cursor:pointer;box-shadow:var(--shadow-btn);transition:transform .45s var(--spring-pop),box-shadow .2s,background-color .2s,color .2s;font:600 13.5px/1 var(--display);}
+  .tbtn:hover{transform:translateY(-2px);}
+  .tbtn:active{transform:translateY(2px) scale(.95);transition-duration:.08s;}
+  .tbtn.on{background:url(kit/felt-texture.webp),var(--green);color:var(--white);box-shadow:0 3px 0 #2c5a3d,0 6px 12px rgba(63,122,85,.28);}
   .tbtn svg{width:17px;height:17px;}
-  .zoom{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .zoom input{accent-color:var(--accent);}
+  .zoom{display:flex;align-items:center;gap:8px;font:600 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .zoom input{accent-color:var(--accent);width:110px;}
   .spacer{flex:1 1 auto;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;white-space:nowrap;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:11px 18px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;white-space:nowrap;}
+  .btn:hover{transform:translateY(-2px) rotate(-1deg);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn-out{font-weight:600;}
   .who{display:flex;align-items:center;gap:8px;}
   .avs{display:flex;}
-  .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:#07100e;margin-left:-8px;border:2px solid var(--bg-2);}
+  .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:600 12px/1 var(--display);color:var(--ink);margin-left:-8px;border:2px solid var(--white);box-shadow:0 2px 0 rgba(84,46,30,.2);}
   .av:first-child{margin-left:0;}
-  .cnt{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .cnt{font:600 13px/1 var(--display);color:var(--muted);}
   .namewrap{display:flex;align-items:center;gap:6px;}
-  .nameinput{width:120px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:7px 10px;font-family:var(--mono);font-size:12.5px;}
-
-  .stage{position:relative;width:100%;background:#0e1a17;overflow:auto;max-height:72vh;display:flex;justify-content:center;align-items:flex-start;touch-action:none;}
-  .canvas-pad{position:relative;margin:18px;}
+  .tool-ui .nameinput{width:130px;padding:10px 14px;font-family:var(--mono);font-size:12.5px;}
+  .stage{position:relative;width:100%;background:url(kit/felt-texture.webp),var(--sand);box-shadow:inset 0 8px 16px rgba(84,46,30,.12);overflow:auto;max-height:72vh;display:flex;justify-content:center;align-items:flex-start;touch-action:none;}
+  .canvas-pad{position:relative;margin:22px;}
   #board,#gridlay,#cursorlay,#surface{position:absolute;top:0;left:0;image-rendering:pixelated;}
-  #board{position:relative;display:block;box-shadow:0 10px 40px rgba(0,0,0,.4);}
+  #board{position:relative;display:block;box-shadow:0 4px 0 #e2cdb0,0 14px 30px rgba(84,46,30,.26);}
   #gridlay,#cursorlay{pointer-events:none;}
   #surface{cursor:crosshair;}
-
-  .statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .conn{display:inline-flex;align-items:center;gap:7px;}
-  .led{width:8px;height:8px;border-radius:50%;background:var(--faint);box-shadow:0 0 8px currentColor;}
-  .led.live{background:#2be3b0;color:#2be3b0;}
-  .led.off{background:#ff6a5d;color:#ff6a5d;}
+  .statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 18px;border-top:2px dashed var(--line);font-size:13px;color:var(--muted);}
+  .conn{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:600;}
+  .led{width:10px;height:10px;border-radius:50%;background:var(--faint);box-shadow:0 0 0 3px rgba(122,100,80,.18);}
+  .led.live{background:var(--green);box-shadow:0 0 0 3px rgba(63,122,85,.22);}
+  .led.off{background:var(--coral);box-shadow:0 0 0 3px rgba(232,96,76,.22);}
   .hint{color:var(--faint);}
-
-  .intro{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(7,16,14,.8);backdrop-filter:blur(4px);text-align:center;padding:24px;}
-  .intro .card{max-width:470px;}
-  .intro h3{font-family:var(--display);font-weight:600;font-size:26px;}
-  .intro p{color:#cdd8d3;font-size:15px;margin-top:10px;}
+  .intro{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:rgba(243,232,214,.78);backdrop-filter:blur(4px);text-align:center;padding:24px;}
+  .intro .card{max-width:470px;padding:28px 30px 26px;border-radius:22px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:var(--shadow-patch);outline:2px dashed var(--thread);outline-offset:-8px;rotate:-.6deg;}
+  .intro h3{font-family:var(--display);font-weight:600;font-size:26px;color:var(--ink);}
+  .intro p{color:var(--muted);font-size:15.5px;margin-top:10px;}
   .intro .row{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
-  .toast{position:absolute;left:50%;bottom:18px;transform:translateX(-50%) translateY(20px);z-index:40;background:var(--ink);color:#07100e;font-family:var(--mono);font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:100px;opacity:0;transition:.25s;pointer-events:none;}
+  .toast{position:absolute;left:50%;bottom:18px;width:max-content;transform:translateX(-50%) translateY(20px);z-index:40;background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);font:600 14px/1 var(--display);padding:11px 18px;border-radius:999px;box-shadow:0 3px 0 #96331f,0 8px 18px rgba(84,46,30,.22);opacity:0;transition:transform .5s var(--spring-pop),opacity .2s;pointer-events:none;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-  section.copy{padding:24px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:640px){.nameinput{width:88px;}.hint{display:none;}.palette{max-width:200px;}}
+  @media(max-width:640px){.tool-ui .nameinput{width:100px;}.hint{display:none;}.palette{max-width:220px;}.toolbar{padding:14px 12px 12px;}.canvas-pad{margin:14px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Pixel Party","url":"https://hammyasf.github.io/pixel-party.html","applicationCategory":"DesignApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free real-time collaborative pixel art canvas. Share a link and place pixels together live with shared cursors, no sign-up.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an account to draw pixel art together?","acceptedAnswer":{"@type":"Answer","text":"No. There is no sign-up and no install. Open the page, share the link, and anyone who opens it places pixels on the same canvas with you instantly."}},{"@type":"Question","name":"How is it live without a server I have to run?","acceptedAnswer":{"@type":"Answer","text":"Every pixel you place is broadcast over a realtime message channel to the other browsers in the room, which paint it onto their own copy of the grid. Presence (who is here and which cell their cursor is on) rides the same channel. When you join, one person already in the room hands you the whole canvas in a single message, so you see all the art that already exists."}},{"@type":"Question","name":"Can I save the pixel art?","acceptedAnswer":{"@type":"Answer","text":"Yes. Hit Save PNG to download a crisp, upscaled image of the canvas at any time. You can also hit Replay to watch a fast timelapse of how the art was built."}},{"@type":"Question","name":"How many people can paint at once?","acceptedAnswer":{"@type":"Answer","text":"A handful of people can paint together comfortably in real time. It is built for friends, classes, and small teams rather than thousands at once."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · real-time, no sign-up</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="live">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-pixel-party">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Pixel Party</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-live"/></svg></span>
+    <span class="tag chip">Free tool · real-time, no sign-up</span>
     <h1>Pixel Party</h1>
     <p class="sub">A shared pixel-art canvas you paint on together. Share the link, place pixels next to your friends in real time, watch their cursors move, then replay how the whole thing was built. No account, runs in your browser.</p>
-    <span class="priv">&#9889; Live multiplayer — share the link, paint pixels together instantly</span>
+    <p class="priv">&#9889; Live multiplayer — share the link, paint pixels together instantly</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="app">
     <div class="toolbar">
       <div class="palette" id="palette"></div>
@@ -164,8 +147,8 @@
       <span id="room"></span>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>Every canvas is a private room with its own link. When you open the page you land in a fresh 64&times;64 grid, and the room code rides in the URL. Send that link to anyone and the moment they open it they are on the same canvas as you, with a live cursor you can watch hop from cell to cell as they paint. Each pixel you place streams to everyone in the room the instant you place it.</p>
     <h2>How is it live without a server I have to run?</h2>
@@ -173,39 +156,25 @@
     <h2>Things to try</h2>
     <p>Make a tiny game sprite with a friend, run a pixel-art jam in class, build a team logo one pixel at a time, or play a guessing game where one person draws and the rest watch it appear. Open the link on your phone and your laptop at once to paint from both. When you like the result, hit Save PNG for a crisp upscaled image, or hit Replay to watch a timelapse of every pixel going down in order.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Do I need to sign up?</summary><p>No. There is no account and no install. Open the page, copy the link, and share it. Anyone who opens the link joins your canvas instantly and starts painting.</p></details>
     <details><summary>Is anything saved or uploaded?</summary><p>By default the canvas is relayed live between the browsers in the room and is not written to a database, so when everyone leaves, the room resets. Use Save PNG if you want to keep the art. (The page also supports an optional permanent-canvas mode if a small database is connected.)</p></details>
     <details><summary>How big is the canvas?</summary><p>It is a 64&times;64 grid, which is a comfortable size for sprites, logos, and collaborative doodles. Zoom in for pixel-perfect detail and the canvas scrolls.</p></details>
     <details><summary>How many people can paint at once?</summary><p>It is built for small groups, a handful of people painting together comfortably in real time, like a team, a class, or friends, rather than thousands at once.</p></details>
     <details><summary>Can I undo someone else's pixels?</summary><p>Undo reverts your own most recent pixels. Anyone can use Clear to wipe the whole canvas for everyone, so use it with care.</p></details>
     <details><summary>Does it work on mobile?</summary><p>Yes, you can paint with your finger. It works best with a mouse or stylus, but touch is fully supported.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build a tool like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Real-time in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- Ad slot (commented for later):
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XX" data-ad-slot="XX" data-ad-format="auto"></ins>
--->
-<!-- Monetization (Polar.sh) slot for a future Pro: permanent canvases, bigger grids, private rooms. -->
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Real-time in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
   "use strict";
-  // ---- match the portfolio's saved theme ----
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var tt=T[localStorage.getItem("siteTheme")]; if(tt){var r=document.documentElement.style; r.setProperty("--accent",tt[0]);r.setProperty("--accent-2",tt[1]);r.setProperty("--accentRGB",tt[2]);r.setProperty("--surfaceRGB",tt[3]);r.setProperty("--bg",tt[4]);r.setProperty("--bg-2",tt[5]);} }catch(e){}
+  
 
   // ---- Supabase config (anon/publishable key is public and safe to embed; broadcast+presence live, DB optional) ----
   var SUPA_URL="https://cunynpmbjogrexkrxbwf.supabase.co";
@@ -294,7 +263,7 @@
   function drawGridLines(){
     gctx.clearRect(0,0,gridlay.width,gridlay.height);
     if(!showGrid) return;
-    gctx.strokeStyle="rgba(0,0,0,.10)"; gctx.lineWidth=1;
+    gctx.strokeStyle="rgba(45,36,64,.12)"; gctx.lineWidth=1;
     gctx.beginPath();
     for(var k=0;k<=N;k++){ var p=k*cell+0.5; gctx.moveTo(p,0); gctx.lineTo(p,N*cell); gctx.moveTo(0,p); gctx.lineTo(N*cell,p); }
     gctx.stroke();
@@ -376,7 +345,7 @@
       cctx.font="11px ui-monospace,monospace"; var w=cctx.measureText(nm).width+8;
       var lx=clamp(px,0,N*cell-w), ly=py-15>2?py-15:py+cell+3;
       cctx.fillStyle=c.color; cctx.fillRect(lx,ly,w,14);
-      cctx.fillStyle="#07100e"; cctx.fillText(nm,lx+4,ly+11);
+      cctx.fillStyle="#2d2440"; cctx.fillText(nm,lx+4,ly+11);
     }
     requestAnimationFrame(cursorLoop);
   }
@@ -525,7 +494,5 @@
   window.__ppBoot=true;
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

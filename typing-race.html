@@ -8,7 +8,7 @@
 <meta name="keywords" content="typing race, multiplayer typing game, typing speed test, typeracer alternative, typing test, words per minute test, wpm test, type racing online, typing game with friends, online typing test, typing competition, real time typing game, no sign up typing test" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta name="color-scheme" content="dark" />
 <meta property="og:title" content="Typebolt — multiplayer typing race &amp; speed test" />
 <meta property="og:description" content="Share a link and race your friends typing the same passage live. Or test your WPM solo. No sign-up, nothing stored." />
@@ -20,138 +20,116 @@
 <meta name="twitter:description" content="Share a link, race friends typing live, see everyone's WPM. No sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/typing-race.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500,600&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500,600&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Typebolt","url":"https://hammyasf.github.io/typing-race.html","applicationCategory":"GameApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free real-time multiplayer typing race and typing speed test. Share a link and race friends typing the same passage live, or test your WPM solo. No sign-up.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an account to play?","acceptedAnswer":{"@type":"Answer","text":"No. There is no sign-up and no install. Open the page, share the link, and anyone who opens it joins your race instantly and types the same passage at the same time."}},{"@type":"Question","name":"How is the race live without a server?","acceptedAnswer":{"@type":"Answer","text":"Each player's progress is relayed through a realtime message channel as a tiny stream of numbers. Your browser broadcasts how far along you are and your current speed, and everyone else's browser draws your car moving. Nothing is written to a database."}},{"@type":"Question","name":"How is typing speed measured?","acceptedAnswer":{"@type":"Answer","text":"Words per minute is the standard measure: the number of correct characters you type divided by five, divided by the minutes elapsed. Accuracy is the share of keystrokes you got right on the first try."}},{"@type":"Question","name":"Can I use it to practice alone?","acceptedAnswer":{"@type":"Answer","text":"Yes. If no one else is in the room it works as a solo typing speed test. Start a race and type the passage to get your WPM and accuracy, then share the link to race friends."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);--good:#3ddc84;--bad:#ff6a5d;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:1080px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  nav .r a:hover{color:var(--ink);}
-  .hero{padding:30px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:680px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-
-  .app{margin:22px 0 8px;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .bar{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(var(--surfaceRGB),.6);}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* a felt race track: racers' lanes are knitted tracks, the passage is a cream paper card, stats are felt tags; good is felt green, a slip is red thread */
+  :root{--good:#3f7a55;--bad:#b3263c;}
+  .app{margin:0;border-radius:22px;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--sunk),0 3px 0 #e6d2b5;outline:2px dashed var(--line);outline-offset:-7px;overflow:hidden;}
+  .bar{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:16px 18px 14px;border-bottom:2px dashed var(--line);}
   .spacer{flex:1 1 auto;}
   .who{display:flex;align-items:center;gap:8px;}
   .avs{display:flex;}
-  .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:#07100e;margin-left:-8px;border:2px solid var(--bg-2);}
+  .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:600 12px/1 var(--display);color:var(--ink);margin-left:-8px;border:2px solid var(--white);box-shadow:0 2px 0 rgba(84,46,30,.2);}
   .av:first-child{margin-left:0;}
-  .cnt{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .cnt{font:600 13px/1.3 var(--display);color:var(--muted);}
   .namewrap{display:flex;align-items:center;gap:6px;}
-  .nameinput{width:130px;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:8px;padding:7px 10px;font-family:var(--mono);font-size:12.5px;}
-  .nameinput:focus{outline:none;border-color:var(--accent);}
-  .seg{display:inline-flex;border:1px solid var(--line-2);border-radius:9px;overflow:hidden;}
-  .seg button{background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:12px;padding:7px 12px;cursor:pointer;transition:.15s;}
-  .seg button.on{background:var(--accent);color:#07100e;font-weight:700;}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s,opacity .14s;white-space:nowrap;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:500;}
-
+  .tool-ui .nameinput{width:140px;padding:10px 14px;font-family:var(--mono);font-size:12.5px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;padding:11px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s,opacity .14s;white-space:nowrap;}
+  .btn:hover{transform:translateY(-2px) rotate(-1deg);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn-out{font-weight:600;}
   /* lanes */
-  .lanes{padding:14px 16px 4px;display:flex;flex-direction:column;gap:9px;}
+  .lanes{padding:18px 18px 6px;display:flex;flex-direction:column;gap:11px;}
   .lane{display:grid;grid-template-columns:140px 1fr 66px;align-items:center;gap:12px;}
   .lane .pl{display:flex;align-items:center;gap:8px;min-width:0;}
-  .lane .pdot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;}
-  .lane .pname{font-family:var(--mono);font-size:12.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .lane .pname.me{color:var(--accent);}
-  .track{position:relative;height:14px;border-radius:100px;background:rgba(237,242,239,.06);border:1px solid var(--line);overflow:hidden;}
-  .fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:100px;opacity:.28;transition:width .12s linear;}
-  .marker{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 1px 6px rgba(0,0,0,.5);transition:left .12s linear;display:flex;align-items:center;justify-content:center;}
-  .marker::after{content:"";width:7px;height:7px;border-radius:50%;background:rgba(7,16,14,.85);}
+  .lane .pdot{width:11px;height:11px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 0 1.5px rgba(45,36,64,.35);}
+  .lane .pname{font:600 13.5px/1.2 var(--display);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lane .pname.me{color:var(--coral-dk);}
+  .track{position:relative;height:16px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);overflow:hidden;}
+  .fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:999px;opacity:.4;transition:width .12s linear;}
+  .marker{position:absolute;top:50%;width:20px;height:20px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 2px var(--white),0 2px 4px rgba(84,46,30,.35);transition:left .12s linear;display:flex;align-items:center;justify-content:center;}
+  .marker::after{content:"";width:7px;height:7px;border-radius:50%;background:rgba(45,36,64,.85);}
   .lane .wpm{font-family:var(--mono);font-size:12.5px;color:var(--muted);text-align:right;}
-  .lane.finished .wpm{color:var(--good);font-weight:600;}
-
+  .lane.finished .wpm{color:var(--good);font-weight:700;}
   /* type area */
-  .typezone{position:relative;margin:8px 16px 16px;}
-  .typebox{position:relative;border:1px solid var(--line);border-radius:14px;background:rgba(7,16,14,.5);padding:22px 24px;font-family:var(--mono);font-size:20px;line-height:1.9;letter-spacing:.2px;min-height:120px;cursor:text;user-select:none;}
+  .typezone{position:relative;margin:8px 18px 18px;}
+  .typebox{position:relative;border-radius:18px;background:linear-gradient(rgba(255,251,244,.85) 0 0),url(kit/felt-texture.webp),var(--cream);box-shadow:var(--sunk),0 0 0 2px var(--line);padding:22px 26px;font-family:var(--mono);font-size:20px;line-height:1.9;letter-spacing:.2px;min-height:120px;cursor:text;user-select:none;transition:box-shadow .2s;}
+  .typezone:focus-within .typebox{box-shadow:var(--sunk),0 0 0 3px rgba(63,122,85,.45);}
   .typebox .ch{color:var(--faint);transition:color .05s;}
   .typebox .ch.ok{color:var(--ink);}
-  .typebox .ch.bad{color:var(--bad);background:rgba(255,106,93,.16);border-radius:3px;}
+  .typebox .ch.bad{color:var(--bad);background:rgba(232,96,76,.18);border-radius:3px;}
   .typebox .ch.cur{position:relative;}
   .typebox .ch.cur::before{content:"";position:absolute;left:-1px;top:6%;bottom:6%;width:2px;background:var(--accent);border-radius:2px;animation:blink 1s steps(2,start) infinite;}
   @keyframes blink{50%{opacity:0;}}
   #feed{position:absolute;inset:0;opacity:0;border:0;resize:none;cursor:text;}
-  .hintline{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:10px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
-
-  /* stats */
-  .stats{display:flex;gap:10px;flex-wrap:wrap;margin:0 16px 8px;}
-  .stat{flex:1 1 0;min-width:120px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(var(--surfaceRGB),.45);}
-  .stat .l{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .hintline{font-size:13px;color:var(--faint);margin-top:10px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .hintline #room{font-family:var(--mono);font-size:12px;}
+  /* stats: felt tags */
+  .stats{display:flex;gap:12px;flex-wrap:wrap;margin:6px 18px 10px;}
+  .stat{flex:1 1 0;min-width:120px;border-radius:14px;padding:12px 15px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 3px 0 #e2cdb0,0 6px 12px rgba(84,46,30,.1);outline:1.5px dashed rgba(45,36,64,.22);outline-offset:-5px;}
+  .stat:nth-child(odd){rotate:-.8deg;}
+  .stat:nth-child(even){rotate:.7deg;}
+  .stat .l{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
   .stat .v{font-family:var(--display);font-weight:600;font-size:26px;margin-top:2px;}
   .stat .v small{font-size:13px;color:var(--muted);font-weight:500;}
-
-  .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:4px 16px 18px;}
-
+  .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:4px 18px 20px;}
   /* overlays */
-  .overlay{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:rgba(7,16,14,.82);backdrop-filter:blur(4px);text-align:center;padding:24px;}
-  .count{font-family:var(--display);font-weight:700;font-size:96px;color:var(--accent);line-height:1;text-shadow:0 0 40px rgba(var(--accentRGB),.5);}
-  .countlbl{font-family:var(--mono);font-size:13px;color:#cdd8d3;margin-top:8px;letter-spacing:.1em;text-transform:uppercase;}
-
-  /* results */
-  .results{margin:4px 16px 18px;border:1px solid rgba(var(--accentRGB),.3);border-radius:16px;background:linear-gradient(150deg,rgba(var(--accentRGB),.1),rgba(var(--accentRGB),.02));padding:18px 18px 8px;display:none;}
-  .results.show{display:block;}
-  .results h3{font-family:var(--display);font-weight:600;font-size:20px;margin-bottom:10px;}
+  .overlay{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:rgba(255,247,234,.86);backdrop-filter:blur(4px);text-align:center;padding:24px;}
+  .count{font-family:var(--display);font-weight:700;font-size:96px;color:var(--coral-dk);line-height:1;text-shadow:0 5px 0 #f3d6c9;}
+  .countlbl{font:600 14px/1.2 var(--display);color:var(--muted);margin-top:10px;letter-spacing:.1em;text-transform:uppercase;}
+  /* results: a mint felt pocket */
+  .results{margin:4px 18px 18px;border-radius:18px;background:url(kit/felt-texture.webp),var(--mint);box-shadow:0 3px 0 #cfdcc4,0 8px 16px rgba(84,46,30,.1);outline:2px dashed rgba(63,122,85,.4);outline-offset:-7px;padding:20px 20px 10px;display:none;}
+  .results.show{display:block;animation:rise .6s var(--spring-pop) both;}
+  .results h3{font-family:var(--display);font-weight:600;font-size:21px;margin-bottom:10px;}
   .rtable{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;}
-  .rtable th{text-align:left;color:var(--faint);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:1px solid var(--line);}
-  .rtable td{padding:8px;border-bottom:1px solid var(--line);}
-  .rtable tr.me td{color:var(--accent);}
+  .rtable th{text-align:left;color:var(--faint);font:600 12px/1.2 var(--display);text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:2px dashed rgba(63,122,85,.3);}
+  .rtable td{padding:8px;border-bottom:1.5px solid rgba(63,122,85,.16);}
+  .rtable tr.me td{color:var(--coral-dk);font-weight:700;}
   .rtable .pos{width:34px;color:var(--muted);}
-  .rtable .rdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;}
-
-  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);z-index:60;background:var(--ink);color:#07100e;font-family:var(--mono);font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:100px;opacity:0;transition:.25s;pointer-events:none;}
+  .rtable .rdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:middle;box-shadow:0 0 0 1.5px rgba(45,36,64,.35);}
+  .toast{position:fixed;left:50%;bottom:24px;width:max-content;transform:translateX(-50%) translateY(20px);z-index:60;background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);font:600 14px/1 var(--display);padding:12px 18px;border-radius:999px;box-shadow:0 3px 0 #96331f,0 8px 18px rgba(84,46,30,.22);opacity:0;transition:transform .5s var(--spring-pop),opacity .2s;pointer-events:none;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  .statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 16px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted);}
-  .conn{display:inline-flex;align-items:center;gap:7px;}
-  .led{width:8px;height:8px;border-radius:50%;background:var(--faint);box-shadow:0 0 8px currentColor;}
-  .led.live{background:#2be3b0;color:#2be3b0;}
-  .led.off{background:#ff6a5d;color:#ff6a5d;}
-
-  section.copy{padding:24px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:30px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  @media(max-width:640px){.nameinput{width:96px;}.lane{grid-template-columns:96px 1fr 54px;}.typebox{font-size:17px;}.stat .v{font-size:22px;}}
+  .statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 18px;border-top:2px dashed var(--line);font-size:13px;color:var(--muted);}
+  .conn{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:600;}
+  .led{width:10px;height:10px;border-radius:50%;background:var(--faint);box-shadow:0 0 0 3px rgba(122,100,80,.18);}
+  .led.live{background:var(--green);box-shadow:0 0 0 3px rgba(63,122,85,.22);}
+  .led.off{background:var(--coral);box-shadow:0 0 0 3px rgba(232,96,76,.22);}
+  @media(max-width:640px){.tool-ui .nameinput{width:110px;}.lane{grid-template-columns:96px 1fr 54px;}.typebox{font-size:17px;padding:18px 18px;}.stat .v{font-size:22px;}.bar,.lanes{padding-inline:12px;}.typezone{margin-inline:12px;}.stats{margin-inline:12px;}.stat{min-width:calc(50% - 6px);}.controls{padding-inline:12px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Typebolt","url":"https://hammyasf.github.io/typing-race.html","applicationCategory":"GameApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A free real-time multiplayer typing race and typing speed test. Share a link and race friends typing the same passage live, or test your WPM solo. No sign-up.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an account to play?","acceptedAnswer":{"@type":"Answer","text":"No. There is no sign-up and no install. Open the page, share the link, and anyone who opens it joins your race instantly and types the same passage at the same time."}},{"@type":"Question","name":"How is the race live without a server?","acceptedAnswer":{"@type":"Answer","text":"Each player's progress is relayed through a realtime message channel as a tiny stream of numbers. Your browser broadcasts how far along you are and your current speed, and everyone else's browser draws your car moving. Nothing is written to a database."}},{"@type":"Question","name":"How is typing speed measured?","acceptedAnswer":{"@type":"Answer","text":"Words per minute is the standard measure: the number of correct characters you type divided by five, divided by the minutes elapsed. Accuracy is the share of keystrokes you got right on the first try."}},{"@type":"Question","name":"Can I use it to practice alone?","acceptedAnswer":{"@type":"Answer","text":"Yes. If no one else is in the room it works as a solo typing speed test. Start a race and type the passage to get your WPM and accuracy, then share the link to race friends."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · real-time, no sign-up</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="live">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-typing-race">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Typebolt</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-live"/></svg></span>
+    <span class="tag chip">Free tool · real-time, no sign-up</span>
     <h1>Typebolt</h1>
     <p class="sub">A typing race you play with other people. Share the link, everyone types the same passage at the same moment, and you watch each other's progress live. Alone? It's a clean typing speed test. No account, nothing stored.</p>
-    <span class="priv">&#9889; Live multiplayer — share the link, race together instantly</span>
+    <p class="priv">&#9889; Live multiplayer — share the link, race together instantly</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="app">
     <div class="bar">
       <div class="seg" id="lenseg" title="Passage length (used when you start a race)">
@@ -205,8 +183,8 @@
       <span id="poshint"></span>
     </div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>Every race is a private room with its own link. Open the page and you land in a fresh room with a code in the URL. Send that link to anyone and the moment they open it they are in your race, ready to type the exact same passage. When any player hits Start, a short countdown runs on everyone's screen at the same instant, then the passage unlocks and the typing begins. Each player's car slides along its lane as they type, so you can feel yourself pulling ahead or falling behind in real time.</p>
     <h2>How is it live without a server I have to run?</h2>
@@ -216,38 +194,24 @@
     <h2>Good ways to use it</h2>
     <p>Drop the link in a group chat and run a best-of-three. Use it as a warm-up before a coding session, settle who buys coffee, or run a friendly bracket at a meetup. On your own it is a distraction-free typing speed test you can repeat as often as you like to push your WPM up. It works on a laptop or desktop keyboard best; on a phone it will bring up the on-screen keyboard so you can still join in.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>Do I need to sign up?</summary><p>No. There is no account and no install. Open the page, copy the link, and share it. Anyone who opens the link joins your race instantly.</p></details>
     <details><summary>Is anything saved or uploaded?</summary><p>No. Your progress and speed are relayed live between the browsers in the room and never written to a database. When everyone closes the tab, the room is gone.</p></details>
     <details><summary>How many people can race at once?</summary><p>It is built for small groups, a handful of friends or teammates racing together comfortably in real time. It is not meant for hundreds of simultaneous racers.</p></details>
     <details><summary>Can I practice by myself?</summary><p>Yes. With no one else in the room it works as a solo typing speed test. Start a race, type the passage, and you get your WPM and accuracy. Share the link whenever you want to race someone.</p></details>
     <details><summary>Does it work on mobile?</summary><p>You can join from a phone and the on-screen keyboard will appear, but a physical keyboard is much faster and more comfortable for a real race.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build a tool like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Real-time in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- Ad slot (commented for later):
-<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XX" data-ad-slot="XX" data-ad-format="auto"></ins>
--->
-<!-- Monetization (Polar.sh) slot for a future Pro: private leagues, custom passages, saved stats. -->
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Real-time in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
   "use strict";
-  // ---- match the portfolio's saved theme ----
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var tt=T[localStorage.getItem("siteTheme")]; if(tt){var r=document.documentElement.style; r.setProperty("--accent",tt[0]);r.setProperty("--accent-2",tt[1]);r.setProperty("--accentRGB",tt[2]);r.setProperty("--surfaceRGB",tt[3]);r.setProperty("--bg",tt[4]);r.setProperty("--bg-2",tt[5]);} }catch(e){}
+  
 
   // ---- Supabase config (anon/publishable key is public and safe; broadcast+presence only, no tables) ----
   var SUPA_URL="https://cunynpmbjogrexkrxbwf.supabase.co";
@@ -597,7 +561,5 @@
   window.__trBoot=true;
 })();
 </script>
-<!-- Analytics: Cloudflare Web Analytics -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

@@ -8,7 +8,7 @@
 <meta name="keywords" content="beat maker, online beat maker, drum machine online, step sequencer online, make beats online, collaborative beat maker, multiplayer music maker, browser drum machine, free beat maker, online sequencer" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Live Beat Maker — make beats together in your browser" />
 <meta property="og:description" content="A real-time multiplayer drum machine. Share a link and build a beat with friends live. No sign-up, no install, runs in the browser." />
 <meta property="og:type" content="website" />
@@ -19,110 +19,93 @@
 <meta name="twitter:description" content="Real-time multiplayer drum machine. Share a link, jam live. No sign-up." />
 <link rel="canonical" href="https://hammyasf.github.io/beat-maker.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Live Beat Maker","url":"https://hammyasf.github.io/beat-maker.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time multiplayer drum machine and 16-step sequencer that runs in the browser. Share a link to make a beat together live. All sound is synthesized with the Web Audio API.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does making a beat together work?","acceptedAnswer":{"@type":"Answer","text":"Each beat has its own room link. Anyone who opens that link joins the same room. Every cell you toggle, the tempo, and play and stop all sync live to everyone in the room over a real-time WebSocket channel, so you are building the same beat at the same time."}},{"@type":"Question","name":"Are the sounds real samples or synthesized?","acceptedAnswer":{"@type":"Answer","text":"Every drum sound is synthesized live in your browser with the Web Audio API. There are no audio files to download, so the page loads instantly and the timing stays tight."}},{"@type":"Question","name":"Is anything stored on a server?","acceptedAnswer":{"@type":"Answer","text":"No. Rooms are ephemeral. The beat lives only in the browsers of the people currently in the room and is relayed peer to peer through a real-time channel. Nothing is saved to a database."}},{"@type":"Question","name":"Do I need an account or an app?","acceptedAnswer":{"@type":"Answer","text":"No sign-up, no install, no app. It works in any modern browser on desktop or mobile."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:980px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:980px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:34px 0 8px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(30px,5vw,48px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:660px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:24px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* a felt drum machine: the transport is a strip of felt pills, every step is a little sunk sand pad that fills with coral felt (green for the alternate tracks), the playing column is ringed */
+  .panel{margin:0;overflow:hidden;}
   /* transport */
-  .transport{display:flex;flex-wrap:wrap;gap:16px 22px;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line);}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s,filter .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn:active{transform:translateY(0);}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);font-weight:600;}
-  .btn-out:hover{border-color:var(--accent);}
-  .play{min-width:118px;justify-content:center;}
-  .ctl{display:flex;flex-direction:column;gap:6px;}
-  .ctl label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
+  .transport{display:flex;flex-wrap:wrap;gap:16px 22px;align-items:flex-end;padding:4px 4px 22px;border-bottom:2px dashed var(--line);}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;padding:11px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px) rotate(-1deg);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn-out{font-weight:600;}
+  .play{min-width:124px;justify-content:center;font-size:16px;padding:14px 24px;}
+  .ctl{display:flex;flex-direction:column;gap:8px;}
+  .ctl label{font:600 12px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);}
   .tempo{display:flex;align-items:center;gap:10px;}
   input[type=range]{accent-color:var(--accent);width:150px;}
-  .bpm{font-family:var(--mono);font-size:14px;color:var(--accent);min-width:64px;}
+  .bpm{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--coral-dk);min-width:64px;}
   .spacer{flex:1;}
   /* presence */
-  .room{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  .peers{display:flex;align-items:center;gap:-6px;}
-  .peer{width:22px;height:22px;border-radius:50%;border:2px solid var(--bg-2);margin-left:-6px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#07100e;font-family:var(--mono);}
+  .room{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font:600 13.5px/1.3 var(--display);color:var(--muted);}
+  .peers{display:flex;align-items:center;}
+  .peer{width:26px;height:26px;border-radius:50%;border:2px solid var(--white);margin-left:-6px;display:inline-flex;align-items:center;justify-content:center;font:600 11px/1 var(--display);color:var(--ink);box-shadow:0 2px 0 rgba(84,46,30,.2);}
   .peer:first-child{margin-left:0;}
-  .live{display:inline-flex;align-items:center;gap:7px;}
-  .livedot{width:8px;height:8px;border-radius:50%;background:#3ad17a;box-shadow:0 0 8px #3ad17a;animation:pulse 1.6s infinite;}
+  .live{display:inline-flex;align-items:center;gap:8px;}
+  .livedot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(63,122,85,.22);animation:pulse 1.6s infinite;}
   .livedot.off{background:var(--faint);box-shadow:none;animation:none;}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
   /* sequencer */
-  .seqwrap{padding:14px 20px 8px;overflow-x:auto;position:relative;}
-  .seq{display:grid;gap:7px;min-width:640px;}
+  .seqwrap{padding:20px 4px 10px;overflow-x:auto;position:relative;}
+  .seq{display:grid;gap:8px;min-width:640px;}
   .seqrow{display:grid;grid-template-columns:96px repeat(16,1fr);gap:6px;align-items:center;}
-  .name{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;}
-  .name .sw{width:9px;height:9px;border-radius:2px;flex:none;}
-  .name:hover{color:var(--ink);}
-  .cell{aspect-ratio:1/1;border-radius:7px;border:1px solid var(--line);background:rgba(237,242,239,.03);cursor:pointer;transition:transform .06s,background .12s,box-shadow .12s;position:relative;}
-  .cell:hover{border-color:var(--line-2);}
-  .cell.g{margin-left:5px;}
-  .cell.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.45);}
-  .cell.on.alt{background:var(--accent-2);border-color:var(--accent-2);box-shadow:0 0 12px rgba(20,195,201,.4);}
+  .name{font:600 13px/1.2 var(--display);color:var(--ink);display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;}
+  .name .sw{width:11px;height:11px;border-radius:50%;flex:none;box-shadow:0 1px 0 rgba(84,46,30,.3);}
+  .name:hover{color:var(--coral-dk);}
+  .cell{aspect-ratio:1/1;border-radius:9px;border:0;background:url(kit/felt-texture.webp),var(--sand);box-shadow:var(--sunk),0 0 0 1.5px var(--line);cursor:pointer;transition:transform .06s,background-color .12s,box-shadow .12s;position:relative;}
+  .cell:hover{box-shadow:var(--sunk),0 0 0 1.5px var(--line-2);}
+  .cell.g{margin-left:6px;}
+  .cell.on{background:url(kit/felt-texture.webp),var(--coral);box-shadow:inset 0 2px 0 rgba(255,255,255,.35),0 2px 0 #96331f;}
+  .cell.on.alt{background:url(kit/felt-texture.webp),var(--leaf);box-shadow:inset 0 2px 0 rgba(255,255,255,.35),0 2px 0 var(--green);}
   .cell.flash{transform:scale(.86);}
   .seqrow.beat .cell{outline:2px solid rgba(var(--accentRGB),.85);outline-offset:1px;}
-  .steplabels{display:grid;grid-template-columns:96px repeat(16,1fr);gap:6px;margin-bottom:4px;}
-  .steplabels span{font-family:var(--mono);font-size:10px;color:var(--faint);text-align:center;}
-  .steplabels .lead{}
+  .steplabels{display:grid;grid-template-columns:96px repeat(16,1fr);gap:6px;margin-bottom:6px;min-width:640px;}
+  .steplabels span{font-family:var(--mono);font-size:11px;color:var(--faint);text-align:center;}
   /* remote cursors */
   .cursors{position:absolute;inset:0;pointer-events:none;z-index:5;}
-  .cursor{position:absolute;transform:translate(-2px,-2px);transition:left .08s linear,top .08s linear;font-family:var(--mono);font-size:11px;white-space:nowrap;}
-  .cursor svg{display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5));}
-  .cursor span{display:inline-block;margin-left:2px;padding:1px 6px;border-radius:6px;color:#07100e;font-weight:700;}
-  .toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:6px 20px 20px;align-items:center;}
-  .note{font-family:var(--mono);font-size:12px;color:var(--faint);padding:0 20px 18px;}
-  .note b{color:var(--accent);}
-  /* copy */
-  section.copy{padding:26px 0 10px;}
-  section.copy h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copy p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#07100e;font-family:var(--mono);font-size:13px;font-weight:700;padding:10px 18px;border-radius:100px;opacity:0;pointer-events:none;transition:.25s;z-index:120;}
+  .cursor{position:absolute;transform:translate(-2px,-2px);transition:left .08s linear,top .08s linear;font:600 11.5px/1.3 var(--display);white-space:nowrap;}
+  .cursor svg{display:block;filter:drop-shadow(0 1px 2px rgba(45,36,64,.45));}
+  .cursor span{display:inline-block;margin-left:2px;padding:1px 7px;border-radius:7px;color:var(--ink);}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:6px 4px 20px;align-items:center;}
+  .note{font-size:14px;color:var(--faint);padding:6px 4px 0;}
+  .note b{color:var(--coral-dk);}
+  .toast{position:fixed;left:50%;bottom:28px;width:max-content;transform:translateX(-50%) translateY(20px);background:url(kit/felt-texture.webp),var(--coral-btn);color:var(--white);font:600 14px/1 var(--display);padding:12px 18px;border-radius:999px;box-shadow:0 3px 0 #96331f,0 8px 18px rgba(84,46,30,.22);opacity:0;pointer-events:none;transition:transform .5s var(--spring-pop),opacity .2s;z-index:120;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  @media(max-width:560px){.seqrow,.steplabels{grid-template-columns:64px repeat(16,1fr);}.name{font-size:11px;}}
+  @media(max-width:560px){.seqrow,.steplabels{grid-template-columns:64px repeat(16,1fr);}.name{font-size:12px;}}
 </style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Live Beat Maker","url":"https://hammyasf.github.io/beat-maker.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"A real-time multiplayer drum machine and 16-step sequencer that runs in the browser. Share a link to make a beat together live. All sound is synthesized with the Web Audio API.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does making a beat together work?","acceptedAnswer":{"@type":"Answer","text":"Each beat has its own room link. Anyone who opens that link joins the same room. Every cell you toggle, the tempo, and play and stop all sync live to everyone in the room over a real-time WebSocket channel, so you are building the same beat at the same time."}},{"@type":"Question","name":"Are the sounds real samples or synthesized?","acceptedAnswer":{"@type":"Answer","text":"Every drum sound is synthesized live in your browser with the Web Audio API. There are no audio files to download, so the page loads instantly and the timing stays tight."}},{"@type":"Question","name":"Is anything stored on a server?","acceptedAnswer":{"@type":"Answer","text":"No. Rooms are ephemeral. The beat lives only in the browsers of the people currently in the room and is relayed peer to peer through a real-time channel. Nothing is saved to a database."}},{"@type":"Question","name":"Do I need an account or an app?","acceptedAnswer":{"@type":"Answer","text":"No sign-up, no install, no app. It works in any modern browser on desktop or mobile."}}]}</script>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · real-time · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="live">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-beat-maker">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Live Beat Maker</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-live"/></svg></span>
+    <span class="tag chip">Free tool · real-time · runs in your browser</span>
     <h1>Live Beat Maker</h1>
     <p class="sub">A drum machine you play with other people. Share the room link and every beat you tap lands on everyone's grid at the same moment. All sound is synthesized live in the browser.</p>
-    <span class="priv">&#9889; Multiplayer · share a link, jam together · nothing stored on a server</span>
+    <p class="priv">&#9889; Multiplayer · share a link, jam together · nothing stored on a server</p>
   </header>
-
+  <section class="tool-ui patch">
   <div class="panel">
     <div class="transport">
       <button class="btn play" id="play" aria-label="Play or stop">&#9654; Play</button>
@@ -146,8 +129,8 @@
     </div>
     <div class="note" id="note">Press <b>Play</b> to hear the starter beat, then tap cells to change it. Open the share link in a second tab to see two players in the same room.</div>
   </div>
-
-  <section class="copy">
+  </section>
+  <section class="tool-copy patch">
     <h2>How it works</h2>
     <p>Each row is a synthesized drum, each column is a sixteenth note, and a playhead sweeps left to right at the tempo you set. Toggle a cell and that drum fires on that step. Everything you hear is generated on the fly with the Web Audio API, oscillators and filtered noise shaped into kicks, snares, hats and toms, so there are no samples to download and the timing stays rock solid.</p>
     <h2>Why it is real-time</h2>
@@ -155,36 +138,20 @@
     <h2>Make a beat in thirty seconds</h2>
     <p>Put kicks on steps 1, 5, 9 and 13 for a steady four-on-the-floor. Add a snare or clap on 5 and 13 for the backbeat. Fill the closed hat across every other step to drive it forward, then sprinkle an open hat or a tom to taste. Hit Randomize when you want a starting point to mangle, and drag the tempo to find the pocket.</p>
   </section>
-
-  <div class="faq">
+  <section class="tool-faq">
     <details open><summary>How do we make a beat together?</summary><p>Click Share room to copy the link and send it to a friend. When they open it they join your room, and from then on every change either of you makes shows up for the other instantly, including live cursors. It works across phones and laptops anywhere in the world.</p></details>
     <details><summary>Are the sounds real samples?</summary><p>No, every drum is synthesized live with the Web Audio API. That is why the page loads instantly with no files to fetch, and why the playback timing is tight.</p></details>
     <details><summary>Is my beat saved anywhere?</summary><p>No. Rooms are ephemeral and nothing is written to a database. The beat exists only in the browsers of the people currently in the room. Bookmark the room link if you want to come back to the same room while people are still in it.</p></details>
     <details><summary>It says solo mode, what happened?</summary><p>That means the real-time connection could not be established, usually a network or firewall issue. The drum machine still works perfectly on its own, you just will not see other people. Reload to try reconnecting.</p></details>
     <details><summary>Do I need an account?</summary><p>No sign-up, no install, no app. Open the page and play.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <div class="toast" id="toast"></div>
-
-<script>
-(function(){
-  // match the portfolio's saved theme
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -356,7 +323,7 @@ function roomId(){
 }
 const ROOM=roomId();
 const ME=Math.random().toString(36).slice(2,10);
-const COLORS=["#2be3b0","#14c3c9","#ffb454","#ff6a8a","#b07cff","#67d96b","#5aa9ff","#ff8f3d"];
+const COLORS=["#8fbf6a","#7cc4b6","#f2c14e","#f08a72","#b49ad6","#e86a9a","#8fb0d0","#f0a46e"];
 const MYCOLOR=COLORS[Math.floor(Math.random()*COLORS.length)];
 const ANIMALS=["Fox","Owl","Cat","Wolf","Bee","Lynx","Crow","Moth","Newt","Hare"];
 const MYNAME=ANIMALS[Math.floor(Math.random()*ANIMALS.length)];
@@ -442,8 +409,5 @@ document.getElementById("share").addEventListener("click",async ()=>{
 /* spacebar = play/stop */
 document.addEventListener("keydown",(e)=>{ if(e.code==="Space" && e.target.tagName!=="INPUT"){ e.preventDefault(); playEl.click(); } });
 </script>
-
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>

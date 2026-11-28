@@ -8,7 +8,7 @@
 <meta name="keywords" content="peer to peer file transfer, send files without uploading, browser to browser file transfer, p2p file sharing, webrtc file transfer, share files by qr, send large files no upload, private file transfer, airdrop for the web, send file by link" />
 <meta name="author" content="Harman Kamboj" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#07100e" />
+<meta name="theme-color" content="#fdf4e6" />
 <meta property="og:title" content="Beam — Peer-to-Peer File Transfer" />
 <meta property="og:description" content="Send files directly browser to browser. Nothing is uploaded — your file goes straight to the other person over an encrypted P2P connection. Share by link or QR." />
 <meta property="og:type" content="website" />
@@ -19,100 +19,96 @@
 <meta name="twitter:description" content="Send files directly browser to browser, encrypted and never uploaded. Share by link or QR." />
 <link rel="canonical" href="https://hammyasf.github.io/beam.html" />
 <link rel="icon" href="favicon.svg" />
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" media="print" onload="this.media='all'" />
-<noscript><link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700,900&f[]=jetbrains-mono@400,500&display=swap" /></noscript>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/felt.css">
+<link rel="stylesheet" href="kit/tool.css">
+<link rel="expect" href="#tool-hero" blocking="render">
+<style data-tool>
+  /* sender and receiver are felt pockets (tool.css .panel); the link strip, the QR on a white card, knitted progress per file; the how-it-works note is a paper sheet with three tilted step cards */
+  .panel{margin:0 0 22px;overflow:hidden;}
+  .panel:last-of-type{margin-bottom:0;}
+  .drop{padding:46px 24px;text-align:center;margin:18px;cursor:pointer;}
+  .drop h2{font-family:var(--display);font-weight:600;font-size:24px;}
+  .drop p{color:var(--muted);font-size:15px;margin-top:8px;}
+  .drop .or{margin-top:14px;font-size:14px;color:var(--faint);}
+  .drop .or a{cursor:pointer;color:var(--coral-dk);font-weight:700;text-decoration:underline dashed;text-underline-offset:3px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;padding:11px 20px;cursor:pointer;transition:transform .45s var(--spring-pop),box-shadow .2s;}
+  .btn:hover{transform:translateY(-2px) rotate(-1deg);}
+  .btn:active{transform:translateY(2px) scale(.96);transition-duration:.08s;}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+  .share{display:grid;grid-template-columns:1fr auto;gap:22px;padding:26px 26px 22px;align-items:center;}
+  @media(max-width:560px){.share{grid-template-columns:1fr;justify-items:start;}}
+  .share .lab{font:600 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:9px;}
+  .linkrow{display:flex;gap:8px;align-items:stretch;}
+  .tool-ui .linkrow input{flex:1;min-width:0;font-family:var(--mono);font-size:13px;}
+  .copy{font:600 14px/1 var(--display);color:var(--ink);border:0;padding:0 18px;border-radius:999px;cursor:pointer;background:url(kit/felt-texture.webp),var(--white);box-shadow:var(--shadow-btn);white-space:nowrap;transition:transform .45s var(--spring-pop);}
+  .copy:hover{transform:translateY(-2px);}
+  .copy:active{transform:translateY(2px) scale(.95);transition-duration:.08s;}
+  /* the QR is scanned by a camera: plain white behind it, on a stitched card */
+  .qr{width:152px;height:152px;background:var(--white);border-radius:14px;padding:10px;display:flex;align-items:center;justify-content:center;rotate:1.5deg;box-shadow:0 3px 0 #e2cdb0,0 8px 16px rgba(84,46,30,.14);outline:1.5px dashed rgba(45,36,64,.22);outline-offset:3px;}
+  .qr svg,.qr img{width:100%;height:100%;display:block;}
+  .qcap{font-size:13px;color:var(--faint);text-align:center;margin-top:10px;}
+  .status{display:flex;align-items:center;gap:10px;padding:14px 26px;border-top:2px dashed var(--line);font:600 14px/1.3 var(--display);color:var(--muted);}
+  .pulse{width:10px;height:10px;border-radius:50%;background:var(--faint);flex:none;}
+  .pulse.live{background:var(--green);box-shadow:0 0 0 4px rgba(63,122,85,.22);animation:bp 1.3s var(--ease) infinite;}
+  .pulse.err{background:var(--coral);box-shadow:0 0 0 4px rgba(232,96,76,.22);}
+  @keyframes bp{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .files{display:grid;gap:12px;padding:6px 26px 24px;}
+  .frow{border-radius:16px;padding:14px 16px;background:url(kit/felt-texture.webp),var(--cream);box-shadow:0 3px 0 #e2cdb0,0 6px 12px rgba(84,46,30,.1);outline:1.5px dashed rgba(45,36,64,.2);outline-offset:-5px;}
+  .frow .top{display:flex;justify-content:space-between;gap:12px;align-items:baseline;}
+  .frow .n{font-size:15px;font-weight:600;color:var(--ink);word-break:break-all;}
+  .frow .s{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;}
+  .track{height:10px;border-radius:999px;background:var(--sand);box-shadow:var(--sunk);margin-top:10px;overflow:hidden;}
+  .fill{height:100%;width:0;border-radius:999px;background:var(--knit),linear-gradient(#f07a66,var(--coral) 60%,#d4513e);background-size:8px 11px,auto;transition:width .12s linear;}
+  .frow .dl{margin-top:11px;display:inline-flex;font:600 13.5px/1 var(--display);color:var(--white);border:0;padding:9px 14px;border-radius:999px;cursor:pointer;background:url(kit/felt-texture.webp),var(--green);box-shadow:0 3px 0 #2c5a3d;}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 26px 22px;}
+  .meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .meta b{color:var(--coral-dk);}
+  .hide{display:none!important;}
+  section.copyc{margin-top:26px;padding:34px 40px 30px;border-radius:22px;background:linear-gradient(rgba(255,251,244,.84) 0 0),url(kit/felt-texture.webp),var(--cream);box-shadow:0 3px 0 #e6d2b5,0 10px 22px rgba(84,46,30,.12);outline:2px dashed var(--thread);outline-offset:-8px;}
+  section.copyc h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,28px);margin:30px 0 10px;letter-spacing:-.01em;}
+  section.copyc h2:first-child{margin-top:0;}
+  section.copyc p{color:var(--ink);font-size:16.5px;line-height:1.7;margin:12px 0;max-width:68ch;}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;}
+  @media(max-width:620px){.steps{grid-template-columns:1fr;}section.copyc{padding:26px 20px 22px;}}
+  .step{border-radius:18px;padding:18px 18px 16px;background:url(kit/felt-texture.webp),var(--white);box-shadow:0 3px 0 #e2cdb0,0 8px 16px rgba(84,46,30,.1);outline:1.5px dashed rgba(45,36,64,.2);outline-offset:-6px;}
+  .step:nth-child(1){rotate:-.8deg;}
+  .step:nth-child(2){rotate:.6deg;}
+  .step:nth-child(3){rotate:-.4deg;}
+  .step .num{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;font:600 13px/1 var(--display);color:var(--ink);background:url(kit/felt-texture.webp),var(--leaf);box-shadow:inset 0 -2px 0 rgba(0,0,0,.14),0 2px 0 var(--green);}
+  .step h3{font-family:var(--display);font-weight:600;font-size:18px;margin:10px 0 6px;}
+  .step p{font-size:14.5px;color:var(--muted);margin:0;}
+</style>
+<script src="kit/transitions.js"></script>
+<script type="module">
+import './kit/site.js';
+</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Beam — Peer-to-Peer File Transfer","url":"https://hammyasf.github.io/beam.html","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Send files directly from one browser to another over an encrypted WebRTC peer-to-peer connection. The file bytes never touch a server. Share by link or QR code.","author":{"@type":"Person","name":"Harman Kamboj","url":"https://hammyasf.github.io"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is my file uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. The file is sent directly from your browser to the other person's browser over a WebRTC data channel. Only a tiny connection handshake passes through a relay to introduce the two browsers. The file bytes themselves never touch any server."}},{"@type":"Question","name":"Is the transfer encrypted?","acceptedAnswer":{"@type":"Answer","text":"Yes. WebRTC data channels are encrypted in transit with DTLS by default, so the file is encrypted on the wire between the two browsers."}},{"@type":"Question","name":"Is there a file size limit?","acceptedAnswer":{"@type":"Answer","text":"There is no fixed limit. Because the transfer is peer-to-peer and streamed in chunks, the practical limit is the patience of both people and the speed of the connection between them, not a server quota."}},{"@type":"Question","name":"Do both people need an account?","acceptedAnswer":{"@type":"Answer","text":"No accounts, no sign-up. One person picks a file and shares the link or QR code, the other opens it, and the transfer starts."}}]}</script>
-<style>
-  :root{--bg:#07100e;--bg-2:#0b1714;--ink:#edf2ef;--muted:#93a8a1;--faint:#7c8b84;--line:rgba(237,242,239,.12);--line-2:rgba(237,242,239,.22);--accent:#2be3b0;--accent-2:#14c3c9;--accentRGB:43,227,176;--surfaceRGB:11,23,20;--display:"Clash Display",-apple-system,sans-serif;--body:"Satoshi","Inter",-apple-system,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--ease:cubic-bezier(.16,.84,.32,1);}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
-    background-image:radial-gradient(120% 80% at 85% -10%,rgba(var(--accentRGB),.13),transparent 55%),radial-gradient(110% 80% at -10% 110%,rgba(var(--accentRGB),.07),transparent 55%);background-attachment:fixed;min-height:100vh;}
-  a{color:var(--accent);text-decoration:none;}::selection{background:var(--accent);color:#07100e;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:920px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink);}
-  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px rgba(var(--accentRGB),.8);}
-  nav .r{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;gap:18px;align-items:center;}
-  .hero{padding:40px 0 16px;}
-  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);}
-  h1{font-family:var(--display);font-weight:600;letter-spacing:-.025em;line-height:1.04;font-size:clamp(32px,5.5vw,52px);margin:12px 0 0;}
-  .sub{margin-top:14px;font-size:18px;color:#cdd8d3;max-width:640px;}
-  .priv{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.3);padding:6px 12px;border-radius:100px;}
-  .panel{margin:26px 0;border:1px solid var(--line);border-radius:20px;background:rgba(var(--surfaceRGB),.55);overflow:hidden;}
-  .drop{padding:46px 24px;text-align:center;border:2px dashed var(--line-2);border-radius:16px;margin:18px;transition:border-color .2s,background .2s;cursor:pointer;}
-  .drop.over{border-color:var(--accent);background:rgba(var(--accentRGB),.06);}
-  .drop h2{font-family:var(--display);font-weight:600;font-size:22px;}
-  .drop p{color:var(--muted);font-size:14px;margin-top:8px;}
-  .drop .or{margin-top:14px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  .drop .or a{cursor:pointer;border-bottom:1px dashed rgba(var(--accentRGB),.5);}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:100px;background:var(--accent);color:#07100e;border:none;cursor:pointer;transition:transform .14s;}
-  .btn:hover{transform:translateY(-2px);}
-  .btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;}
-  .btn-out{background:transparent;border:1px solid var(--line-2);color:var(--ink);}
-  .share{display:grid;grid-template-columns:1fr auto;gap:22px;padding:24px;align-items:center;}
-  @media(max-width:560px){.share{grid-template-columns:1fr;}}
-  .share .lab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
-  .linkrow{display:flex;gap:8px;align-items:stretch;}
-  .linkrow input{flex:1;background:rgba(var(--surfaceRGB),.6);border:1px solid var(--line-2);color:var(--ink);border-radius:10px;padding:11px 12px;font-family:var(--mono);font-size:13px;}
-  .copy{font-family:var(--mono);font-size:12.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:0 14px;border-radius:10px;cursor:pointer;background:transparent;white-space:nowrap;}
-  .qr{width:152px;height:152px;background:#fff;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;}
-  .qr svg,.qr img{width:100%;height:100%;display:block;}
-  .qcap{font-family:var(--mono);font-size:11px;color:var(--faint);text-align:center;margin-top:8px;}
-  .status{display:flex;align-items:center;gap:10px;padding:14px 24px;border-top:1px solid var(--line);font-family:var(--mono);font-size:13px;color:var(--muted);}
-  .pulse{width:9px;height:9px;border-radius:50%;background:var(--faint);flex:none;}
-  .pulse.live{background:var(--accent);box-shadow:0 0 10px rgba(var(--accentRGB),.8);animation:bp 1.3s var(--ease) infinite;}
-  .pulse.err{background:#ff6a5a;box-shadow:0 0 10px rgba(255,106,90,.7);}
-  @keyframes bp{0%,100%{opacity:1;}50%{opacity:.35;}}
-  .files{display:grid;gap:12px;padding:6px 24px 24px;}
-  .frow{border:1px solid var(--line);border-radius:14px;padding:13px 15px;background:rgba(var(--surfaceRGB),.4);}
-  .frow .top{display:flex;justify-content:space-between;gap:12px;align-items:baseline;}
-  .frow .n{font-size:14px;color:var(--ink);word-break:break-all;}
-  .frow .s{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;}
-  .track{height:7px;border-radius:6px;background:rgba(var(--surfaceRGB),.9);border:1px solid var(--line);margin-top:10px;overflow:hidden;}
-  .fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .12s linear;}
-  .frow .dl{margin-top:11px;display:inline-flex;font-family:var(--mono);font-size:12.5px;color:var(--accent);border:1px solid rgba(var(--accentRGB),.4);padding:7px 12px;border-radius:8px;cursor:pointer;background:transparent;}
-  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:0 24px 22px;}
-  .meta{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
-  .meta b{color:var(--accent);}
-  .hide{display:none!important;}
-  section.copyc{padding:30px 0 10px;}
-  section.copyc h2{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);margin:34px 0 10px;letter-spacing:-.01em;}
-  section.copyc p{color:#cdd8d3;font-size:16.5px;margin:12px 0;}
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;}
-  @media(max-width:620px){.steps{grid-template-columns:1fr;}}
-  .step{border:1px solid var(--line);border-radius:16px;padding:18px;background:rgba(var(--surfaceRGB),.4);}
-  .step .num{font-family:var(--mono);font-size:12px;color:var(--accent);}
-  .step h3{font-family:var(--display);font-weight:600;font-size:17px;margin:8px 0 6px;}
-  .step p{font-size:14.5px;color:var(--muted);margin:0;}
-  .faq{border-top:1px solid var(--line);margin-top:10px;}
-  .faq details{border-bottom:1px solid var(--line);padding:16px 2px;}
-  .faq summary{font-family:var(--display);font-weight:600;font-size:17px;cursor:pointer;list-style:none;}
-  .faq summary::-webkit-details-marker{display:none;}
-  .faq p{margin-top:10px;font-size:15.5px;color:#cdd8d3;}
-  .cta{margin:30px 0;padding:30px;border:1px solid rgba(var(--accentRGB),.28);border-radius:20px;background:linear-gradient(150deg,rgba(var(--accentRGB),.12),rgba(var(--accentRGB),.02));}
-  .cta h3{font-family:var(--display);font-weight:600;font-size:24px;}
-  .cta p{color:#cdd8d3;margin-top:8px;}
-  footer{border-top:1px solid var(--line);margin-top:30px;padding:24px 0 40px;font-family:var(--mono);font-size:12.5px;color:var(--faint);}
-  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-</style>
 </head>
-<body>
-<nav>
-  <a class="brand" href="index.html"><span class="dot"></span> Harman Kamboj</a>
-  <div class="r"><a href="lab.html">More tools</a><a href="index.html#contact">Hire me</a></div>
-</nav>
-
-<main class="wrap">
-  <header class="hero">
-    <div class="tag">Free tool · peer-to-peer · runs in your browser</div>
+<body class="tool-page">
+<header class="site-head">
+  <a class="site-head__home" href="index.html"><span class="site-head__avatar" aria-hidden="true"><img src="kit/avatar.png" srcset="kit/avatar@2x.png 2x" alt="" width="36" height="36"></span><span class="site-head__name">Harman Kamboj</span></a>
+  <nav class="site-head__nav" aria-label="Main">
+    <a href="index.html">World</a>
+    <a href="index.html#resume-h">Résumé</a>
+    <a href="blog.html">Writing</a>
+    <a href="lab.html">Lab</a>
+    <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">Email</a>
+  </nav>
+</header>
+<main class="tool" data-kind="live">
+  <header class="hero patch" id="tool-hero" data-morph-target="post-beam">
+    <nav class="crumb" aria-label="Breadcrumb"><a href="lab.html">Lab</a> <span aria-hidden="true">/</span> <span aria-current="page">Beam a file, browser to browser.</span></nav>
+    <span class="kind" aria-hidden="true"><svg><use href="kit/tool-icons.svg#ti-live"/></svg></span>
+    <span class="tag chip">Free tool · peer-to-peer · runs in your browser</span>
     <h1 id="title">Beam a file, browser to browser.</h1>
     <p class="sub" id="subtitle">Drop a file, share the link or QR code, and it streams straight to the other person's browser. No upload, no account, no size cap.</p>
-    <span class="priv">&#128274; Your file goes peer-to-peer — it never touches a server</span>
+    <p class="priv">&#128274; Your file goes peer-to-peer — it never touches a server</p>
   </header>
-
+  <section class="tool-ui patch">
   <!-- ============ SENDER ============ -->
   <div class="panel" id="senderPanel">
     <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add files to send">
@@ -170,37 +166,21 @@
     <h2>The honest caveats</h2>
     <p>Both browser tabs need to stay open during the transfer, since the file flows live between them. The connection uses public STUN servers to find a direct path, which works on the large majority of home and office networks; a small number of very locked-down corporate networks block direct peer connections, in which case the handshake won't complete. And the handshake (just the connection details, never your file) is relayed so the two browsers can find each other.</p>
   </section>
-
-  <div class="faq">
+  </section>
+  <section class="tool-faq">
     <details open><summary>Is my file uploaded anywhere?</summary><p>No. The file goes directly from your browser to the other person's browser over a WebRTC data channel. Only a small connection handshake is relayed to introduce the two browsers. Your file bytes never touch a server.</p></details>
     <details><summary>Is it encrypted?</summary><p>Yes. WebRTC data channels are encrypted in transit with DTLS by default, so the file is encrypted on the wire between the two browsers.</p></details>
     <details><summary>How big a file can I send?</summary><p>There's no fixed limit. The file is streamed in chunks peer-to-peer, so the practical ceiling is your connection speed and both tabs staying open, not a storage quota.</p></details>
     <details><summary>Do we need accounts?</summary><p>No sign-up for either side. One person picks a file and shares the link or QR; the other opens it and the transfer starts.</p></details>
     <details><summary>Does it work between a phone and a laptop?</summary><p>Yes. Scan the QR code on a phone, or open the link on any device. It works across platforms because it's just two web browsers talking to each other.</p></details>
-  </div>
-
-  <div class="cta">
+  </section>
+  <aside class="tool-cta patch">
     <h3>I build tools like this every day.</h3>
-    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="index.html#contact">get in touch</a>.</p>
-  </div>
+    <p>Senior full-stack engineer, available for senior or contract work, fully remote. See the rest of the <a href="lab.html">lab</a> or <a href="mailto:playcivil@gmail.com?subject=Recruiting%20Harman">get in touch</a>.</p>
+  </aside>
 </main>
-
-<footer><div class="wrap">
-  <span>© 2026 Harman Kamboj</span>
-  <span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span>
-</div></footer>
-
-<!-- early theme: match the portfolio's saved theme -->
-<script>
-(function(){
-  try{ var T={jade:["#2be3b0","#14c3c9","43,227,176","11,23,20","#07100e","#0b1714"],blue:["#3da5ff","#00d1ff","61,165,255","12,20,32","#060a12","#0a1220"],violet:["#b07cff","#7c5cff","176,124,255","20,15,30","#0a0712","#0f0b1c"],coral:["#ff6a3d","#ff9a3d","255,106,61","28,17,11","#110a06","#1a0f0a"]};
-    var t=T[localStorage.getItem("siteTheme")]; if(t){var r=document.documentElement.style; r.setProperty("--accent",t[0]);r.setProperty("--accent-2",t[1]);r.setProperty("--accentRGB",t[2]);r.setProperty("--surfaceRGB",t[3]);r.setProperty("--bg",t[4]);r.setProperty("--bg-2",t[5]);} }catch(e){}
-})();
-</script>
-
-<!-- QR code generator (tiny, no deps) -->
+<footer class="site-foot"><span>© 2026 Harman Kamboj</span><span>Built in the browser · <a href="index.html">hammyasf.github.io</a></span><nav aria-label="Footer"><a href="index.html">← Back to portfolio</a></nav></footer>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
-
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
@@ -445,11 +425,5 @@ function setStatus(side, cls, text){
 }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, (c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 </script>
-
-<!-- Monetization slot (left intentionally empty for now):
-<ins class="adsbygoogle" ...></ins>  |  Polar.sh checkout button
--->
-<!-- Analytics: Cloudflare Web Analytics beacon. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"67319da24fb341b6bc63d535a3edda18"}'></script>
 </body>
 </html>
